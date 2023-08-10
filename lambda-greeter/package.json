@@ -1,0 +1,27 @@
+{
+  "name": "lambda-greeter",
+  "version": "0.0.1",
+  "description": "A simple Restate application that can be deployed on AWS Lambda",
+  "main": "app.js",
+  "type": "commonjs",
+  "license": "MIT",
+  "author": "Restate developers",
+  "email": "info@restate.dev",
+  "scripts": {
+    "lint": "eslint --ignore-path .eslintignore --ext .ts .",
+    "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
+    "build": "tsc --noEmitOnError",
+    "bundle": "esbuild src/app.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
+    "postbundle": "cd dist && zip -r index.zip index.js*",
+    "app": "node ./dist/app.js",
+    "dev": "ts-node-dev --respawn --transpile-only ./src/app.ts"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "1.0.35"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.0",
+    "prettier": "^3.0.1",
+    "ts-node-dev": "^2.0.0"
+  }
+}
