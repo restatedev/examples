@@ -5,6 +5,7 @@ Browse this repository to see how easy distributed applications development beco
 This repository contains the following examples:
 
 * [Lambda greeter](lambda-greeter): A simple example of how you can run a Restate service on AWS Lambda.
+* [Ticket reservation](ticket-reservation): An example to illustrate how Restate's keyed-sharding and concurrency guarantees simplify microservice architectures.
 
 ## Releasing (for Restate developers)
 
