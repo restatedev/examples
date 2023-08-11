@@ -18,13 +18,13 @@
     "@restatedev/restate-sdk": "1.0.34"
   },
   "devDependencies": {
-    "esbuild": "^0.19.0",
-    "eslint": "^8.46.0",
+    "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",
+    "esbuild": "^0.19.0",
+    "eslint": "^8.46.0",
     "prettier": "^3.0.1",
     "ts-node-dev": "^2.0.0",
-    "@types/uuid": "^9.0.0",
     "uuid": "^9.0.0"
   }
 }

@@ -92,39 +92,13 @@ npm run app
 
 The user session service, ticket service and checkout service are now up and running!
 
+### Launch the Restate runtime
+
+See [how to launch the runtime](../README.md#launching-the-runtime) for details.
+
 ### Connect Services and Runtime
 
-Once the runtime is up, let it discover your services by executing:
-
-- For MacOS:
-```shell
-curl -X POST http://localhost:8081/endpoints -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:8080"}'
-```
-- For Linux:
-```shell
-curl -X POST http://localhost:8081/endpoints -H 'content-type: application/json' -d '{"uri": "http://localhost:8080"}'
-```
-
-This should give you the following output:
-```json
-{
-    "id": "bG9jYWxob3N0OjgwODAv",
-    "services": [
-        {
-            "name": "userSession",
-            "revision": 1
-        },
-        {
-            "name": "ticketDb",
-            "revision": 1
-        },
-        {
-            "name": "checkoutProcess",
-            "revision": 1
-        }
-    ]
-}
-```
+See [how to connect services and runtime](../README.md#connect-runtime-and-services) for details.
 
 ### Call the Service
 

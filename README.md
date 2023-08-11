@@ -7,7 +7,72 @@ This repository contains the following examples:
 * [Lambda greeter](lambda-greeter): A simple example of how you can run a Restate service on AWS Lambda.
 * [Ticket reservation](ticket-reservation): An example to illustrate how Restate's keyed-sharding and concurrency guarantees simplify microservice architectures.
 
+## Launching the runtime
+
+Have a look at how to start up the runtime in a Docker container in this repository: https://github.com/restatedev/restate-dist or simply run the following commands:
+
+- For MacOS:
+```shell
+docker run --name restate_dev --rm -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:0.1.7
+```
+- For Linux:
+```shell
+docker run --name restate_dev --rm --network=host ghcr.io/restatedev/restate-dist:0.1.7
+```
+
+## Connect runtime and services
+
+Once the runtime is up, let it discover the services of the examples by executing:
+
+- For MacOS:
+```shell
+curl -X POST http://localhost:8081/endpoints -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:8080"}'
+```
+- For Linux:
+```shell
+curl -X POST http://localhost:8081/endpoints -H 'content-type: application/json' -d '{"uri": "http://localhost:8080"}'
+```
+
+This should give you the following output in case of the ticket reservation example:
+```json
+{
+    "id": "bG9jYWxob3N0OjgwODAv",
+    "services": [
+        {
+            "name": "userSession",
+            "revision": 1
+        },
+        {
+            "name": "ticketDb",
+            "revision": 1
+        },
+        {
+            "name": "checkoutProcess",
+            "revision": 1
+        }
+    ]
+}
+```
+
 ## Releasing (for Restate developers)
 
 In order to create a new release, push a tag of the form `vX.Y.Z`.
 Then [create a release via GitHub](https://github.com/restatedev/example-lambda-ts-greeter/releases).
+
+### Upgrading the SDK dependency
+
+In order to upgrade the SDK depedency you have to run:
+
+```shell
+npm install @restatedev/restate-sdk@Z.Y.X --workspaces --save-exact
+```
+
+Now check whether the examples are still building:
+
+```shell
+npm run build --workspaces
+```
+
+### Upgrading the runtime version
+
+Update the runtime version tag [in this README.md](README.md#launching-the-runtime).
