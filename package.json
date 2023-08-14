@@ -6,6 +6,7 @@
     "email": "info@restate.dev",
     "workspaces": [
         "lambda-greeter",
-        "ticket-reservation"
+        "ticket-reservation",
+        "payment-api"
     ]
 }
