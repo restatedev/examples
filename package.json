@@ -9,6 +9,6 @@
         "ticket-reservation"
     ],
     "dependencies": {
-        "@restatedev/restate-sdk": "1.0.34"
+        "@restatedev/restate-sdk": "1.0.35"
     }
 }
