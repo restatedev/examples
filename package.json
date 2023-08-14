@@ -4,9 +4,11 @@
     "license": "MIT",
     "author": "Restate developers",
     "email": "info@restate.dev",
+    "private": true,
     "workspaces": [
         "lambda-greeter",
-        "ticket-reservation"
+        "ticket-reservation",
+        "common/*"
     ],
     "dependencies": {
         "@restatedev/restate-sdk": "1.0.35"

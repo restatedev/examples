@@ -1,0 +1,13 @@
+{
+    "name": "@restate-examples/prettier-config",
+    "version": "1.0.0",
+    "main": "./prettier-config.json",
+    "scripts": {
+        "format": "",
+        "lint": "",
+        "build": ""
+    },
+    "peerDependencies": {
+        "prettier": "^3.0.1"
+    }
+}
