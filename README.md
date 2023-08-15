@@ -39,15 +39,15 @@ This should give you the following output in case of the ticket reservation exam
     "id": "bG9jYWxob3N0OjgwODAv",
     "services": [
         {
-            "name": "userSession",
+            "name": "UserSession",
             "revision": 1
         },
         {
-            "name": "ticketDb",
+            "name": "TicketDb",
             "revision": 1
         },
         {
-            "name": "checkoutProcess",
+            "name": "CheckoutProcess",
             "revision": 1
         }
     ]
