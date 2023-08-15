@@ -7,8 +7,5 @@
     "workspaces": [
         "lambda-greeter",
         "ticket-reservation"
-    ],
-    "dependencies": {
-        "@restatedev/restate-sdk": "1.0.35"
-    }
+    ]
 }

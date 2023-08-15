@@ -64,7 +64,7 @@ Then [create a release via GitHub](https://github.com/restatedev/example-lambda-
 In order to upgrade the SDK depedency you have to run:
 
 ```shell
-npm install @restatedev/restate-sdk@Z.Y.X --save-exact
+npm install @restatedev/restate-sdk@Z.Y.X -ws --save-exact
 ```
 
 Now check whether the examples are still building:
