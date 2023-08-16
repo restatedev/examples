@@ -6,7 +6,7 @@
   "type": "commonjs",
   "license": "MIT",
   "author": "Restate developers",
-  "email": "info@restate.dev",
+  "email": "code@restate.dev",
   "scripts": {
     "lint": "eslint --ignore-path .eslintignore --ext .ts .",
     "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",

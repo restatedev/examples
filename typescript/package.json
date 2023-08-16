@@ -3,7 +3,7 @@
     "description": "Restate examples",
     "license": "MIT",
     "author": "Restate developers",
-    "email": "info@restate.dev",
+    "email": "code@restate.dev",
     "workspaces": [
         "lambda-greeter",
         "ticket-reservation",
