@@ -34,7 +34,7 @@ const EXPIRY_TIMEOUT = 60 * 60 * 1000; // 1 hour
 async function makePayment(
   ctx: restate.RpcContext,
   idempotencyToken: string,
-  payment: Payment,
+  payment: Payment
 ): Promise<Result> {
   // de-duplication to make calls idempotent
   const status: PaymentStatus = (await ctx.get("status")) ?? PaymentStatus.NEW;
@@ -70,7 +70,7 @@ async function makePayment(
 
 async function cancelPayment(
   ctx: restate.RpcContext,
-  idempotencyToken: string,
+  idempotencyToken: string
 ) {
   const status: PaymentStatus = (await ctx.get("status")) ?? PaymentStatus.NEW;
 
@@ -126,7 +126,7 @@ restate
 function checkTypes(payment: Payment): Payment {
   if (typeof payment.accountId !== "string") {
     throw new restate.TerminalError(
-      "Wrong type for accountId " + typeof payment.accountId,
+      "Wrong type for accountId " + typeof payment.accountId
     );
   }
   if (typeof payment.amount === "number") {
@@ -139,7 +139,7 @@ function checkTypes(payment: Payment): Payment {
         `Type for amount (${typeof payment.amount}) cannot convert amount to number: ${
           payment.amount
         }`,
-        { cause: e },
+        { cause: e }
       );
     }
   }

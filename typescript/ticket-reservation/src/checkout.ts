@@ -16,7 +16,7 @@ import { EmailClient } from "./aux/email_client";
 
 const doCheckout = async (
   ctx: restate.RpcContext,
-  request: { userId: string; tickets: string[] },
+  request: { userId: string; tickets: string[] }
 ) => {
   // We are a uniform shop where everything costs 40 USD
   const totalPrice = request.tickets.length * 40;
@@ -33,12 +33,12 @@ const doCheckout = async (
   if (success) {
     console.info("Payment successful. Notifying user about shipment.");
     await ctx.sideEffect(async () =>
-      email.notifyUserOfPaymentSuccess(request.userId),
+      email.notifyUserOfPaymentSuccess(request.userId)
     );
   } else {
     console.info("Payment failure. Notifying user about it.");
     await ctx.sideEffect(async () =>
-      email.notifyUserOfPaymentFailure(request.userId),
+      email.notifyUserOfPaymentFailure(request.userId)
     );
   }
 

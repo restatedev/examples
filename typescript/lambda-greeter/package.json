@@ -25,7 +25,7 @@
     "@typescript-eslint/parser": "^6.3.0",
     "esbuild": "^0.19.0",
     "eslint": "^8.46.0",
-    "prettier": "^3.0.1",
+    "prettier": "^2.8.8",
     "ts-node-dev": "^2.0.0"
   }
 }

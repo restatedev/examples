@@ -17,7 +17,7 @@ const doGreet = async (ctx: restate.RestateContext, name: string) => {
 
 const doGreetAndRemember = async (
   ctx: restate.RestateContext,
-  name: string,
+  name: string
 ) => {
   let seen = (await ctx.get<number>("seen")) || 0;
   seen += 1;

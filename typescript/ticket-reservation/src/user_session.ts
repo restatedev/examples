@@ -16,7 +16,7 @@ import { checkoutApi } from "./checkout";
 const doAddTicket = async (
   ctx: restate.RpcContext,
   userId: string,
-  ticketId: string,
+  ticketId: string
 ) => {
   // try to reserve ticket
   const reservation_response = await ctx.rpc(ticketDbApi).reserve(ticketId);
@@ -39,7 +39,7 @@ const doAddTicket = async (
 const doExpireTicket = async (
   ctx: restate.RpcContext,
   userId: string,
-  ticketId: string,
+  ticketId: string
 ) => {
   ctx.send(ticketDbApi).unreserve(ticketId);
   const tickets = (await ctx.get<string[]>("items")) || [];
