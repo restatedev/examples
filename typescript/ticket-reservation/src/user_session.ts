@@ -23,7 +23,7 @@ const doAddTicket = async (
 
   if (reservation_response) {
     // add ticket to user session items
-    const tickets = (await ctx.get<string[]>("items")) || [];
+    const tickets = (await ctx.get<string[]>("items")) ?? [];
     tickets.push(ticketId);
     ctx.set("items", tickets);
 
@@ -42,7 +42,7 @@ const doExpireTicket = async (
   ticketId: string
 ) => {
   ctx.send(ticketDbApi).unreserve(ticketId);
-  const tickets = (await ctx.get<string[]>("items")) || [];
+  const tickets = (await ctx.get<string[]>("items")) ?? [];
 
   const index = tickets.findIndex((id) => id === ticketId);
 
