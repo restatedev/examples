@@ -4,8 +4,16 @@ Browse this repository to see how easy distributed applications development beco
 
 This repository contains the following examples:
 
-* [Lambda greeter](lambda-greeter): A simple example of how you can run a Restate service on AWS Lambda.
-* [Ticket reservation](ticket-reservation): An example to illustrate how Restate's keyed-sharding and concurrency guarantees simplify microservice architectures.
+## Typescript
+
+### Simple examples
+
+* [Lambda greeter](typescript/lambda-greeter): A simple example of how you can run a Restate service on AWS Lambda.
+* [Payment api](typescript/payment-api/): Example API for payments, inspired by the Stripe API.
+
+### Intermediate examples
+
+* [Ticket reservation](typescript/ticket-reservation): An example to illustrate how Restate's keyed-sharding and concurrency guarantees simplify microservice architectures.
 
 ## Launching the runtime
 
@@ -59,18 +67,18 @@ This should give you the following output in case of the ticket reservation exam
 In order to create a new release, push a tag of the form `vX.Y.Z`.
 Then [create a release via GitHub](https://github.com/restatedev/example-lambda-ts-greeter/releases).
 
-### Upgrading the SDK dependency
+### Upgrading the SDK dependency (for Restate developers)
 
 In order to upgrade the SDK depedency you have to run:
 
 ```shell
-npm install @restatedev/restate-sdk@Z.Y.X -ws --save-exact
+npm install --prefix typescript @restatedev/restate-sdk@Z.Y.X --workspaces --save-exact
 ```
 
 Now check whether the examples are still building:
 
 ```shell
-npm run build --workspaces
+npm run --prefix typescript build --workspaces
 ```
 
 ### Upgrading the runtime version
