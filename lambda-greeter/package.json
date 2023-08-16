@@ -1,5 +1,5 @@
 {
-  "name": "lambda-greeter",
+  "name": "@restatedev/example-lambda-greeter",
   "version": "0.0.1",
   "description": "A simple Restate application that can be deployed on AWS Lambda",
   "main": "app.js",

@@ -1,5 +1,5 @@
 {
-  "name": "ticket-reservation",
+  "name": "@restatedev/example-ticket-reservation",
   "version": "0.0.1",
   "description": "An example to illustrate how Restate's keyed-sharding and concurrency guarantees simplify microservice architectures",
   "main": "app.js",
