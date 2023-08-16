@@ -21,7 +21,7 @@ import { Result } from "./payment_service";
 //      same accountId
 // ----------------------------------------------------------------------------
 
-const error_rate = 3; // high error rate, to make it more interesting
+const error_rate = 0.8; // high error rate, to make it more interesting
 
 async function deposit(
   ctx: restate.RpcContext,
