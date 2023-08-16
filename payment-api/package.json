@@ -10,6 +10,7 @@
   "scripts": {
     "lint": "eslint --ignore-path .eslintignore --ext .ts .",
     "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
+    "verify": "npm run format -- --check && npm run lint && npm run build",
     "build": "tsc --noEmitOnError",
     "app": "node ./dist/payment_service.js",
     "app-dev": "ts-node-dev --watch ./src --respawn --transpile-only ./src/payment_service.ts"
