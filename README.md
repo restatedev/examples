@@ -83,4 +83,4 @@ npm run --prefix typescript build --workspaces
 
 ### Upgrading the runtime version
 
-Update the runtime version tag [in this README.md](README.md#launching-the-runtime).
+Update the runtime version tag in this [README.md](README.md#launching-the-runtime).
