@@ -21,12 +21,12 @@ import { Result } from "./payment_service";
 //      same accountId
 // ----------------------------------------------------------------------------
 
-const error_rate = 0.8; // high error rate, to make it more interesting
+const error_rate = 0.3; // high error rate, to make it more interesting
 
 async function deposit(
   ctx: restate.RpcContext,
   accountId: string,
-  amountCents: number
+  amountCents: number,
 ) {
   if (amountCents < 0) {
     throw new restate.TerminalError("Amount must not be negative");
@@ -39,14 +39,14 @@ async function deposit(
   console.log(
     `Depositing to account ${accountId}. New balance: $${
       (balanceCents + amountCents) / 100
-    }`
+    }`,
   );
 }
 
 async function withdraw(
   ctx: restate.RpcContext,
   accountId: string,
-  amountCents: number
+  amountCents: number,
 ): Promise<Result> {
   if (amountCents < 0) {
     throw new restate.TerminalError("Amount must not be negative");
@@ -68,7 +68,7 @@ async function withdraw(
   console.log(
     `Withdrawing from account ${accountId}. New balance: $${
       Number(balanceCents - amountCents) / 100
-    }`
+    }`,
   );
 
   return { success: true };
@@ -86,10 +86,10 @@ export type API = typeof router;
 // ----------------------------------------------------------------------------
 
 async function initializeRandomAmount(
-  ctx: restate.RpcContext
+  ctx: restate.RpcContext,
 ): Promise<number> {
   const amountCents = await ctx.sideEffect(async () =>
-    Math.floor(Math.random() * 100_000)
+    Math.floor(Math.random() * 100_000),
   );
   ctx.set("balance", amountCents);
   return amountCents;
