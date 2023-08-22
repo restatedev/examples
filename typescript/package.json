@@ -7,6 +7,7 @@
     "workspaces": [
         "lambda-greeter",
         "ticket-reservation",
-        "payment-api"
+        "payment-api",
+        "ecommerce-store/services"
     ]
 }

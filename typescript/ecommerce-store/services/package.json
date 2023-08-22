@@ -1,0 +1,45 @@
+{
+  "name": "@restatedev/example-ecommerce-store",
+  "version": "0.0.1",
+  "description": "A sophisticated example on how to build an ecommerce store based on Restate using the grpc-based Typescript SDK.",
+  "main": "dist/app.js",
+  "type": "commonjs",
+  "types": "dist/app.d.ts",
+  "license": "MIT",
+  "author": "Restate developers",
+  "email": "code@restate.dev",
+  "private": true,
+  "scripts": {
+    "lint": "eslint --ignore-path .eslintignore --ext .ts .",
+    "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
+    "verify": "npm run format -- --check && npm run lint && npm run proto && npm run build",
+    "proto": "cd proto && npx --prefix=. buf mod update && npx --prefix=. buf generate .",
+    "build": "tsc --noEmitOnError",
+    "app": "RESTATE_DEBUG_LOGGING=JOURNAL node ./dist/app.js",
+    "dev": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only ./src/app.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@restatedev/restate-sdk": "1.0.35",
+    "long": "^5.2.1",
+    "pg": "^8.10.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.30.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@aws-sdk/client-rds-data": "^3.289.0",
+    "@bufbuild/buf": "^1.26.1",
+    "@types/node": "^18.14.2",
+    "@types/uuid": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.3.0",
+    "@typescript-eslint/parser": "^6.3.0",
+    "esbuild": "^0.19.0",
+    "eslint": "^8.46.0",
+    "prettier": "^2.8.4",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.1.6"
+  }
+}

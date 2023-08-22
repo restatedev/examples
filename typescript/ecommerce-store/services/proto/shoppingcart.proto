@@ -1,0 +1,359 @@
+syntax = "proto3";
+
+package io.shoppingcart;
+
+import "google/protobuf/empty.proto";
+
+import "dev/restate/ext.proto";
+
+// ------------------------------------------------------------------------
+// Common
+// ------------------------------------------------------------------------
+
+message CheckoutResponse {
+
+	message CheckoutSuccess {
+		string tracking_number = 1;
+	}
+
+	message EmptyCart {
+	}
+
+	message ProductOutOfStockFailure {
+		repeated string product_ids = 1;
+	}
+
+	message PaymentFailure {
+	}
+
+	message DeliveryAvailabilityFailure {
+	}
+
+	oneof response {
+		CheckoutSuccess checkout_success = 1;
+		EmptyCart empty_cart = 2;
+		ProductOutOfStockFailure product_out_of_stock = 3;
+		PaymentFailure payment_failure = 4;
+		DeliveryAvailabilityFailure delivery_availability_failure = 5;
+	}
+}
+
+// ------------------------------------------------------------------------
+// Product Service
+// ------------------------------------------------------------------------
+
+service ProductService {
+	option (dev.restate.ext.service_type) = KEYED;
+
+	rpc GetProductInformation(GetProductInformationRequest) returns (GetProductInformationResponse);
+
+	rpc Reserve(ReservationRequest) returns (Reservation);
+
+	rpc Release(ReleaseRequest) returns (google.protobuf.Empty);
+
+	rpc NotifyProductSold(NotifyProductSoldEvent) returns (google.protobuf.Empty);
+
+	rpc NotifyNewQuantityInStock(NewQuantityInStock) returns (google.protobuf.Empty);
+}
+
+message GetProductInformationRequest {
+	string product_id = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message GetProductInformationResponse {
+	string product_id = 1;
+	int64 price_in_cents = 2;
+	int64 quantity = 3;
+}
+
+message GetStockQuantityRequest {
+	string product_id = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message GetStockQuantityResponse {
+	int32 quantity = 2;
+}
+
+message ReservationRequest {
+	string product_id = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message Reservation {
+	bool reservation_success = 1;
+	string product_id = 2;
+	int64 price_in_cents = 4;
+}
+
+message ReleaseRequest {
+	string product_id = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message NotifyProductSoldEvent {
+	string product_id = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message NewQuantityInStock {
+	string product_id = 1 [(dev.restate.ext.field) = KEY];
+	int32 amount = 2;
+	int64 new_price_in_cents = 3;
+}
+
+// ------------------------------------------------------------------------
+// ProductManager Service
+// ------------------------------------------------------------------------
+
+service ProductListingService {
+	option (dev.restate.ext.service_type) = UNKEYED;
+
+	rpc ListAllProducts(google.protobuf.Empty) returns (ListAllProductsResponse);
+}
+
+message ListAllProductsResponse {
+	message ProductData {
+		repeated string available_sizes = 1;
+		string currency_format = 2;
+		string currency_id = 3;
+		string description = 4;
+		string id = 5;
+		int32 quantity = 6;
+		bool is_free_shipping = 7;
+		int64 price_in_cents = 8;
+		int64 sku = 9;
+		string style = 10;
+		string title = 11;
+	}
+
+	repeated ProductData products = 1;
+}
+
+message RegisterSalesRequest {
+	repeated Reservation reservations = 1;
+}
+
+// ------------------------------------------------------------------------
+// Shopping Cart Service
+// ------------------------------------------------------------------------
+
+service ShoppingCartService {
+
+	option (dev.restate.ext.service_type) = KEYED;
+
+	rpc CreateCart(CreateCartRequest) returns (google.protobuf.Empty);
+
+	rpc AddProduct(AddProductRequest) returns (AddProductResponse);
+
+	rpc RemoveProduct(RemoveProductRequest) returns (google.protobuf.Empty);
+
+	rpc GetAllProducts(GetAllProductsRequest) returns (GetAllProductsResponse);
+
+	rpc Checkout(CheckoutRequest) returns (CheckoutResponse);
+}
+
+message CreateCartRequest {
+	string shopping_cart_id	= 1 [(dev.restate.ext.field) = KEY];
+	string user_id = 2;
+}
+
+message AddProductRequest {
+	string shopping_cart_id	= 1 [(dev.restate.ext.field) = KEY];
+	string product_id 		= 2;
+}
+
+message AddProductResponse {
+	bool success = 1;
+}
+
+message RemoveProductRequest {
+	string shopping_cart_id = 1 [(dev.restate.ext.field) = KEY];
+	string product_id 		= 2;
+}
+
+message CheckoutRequest {
+	string shopping_cart_id = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message GetAllProductsRequest {
+	string shopping_cart_id = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message GetAllProductsResponse {
+	message Product {
+		string product_id = 1;
+		int64 price_in_cents = 2;
+	}
+
+	string status = 1;
+	string failure = 2;
+	repeated Product product = 3;
+}
+
+// ------------------------------------------------------------------------
+// Checkout Service
+// ------------------------------------------------------------------------
+
+service CheckoutFlowService {
+	option (dev.restate.ext.service_type) = UNKEYED;
+
+	// 1. reserve all the products
+	// 2. get the user profile
+	// 2. add the shipment cost
+	// 3. make a payment
+	// 4. send an invoice email
+	// 5. add products to the user's perches history
+	// 6. update user's purchase history.
+	// 7. notify the products that they were successfully sold
+	rpc Start(CheckoutFlowRequest) returns (CheckoutResponse);
+}
+
+message CheckoutFlowRequest {
+	string shopping_cart_id = 1;
+	string user_id = 2;
+	repeated Reservation reserved_products = 3;
+}
+
+// ------------------------------------------------------------------------
+// Checkout Status Service
+// ------------------------------------------------------------------------
+
+service CheckoutFlowStatusService {
+	option (dev.restate.ext.service_type) = KEYED;
+
+	rpc GetStatus(GetCheckoutFlowStatusRequest) returns (CheckoutFlowStatus);
+	rpc SetStatus(SetCheckoutFlowStatusRequest) returns (google.protobuf.Empty);
+}
+
+message GetCheckoutFlowStatusRequest {
+	string checkout_flow_id = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message SetCheckoutFlowStatusRequest {
+	string checkout_flow_id = 1 [(dev.restate.ext.field) = KEY];
+	CheckoutFlowStatus status = 2;
+}
+
+message CheckoutFlowStatus {
+	string status = 1;
+}
+
+// ------------------------------------------------------------------------
+// Aux Services that are not interesting, but required for this demo
+// ------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------
+// Shipment Provider Service
+// ------------------------------------------------------------------------
+
+service ShipmentService {
+	option (dev.restate.ext.service_type) = UNKEYED;
+
+	rpc PrepareShipment(PrepareShipmentRequest) returns (PrepareShipmentResponse);
+
+}
+
+message PrepareShipmentRequest {
+	string target_address = 1;
+	repeated string product_ids = 2;
+}
+
+message PrepareShipmentResponse {
+	bool success = 1;
+	int64 shipment_cost = 2;
+	string shipment_date = 3;
+	string tracking_number = 4;
+}
+
+
+// ------------------------------------------------------------------------
+// Payment Gateway Service
+// ------------------------------------------------------------------------
+
+service PaymentGateway {
+	option (dev.restate.ext.service_type) = UNKEYED;
+
+	rpc Charge(ChargeRequest) returns (ChargeResponse);
+
+}
+
+message ChargeRequest {
+	string payment_method_identifier = 1;
+	string transaction_id = 2;
+	int64 amount = 3;
+}
+
+message ChargeResponse {
+	bool success = 1;
+}
+
+// ------------------------------------------------------------------------
+// User Profile service
+// ------------------------------------------------------------------------
+
+service UserProfileService {
+	option (dev.restate.ext.service_type) = KEYED;
+
+	rpc CreateUserProfile(CreateUserProfileRequest) returns (google.protobuf.Empty);
+
+	rpc GetUserProfile(GetUserProfileRequest) returns (UserProfile);
+
+	rpc AppendPurchaseHistory(AppendPurchaseHistoryRequest) returns (google.protobuf.Empty);
+}
+
+message CreateUserProfileRequest {
+	string user_id = 1 [(dev.restate.ext.field) = KEY];
+	UserProfile user_profile = 2;
+}
+
+message GetUserProfileRequest {
+	string user_id = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message UserProfile {
+	string user_id = 1;
+	string user_full_name = 2;
+	string payment_method_identifier = 3;
+	string shipping_address = 4;
+	string email_address = 5;
+
+	repeated string purchase_history = 6;
+}
+
+message AppendPurchaseHistoryRequest {
+	string user_id = 1 [(dev.restate.ext.field) = KEY];
+	repeated string purchase_history = 2;
+}
+
+// ------------------------------------------------------------------------
+// Inventory Restock Service
+// ------------------------------------------------------------------------
+
+service InventoryRestockService {
+	option (dev.restate.ext.service_type) = UNKEYED;
+
+	rpc OrderProduct(ProductOrderRequest) returns (google.protobuf.Empty);
+}
+
+message ProductOrderRequest {
+	string product_id = 1 [(dev.restate.ext.field) = KEY];
+}
+
+// ------------------------------------------------------------------------
+// Email sender
+// ------------------------------------------------------------------------
+
+service EmailSender {
+	option (dev.restate.ext.service_type) = KEYED;
+
+	rpc SendEmail(SendEmailRequest) returns (google.protobuf.Empty);
+}
+
+message SendEmailRequest {
+	string email_address = 1 [(dev.restate.ext.field) = KEY];
+	string content = 2;
+}
+
+
+// --------------------------------- aux state -----------------------------
+
+message ShoppingCartData {
+	repeated Reservation reservations = 1;
+}

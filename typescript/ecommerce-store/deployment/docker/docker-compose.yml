@@ -1,0 +1,50 @@
+version: "3.3"
+services:
+  services:
+    image: dev.local/shopping-cart/services:0.0.1
+    environment:
+      - RESTATE_DEBUG_LOGGING=JOURNAL_VERBOSE
+      - DATABASE_ENABLED=false
+    ports:
+      - "8080:8080"
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.47
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+
+  runtime:
+    image: ghcr.io/restatedev/restate-dist:0.1.7
+    depends_on:
+      - services
+      - jaeger
+    ports:
+      - "9090:9090"
+      - "8081:8081"
+    environment:
+      - RUST_LOG=info,restate=debug
+      - RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://jaeger:4317
+
+  runtimesetup:
+    image: alpine
+    depends_on:
+      - runtime
+      - services
+    restart: "no"
+    volumes:
+      - ../local/:/scripts
+      - ../data/:/data
+    entrypoint: ["sh", "-c", "sleep 5 && apk add --no-cache bash jq curl &&
+    curl -X POST 'runtime:8081/endpoints' -H 'content-type: application/json' -d '{\"uri\": \"http://services:8080\"}' &&
+    sleep 3 && cd /scripts && chmod +x init_state.sh && ./init_state.sh runtime:9090
+    || exit 1"]
+
+  react_app:
+    image: dev.local/shopping-cart/react-app:0.0.1
+    depends_on:
+      - runtimesetup
+    ports:
+      - "3000:3000"

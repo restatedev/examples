@@ -1,0 +1,8 @@
+terraform.tfvars
+.terraform.lock.hcl
+.terraform.tfstate.lock.info
+terraform.tfstate
+shopping-demo-key.pem
+.terraform
+aws_ec2_instance_public_dns.txt
+terraform.tfstate.backup

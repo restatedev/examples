@@ -2,9 +2,7 @@
 
 Browse this repository to see how easy distributed applications development becomes with Restate.
 
-This repository contains the following examples:
-
-## Typescript
+## Typescript examples
 
 ### Simple examples
 
@@ -14,6 +12,10 @@ This repository contains the following examples:
 ### Intermediate examples
 
 * [Ticket reservation](typescript/ticket-reservation): An example to illustrate how Restate's keyed-sharding and concurrency guarantees simplify microservice architectures.
+
+### Complex examples
+
+- [Ecommerce store](typescript/ecommerce-store): A sophisticated example on how to build an ecommerce store based on Restate using the grpc-based Typescript SDK.
 
 ## Launching the runtime
 
@@ -78,7 +80,7 @@ npm install --prefix typescript @restatedev/restate-sdk@Z.Y.X --workspaces --sav
 Now check whether the examples are still building:
 
 ```shell
-npm run --prefix typescript build --workspaces
+npm run --prefix typescript verify --workspaces
 ```
 
 ### Upgrading the runtime version
