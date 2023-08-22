@@ -1,0 +1,37 @@
+{
+  "name": "@restatedev/example-food-ordering",
+  "version": "0.0.1",
+  "description": "An example application which uses Awakeables to integrate with external services.",
+  "main": "app.js",
+  "type": "commonjs",
+  "license": "MIT",
+  "author": "Restate developers",
+  "email": "code@restate.dev",
+  "private": true,
+  "scripts": {
+    "lint": "eslint --ignore-path .eslintignore --ext .ts .",
+    "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
+    "verify": "npm run format -- --check && npm run lint && npm run proto && npm run build",
+    "proto": "cd proto && npx --prefix=. buf mod update && npx --prefix=. buf generate .",
+    "build": "tsc --noEmitOnError",
+    "app": "RESTATE_DEBUG_LOGGING=JOURNAL node ./dist/app.js",
+    "dev": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only ./src/app.ts",
+    "prebundle": "rm -rf ../dist",
+    "bundle": "esbuild src/app.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
+    "postbundle": "cd ../dist && zip -r index.zip index.js*"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "1.0.37",
+    "axios": "^1.4.0"
+  },
+  "devDependencies": {
+    "@bufbuild/buf": "^1.26.1",
+    "@typescript-eslint/eslint-plugin": "^6.3.0",
+    "@typescript-eslint/parser": "^6.3.0",
+    "esbuild": "^0.19.0",
+    "eslint": "^8.46.0",
+    "prettier": "^2.8.4",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.1.6"
+  }
+}

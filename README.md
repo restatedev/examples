@@ -12,6 +12,7 @@ Browse this repository to see how easy distributed applications development beco
 ### Intermediate examples
 
 * [Ticket reservation](typescript/ticket-reservation): An example to illustrate how Restate's keyed-sharding and concurrency guarantees simplify microservice architectures.
+* [Food ordering](typescript/food-ordering): An example application which uses Awakeables to integrate with external services using the grpc-based Typescript SDK.
 
 ### Complex examples
 

@@ -10,6 +10,7 @@ This directory contains Restate examples using the Typescript SDK.
 ## Intermediate examples
 
 - [Ticket reservation](ticket-reservation): An example to illustrate how Restate's keyed-sharding and concurrency guarantees simplify microservice architectures.
+- [Food ordering](food-ordering): An example application which uses Awakeables to integrate with external services using the grpc-based Typescript SDK.
 
 ## Complex examples
 

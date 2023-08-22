@@ -8,6 +8,7 @@
         "lambda-greeter",
         "ticket-reservation",
         "payment-api",
-        "ecommerce-store/services"
+        "ecommerce-store/services",
+        "food-ordering/services"
     ]
 }
