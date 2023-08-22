@@ -94,11 +94,11 @@ The user session service, ticket service and checkout service are now up and run
 
 ### Launch the Restate runtime
 
-See [how to launch the runtime](../README.md#launching-the-runtime) for details.
+See [how to launch the runtime](../../README.md#launching-the-runtime) for details.
 
 ### Connect Services and Runtime
 
-See [how to connect services and runtime](../README.md#connect-runtime-and-services) for details.
+See [how to connect services and runtime](../../README.md#connect-runtime-and-services) for details.
 
 ### Call the Service
 
