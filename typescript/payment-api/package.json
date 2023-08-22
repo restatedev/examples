@@ -16,14 +16,14 @@
     "app-dev": "ts-node-dev --watch ./src --respawn --transpile-only ./src/payment_service.ts"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.0.35"
+    "@restatedev/restate-sdk": "1.0.37"
   },
   "devDependencies": {
-    "typescript": "^5.1.6",
-    "ts-node-dev": "^2.0.0",
-    "prettier": "^2.8.8",
-    "eslint": "^8.47.0",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
-    "@typescript-eslint/parser": "^6.4.0"
+    "@typescript-eslint/parser": "^6.4.0",
+    "eslint": "^8.47.0",
+    "prettier": "^2.8.8",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.1.6"
   }
 }

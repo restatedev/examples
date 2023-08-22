@@ -22,7 +22,7 @@
     "dist"
   ],
   "dependencies": {
-    "@restatedev/restate-sdk": "1.0.35",
+    "@restatedev/restate-sdk": "1.0.37",
     "long": "^5.2.1",
     "pg": "^8.10.0",
     "pg-hstore": "^2.3.4",
