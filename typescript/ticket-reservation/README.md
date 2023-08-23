@@ -96,11 +96,11 @@ The user session service, ticket service and checkout service are now up and run
 
 See [how to launch the runtime](../../README.md#launching-the-runtime) for details.
 
-### Connect Services and Runtime
+### Connect services and runtime
 
 See [how to connect services and runtime](../../README.md#connect-runtime-and-services) for details.
 
-### Call the Service
+### Call the service
 
 We can now invoke the `addTicket` method of the user session service by executing:
 

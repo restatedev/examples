@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: restate-runtime
-          image: ghcr.io/restatedev/restate-dist:0.1.7
+          image: ghcr.io/restatedev/restate-dist:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 9090

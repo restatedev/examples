@@ -18,20 +18,25 @@ Browse this repository to see how easy distributed applications development beco
 
 - [Ecommerce store](typescript/ecommerce-store): A sophisticated example on how to build an ecommerce store based on Restate using the grpc-based Typescript SDK.
 
-## Launching the runtime
+## Running the examples
 
-Have a look at how to start up the runtime in a Docker container in this repository: https://github.com/restatedev/restate-dist or simply run the following commands:
+In order to run the examples you first need to [sign up for Restate's private beta](https://forms.gle/G8kDuucqhBoTfMwLA).
+After signing-up, you have to set up your [access to Restate's packages](https://github.com/restatedev/restate-dist) which gives you access to the runtime as well as the SDK artifacts.
+
+### Launching the runtime
+
+Have a look at how to start up the runtime in a Docker container in [this repository]* or run the following commands:
 
 - For MacOS:
 ```shell
-docker run --name restate_dev --rm -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:0.1.7
+docker run --name restate_dev --rm -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:latest
 ```
 - For Linux:
 ```shell
-docker run --name restate_dev --rm --network=host ghcr.io/restatedev/restate-dist:0.1.7
+docker run --name restate_dev --rm --network=host ghcr.io/restatedev/restate-dist:latest
 ```
 
-## Connect runtime and services
+### Connect runtime and services
 
 Once the runtime is up, let it discover the services of the examples by executing:
 
@@ -72,10 +77,10 @@ Then [create a release via GitHub](https://github.com/restatedev/example-lambda-
 
 ### Upgrading the SDK dependency (for Restate developers)
 
-In order to upgrade the SDK depedency you have to run:
+In order to upgrade the SDK depedency to the next major version you have to run:
 
 ```shell
-npm install --prefix typescript @restatedev/restate-sdk@Z.Y.X --workspaces --save-exact
+npm install --prefix typescript @restatedev/restate-sdk@Z.Y.X --workspaces
 ```
 
 Now check whether the examples are still building:
@@ -83,7 +88,3 @@ Now check whether the examples are still building:
 ```shell
 npm run --prefix typescript verify --workspaces
 ```
-
-### Upgrading the runtime version
-
-Update the runtime version tag in this [README.md](README.md#launching-the-runtime).

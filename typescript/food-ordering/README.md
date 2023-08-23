@@ -161,7 +161,3 @@ curl -X POST http://localhost:9090/ordering.OrderService/CreateOrder -H 'content
 ### Upgrading Typescript SDK
 
 Upgrade the `@restatedev/restate-sdk` version as described [here](../../README.md#upgrading-the-sdk-dependency-for-restate-developers).
-
-### Upgrading the Restate runtime
-
-- Change the runtime version in the [Docker Compose file](docker-compose.yml)

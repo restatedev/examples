@@ -13,7 +13,7 @@ The example illustrates the following aspects:
     each other through the combination of durable RPC and durable execution.
   * A payment request can be cancelled, which prevents it from succeeding later, or rolles it back, if
     it was already processed.
-  * Keyed-concurrency ensures that requests and cancellations don't produce tricky race conditions 
+  * Keyed-concurrency ensures that requests and cancellations don't produce tricky race conditions
   * Expiry of idempotency-tokens is handled through Restate's internal timers.
 
 Despite the relatively few lines of code (no careful synchronization, retries, or other recovery logic),
@@ -22,6 +22,8 @@ and failures.
 
 
 ### Running this example
+
+Make sure you have set up your [access to Restate's packages](../../README.md#running-the-examples).
 
 Build and start the example services
 ```shell
@@ -32,10 +34,10 @@ npm run app
 
 Make a sample payment. The 'key' parameter is the idempotency token.
 ```shell
-curl -X POST localhost:9090/payments/makePayment -H 'content-type: application/json' -d '{"key": "some-string-id", "request": { "accountId": "abc", "amount": 100 } }' 
+curl -X POST localhost:9090/payments/makePayment -H 'content-type: application/json' -d '{"key": "some-string-id", "request": { "accountId": "abc", "amount": 100 } }'
 ```
 
 Cancel a payment. The 'key' parameter is the idempotency token, there is no further request data.
 ```shell
-curl -X POST localhost:9090/payments/cancelPayment -H 'content-type: application/json' -d '{"key": "some-string-id"}' 
+curl -X POST localhost:9090/payments/cancelPayment -H 'content-type: application/json' -d '{"key": "some-string-id"}'
 ```

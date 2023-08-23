@@ -183,9 +183,3 @@ Then run the example:
 - on Docker Compose with and without a database
 - on kind + Knative
 - on AWS
-
-### Upgrading Restate runtime
-
-- Upgrade the version tags of the Restate Docker image in the Docker Compose files [docker-compose.yml](deployment/docker/docker-compose.yml) and [docker-compose-pg.yml](deployment/docker/docker-compose-pg.yml). Rerun the Docker Compose setups.
-- Upgrade the version tags of the Restate Docker image in the Knative deployment [readme](deployment/knative/README.md) and [deployment file](deployment/knative/deploy.yaml).
-- Upgrade the version tags of the Restate Docker image [AWS deployment readme](deployment/aws/README.md). Upload the image to ECR and rerun the setup. Also, adapt the version in [terraform.tfvars.template](deployment/aws/terraform.tfvars.template).

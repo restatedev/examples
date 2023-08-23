@@ -20,7 +20,7 @@ Upload the images to the cluster:
 ```shell
 kind load docker-image --name knative dev.local/shopping-cart/services:0.0.1
 kind load docker-image --name knative dev.local/shopping-cart/react-app:0.0.1
-kind load docker-image --name knative ghcr.io/restatedev/restate-dist:0.1.7
+kind load docker-image --name knative ghcr.io/restatedev/restate-dist:latest
 ```
 
 3. Create the `shopping-cart` namespace

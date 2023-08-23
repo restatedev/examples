@@ -18,7 +18,7 @@ services:
       - COLLECTOR_OTLP_ENABLED=true
 
   runtime:
-    image: ghcr.io/restatedev/restate-dist:0.1.7
+    image: ghcr.io/restatedev/restate-dist:latest
     depends_on:
       - services
       - jaeger
