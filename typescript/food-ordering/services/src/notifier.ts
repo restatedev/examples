@@ -20,7 +20,7 @@ export class Notifier implements NotifierService {
   async ack(request: RestaurantAckRequest): Promise<Empty> {
     const ctx = restate.useContext(this);
 
-    ctx.completeAwakeable(request.awakeableId, 200);
+    ctx.resolveAwakeable(request.awakeableId, 200);
 
     return {};
   }
