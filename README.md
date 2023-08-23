@@ -77,14 +77,22 @@ Then [create a release via GitHub](https://github.com/restatedev/example-lambda-
 
 ### Upgrading the SDK dependency (for Restate developers)
 
-In order to upgrade the SDK depedency to the next major version you have to run:
+In order to upgrade/update the SDK dependency you have to run:
+
+**Major version** change:
 
 ```shell
-npm install --prefix typescript @restatedev/restate-sdk@Z.Y.X --workspaces
+npm --prefix typescript install @restatedev/restate-sdk@^Z.Y.X --workspaces
+```
+
+**Minor/patch version** change:
+
+```shell
+npm --prefix typescript update @restatedev/restate-sdk --workspaces
 ```
 
 Now check whether the examples are still building:
 
 ```shell
-npm run --prefix typescript verify --workspaces
+npm --prefix typescript run verify --workspaces
 ```
