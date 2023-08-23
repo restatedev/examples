@@ -49,16 +49,12 @@ resource "aws_ecs_task_definition" "restate_runtime" {
           value = "full"
         },
         {
-          "name": "RESTATE_TRACING__LOG_FORMAT",
-          "value": "Json"
-        },
-        {
           name  = "RUST_BACKTRACE",
           value = "full"
         },
         {
-          name  = "RESTATE_TRACING__JAEGER_ENDPOINT",
-          value = "${var.jaeger_service_discovery_name}.${var.service_discovery_dns_name}:${var.jaeger_tracing_port}"
+          name  = "RESTATE_OBSERVABILITY__TRACING__ENDPOINT",
+          value = "http://${var.jaeger_service_discovery_name}.${var.service_discovery_dns_name}:${var.jaeger_tracing_port}"
         }
       ]
       portMappings = [

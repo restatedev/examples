@@ -2,9 +2,9 @@
 name                              = "shopping-cart-demo"
 availability_zones                = ["eu-central-1a", "eu-central-1b"]
 public_subnets                    = ["10.0.1.0/24", "10.0.0.0/24"]
-ecr_repository_uri                = "xxx.dkr.ecr.eu-central-1.amazonaws.com"
-webapp_container_image            = "shopping-cart-webapp:1.0.2"
-restate_runtime_container_image   = "restate-runtime:0.1.7"
-shopping_services_container_image = "shopping-cart-demo:1.0.2"
-jaeger_container_image            = "jaeger-all-in-one:1.37.0"
-pgadmin_container_image           = "pgadmin:6.15"
+ecr_uri                           = "xxx.dkr.ecr.eu-central-1.amazonaws.com"
+webapp_image                      = "shopping-cart-webapp:1.0.2"
+restate_runtime_image             = "restate-runtime:0.1.7"
+shopping_services_image           = "shopping-cart-demo:1.0.2"
+jaeger_image                      = "jaeger-all-in-one:1.37.0"
+pgadmin_image                     = "pgadmin:6.15"

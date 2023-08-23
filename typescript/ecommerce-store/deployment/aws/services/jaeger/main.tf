@@ -39,6 +39,12 @@ resource "aws_ecs_task_definition" "jaeger" {
       name         = "${var.name}-jaeger-container"
       image        = var.jaeger_image
       essential    = true
+      environment  = [
+        {
+          name = "COLLECTOR_OTLP_ENABLED",
+          value = "true"
+        }
+      ]
       portMappings = [
         {
           protocol      = "tcp"

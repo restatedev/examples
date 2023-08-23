@@ -108,7 +108,7 @@ In the `General` tab of the pop-up, fill in `db` as the database name. Leave the
 
 <img src="img/register-server-1.png" height=30% alt="">
 
-In the `Connection` tab, fill in `db` as hostname/address, `productsdb` as maintenance DB, and `restatedb` as username and password. Then click `Save`.
+In the `Connection` tab, fill in `db` as hostname/address (or the hostname of the RDS database for AWS deployments), `productsdb` as maintenance DB, and `restatedb` as username and password. Then click `Save`.
 
 <img src="img/register-server-2.png" height=30% alt="">
 

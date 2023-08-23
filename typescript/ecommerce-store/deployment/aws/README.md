@@ -87,8 +87,8 @@ The ssh command of the previous paragraph also port forwarded the webapp UI, pgA
 - Jaeger: http://localhost:16686
 - pgAdmin: http://localhost:5050
 
-To register the database in the pgAdmin UI, have a look at the README
-at the root of this repository and replace the `hostname/address` by the RDS database endpoint that you can retrieve
+To register the database in the pgAdmin UI, have a look at the [README at the root of the ecommerce example](../../README.md#demo-scenario-for-docker-compose-with-postgres).
+and replace the `hostname/address` by the RDS database endpoint that you can retrieve
 via:
 
 ```shell

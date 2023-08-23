@@ -56,7 +56,7 @@ variable "jaeger_ui_port" {
 
 variable "jaeger_tracing_port" {
   description = "The port where Jaeger tracing is exposed"
-  default     = 6831
+  default     = 4317
 }
 
 variable "pgadmin_ui_port" {
