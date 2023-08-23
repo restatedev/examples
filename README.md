@@ -24,11 +24,11 @@ Have a look at how to start up the runtime in a Docker container in this reposit
 
 - For MacOS:
 ```shell
-docker run --name restate_dev --rm -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:0.1.7
+docker run --name restate_dev --rm -p 8081:8081 -p 9091:9091 -p 9090:9090 ghcr.io/restatedev/restate-dist:0.2.0
 ```
 - For Linux:
 ```shell
-docker run --name restate_dev --rm --network=host ghcr.io/restatedev/restate-dist:0.1.7
+docker run --name restate_dev --rm --network=host ghcr.io/restatedev/restate-dist:0.2.0
 ```
 
 ## Connect runtime and services

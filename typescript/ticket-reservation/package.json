@@ -16,7 +16,7 @@
     "dev": "ts-node-dev --respawn --transpile-only ./src/app.ts"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "1.0.37",
+    "@restatedev/restate-sdk": "0.2.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
