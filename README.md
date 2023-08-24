@@ -8,11 +8,11 @@ Browse this repository to see how easy distributed applications development beco
 
 * [Lambda greeter](typescript/lambda-greeter): A simple example of how you can run a Restate service on AWS Lambda.
 * [Payment api](typescript/payment-api/): Example API for payments, inspired by the Stripe API.
+* [Food ordering](typescript/food-ordering): See how to integrate Restate with external services using Awakeables and side effects.
 
 ### Intermediate examples
 
 * [Ticket reservation](typescript/ticket-reservation): An example to illustrate how Restate's keyed-sharding and concurrency guarantees simplify microservice architectures.
-* [Food ordering](typescript/food-ordering): An example application which uses Awakeables to integrate with external services using the grpc-based Typescript SDK.
 
 ### Advanced examples
 

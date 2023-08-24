@@ -49,12 +49,18 @@ app.post("/prepare", (req: Request, res: Response) => {
       `Order ${req.body.orderId} prepared and ready for shipping...`
     );
     axios.post(
-      `${RESTATE_RUNTIME_ENDPOINT}/ordering.NotifierService/Ack`,
-      { awakeableId: "" + req.body.awakeableId },
+      `${RESTATE_RUNTIME_ENDPOINT}/dev.restate.Awakeables/Resolve`,
+      { id: req.body.awakeableId, json_result: {} },
       { headers: { "Content-Type": "application/json" } }
     );
   }, 5000);
 });
+
+app.get("/opening-hours/:restaurantId", (req: Request, res: Response) => {
+  console.info(`Checking whether restaurant '${req.params.restaurantId}' is open.`);
+  // All our restaurants operate 24/7 :-)
+  res.send(true);
+})
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);

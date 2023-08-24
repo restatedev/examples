@@ -11,20 +11,9 @@
 
 import * as restate from "@restatedev/restate-sdk";
 
-import { protoMetadata } from "./generated/proto/example";
-import { OrderSvc } from "./order_service";
-import { Notifier } from "./notifier";
+import { orderApi, orderService } from "./order_service";
 
 restate
   .createServer()
-  .bindService({
-    service: "OrderService",
-    instance: new OrderSvc(),
-    descriptor: protoMetadata,
-  })
-  .bindService({
-    service: "NotifierService",
-    instance: new Notifier(),
-    descriptor: protoMetadata,
-  })
+  .bindKeyedRouter(orderApi.path, orderService)
   .listen(8080);

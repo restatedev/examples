@@ -11,10 +11,9 @@ RUN --mount=type=secret,id=npmrc,target=/root/.npmrc npm install
 
 COPY --chown=node:node .. .
 
-RUN npm run proto
 RUN npm run build
 
-RUN npm prune --production
+RUN --mount=type=secret,id=npmrc,target=/root/.npmrc npm prune --omit=dev
 ENV NODE_ENV production
 
 EXPOSE 8080
