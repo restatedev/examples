@@ -1,5 +1,5 @@
 {
-  "name": "@restatedev/example-food-ordering-point-of-sales-server",
+  "name": "@restatedev/example-food-ordering-pos-server",
   "version": "0.0.1",
   "description": "Example of food ordering application with Restate: Point of sales server",
   "main": "server.js",

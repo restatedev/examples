@@ -9,147 +9,120 @@
  * https://github.com/restatedev/examples/blob/main/LICENSE
  */
 
-import {
-  CancelOrderRequest,
-  CreateOrderRequest,
-  OrderService,
-  OrderServiceClientImpl,
-  PrepareOrderRequest,
-  OrderStatusRequest,
-  OrderStatusResponse,
-} from "./generated/proto/example";
-import { BoolValue } from "./generated/proto/google/protobuf/wrappers";
 import * as restate from "@restatedev/restate-sdk";
-import { OrderStatus } from "./types/types";
-import { PointOfSalesApiClient } from "./aux/point_of_sales_api_client";
+import { Order, OrderStatus } from "./types/types";
 import { DeliveryProviderApiClient } from "./aux/delivery_provider_api_client";
-import { Empty } from "./generated/proto/google/protobuf/empty";
+import axios from "axios";
 
-// keyed by orderId
-export class OrderSvc implements OrderService {
-  STATUS = "status";
-  pointOfSalesApiClient = new PointOfSalesApiClient();
-  deliveryProviderApiClient = new DeliveryProviderApiClient();
+const STATUS = "status";
+const POS_ENDPOINT = process.env.POS_ENDPOINT || "http://localhost:5050";
+const deliveryProviderApiClient = new DeliveryProviderApiClient();
 
-  async createOrder(request: CreateOrderRequest): Promise<BoolValue> {
-    const ctx = restate.useContext(this);
+const createOrder = async (
+  ctx: restate.RpcContext,
+  orderId: string,
+  order: Order
+) => {
+  // Use sideEffects to call the external service so that the call can be replayed w/o
+  // calling the external service again.
+  const restaurantOpen = await ctx.sideEffect(
+    async () =>
+      (
+        await axios.get(`${POS_ENDPOINT}/opening-hours/${order.restaurantId}`)
+      ).data
+  );
 
-    if (!request.order) {
-      return BoolValue.create({ value: false });
-    }
+  if (restaurantOpen) {
+    ctx.set(STATUS, OrderStatus.ACCEPTED);
 
-    // 1. Check if restaurant open
-    const restaurantOpen = await ctx.sideEffect(async () =>
-      this.pointOfSalesApiClient.checkIfRestaurantOpen(
-        request.order!.deliveryDelay
-      )
+    // Use sideEffects to call external service so that it can be replayed w/o
+    // calling the external service again. Idempotency is provided by the orderId
+    await ctx.sideEffect(async () => {
+      await axios.post(`${POS_ENDPOINT}/create`, {
+        orderId: orderId,
+        order: order,
+      });
+    });
+
+    // Schedule the prepare order request based on the desired delivery delay
+    ctx.sendDelayed(orderApi, order.deliveryDelay).prepareOrder(orderId);
+
+    return true;
+  } else {
+    ctx.set(STATUS, OrderStatus.REJECTED);
+    return false;
+  }
+};
+
+const prepareOrder = async (ctx: restate.RpcContext, orderId: string) => {
+  const currentStatus = await ctx.get<OrderStatus>(STATUS);
+
+  if (currentStatus === OrderStatus.ACCEPTED) {
+    ctx.set(STATUS, OrderStatus.PROCESSING);
+
+    // Create an awakeable (persistent promise) which can be resolved by an external system.
+    // In order to resolve the promise, the external system needs the awakeable id.
+    const orderPreparationAwakeable = ctx.awakeable();
+
+    // Trigger the asynchronous order preparation whose completion will be awaited on.
+    // The point of sales service will resolve the promise once the preparation is complete.
+    // Idempotency is provided by the orderId.
+    await ctx.sideEffect(async () => {
+      await axios.post(`${POS_ENDPOINT}/prepare`, {
+        awakeableId: orderPreparationAwakeable.id, // include so that POS is able to resolve the awakeable
+        orderId: orderId,
+      });
+    });
+
+    // Wait for the restaurant to notify us that the order is prepared.
+    // This promise gets resolved when the point of sales service completes the
+    // preparation and notifies Restate. Check the prepare handler in
+    // @restatedev/example-food-ordering-pos-server for more details.
+    await orderPreparationAwakeable.promise;
+
+    ctx.set(STATUS, OrderStatus.PREPARED);
+
+    // Tell the delivery provider to deliver the order. In order to make this call replayable
+    // w/o calling the service again it is wrapped in a sideEffect. Idempotency is provided
+    // by the orderId.
+    await ctx.sideEffect(async () =>
+      deliveryProviderApiClient.requestOrderDelivery(orderId)
     );
-
-    // 2. Check if products are in stock
-    const productsInStock = await ctx.sideEffect(async () =>
-      this.pointOfSalesApiClient.checkIfProductsInStock(request.order!.items)
-    );
-
-    // If the restaurant is open and the products are in stock, then accept the order
-    if (restaurantOpen && productsInStock) {
-      // 3. Set the order as accepted
-      ctx.set(this.STATUS, OrderStatus.ACCEPTED);
-
-      // 4. Notify the restaurant; create the order in their POS system
-      await ctx.sideEffect(() =>
-        this.pointOfSalesApiClient.createOrder(request.orderId, request.order!)
-      );
-
-      // 5. Schedule the prepare order request based on the desired delivery delay
-      const client = new OrderServiceClientImpl(ctx);
-      ctx.delayedCall(
-        () =>
-          client.prepareOrder(
-            PrepareOrderRequest.create({ orderId: request.orderId })
-          ),
-        request.order?.deliveryDelay || 0
-      );
-
-      // 6. Notify the delivery provider of the acceptance
-      return BoolValue.create({ value: true });
-    } else {
-      // Set the order as rejected
-      ctx.set(this.STATUS, OrderStatus.REJECTED);
-
-      // Notify the delivery provider of the rejection
-      return BoolValue.create({ value: false });
-    }
   }
+};
 
-  async prepareOrder(request: PrepareOrderRequest): Promise<Empty> {
-    const ctx = restate.useContext(this);
+const cancelOrder = async (ctx: restate.RpcContext, orderId: string) => {
+  const currentStatus = await ctx.get<OrderStatus>(STATUS);
 
-    // 1. Retrieve the order status from Restate's state store
-    // State is eagerly sent together with the request so this works on local state.
-    const currentStatus = await ctx.get<OrderStatus>(this.STATUS);
+  // You can only cancel an order that is not yet being prepared or canceled
+  if (currentStatus === OrderStatus.ACCEPTED) {
+    ctx.set(STATUS, OrderStatus.CANCELED);
 
-    // Only prepare the order if it in accepted status.
-    if (currentStatus === OrderStatus.ACCEPTED) {
-      // 2. Set status to processing
-      ctx.set(this.STATUS, OrderStatus.PROCESSING);
+    // Notify the restaurant; cancel the order in their POS system. In order to make the call
+    // replayable w/o calling the serivce again, it is wrapped in a sideEffect. Idempotency is
+    // provided by the orderId.
+    await ctx.sideEffect(async () => {
+      await axios.post(`${POS_ENDPOINT}/cancel`, { orderId: orderId });
+    });
 
-      // 3. Notify the restaurant to prepare the order
-      const orderPreparationAwakeable = ctx.awakeable();
-      await ctx.sideEffect(() =>
-        this.pointOfSalesApiClient.prepareOrder(
-          request.orderId,
-          orderPreparationAwakeable.id
-        )
-      );
-
-      // 3. Wait for the restaurant to notify us that the order is prepared
-      // This promise gets resolved when the awakeableID is delivered back to Restate by the point of sales software of the restaurant
-      await orderPreparationAwakeable.promise;
-
-      // 4. Set the order status to PREPARED
-      ctx.set(this.STATUS, OrderStatus.PREPARED);
-
-      // 5. Tell the delivery provider to look for a driver and to deliver the order
-      await ctx.sideEffect(async () =>
-        this.deliveryProviderApiClient.requestOrderDelivery(request.orderId)
-      );
-
-      return {};
-    } else {
-      return {};
-    }
+    return true;
+  } else {
+    return false;
   }
+};
 
-  async cancelOrder(request: CancelOrderRequest): Promise<BoolValue> {
-    const ctx = restate.useContext(this);
+const getOrderStatus = async (ctx: restate.RpcContext, _orderId: string) => {
+  const status = (await ctx.get<OrderStatus>(STATUS)) ?? OrderStatus.UNKNOWN;
+  return OrderStatus[status];
+};
 
-    const currentStatus = await ctx.get<OrderStatus>(this.STATUS);
+export const orderService = restate.keyedRouter({
+  createOrder,
+  prepareOrder,
+  cancelOrder,
+  getOrderStatus,
+});
 
-    // You can only cancel an order that is not yet being prepared or canceled
-    if (currentStatus === OrderStatus.ACCEPTED) {
-      ctx.set(this.STATUS, OrderStatus.CANCELED);
-
-      // Notify the restaurant; cancel the order in their POS system
-      await ctx.sideEffect(() =>
-        this.pointOfSalesApiClient.cancelOrder(request.orderId)
-      );
-
-      // Notify the delivery app of the cancellation success
-      return BoolValue.create({ value: true });
-    } else {
-      // Notify the delivery app of the cancellation failure
-      return BoolValue.create({ value: false });
-    }
-  }
-
-  async getOrderStatus(
-    _request: OrderStatusRequest
-  ): Promise<OrderStatusResponse> {
-    const ctx = restate.useContext(this);
-
-    const status =
-      (await ctx.get<OrderStatus>(this.STATUS)) || OrderStatus.UNKNOWN;
-
-    return OrderStatusResponse.create({ status: OrderStatus[status] });
-  }
-}
+export const orderApi: restate.ServiceApi<typeof orderService> = {
+  path: "OrderService",
+};

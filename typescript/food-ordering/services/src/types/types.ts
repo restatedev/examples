@@ -9,6 +9,17 @@
  * https://github.com/restatedev/examples/blob/main/LICENSE
  */
 
+export interface Order {
+  restaurantId: string;
+  deliveryDelay: number;
+  items: OrderItem[];
+}
+
+export interface OrderItem {
+  productName: string;
+  quantity: number;
+}
+
 export enum OrderStatus {
   UNKNOWN,
   ACCEPTED,
