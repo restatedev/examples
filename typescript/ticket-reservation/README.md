@@ -10,24 +10,18 @@ Restate is a system for easily building resilient applications using **distribut
 
 To set up the example, use this sequence of commands:
 
-> &#x1F4DD; Make sure you have set up your [access to Restate's packages](https://github.com/restatedev/restate-dist)
-
 ```shell
-git clone git@github.com:restatedev/examples.git
-cd ticket-reservation
-
 npm install
 npm run build
-
 npm run app
 ```
 
-For more details checkout out [Running the example](README.md#running-the-example).
-
+For more details check out [Running the example](README.md#running-the-example).
 
 ## Description
 
 Imagine a ticket booking systems for concerts, sports games or the cinema. The plot goes as follows:
+
 - Users select tickets (for specific seats), and put them in their shopping cart. Each seat can only be reserved and sold once.
 - The tickets are reserved for a limited time (15 minutes), after which the reservation expires and the tickets become available to other buyers again.
 - When going through checkout, tickets get permanently reserved, payment is processed, tickets are mailed to the user.
@@ -63,9 +57,12 @@ Here is an incomplete list of simplifications to the application that are possib
 
 ## Running the example
 
-### Pre-requisites
+### Prerequisites
 
-- [NodeJS (and npm)](https://nodejs.org) installed.
+> **Note**
+> Make sure you have [signed up for Restate's private beta](https://forms.gle/G8kDuucqhBoTfMwLA) and set up [access to Restate's packages](https://github.com/restatedev/restate-dist).
+
+- Latest stable version of [NodeJS](https://nodejs.org/en/) >= v18.17.1 and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7 installed.
 - [Docker Engine](https://docs.docker.com/engine/install/) to launch the Restate runtime (not needed for the app implementation itself).
 
 ### Setup
@@ -78,11 +75,13 @@ cd ticket-reservation
 ```
 
 Next, install the dependencies:
+
 ```shell
 npm install
 ```
 
 ### Run the service
+
 Once you are done with the implementation, build/run the example app with:
 
 ```shell
@@ -92,13 +91,9 @@ npm run app
 
 The user session service, ticket service and checkout service are now up and running!
 
-### Launch the Restate runtime
+### Launch Restate and discover services
 
-See [how to launch the runtime](../../README.md#launching-the-runtime) for details.
-
-### Connect services and runtime
-
-See [how to connect services and runtime](../../README.md#connect-runtime-and-services) for details.
+Now [launch the runtime](../../README.md#launching-the-runtime) and [discover the services](../../README.md#connect-runtime-and-services).
 
 ### Call the service
 

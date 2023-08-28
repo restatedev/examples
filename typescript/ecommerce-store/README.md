@@ -10,9 +10,10 @@ Restate is a system for easily building resilient applications using **distribut
 
 ## Prerequisites
 
-> &#x1F4DD; Make sure you have set up your [access to Restate's packages](https://github.com/restatedev/restate-dist)
+> **Note**
+> Make sure you have [signed up for Restate's private beta](https://forms.gle/G8kDuucqhBoTfMwLA) and set up [access to Restate's packages](https://github.com/restatedev/restate-dist).
 
-- [NodeJS (and npm)](https://nodejs.org)
+- Latest stable version of [NodeJS](https://nodejs.org/en/) >= v18.17.1 and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7 installed.
 - [Docker Engine](https://docs.docker.com/engine/install/) to launch the Restate runtime (not needed for the app implementation itself).
 - Optional: Docker Compose
 - Optional: AWS account with permissions for ECS, RDS, ECR, security groups, VPC, service discovery, IAM roles.

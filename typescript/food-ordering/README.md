@@ -34,9 +34,10 @@ Have a look at the implementation of the `prepareOrder` function in the OrderSer
 
 ## Prerequisites
 
-> &#x1F4DD; Make sure you have set up your [access to Restate's packages](https://github.com/restatedev/restate-dist)
+> **Note**
+> Make sure you have [signed up for Restate's private beta](https://forms.gle/G8kDuucqhBoTfMwLA) and set up [access to Restate's packages](https://github.com/restatedev/restate-dist).
 
-- [NodeJS (and npm)](https://nodejs.org)
+- Latest stable version of [NodeJS](https://nodejs.org/en/) >= v18.17.1 and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7 installed.
 - [Docker Engine](https://docs.docker.com/engine/install/) to launch the Restate runtime (not needed for the app implementation itself).
 - Optional: Docker Compose
 
@@ -132,7 +133,7 @@ npm run app
 
 ### Start the Restate runtime
 
-See [how to launch the runtime](../../README.md#launching-the-runtime) and [how to discover services](../../README.md#connect-runtime-and-services) for details.
+Now [launch the runtime](../../README.md#launching-the-runtime) and [discover the services](../../README.md#connect-runtime-and-services).
 
 ### Send requests to the service
 

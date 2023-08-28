@@ -20,8 +20,8 @@ Browse this repository to see how easy distributed applications development beco
 
 ## Running the examples
 
-In order to run the examples you first need to [sign up for Restate's private beta](https://forms.gle/G8kDuucqhBoTfMwLA).
-After signing-up, you have to set up your [access to Restate's packages](https://github.com/restatedev/restate-dist) which gives you access to the runtime as well as the SDK artifacts.
+> **Note**
+> Make sure you have [signed up for Restate's private beta](https://forms.gle/G8kDuucqhBoTfMwLA) and set up [access to Restate's packages](https://github.com/restatedev/restate-dist).
 
 ### Launching the runtime
 
