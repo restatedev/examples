@@ -18,6 +18,11 @@ Browse this repository to see how easy distributed applications development beco
 
 - [Ecommerce store](typescript/ecommerce-store): A sophisticated example on how to build an ecommerce store based on Restate using the grpc-based Typescript SDK.
 
+## Joining the community
+
+If you want to join the Restate community in order to stay up to date, then please join our [Discord](https://discord.gg/skW3AZ6uGd).
+The Discord server is also the perfect place for sharing your feedback with us, learning more about Restate and connect with others!
+
 ## Running the examples
 
 > **Note**
