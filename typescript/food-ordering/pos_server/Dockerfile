@@ -6,7 +6,7 @@ RUN apk add dumb-init
 WORKDIR /usr/src/app
 
 # copy package.json and package-lock.json separately to cache dependencies
-COPY package*.json .
+COPY package*.json ./
 RUN npm install
 
 COPY --chown=node:node .. .
