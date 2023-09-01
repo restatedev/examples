@@ -44,7 +44,7 @@ services:
       - "3030:3030"
     depends_on:
       runtimesetup:
-        condition: service_completed_successfully
+        condition: service_started
     entrypoint: ["/bin/grpcui", "-bind=0.0.0.0", "-port=3030", "-plaintext", "runtime:9090"]
 
   pos_server:
