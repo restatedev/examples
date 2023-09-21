@@ -57,7 +57,7 @@ const useCartProducts = () => {
     const updatedProducts = products.filter(
       (product: ICartProduct) => product.id !== productToRemove.id
     );
-    const req = { "shopping_cart_id": user!.shopping_cart_id, "product_id": productToRemove.id };
+    const req = { "shopping_cart_id": user!.shopping_cart_id, "product_id": ""+productToRemove.id };
 
     grpc('ShoppingCartService', 'RemoveProduct', req).then((res: any) => {
       setProducts(updatedProducts);
