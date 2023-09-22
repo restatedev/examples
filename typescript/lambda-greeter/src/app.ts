@@ -15,10 +15,7 @@ const doGreet = async (ctx: restate.RpcContext, name: string) => {
   return `Hello ${name} :-)`;
 };
 
-const doGreetAndRemember = async (
-  ctx: restate.RpcContext,
-  name: string
-) => {
+const doGreetAndRemember = async (ctx: restate.RpcContext, name: string) => {
   let seen = (await ctx.get<number>("seen")) ?? 0;
   seen += 1;
 
