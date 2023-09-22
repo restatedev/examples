@@ -11,12 +11,12 @@
 
 import * as restate from "@restatedev/restate-sdk";
 
-const doGreet = async (ctx: restate.RestateContext, name: string) => {
+const doGreet = async (ctx: restate.RpcContext, name: string) => {
   return `Hello ${name} :-)`;
 };
 
 const doGreetAndRemember = async (
-  ctx: restate.RestateContext,
+  ctx: restate.RpcContext,
   name: string
 ) => {
   let seen = (await ctx.get<number>("seen")) ?? 0;
