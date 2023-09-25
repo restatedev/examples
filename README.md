@@ -34,7 +34,7 @@ Have a look at how to start up the runtime in a Docker container in [this reposi
 
 - For MacOS:
 ```shell
-docker run --name restate_dev --rm -p 8081:8081 -p 9091:9091 -p 9090:9090 -p 5432:5432 ghcr.io/restatedev/restate-dist:latest
+docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 ghcr.io/restatedev/restate-dist:latest
 ```
 - For Linux:
 ```shell
@@ -47,11 +47,11 @@ Once the runtime is up, let it discover the services of the examples by executin
 
 - For MacOS:
 ```shell
-curl -X POST http://localhost:8081/endpoints -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:8080"}'
+curl -X POST http://localhost:9070/endpoints -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
 ```
 - For Linux:
 ```shell
-curl -X POST http://localhost:8081/endpoints -H 'content-type: application/json' -d '{"uri": "http://localhost:8080"}'
+curl -X POST http://localhost:9070/endpoints -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
 ```
 
 This should give you the following output in case of the ticket reservation example:

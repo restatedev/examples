@@ -117,7 +117,7 @@ restate
   .createServer()
   .bindKeyedRouter("payments", rounter)
   .bindKeyedRouter("accounts", accounts.router)
-  .listen(8080);
+  .listen();
 
 // ----------------------------------------------------------------------------
 //  miscellaneous utils

@@ -19,4 +19,4 @@ restate
   .bindKeyedRouter(userSessionApi.path, userSessionRouter)
   .bindKeyedRouter(ticketDbApi.path, ticketDbRouter)
   .bindRouter(checkoutApi.path, checkoutRouter)
-  .listen(8080);
+  .listen();

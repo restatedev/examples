@@ -42,7 +42,7 @@ resource "aws_ecs_task_definition" "webapp" {
       environment = [
         {
           name  = "REACT_APP_RESTATE_HOST",
-          value = "http://localhost:9090"
+          value = "http://localhost:8080"
         },
         {
           name  = "REACT_APP_DATABASE_ENABLED",

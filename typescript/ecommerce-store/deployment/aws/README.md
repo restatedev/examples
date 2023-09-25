@@ -74,7 +74,7 @@ ssh -i shopping-demo-key.pem -L 5050:pgadmin.shopping-cart-demo:5050 -L 16686:ja
 Then discover the services from within the ssh session:
 
 ```shell
-curl -X POST http://restate-runtime.shopping-cart-demo:8081/endpoints -H 'content-type: application/json' -d '{"uri": "http://shopping-services.shopping-cart-demo:8080"}'
+curl -X POST http://restate-runtime.shopping-cart-demo:9070/endpoints -H 'content-type: application/json' -d '{"uri": "http://shopping-services.shopping-cart-demo:8080"}'
 ```
 
 This prints out the services were discovered by the Restate runtime.

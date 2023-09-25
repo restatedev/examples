@@ -16,6 +16,7 @@ RUN npm run build
 
 ENV NODE_ENV production
 
+ENV PORT 8080
 EXPOSE 8080
 USER node
 CMD ["dumb-init", "node", "./dist/app.js"]

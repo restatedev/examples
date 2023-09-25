@@ -16,4 +16,4 @@ import { orderApi, orderService } from "./order_service";
 restate
   .createServer()
   .bindKeyedRouter(orderApi.path, orderService)
-  .listen(8080);
+  .listen();

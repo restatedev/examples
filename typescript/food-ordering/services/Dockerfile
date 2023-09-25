@@ -17,5 +17,6 @@ RUN --mount=type=secret,id=npmrc,target=/root/.npmrc npm prune --omit=dev
 ENV NODE_ENV production
 
 EXPOSE 8080
+ENV PORT 8080
 USER node
 CMD ["dumb-init", "node", "./dist/app.js"]

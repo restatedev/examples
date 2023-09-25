@@ -5,8 +5,6 @@ services:
     environment:
       - RESTATE_DEBUG_LOGGING=JOURNAL_VERBOSE
       - DATABASE_ENABLED=false
-    ports:
-      - "8080:8080"
 
   jaeger:
     image: jaegertracing/all-in-one:1.47
@@ -22,8 +20,8 @@ services:
       - services
       - jaeger
     ports:
-      - "9090:9090"
-      - "8081:8081"
+      - "8080:8080"
+      - "9070:9070"
     environment:
       - RUST_LOG=info,restate=debug
       - RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://jaeger:4317
@@ -38,7 +36,7 @@ services:
       - ../local/:/scripts
       - ../data/:/data
     entrypoint: ["sh", "-c", "sleep 5 && apk add --no-cache bash jq curl &&
-    curl -X POST 'runtime:8081/endpoints' -H 'content-type: application/json' -d '{\"uri\": \"http://services:8080\"}' &&
+    curl -X POST 'runtime:9070/endpoints' -H 'content-type: application/json' -d '{\"uri\": \"http://services:8080\"}' &&
     sleep 3 && cd /scripts && chmod +x init_state.sh && ./init_state.sh runtime:9090
     || exit 1"]
 

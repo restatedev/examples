@@ -77,7 +77,7 @@ Create a new order for five cheeseburgers at `FastFood123` with immediate delive
 You can do this via curl:
 
 ```shell
-curl -X POST http://localhost:9090/OrderService/createOrder -H 'content-type: application/json' -d '{
+curl -X POST http://localhost:8080/OrderService/createOrder -H 'content-type: application/json' -d '{
   "key": "134",
   "request": {"restaurantId": "FastFood123", "deliveryDelay": 0, "items": [{"productName": "cheeseburger", "quantity": 5}]}
 }'
@@ -86,7 +86,7 @@ curl -X POST http://localhost:9090/OrderService/createOrder -H 'content-type: ap
 Create a new order for five cheeseburgers at `FastFood123` with delivery delayed for 10 seconds:
 
 ```shell
-curl -X POST http://localhost:9090/OrderService/createOrder -H 'content-type: application/json' -d '{
+curl -X POST http://localhost:8080/OrderService/createOrder -H 'content-type: application/json' -d '{
   "key": "174",
   "request": {"restaurantId": "FastFood123", "deliveryDelay": 10000, "items": [{"productName": "cheeseburger", "quantity": 5}]}
 }'
@@ -95,7 +95,7 @@ curl -X POST http://localhost:9090/OrderService/createOrder -H 'content-type: ap
 You can also check the status of the delivery via:
 
 ```shell
-curl -X POST http://localhost:9090/OrderService/getOrderStatus -H 'content-type: application/json' -d '{ "key": "174" }'
+curl -X POST http://localhost:8080/OrderService/getOrderStatus -H 'content-type: application/json' -d '{ "key": "174" }'
 ```
 
 To understand the requests that are done, you can have a look at the logs of the runtime, service and PoS server.

@@ -86,7 +86,7 @@ Local deployment doesn't use a pre-filled database, so you need to manually fill
 
 ```shell
 cd deployment/local
-./init_state.sh "localhost:9090"
+./init_state.sh "localhost:8080"
 ```
 
 Go to http://localhost:3000 to see the UI and buy some products.

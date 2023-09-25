@@ -1,5 +1,5 @@
 #!/bin/bash
-export RESTATE_HOST=${1:-localhost:9090}
+export RESTATE_HOST=${1:-localhost:8080}
 jq -c '.data.products[]' ../data/products.json | while read i; do
   id=$(echo $i | jq -r '.id')
   quantity=$(echo $i | jq -r '.installments')
