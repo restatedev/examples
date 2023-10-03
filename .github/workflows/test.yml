@@ -24,8 +24,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Create .npmrc
         run: |
-          echo '@restatedev:registry=https://npm.pkg.github.com/' > ~/.npmrc
-          echo '//npm.pkg.github.com/:_authToken=${GH_PACKAGE_READ_ACCESS_TOKEN}' >> ~/.npmrc
+          echo '@restatedev:registry=https://npm.pkg.github.com/' > typescript/.npmrc
+          echo '//npm.pkg.github.com/:_authToken=${GH_PACKAGE_READ_ACCESS_TOKEN}' >> typescript/.npmrc
       - run: npm ci --prefix typescript
         env:
           GH_PACKAGE_READ_ACCESS_TOKEN: ${{ secrets.GH_PACKAGE_READ_ACCESS_TOKEN }}
