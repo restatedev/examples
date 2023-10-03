@@ -12,7 +12,7 @@
 import * as restate from "@restatedev/restate-sdk";
 
 const doGreet = async (ctx: restate.RpcContext, name: string) => {
-  return `Hello ${name} :-)`;
+  return `Hello  ${name} :-)`;
 };
 
 const doGreetAndRemember = async (ctx: restate.RpcContext, name: string) => {
