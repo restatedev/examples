@@ -12,7 +12,7 @@
 import * as restate from "@restatedev/restate-sdk";
 import { EmailSender, SendEmailRequest } from "./generated/proto/shoppingcart";
 import { Empty } from "./generated/proto/google/protobuf/empty";
-import { MailgunClient } from "./aux/mailgun_client";
+import { MailgunClient } from "./auxiliary/mailgun_client";
 
 export class EmailSvc implements EmailSender {
   private mailgunClient: MailgunClient;

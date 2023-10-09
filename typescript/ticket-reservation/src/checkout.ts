@@ -11,8 +11,8 @@
 
 import * as restate from "@restatedev/restate-sdk";
 import { v4 as uuid } from "uuid";
-import { StripeClient } from "./aux/stripe_client";
-import { EmailClient } from "./aux/email_client";
+import { StripeClient } from "./auxiliary/stripe_client";
+import { EmailClient } from "./auxiliary/email_client";
 
 const doCheckout = async (
   ctx: restate.RpcContext,
