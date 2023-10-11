@@ -27,7 +27,7 @@ dependencies {
 
   // Restate SDK
   implementation("dev.restate.sdk:sdk-kotlin:1.0-SNAPSHOT")
-  implementation("dev.restate.sdk:sdk-vertx:1.0-SNAPSHOT")
+  implementation("dev.restate.sdk:sdk-http-vertx:1.0-SNAPSHOT")
   // To use Jackson to read/write state entries (optional)
   implementation("dev.restate.sdk:sdk-serde-jackson:1.0-SNAPSHOT")
 

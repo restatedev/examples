@@ -5,7 +5,7 @@ import dev.restate.sdk.examples.generated.*
 import dev.restate.sdk.examples.generated.GreeterProto.GreetRequest
 import dev.restate.sdk.examples.generated.GreeterProto.GreetResponse
 import dev.restate.sdk.kotlin.RestateCoroutineService
-import dev.restate.sdk.vertx.RestateHttpEndpointBuilder
+import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
 import io.vertx.core.Vertx
 import io.vertx.kotlin.coroutines.dispatcher
 import kotlin.coroutines.CoroutineContext
