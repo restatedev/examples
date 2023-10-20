@@ -4,7 +4,13 @@ The code in this repo was used for:
 - Current 2023 presentation
 - Blog post on serverless
 
+Have a look at the blog post to go through the example.
+
 The app logic (order workflow) discussed in the presentation and blog post can be found under: `app/src/services/order_service.ts`.
+
+The demo scenario looks as follows:
+
+![demo_overview.png](demo_overview.png)
 
 ## Running locally
 
