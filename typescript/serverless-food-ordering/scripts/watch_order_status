@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -x
+
+watch -n 1 'psql -h localhost -p 5432 -c "select service, service_key_utf8, key, value_utf8 from state s where s.service='"'"'orderStatus'"'"';"'

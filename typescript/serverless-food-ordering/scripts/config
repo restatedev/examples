@@ -1,0 +1,3 @@
+KAFKA_CONTAINER_NAME="broker"
+ORDERS_TOPIC="orders"
+DRIVERS_TOPIC="driver-updates"

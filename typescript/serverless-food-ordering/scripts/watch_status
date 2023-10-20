@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -x
+
+watch -n 1 'psql -h localhost -p 5432 -c "select service, method, service_key_utf8, id, status, invoked_by_service, invoked_by_id from sys_status;"'

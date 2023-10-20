@@ -1,0 +1,25 @@
+{
+  "name": "@restatedev/example-food-ordering-driver",
+  "version": "0.0.1",
+  "description": "Example of food ordering application with Restate: Driver",
+  "main": "driver.js",
+  "type": "commonjs",
+  "license": "MIT",
+  "author": "Restate developers",
+  "email": "code@restate.dev",
+  "scripts": {
+    "build": "tsc --noEmitOnError",
+    "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
+    "app": "node ./dist/server.js",
+    "app-dev": "ts-node-dev --watch src --transpile-only src/driver.ts"
+  },
+  "dependencies": {
+    "axios": "^1.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.6.3",
+    "prettier": "^2.8.4",
+    "ts-node-dev": "^1.1.1",
+    "typescript": "^5.1.6"
+  }
+}

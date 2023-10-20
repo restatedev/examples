@@ -1,0 +1,36 @@
+{
+  "name": "restate-ts-template",
+  "version": "0.0.1",
+  "description": "Template for JavaScript/TypeScript services running with Restate (https://github.com/restatedev/) ",
+  "main": "app.js",
+  "type": "commonjs",
+  "scripts": {
+    "proto": "cd proto && npx buf mod update && npx buf generate ",
+    "build": "tsc --noEmitOnError",
+    "prebundle": "rm -rf dist",
+    "bundle": "esbuild src/lambda.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
+    "postbundle": "cd dist && zip -r index.zip index.js*",
+    "order-app": "RESTATE_DEBUG_LOGGING=OFF node ./dist/order_app.js",
+    "order-app-dev": "RESTATE_DEBUG_LOGGING=OFF ts-node-dev --watch src --respawn --transpile-only ./src/order_app.ts",
+    "driversim-app": "RESTATE_DEBUG_LOGGING=OFF node ./dist/driversim_app.js",
+    "driversim-dev": "RESTATE_DEBUG_LOGGING=OFF ts-node-dev --watch src --transpile-only src/driversim_app.ts",
+    "delivery-app": "RESTATE_DEBUG_LOGGING=OFF node ./dist/delivery_app.js",
+    "delivery-app-dev": "RESTATE_DEBUG_LOGGING=OFF ts-node-dev --watch src --transpile-only src/delivery_app.ts",
+    "format": "prettier --ignore-path .eslintignore --write \\\"**/*.+(ts)\\\""
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "^0.3.2",
+    "axios": "^1.4.0",
+    "kafkajs": "^2.2.4",
+    "protobufjs": "^7.2.2",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.6.3",
+    "@types/uuid": "^9.0.0",
+    "esbuild": "^0.18.12",
+    "prettier": "^2.8.4",
+    "ts-node-dev": "^1.1.1",
+    "typescript": "^5.0.2"
+  }
+}

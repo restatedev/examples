@@ -1,0 +1,134 @@
+version: '3'
+services:
+  broker:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: broker
+    ports:
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@broker:29093
+      KAFKA_LISTENERS: PLAINTEXT://broker:29092,CONTROLLER://broker:29093,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+
+  init-kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - broker
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server broker:29092 --list
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic orders --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic driver-updates --replication-factor 1 --partitions 1
+
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server broker:29092 --list
+      "
+
+  rest-proxy:
+    image: confluentinc/cp-kafka-rest:7.5.0
+    ports:
+      - 8088:8088
+    hostname: rest-proxy
+    container_name: rest-proxy
+    environment:
+      KAFKA_REST_HOST_NAME: rest-proxy
+      KAFKA_REST_LISTENERS: "http://0.0.0.0:8088"
+      KAFKA_REST_BOOTSTRAP_SERVERS: "broker:29092"
+      KAFKA_REST_ACCESS_CONTROL_ALLOW_ORIGIN: "*"
+      KAFKA_REST_ACCESS_CONTROL_ALLOW_METHODS: "OPTIONS,GET,POST,PUT,DELETE"
+      KAFKA_REST_ACCESS_CONTROL_ALLOW_HEADERS: "origin,content-type,accept,authorization"
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.47
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+
+  delivery_app:
+    container_name: delivery_app
+    image: order-services:0.0.1
+    environment:
+      - RESTATE_DEBUG_LOGGING=OFF
+      - RESTAURANT_ENDPOINT=http://restaurant_pos:5050
+    ports:
+      - "8085:8085"
+    entrypoint: ["dumb-init", "node", "./dist/delivery_app.js"]
+
+  driversim_app:
+    container_name: driversim_app
+    image: order-services:0.0.1
+    environment:
+      - RESTATE_DEBUG_LOGGING=OFF
+      - RESTAURANT_ENDPOINT=http://restaurant_pos:5050
+      - KAFKA_BOOTSTRAP_SERVERS=broker:29092
+    ports:
+      - "5051:5051"
+    entrypoint: ["dumb-init", "node", "./dist/driversim_app.js"]
+
+  restaurant_pos:
+    container_name: restaurant_pos
+    image: restaurant-pos:0.0.1
+    environment:
+      - RESTATE_RUNTIME_ENDPOINT=http://runtime:9090
+    ports:
+      - "5050:5050"
+
+  runtime:
+    image: ghcr.io/restatedev/restate-dist:0.3.0
+    depends_on:
+      - delivery_app
+      - driversim_app
+      - restaurant_pos
+      - broker
+      - rest-proxy
+      - jaeger
+    ports:
+      - "9090:9090"
+      - "8081:8081"
+      - "5432:5432"
+    volumes:
+      - ./restate/restate-docker.yaml:/restate.yaml
+    environment:
+      - RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://jaeger:4317
+      - RESTATE_CONFIG=/restate.yaml
+
+  runtimesetup:
+    image: alpine
+    depends_on:
+      - runtime
+      - delivery_app
+      - driversim_app
+    restart: "no"
+    entrypoint: ["sh", "-c", "sleep 5 && 
+    apk add --no-cache bash jq curl &&
+    curl -X POST 'runtime:8081/endpoints' -H 'content-type: application/json' -d '{\"uri\": \"http://delivery_app:8085\"}' &&
+    curl -X POST 'runtime:8081/endpoints' -H 'content-type: application/json' -d '{\"uri\": \"http://driversim_app:5051\"}' &&
+    sleep 3 && 
+    curl -X POST -H 'content-type: application/json' runtime:9090/simulateddriver/startDriver -d '{\"key\": \"driver-01\", \"request\": {} }' &&
+    curl -X POST -H 'content-type: application/json' runtime:9090/simulateddriver/startDriver -d '{\"key\": \"driver-02\", \"request\": {} }' &&
+    exit 1"]
+
+  webui:
+    image: webui:0.0.1
+    depends_on:
+      - runtimesetup
+    ports:
+      - "3000:3000"

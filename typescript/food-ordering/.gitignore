@@ -1,5 +1,0 @@
-.idea/*
-dist
-node_modules
-services/proto/buf.lock
-services/src/generated

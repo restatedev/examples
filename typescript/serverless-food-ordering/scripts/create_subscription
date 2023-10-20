@@ -1,0 +1,15 @@
+#!/bin/bash
+
+SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+
+# read config
+source "$SCRIPTPATH/config"
+
+# check whether curl is installed
+if ! command -v curl &> /dev/null; then
+    echo "curl is not installed. Install curl to run this script."
+    exit 1
+fi
+
+curl -X POST -H 'content-type: application/json' http://localhost:8081/subscriptions -d "{ \"source\":\"kafka://my-cluster/$ORDERS_TOPIC\", \"sink\":\"service://orders/eventHandler\" }"
+curl -X POST -H 'content-type: application/json' http://localhost:8081/subscriptions -d "{ \"source\":\"kafka://my-cluster/$DRIVERS_TOPIC\", \"sink\":\"service://driver/handleUpdateEvent\" }"
