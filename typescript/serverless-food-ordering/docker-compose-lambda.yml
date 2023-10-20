@@ -105,7 +105,7 @@ services:
       - "8081:8081"
       - "5432:5432"
     volumes:
-      - ./restate/restate-docker.yaml:/restate.yaml
+      - ./restate-docker.yaml:/restate.yaml
     environment:
       - RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://jaeger:4317
       - RESTATE_CONFIG=/restate.yaml
