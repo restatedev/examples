@@ -15,9 +15,3 @@ You can run the Kotlin greeter service via:
 ```
 
 Or from the Intellij IDEA UI.
-
-## Build a docker image
-
-```shell
-./gradlew jibDockerBuild
-```

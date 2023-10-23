@@ -5,12 +5,6 @@ plugins {
   application
 
   id("com.google.protobuf") version "0.9.1"
-
-  // Code formatter (optional)
-  id("com.diffplug.spotless") version "6.6.1"
-
-  // To build the docker image (optional)
-  id("com.google.cloud.tools.jib") version "3.2.1"
 }
 
 dependencies {
@@ -57,17 +51,6 @@ protobuf {
         id("grpc")
       }
     }
-  }
-}
-
-// Configure code formatter
-configure<com.diffplug.gradle.spotless.SpotlessExtension> {
-  java {
-    googleJavaFormat()
-    targetExclude("build/generated/**/*.java")
-  }
-  kotlin {
-    ktfmt()
   }
 }
 

@@ -5,9 +5,6 @@ plugins {
 
   id("com.google.protobuf") version "0.9.1"
 
-  // Code formatter (optional)
-  id("com.diffplug.spotless") version "6.6.1"
-
   // To package the dependency for Lambda
   id("com.github.johnrengelman.shadow") version "7.1.2"
 }
@@ -56,17 +53,6 @@ protobuf {
         id("grpc")
       }
     }
-  }
-}
-
-// Configure code formatter
-configure<com.diffplug.gradle.spotless.SpotlessExtension> {
-  java {
-    googleJavaFormat()
-    targetExclude("build/generated/**/*.java")
-  }
-  kotlin {
-    ktfmt()
   }
 }
 

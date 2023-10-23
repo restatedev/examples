@@ -6,9 +6,6 @@ plugins {
 
   id("com.google.protobuf") version "0.9.1"
 
-  // Code formatter (optional)
-  id("com.diffplug.spotless") version "6.6.1"
-
   // To package the dependency for Lambda
   id("com.github.johnrengelman.shadow") version "7.1.2"
 }
@@ -48,12 +45,12 @@ dependencies {
   implementation("org.apache.logging.log4j:log4j-core:2.20.0")
 }
 
-// Setup Java and Kotlin compiler target
-tasks.withType<JavaCompile>().configureEach {
-  targetCompatibility = "11"
-  sourceCompatibility = "11"
+// Setup Java/Kotlin compiler target
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(17))
+  }
 }
-tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = "11" }
 
 // Configure protoc plugin
 protobuf {
@@ -76,14 +73,6 @@ protobuf {
         id("kotlin")
       }
     }
-  }
-}
-
-// Configure code formatter
-configure<com.diffplug.gradle.spotless.SpotlessExtension> {
-  kotlin {
-    ktfmt()
-    targetExclude("build/generated/**/*.kt")
   }
 }
 

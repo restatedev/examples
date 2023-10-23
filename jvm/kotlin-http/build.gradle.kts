@@ -4,13 +4,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
   kotlin("jvm") version "1.9.10"
   application
+
   id("com.google.protobuf") version "0.9.1"
-
-  // Code formatter (optional)
-  id("com.diffplug.spotless") version "6.6.1"
-
-  // To build the docker image (optional)
-  id("com.google.cloud.tools.jib") version "3.2.1"
 }
 
 dependencies {
@@ -41,20 +36,16 @@ dependencies {
   // See https://github.com/grpc/grpc-java/issues/9153
   compileOnly("org.apache.tomcat:annotations-api:6.0.53")
 
-  // Vert.x runtime to run coroutines
-  implementation("io.vertx:vertx-core:4.4.5")
-  implementation("io.vertx:vertx-lang-kotlin-coroutines:4.4.5")
-
   // Logging (optional)
   implementation("org.apache.logging.log4j:log4j-core:2.20.0")
 }
 
-// Setup Java and Kotlin compiler target
-tasks.withType<JavaCompile>().configureEach {
-  targetCompatibility = "11"
-  sourceCompatibility = "11"
+// Setup Java/Kotlin compiler target
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(17))
+  }
 }
-tasks.withType<KotlinCompile> { kotlinOptions.jvmTarget = "11" }
 
 // Configure protoc plugin
 protobuf {
@@ -77,14 +68,6 @@ protobuf {
         id("kotlin")
       }
     }
-  }
-}
-
-// Configure code formatter
-configure<com.diffplug.gradle.spotless.SpotlessExtension> {
-  kotlin {
-    ktfmt()
-    targetExclude("build/generated/**/*.kt")
   }
 }
 
