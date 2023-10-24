@@ -49,18 +49,18 @@ You can visit the web app at http://localhost:3000
 6. Forwards the ports of the Restate runtime:
 
 ```shell
-kubectl port-forward -n shopping-cart svc/restate-runtime 8081:8081 9090:9090
+kubectl port-forward -n shopping-cart svc/restate-runtime 8080:8080 9070:9070
 ```
 
 7. Execute the service discovery:
 
 ```shell
-curl -X POST http://localhost:8081/endpoint/discover -H 'content-type: application/json' -d '{"uri": "http://services.shopping-cart.svc.cluster.local"}'
+curl -X POST http://localhost:9070/endpoint/discover -H 'content-type: application/json' -d '{"uri": "http://services.shopping-cart.svc.cluster.local"}'
 ```
 
 8. Fill the state of the product service with a list of products:
 ```shell
-cd deployment/local && ./init_state.sh "localhost:9090" && cd -
+cd deployment/local && ./init_state.sh "localhost:8080" && cd -
 ```
 
 6. Watch pods of the application

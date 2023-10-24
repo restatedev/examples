@@ -18,7 +18,7 @@ import axios from "axios";
  */
 
 const RESTATE_RUNTIME_ENDPOINT =
-  process.env.RESTATE_RUNTIME_ENDPOINT || "http://localhost:9090";
+  process.env.RESTATE_RUNTIME_ENDPOINT || "http://localhost:8080";
 
 const app = express();
 const port = 5050;

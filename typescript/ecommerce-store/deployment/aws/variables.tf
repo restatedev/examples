@@ -36,12 +36,12 @@ variable "service_desired_count" {
 
 variable "restate_runtime_ingress_port" {
   description = "The port of the restate runtime ingress endpoint"
-  default     = 9090
+  default     = 8080
 }
 
 variable "restate_runtime_discovery_port" {
   description = "The port of the restate runtime to register service endpoints"
-  default     = 8081
+  default     = 9070
 }
 
 variable "webapp_port" {

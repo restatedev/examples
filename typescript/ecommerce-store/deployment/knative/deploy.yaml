@@ -19,9 +19,9 @@ spec:
           image: ghcr.io/restatedev/restate-dist:latest
           imagePullPolicy: Never
           ports:
-            - containerPort: 9090
+            - containerPort: 8080
               name: grpc
-            - containerPort: 8081
+            - containerPort: 9070
               name: meta
 
 ---
@@ -36,13 +36,13 @@ spec:
     app: restate-runtime
   ports:
     - name: grpc
-      port: 9090
+      port: 8080
       protocol: TCP
-      targetPort: 9090
+      targetPort: 8080
     - name: meta
-      port: 8081
+      port: 9070
       protocol: TCP
-      targetPort: 8081
+      targetPort: 9070
 
 ---
 apiVersion: apps/v1

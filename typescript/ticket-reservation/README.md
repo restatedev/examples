@@ -100,7 +100,7 @@ Now [launch the runtime](../../README.md#launching-the-runtime) and [discover th
 We can now invoke the `addTicket` method of the user session service by executing:
 
 ```shell
-curl -X POST http://localhost:9090/UserSession/addTicket -H 'content-type: application/json' -d '{"key": "user_1", "request": "Rolling-stones-A22"}'
+curl -X POST http://localhost:8080/UserSession/addTicket -H 'content-type: application/json' -d '{"key": "user_1", "request": "Rolling-stones-A22"}'
 ```
 
 The first time, this should give us `true` back. The second time, it returns `false`
@@ -109,7 +109,7 @@ because a single seat cannot be reserved twice.
 Now let user `user_1` buy the ticket by calling the `checkout` method of the user session service:
 
 ```shell
-curl -X POST http://localhost:9090/UserSession/checkout -H 'content-type: application/json' -d '{"key": "user_1"}'
+curl -X POST http://localhost:8080/UserSession/checkout -H 'content-type: application/json' -d '{"key": "user_1"}'
 ```
 
 That's it! We managed to run the example, add a ticket to the user session cart, and buy it!

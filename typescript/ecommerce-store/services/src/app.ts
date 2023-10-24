@@ -81,4 +81,4 @@ if (process.env.DATABASE_ENABLED === "true") {
   });
 }
 
-restateServer.listen(8080);
+restateServer.listen();

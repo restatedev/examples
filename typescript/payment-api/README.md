@@ -43,11 +43,11 @@ Now [launch the runtime](../../README.md#launching-the-runtime) and [discover th
 Make a sample payment. The 'key' parameter is the idempotency token.
 
 ```shell
-curl -X POST localhost:9090/payments/makePayment -H 'content-type: application/json' -d '{"key": "some-string-id", "request": { "accountId": "abc", "amount": 100 } }'
+curl -X POST localhost:8080/payments/makePayment -H 'content-type: application/json' -d '{"key": "some-string-id", "request": { "accountId": "abc", "amount": 100 } }'
 ```
 
 Cancel a payment. The 'key' parameter is the idempotency token, there is no further request data.
 
 ```shell
-curl -X POST localhost:9090/payments/cancelPayment -H 'content-type: application/json' -d '{"key": "some-string-id"}'
+curl -X POST localhost:8080/payments/cancelPayment -H 'content-type: application/json' -d '{"key": "some-string-id"}'
 ```
