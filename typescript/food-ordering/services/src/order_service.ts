@@ -11,7 +11,7 @@
 
 import * as restate from "@restatedev/restate-sdk";
 import { Order, OrderStatus } from "./types/types";
-import { DeliveryProviderApiClient } from "./aux/delivery_provider_api_client";
+import { DeliveryProviderApiClient } from "./auxiliary/delivery_provider_api_client";
 import axios from "axios";
 
 const STATUS = "status";

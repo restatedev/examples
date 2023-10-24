@@ -15,7 +15,7 @@ import {
   ChargeResponse,
   PaymentGateway,
 } from "./generated/proto/shoppingcart";
-import { StripeClient } from "./aux/stripe_client";
+import { StripeClient } from "./auxiliary/stripe_client";
 
 export class PaymentGatewaySvc implements PaymentGateway {
   async charge(request: ChargeRequest): Promise<ChargeResponse> {
