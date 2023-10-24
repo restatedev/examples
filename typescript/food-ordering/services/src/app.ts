@@ -13,7 +13,4 @@ import * as restate from "@restatedev/restate-sdk";
 
 import { orderApi, orderService } from "./order_service";
 
-restate
-  .createServer()
-  .bindKeyedRouter(orderApi.path, orderService)
-  .listen();
+restate.createServer().bindKeyedRouter(orderApi.path, orderService).listen();
