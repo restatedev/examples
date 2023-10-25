@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 # copy package.json and package-lock.json separately to cache dependencies
 COPY package*.json .
 COPY tsconfig.json .
-RUN --mount=type=secret,id=npmrc,target=/root/.npmrc npm install
+RUN npm install
 COPY --chown=node:node . .
 
 RUN npm run proto
