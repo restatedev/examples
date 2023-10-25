@@ -24,7 +24,7 @@ Build the Docker containers for the web app and services:
 
 ```shell
 docker build -t dev.local/shopping-cart/react-app:0.0.1 ./react-shopping-cart
-docker build ./services/ -t dev.local/shopping-cart/services:0.0.1 --secret id=npmrc,src=$HOME/.npmrc
+docker build ./services/ -t dev.local/shopping-cart/services:0.0.1
 ```
 
 You can store the products data in the Restate runtime or in a separate Postgres DB:

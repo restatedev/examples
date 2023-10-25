@@ -27,7 +27,7 @@ Build the following Docker images and push them to AWS ECR. At the root of the r
 
 ```shell
 # Shopping services
-docker build ./services -t $ECR_REPOSITORY/shopping-cart-demo:1.0.2 --secret id=npmrc,src=$HOME/.npmrc
+docker build ./services -t $ECR_REPOSITORY/shopping-cart-demo:1.0.2
 docker push $ECR_REPOSITORY/shopping-cart-demo:1.0.2
 # Shopping web app
 docker build -t $ECR_REPOSITORY/shopping-cart-webapp:1.0.2 ./react-shopping-cart

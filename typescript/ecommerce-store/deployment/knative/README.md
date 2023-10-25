@@ -12,7 +12,7 @@ kn quickstart kind
 2. Build the Docker images for the web application and backend services:
 ```shell
 docker build -t dev.local/shopping-cart/react-app:0.0.1 ./react-shopping-cart
-docker build ./services/ -t dev.local/shopping-cart/services:0.0.1 --secret id=npmrc,src=$HOME/.npmrc
+docker build ./services/ -t dev.local/shopping-cart/services:0.0.1
 ```
 
 Upload the images to the cluster:

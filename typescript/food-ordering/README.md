@@ -60,7 +60,7 @@ Have a look at the implementation of the `prepareOrder` function in the `OrderSe
 Build the services:
 
 ```shell
-docker build ./services/ -t dev.local/food-ordering/services:0.0.1 --secret id=npmrc,src=$HOME/.npmrc && \
+docker build ./services/ -t dev.local/food-ordering/services:0.0.1 && \
 docker build ./pos_server/ -t dev.local/food-ordering/pos_server:0.0.1
 ```
 
