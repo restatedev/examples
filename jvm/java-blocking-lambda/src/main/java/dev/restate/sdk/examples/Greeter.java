@@ -1,28 +1,24 @@
 package dev.restate.sdk.examples;
 
-import static dev.restate.sdk.examples.generated.GreeterProto.*;
-
-import dev.restate.sdk.blocking.RestateBlockingService;
 import dev.restate.sdk.blocking.RestateContext;
+import dev.restate.sdk.core.CoreSerdes;
 import dev.restate.sdk.core.StateKey;
 import dev.restate.sdk.examples.generated.*;
-import io.grpc.stub.StreamObserver;
+import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
-public class Greeter extends GreeterGrpc.GreeterImplBase implements RestateBlockingService {
+import static dev.restate.sdk.examples.generated.GreeterProto.*;
 
-  private static final StateKey<Integer> COUNT = StateKey.of("count", Integer.class);
+public class Greeter extends GreeterRestate.GreeterRestateImplBase {
+
+  private static final StateKey<Integer> COUNT = StateKey.of("count", CoreSerdes.INT);
 
   @Override
-  public void greet(GreetRequest request, StreamObserver<GreetResponse> responseObserver) {
-    RestateContext ctx = restateContext();
+  public GreetResponse greet(RestateContext context, GreetRequest request) {
+    int count = context.get(COUNT).orElse(1);
+    context.set(COUNT, count + 1);
 
-    int count = ctx.get(COUNT).orElse(1);
-    ctx.set(COUNT, count + 1);
-
-    responseObserver.onNext(
-        GreetResponse.newBuilder()
+    return GreetResponse.newBuilder()
             .setMessage("Hello " + request.getName() + " for the " + count + " time!")
-            .build());
-    responseObserver.onCompleted();
+            .build();
   }
 }

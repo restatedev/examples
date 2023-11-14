@@ -1,5 +1,6 @@
 package dev.restate.sdk.examples
 
+import dev.restate.sdk.core.CoreSerdes
 import dev.restate.sdk.core.StateKey
 import dev.restate.sdk.examples.generated.*
 import dev.restate.sdk.examples.generated.GreeterProto.GreetRequest
@@ -13,7 +14,7 @@ class Greeter :
     GreeterGrpcKt.GreeterCoroutineImplBase(Dispatchers.Unconfined),
     RestateCoroutineService {
 
-  private val COUNT = StateKey.of("count", Int::class.java)
+  private val COUNT = StateKey.of("count", CoreSerdes.INT)
 
   override suspend fun greet(request: GreetRequest): GreetResponse {
     val ctx = restateContext()

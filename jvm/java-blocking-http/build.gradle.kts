@@ -41,14 +41,17 @@ dependencies {
 protobuf {
   protoc { artifact = "com.google.protobuf:protoc:3.24.3" }
 
+  // We need both grpc and restate codegen(s) because the restate codegen depends on the grpc one
   plugins {
     id("grpc") { artifact = "io.grpc:protoc-gen-grpc-java:1.58.0" }
+    id("restate") { artifact = "dev.restate.sdk:protoc-gen-restate-java-blocking:1.0-SNAPSHOT:all@jar" }
   }
 
   generateProtoTasks {
     all().forEach {
       it.plugins {
         id("grpc")
+        id("restate")
       }
     }
   }
