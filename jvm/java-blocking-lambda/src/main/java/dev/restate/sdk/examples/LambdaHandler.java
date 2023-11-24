@@ -6,6 +6,6 @@ import dev.restate.sdk.lambda.RestateLambdaEndpointBuilder;
 public class LambdaHandler extends BaseRestateLambdaHandler {
   @Override
   public void register(RestateLambdaEndpointBuilder builder) {
-builder.withService(new Greeter());
+    builder.withService(new Greeter());
   }
 }
