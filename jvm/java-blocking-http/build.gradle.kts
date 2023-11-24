@@ -7,23 +7,21 @@ plugins {
   id("com.google.protobuf") version "0.9.1"
 }
 
-dependencies {
-  repositories {
-    mavenCentral()
-    maven {
-      url = uri("https://maven.pkg.github.com/restatedev/sdk-java")
-      credentials {
-        username = System.getenv("GH_PACKAGE_READ_ACCESS_USER")
-        password = System.getenv("GH_PACKAGE_READ_ACCESS_TOKEN")
-      }
-    }
-  }
+repositories {
+  mavenCentral()
+  // OSSRH Snapshots repo
+  // TODO remove it once we have the proper release
+  maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/") }
+}
 
+val restateVersion = "0.0.1-SNAPSHOT"
+
+dependencies {
   // Restate SDK
-  implementation("dev.restate.sdk:sdk-java-blocking:1.0-SNAPSHOT")
-  implementation("dev.restate.sdk:sdk-http-vertx:1.0-SNAPSHOT")
+  implementation("dev.restate:sdk-java-blocking:$restateVersion")
+  implementation("dev.restate:sdk-http-vertx:$restateVersion")
   // To use Jackson to read/write state entries (optional)
-  implementation("dev.restate.sdk:sdk-serde-jackson:1.0-SNAPSHOT")
+  implementation("dev.restate:sdk-serde-jackson:$restateVersion")
 
   // Protobuf and grpc dependencies
   implementation("com.google.protobuf:protobuf-java:3.24.3")
@@ -35,6 +33,10 @@ dependencies {
 
   // Logging (optional)
   implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+
+  // Testing (optional)
+  testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
+  testImplementation("dev.restate:sdk-test:$restateVersion")
 }
 
 // Configure protoc plugin
@@ -44,7 +46,7 @@ protobuf {
   // We need both grpc and restate codegen(s) because the restate codegen depends on the grpc one
   plugins {
     id("grpc") { artifact = "io.grpc:protoc-gen-grpc-java:1.58.0" }
-    id("restate") { artifact = "dev.restate.sdk:protoc-gen-restate-java-blocking:1.0-SNAPSHOT:all@jar" }
+    id("restate") { artifact = "dev.restate:protoc-gen-restate-java-blocking:$restateVersion:all@jar" }
   }
 
   generateProtoTasks {
@@ -57,12 +59,12 @@ protobuf {
   }
 }
 
-application {
-  mainClass.set("dev.restate.sdk.examples.Greeter")
+// Configure test platform
+tasks.withType<Test> {
+  useJUnitPlatform()
 }
 
-// Temporary solution for disabling caching of Java SDK until we release it
-configurations.all {
-  // This disables caching for -SNAPSHOT dependencies
-  resolutionStrategy.cacheChangingModulesFor(0, "seconds")
+// Set main class
+application {
+  mainClass.set("dev.restate.sdk.examples.Greeter")
 }

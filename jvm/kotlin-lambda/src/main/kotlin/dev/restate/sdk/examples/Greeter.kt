@@ -13,7 +13,9 @@ class Greeter :
     GreeterGrpcKt.GreeterCoroutineImplBase(Dispatchers.Unconfined),
     RestateCoroutineService {
 
-  private val COUNT = StateKey.of("count", CoreSerdes.INT)
+  companion object {
+    private val COUNT = StateKey.of("count", CoreSerdes.INT)
+  }
 
   override suspend fun greet(request: GreetRequest): GreetResponse {
     val ctx = restateContext()

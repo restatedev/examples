@@ -4,7 +4,6 @@ import dev.restate.sdk.blocking.RestateContext;
 import dev.restate.sdk.core.CoreSerdes;
 import dev.restate.sdk.core.StateKey;
 import dev.restate.sdk.examples.generated.*;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
 import static dev.restate.sdk.examples.generated.GreeterProto.*;
 

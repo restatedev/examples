@@ -10,23 +10,21 @@ plugins {
   id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
-dependencies {
-  repositories {
-    mavenCentral()
-    maven {
-      url = uri("https://maven.pkg.github.com/restatedev/sdk-java")
-      credentials {
-        username = System.getenv("GH_PACKAGE_READ_ACCESS_USER")
-        password = System.getenv("GH_PACKAGE_READ_ACCESS_TOKEN")
-      }
-    }
-  }
+repositories {
+  mavenCentral()
+  // OSSRH Snapshots repo
+  // TODO remove it once we have the proper release
+  maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/") }
+}
 
+val restateVersion = "0.0.1-SNAPSHOT"
+
+dependencies {
   // Restate SDK
-  implementation("dev.restate.sdk:sdk-kotlin:1.0-SNAPSHOT")
-  implementation("dev.restate.sdk:sdk-lambda:1.0-SNAPSHOT")
+  implementation("dev.restate:sdk-kotlin:$restateVersion")
+  implementation("dev.restate:sdk-lambda:$restateVersion")
   // To use Jackson to read/write state entries (optional)
-  implementation("dev.restate.sdk:sdk-serde-jackson:1.0-SNAPSHOT")
+  implementation("dev.restate:sdk-serde-jackson:$restateVersion")
 
   // Protobuf and grpc dependencies (we need the Java dependencies as well because the Kotlin dependencies rely on Java)
   implementation("com.google.protobuf:protobuf-java:3.24.3")
@@ -43,6 +41,11 @@ dependencies {
 
   // Logging (optional)
   implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+
+  // Testing (optional)
+  testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
+  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+  testImplementation("dev.restate:sdk-test:$restateVersion")
 }
 
 // Setup Java/Kotlin compiler target
@@ -76,8 +79,7 @@ protobuf {
   }
 }
 
-// Temporary solution for disabling caching of Java SDK until we release it
-configurations.all {
-  // This disables caching for -SNAPSHOT dependencies
-  resolutionStrategy.cacheChangingModulesFor(0, "seconds")
+// Configure test platform
+tasks.withType<Test> {
+  useJUnitPlatform()
 }
