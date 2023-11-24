@@ -23,11 +23,6 @@ Browse this repository to see how easy distributed applications development beco
 If you want to join the Restate community in order to stay up to date, then please join our [Discord](https://discord.gg/skW3AZ6uGd).
 The Discord server is also the perfect place for sharing your feedback with us, learning more about Restate and connect with others!
 
-## Running the examples
-
-> **Note**
-> Make sure you have [signed up for Restate's private beta](https://forms.gle/G8kDuucqhBoTfMwLA) and set up [access to Restate's packages](https://github.com/restatedev/restate-dist).
-
 ### Launching the runtime
 
 Have a look at how to start up the runtime in a Docker container in [this repository]* or run the following commands:
@@ -77,27 +72,8 @@ This should give you the following output in case of the ticket reservation exam
 
 ## Releasing (for Restate developers)
 
-In order to create a new release, push a tag of the form `vX.Y.Z`.
-Then [create a release via GitHub](https://github.com/restatedev/example-lambda-ts-greeter/releases).
+Before releasing, trigger the "pre-release" workflow to update sdk versions. This automatically creates a pull request, which must be manually merged.  
 
-### Upgrading the SDK dependency (for Restate developers)
+Once the repo is ready for the release, push a tag of the form `vX.Y.Z`. 
 
-In order to upgrade/update the SDK dependency you have to run:
-
-**Major version** change:
-
-```shell
-npm --prefix typescript install @restatedev/restate-sdk@^Z.Y.X --workspaces
-```
-
-**Minor/patch version** change:
-
-```shell
-npm --prefix typescript update @restatedev/restate-sdk --workspaces
-```
-
-Now check whether the examples are still building:
-
-```shell
-npm --prefix typescript run verify --workspaces
-```
+This triggers a workflow that [creates a draft release](https://github.com/restatedev/examples/releases) on Github, which you need to approve to finalize it.

@@ -7,7 +7,44 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  build-jvm:
+    # prevent from running on forks
+    if: github.repository_owner == 'restatedev'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        jvm-version: [ 17 ]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use JVM ${{ matrix.jvm-version }}
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.jvm-version }}
+
+      - name: Test jvm/java-blocking-http
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: check
+          build-root-directory: jvm/java-blocking-http
+      - name: Test jvm/java-blocking-lambda
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: check
+          build-root-directory: jvm/java-blocking-lambda
+      - name: Test jvm/kotlin-http
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: check
+          build-root-directory: jvm/kotlin-http
+      - name: Test jvm/kotlin-lambda
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: check
+          build-root-directory: jvm/kotlin-lambda
+  build-ts:
     # prevent from running on forks
     if: github.repository_owner == 'restatedev'
     runs-on: ubuntu-latest
@@ -17,11 +54,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
       - uses: bufbuild/buf-setup-action@v1
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://registry.npmjs.org'
+
       - run: npm ci --prefix typescript
       - run: npm run --prefix typescript -ws verify

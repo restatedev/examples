@@ -1,0 +1,29 @@
+name: Create new release
+
+on:
+  push:
+    tags:
+      - v**
+
+jobs:
+  publish-release:
+    name: Publish release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Prepare zip files
+        run: ./scripts/prepare_examples_zip.sh
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          # create a draft release which needs manual approval
+          draft: true
+          files: |
+            typescript-lambda-greeter.zip
+            jvm-java-blocking-http.zip
+            jvm-java-blocking-lambda.zip
+            jvm-kotlin-http.zip
+            jvm-kotlin-lambda.zip

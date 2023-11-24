@@ -1,0 +1,83 @@
+name: Pre-release updates
+
+on:
+  workflow_dispatch:
+    inputs:
+      sdkTypescriptVersion:
+        description: 'sdk-typescript version (without prepending v). Leave empty if you do not want to update it.'
+        required: false
+        type: string
+      sdkJavaVersion:
+        description: 'sdk-java version (without prepending v). Leave empty if you do not want to update it.'
+        required: false
+        type: string
+
+jobs:
+  updates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Setup node
+      - uses: actions/setup-node@v3
+        if: github.event.inputs.sdkTypescriptVersion != ''
+        with:
+          node-version: "19.x"
+          registry-url: 'https://registry.npmjs.org'
+
+      # Bump sdk version in node examples and run checks
+      - name: Run npm updates
+        if: github.event.inputs.sdkTypescriptVersion != ''
+        run: npm --prefix typescript install @restatedev/restate-sdk@^${{ inputs.sdkTypescriptVersion }} --workspaces
+      - name: Check npm examples compile correctly
+        if: github.event.inputs.sdkTypescriptVersion != ''
+        run: npm --prefix typescript run verify --workspaces
+
+      # Setup Java
+      - uses: actions/setup-java@v3
+        if: github.event.inputs.sdkJavaVersion != ''
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # Bump sdk version in java examples and run checks
+      - name: Find and replace restateVersion in build.gradle.kts
+        if: github.event.inputs.sdkJavaVersion != ''
+        run: for jvmDir in java-blocking-http java-blocking-lambda kotlin-http kotlin-lambda; do sed -i 's/val restateVersion = "[0-9A-Z.-]*"/val restateVersion = "${{ inputs.sdkJavaVersion }}"/' jvm/$jvmDir/build.gradle.kts; done
+      - name: Test jvm/java-blocking-http
+        if: github.event.inputs.sdkJavaVersion != ''
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: check
+          build-root-directory: jvm/java-blocking-http
+      - name: Test jvm/java-blocking-lambda
+        if: github.event.inputs.sdkJavaVersion != ''
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: check
+          build-root-directory: jvm/java-blocking-lambda
+      - name: Test jvm/kotlin-http
+        if: github.event.inputs.sdkJavaVersion != ''
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: check
+          build-root-directory: jvm/kotlin-http
+      - name: Test jvm/kotlin-lambda
+        if: github.event.inputs.sdkJavaVersion != ''
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: check
+          build-root-directory: jvm/kotlin-lambda
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          title: "[GithubActions] Update Restate SDK-Typescript '${{ inputs.sdkTypescriptVersion }}' SDK-Java '${{ inputs.sdkJavaVersion }}'"
+          commit-message: "[GithubActions] Update Restate SDK-Typescript '${{ inputs.sdkTypescriptVersion }}' SDK-Java '${{ inputs.sdkJavaVersion }}'"
+          add-paths: |
+            **/package.json
+            **/package-lock.json
+            **/build.gradle.kts
