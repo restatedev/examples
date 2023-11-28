@@ -16,7 +16,7 @@
     "app-dev": "ts-node-dev --watch ./src --respawn --transpile-only ./src/payment_service.ts"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^0.4.0"
+    "@restatedev/restate-sdk": "^0.5.1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.4.0",
