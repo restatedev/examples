@@ -25,8 +25,7 @@ The Discord server is also the perfect place for sharing your feedback with us, 
 
 ## Running the examples
 
-> **Note**
-> Make sure you have [signed up for Restate's private beta](https://forms.gle/G8kDuucqhBoTfMwLA) and set up [access to Restate's packages](https://github.com/restatedev/restate-dist).
+The readme for each example will explain how to get it running. Once the example is running, it needs to be discovered by an instance of the Restate runtime.
 
 ### Launching the runtime
 
@@ -43,7 +42,7 @@ docker run --name restate_dev --rm --network=host ghcr.io/restatedev/restate-dis
 
 ### Connect runtime and services
 
-Once the runtime is up, let it discover the services of the examples by executing:
+Once the runtime is up, let it discover the services of the example by executing:
 
 - For MacOS:
 ```shell
