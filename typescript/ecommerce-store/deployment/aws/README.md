@@ -33,7 +33,7 @@ docker push $ECR_REPOSITORY/shopping-cart-demo:1.0.2
 docker build -t $ECR_REPOSITORY/shopping-cart-webapp:1.0.2 ./react-shopping-cart
 docker push $ECR_REPOSITORY/shopping-cart-webapp:1.0.2
 # Restate runtime
-docker tag ghcr.io/restatedev/restate-dist:latest $ECR_REPOSITORY/restate-runtime:latest
+docker tag docker.io/restatedev/restate:latest $ECR_REPOSITORY/restate-runtime:latest
 docker push $ECR_REPOSITORY/restate-runtime:latest
 # Jaeger
 docker tag jaegertracing/all-in-one:1.37.0 $ECR_REPOSITORY/jaeger-all-in-one:1.37.0

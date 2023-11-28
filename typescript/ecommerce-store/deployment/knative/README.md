@@ -10,6 +10,7 @@ kn quickstart kind
 ```
 
 2. Build the Docker images for the web application and backend services:
+
 ```shell
 docker build -t dev.local/shopping-cart/react-app:0.0.1 ./react-shopping-cart
 docker build ./services/ -t dev.local/shopping-cart/services:0.0.1
@@ -20,7 +21,7 @@ Upload the images to the cluster:
 ```shell
 kind load docker-image --name knative dev.local/shopping-cart/services:0.0.1
 kind load docker-image --name knative dev.local/shopping-cart/react-app:0.0.1
-kind load docker-image --name knative ghcr.io/restatedev/restate-dist:latest
+kind load docker-image --name knative docker.io/restatedev/restate:latest
 ```
 
 3. Create the `shopping-cart` namespace
@@ -59,6 +60,7 @@ curl -X POST http://localhost:9070/endpoint/discover -H 'content-type: applicati
 ```
 
 8. Fill the state of the product service with a list of products:
+
 ```shell
 cd deployment/local && ./init_state.sh "localhost:8080" && cd -
 ```
