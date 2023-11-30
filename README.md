@@ -6,21 +6,75 @@
 
 Browse this repository to see how easy distributed applications development becomes with Restate.
 
-## Typescript examples
+## Starters
 
-### Starter examples
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 
-* [Lambda greeter](typescript/lambda-greeter): A simple example of how you can run a Restate service on AWS Lambda.
-* [Payment api](typescript/payment-api/): Example API for payments, inspired by the Stripe API.
-* [Food ordering](typescript/food-ordering): See how to integrate Restate with external services using Awakeables and side effects.
+[Hello world on AWS Lambda](typescript/hello-world-lambda)
+```shell
+# Download the example
+EXAMPLE=typescript-hello-world-lambda; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+```
 
-### Intermediate examples
+![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
 
-* [Ticket reservation](typescript/ticket-reservation): An example to illustrate how Restate's keyed-sharding and concurrency guarantees simplify microservice architectures.
+[Hello World HTTP](jvm/hello-world-java-http)
+```shell
+# Download the example
+EXAMPLE=jvm-hello-world-java-http; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+```
 
-### Advanced examples
+[Hello world on AWS Lambda](jvm/hello-world-java-lambda)
+```shell
+# Download the example
+EXAMPLE=jvm-hello-world-java-lambda; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+```
 
-- [Ecommerce store](typescript/ecommerce-store): A sophisticated example on how to build an ecommerce store based on Restate using the grpc-based Typescript SDK.
+![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white)
+
+[Hello World HTTP](jvm/hello-world-kotlin-http)
+```shell
+# Download the example
+EXAMPLE=jvm-hello-world-kotlin-http; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+```
+
+[Hello world on AWS Lambda](jvm/hello-world-kotlin-lambda)
+```shell
+# Download the example
+EXAMPLE=jvm-hello-world-kotlin-lambda; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+```
+
+## Patterns
+
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+
+[Payment api](typescript/payment-api): Example API for payments, inspired by the Stripe API
+```shell
+# Download the example
+EXAMPLE=typescript-payment-api; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+```
+
+## Applications
+
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+
+[Food ordering](typescript/food-ordering): Integrate Restate with external services
+```shell
+# Download the example
+EXAMPLE=typescript-food-ordering; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+```
+
+[Ticket reservation](typescript/ticket-reservation): Example showing Restate's keyed-sharding and concurrency guarantees
+```shell
+# Download the example
+EXAMPLE=typescript-ticket-reservation; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+```
+
+[Ecommerce store](typescript/ecommerce-store): An ecommerce store completely built on top of Restate
+```shell
+# Download the example
+EXAMPLE=typescript-ecommerce-store; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+```
 
 ## Joining the community
 
@@ -80,27 +134,8 @@ This should give you the following output in case of the ticket reservation exam
 
 ## Releasing (for Restate developers)
 
-In order to create a new release, push a tag of the form `vX.Y.Z`.
-Then [create a release via GitHub](https://github.com/restatedev/example-lambda-ts-greeter/releases).
+Before releasing, trigger the "pre-release" workflow to update sdk versions. This automatically creates a pull request, which must be manually merged.
 
-### Upgrading the SDK dependency (for Restate developers)
+Once the repo is ready for the release, push a tag of the form `vX.Y.Z`.
 
-In order to upgrade/update the SDK dependency you have to run:
-
-**Major version** change:
-
-```shell
-npm --prefix typescript install @restatedev/restate-sdk@^Z.Y.X --workspaces
-```
-
-**Minor/patch version** change:
-
-```shell
-npm --prefix typescript update @restatedev/restate-sdk --workspaces
-```
-
-Now check whether the examples are still building:
-
-```shell
-npm --prefix typescript run verify --workspaces
-```
+This triggers a workflow that [creates a draft release](https://github.com/restatedev/examples/releases) on Github, which you need to approve to finalize it.

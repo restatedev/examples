@@ -9,6 +9,12 @@ Sample project configuration of a Restate service using the Java interface and A
 * [Test `GreeterTest`](src/test/java/dev/restate/sdk/examples/GreeterTest.java)
 * [Logging configuration](src/main/resources/log4j2.properties)
 
+## Download the example
+
+```shell
+EXAMPLE=jvm-hello-world-java-lambda; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+```
+
 ## Package
 
 Run:
