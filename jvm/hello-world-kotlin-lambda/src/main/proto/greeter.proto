@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package greeter;
+
+import "dev/restate/ext.proto";
+
+option java_package = "dev.restate.sdk.examples.generated";
+option java_outer_classname = "GreeterProto";
+
+service Greeter {
+  option (dev.restate.ext.service_type) = KEYED;
+
+  rpc Greet (GreetRequest) returns (GreetResponse);
+}
+
+message GreetRequest {
+  string name = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message GreetResponse {
+  string message = 1;
+}
