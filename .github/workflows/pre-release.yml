@@ -46,33 +46,36 @@ jobs:
           java-version: '17'
 
       # Bump sdk version in java examples and run checks
-      - name: Find and replace restateVersion in build.gradle.kts
+      - name: Find and replace restateVersion in build.gradle.kts for java templates
         if: github.event.inputs.sdkJavaVersion != ''
-        run: for jvmDir in hello-world-java-http hello-world-java-lambda hello-world-kotlin-http hello-world-kotlin-lambda; do sed -i 's/val restateVersion = "[0-9A-Z.-]*"/val restateVersion = "${{ inputs.sdkJavaVersion }}"/' jvm/$jvmDir/build.gradle.kts; done
-      - name: Test jvm/hello-world-java-http
+        run: for jvmDir in hello-world-http hello-world-lambda; do sed -i 's/val restateVersion = "[0-9A-Z.-]*"/val restateVersion = "${{ inputs.sdkJavaVersion }}"/' java/$jvmDir/build.gradle.kts; done
+      - name: Find and replace restateVersion in build.gradle.kts for kotlin templates
         if: github.event.inputs.sdkJavaVersion != ''
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: check
-          build-root-directory: jvm/hello-world-java-http
-      - name: Test jvm/hello-world-java-lambda
+        run: for jvmDir in hello-world-http hello-world-lambda; do sed -i 's/val restateVersion = "[0-9A-Z.-]*"/val restateVersion = "${{ inputs.sdkJavaVersion }}"/' kotlin/$jvmDir/build.gradle.kts; done
+      - name: Test java/hello-world-http
         if: github.event.inputs.sdkJavaVersion != ''
         uses: gradle/gradle-build-action@v2
         with:
           arguments: check
-          build-root-directory: jvm/hello-world-java-lambda
-      - name: Test jvm/hello-world-kotlin-http
+          build-root-directory: java/hello-world-http
+      - name: Test java/hello-world-lambda
         if: github.event.inputs.sdkJavaVersion != ''
         uses: gradle/gradle-build-action@v2
         with:
           arguments: check
-          build-root-directory: jvm/hello-world-kotlin-http
-      - name: Test jvm/hello-world-kotlin-lambda
+          build-root-directory: java/hello-world-lambda
+      - name: Test kotlin/hello-world-http
         if: github.event.inputs.sdkJavaVersion != ''
         uses: gradle/gradle-build-action@v2
         with:
           arguments: check
-          build-root-directory: jvm/hello-world-kotlin-lambda
+          build-root-directory: kotlin/hello-world-http
+      - name: Test kotlin/hello-world-lambda
+        if: github.event.inputs.sdkJavaVersion != ''
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: check
+          build-root-directory: kotlin/hello-world-lambda
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5

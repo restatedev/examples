@@ -12,7 +12,7 @@ Sample project configuration of a Restate service using the Kotlin coroutines in
 ## Download the example
 
 ```shell
-EXAMPLE=jvm-hello-world-kotlin-lambda; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+EXAMPLE=kotlin-hello-world-lambda; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
 ```
 
 ## Package

@@ -24,26 +24,26 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ matrix.jvm-version }}
 
-      - name: Test jvm/hello-world-java-http
+      - name: Test java/hello-world-http
         uses: gradle/gradle-build-action@v2
         with:
           arguments: check
-          build-root-directory: jvm/hello-world-java-http
-      - name: Test jvm/hello-world-java-lambda
+          build-root-directory: java/hello-world-http
+      - name: Test java/hello-world-lambda
         uses: gradle/gradle-build-action@v2
         with:
           arguments: check
-          build-root-directory: jvm/hello-world-java-lambda
-      - name: Test jvm/hello-world-kotlin-http
+          build-root-directory: java/hello-world-lambda
+      - name: Test kotlin/hello-world-http
         uses: gradle/gradle-build-action@v2
         with:
           arguments: check
-          build-root-directory: jvm/hello-world-kotlin-http
-      - name: Test jvm/hello-world-kotlin-lambda
+          build-root-directory: kotlin/hello-world-http
+      - name: Test kotlin/hello-world-lambda
         uses: gradle/gradle-build-action@v2
         with:
           arguments: check
-          build-root-directory: jvm/hello-world-kotlin-lambda
+          build-root-directory: kotlin/hello-world-lambda
   build-ts:
     # prevent from running on forks
     if: github.repository_owner == 'restatedev'

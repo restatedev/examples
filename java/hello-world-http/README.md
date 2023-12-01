@@ -11,7 +11,7 @@ Sample project configuration of a Restate service using the Java interface and H
 ## Download the example
 
 ```shell
-EXAMPLE=jvm-hello-world-java-http; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+EXAMPLE=java-hello-world-http; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
 ```
 
 ## Running the example

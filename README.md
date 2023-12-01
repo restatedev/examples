@@ -18,30 +18,30 @@ EXAMPLE=typescript-hello-world-lambda; wget https://github.com/restatedev/exampl
 
 ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
 
-[Hello World HTTP](jvm/hello-world-java-http)
+[Hello World HTTP](java/hello-world-http)
 ```shell
 # Download the example
-EXAMPLE=jvm-hello-world-java-http; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+EXAMPLE=java-hello-world-http; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
 ```
 
-[Hello world on AWS Lambda](jvm/hello-world-java-lambda)
+[Hello world on AWS Lambda](java/hello-world-lambda)
 ```shell
 # Download the example
-EXAMPLE=jvm-hello-world-java-lambda; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+EXAMPLE=java-hello-world-lambda; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
 ```
 
 ![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white)
 
-[Hello World HTTP](jvm/hello-world-kotlin-http)
+[Hello World HTTP](java/hello-world-kotlin-http)
 ```shell
 # Download the example
-EXAMPLE=jvm-hello-world-kotlin-http; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+EXAMPLE=kotlin-hello-world-http; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
 ```
 
-[Hello world on AWS Lambda](jvm/hello-world-kotlin-lambda)
+[Hello world on AWS Lambda](java/hello-world-kotlin-lambda)
 ```shell
 # Download the example
-EXAMPLE=jvm-hello-world-kotlin-lambda; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+EXAMPLE=kotlin-hello-world-lambda; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
 ```
 
 ## Patterns

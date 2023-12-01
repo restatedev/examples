@@ -13,10 +13,11 @@ create_release_zip() {
   echo "Zip for $1/$2 in $OUT_DIR/$1-$2.zip"
 }
 
-create_release_zip jvm hello-world-java-http
-create_release_zip jvm hello-world-java-lambda
-create_release_zip jvm hello-world-kotlin-http
-create_release_zip jvm hello-world-kotlin-lambda
+create_release_zip java hello-world-http
+create_release_zip java hello-world-lambda
+
+create_release_zip kotlin hello-world-http
+create_release_zip kotlin hello-world-lambda
 
 create_release_zip typescript hello-world-lambda
 create_release_zip typescript ecommerce-store
