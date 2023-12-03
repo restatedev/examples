@@ -1,0 +1,15 @@
+{
+  "name": "restate-pattern-collection",
+  "version": "0.0.1",
+  "description": "A collection of useful patterns for distributed applications with Restate (https://github.com/restatedev/)",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc --noEmitOnError"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "^0.5.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.2"
+  }
+}
