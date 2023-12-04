@@ -1,7 +1,7 @@
 import * as restate from "@restatedev/restate-sdk";
 
 //  -----------------                                         -----------------
-//                          Single-write concurrency
+//                          Single-writer concurrency
 //  -----------------                                         -----------------
 //
 // The single-writer pattern ensures that for a specific entity, only a single
