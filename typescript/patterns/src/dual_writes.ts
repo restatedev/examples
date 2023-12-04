@@ -29,7 +29,7 @@ async function applyChange(ctx: restate.RpcContext, request: UpdateRequest) {
 };
 
 // ----------------------------------------------------------------------------
-//  API mocks for the compiler
+//  To avoid complex dependencies, we put a minimal API mock here
 
 type UpdateRequest = {
   dbUpdateRecord: any,

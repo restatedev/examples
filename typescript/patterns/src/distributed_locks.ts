@@ -13,21 +13,13 @@ import * as restate from "@restatedev/restate-sdk";
 // But if actual distributed locks are required, it is fairly easy to create a
 // robust implementation with Restate, as shown in this pattern.
 
-export type TriedLockAcquisition = {
-    acquired: boolean,
-    fencingToken?: string,
-}
+// ---------------------- Internal Service Implementation ---------------------
 
 const LOCK_HOLDER_STATE = "lock-holder";
 const ACQUIRE_QUEUE_STATE = "lock-queue";
 
-const lockService = {
+const lockServiceInternal = {
 
-    /**
-     * Tries to acquire the lock with the given ID and returns a {@link TriedLockAcquisition}
-     * to signal whether the acquisition succeeded, and (upon success) the associated
-     * fencing token.
-     */
     tryAcquire: async (ctx: restate.RpcContext, _lockId: string): Promise<TriedLockAcquisition> => {
         // the _lockId here is used by Restate as the key for this handler, and
         // all state is scoped to this. we don't use it explicitly in this function here
@@ -41,26 +33,15 @@ const lockService = {
         return { acquired: true, fencingToken } as TriedLockAcquisition;
     },
 
-    /**
-     * Acquires the lock with the given ID, blocking until the lock could be acquired.
-     * Returns the fencing token.
-     */
     acquireBlocking: async (ctx: restate.RpcContext, lockId: string): Promise<string> => {
         const awakeable = ctx.awakeable<string>();
-        ctx.send(lockServiceApi).acquireAsync(lockId, awakeable.id);
+        ctx.send(lockService).acquireAsync(lockId, awakeable.id);
         return awakeable.promise;
     },
 
-    /**
-     * Acquires the lock with the given ID, asynchronously. Once the lock has been acquired,
-     * completes the awakeable with the given ID with the lock's fencing token.
-     */
-    acquireAsync: async (ctx: restate.RpcContext, _lockId: string, awakeableId: string): Promise<void> => {
-        // the lockId here is used by Restate as the key for this handler, and
-        // all state is scoped to this. we don't use it explicitly in this function here
-
+    acquireAsync: async (ctx: restate.RpcContext, lockId: string, awakeableId: string): Promise<void> => {
         // we call this method here synchronously (we can, because we keep the same key)
-        const immediateAcquisition = await lockService.tryAcquire(ctx, _lockId);
+        const immediateAcquisition = await lockServiceInternal.tryAcquire(ctx, lockId);
         if (immediateAcquisition.acquired) {
             ctx.resolveAwakeable<string>(awakeableId, immediateAcquisition.fencingToken!);
             return;
@@ -71,9 +52,6 @@ const lockService = {
         ctx.set(ACQUIRE_QUEUE_STATE, acquireQueue);
     },
 
-    /**
-     * Checks whether the lock with the given ID is held by the given fencing token.
-     */
     holdsLock: async (ctx: restate.RpcContext, _lockId: string, fencingToken: string): Promise<boolean> => {
         // the lockId here is used by Restate as the key for this handler, and
         // all state is scoped to this. we don't use it explicitly in this function here
@@ -81,9 +59,6 @@ const lockService = {
         return lockHolder === fencingToken;
     },
 
-    /**
-     * Releases the lock with the given ID, if it is held with the given fencing token.
-     */
     release: async (ctx: restate.RpcContext, _lockId: string, fencingToken: string): Promise<boolean> => {
         // the lockId here is used by Restate as the key for this handler, and
         // all state is scoped to this. we don't use it explicitly in this function here
@@ -116,10 +91,80 @@ const lockService = {
     }
 }
 
-export const lockServiceRouter = restate.keyedRouter(lockService);
+const lockServiceRouter = restate.keyedRouter(lockServiceInternal);
+type lockServiceType = typeof lockServiceRouter;
+const lockService = { path: "example_lock_service" } as restate.ServiceApi<lockServiceType>;
 
-/** Lock Service API type signature */
-export type lockServiceType = typeof lockServiceRouter;
+// ---------------------------- Public Service API ----------------------------
 
-/** Lock Service RPC API */
-export const lockServiceApi = { path: "_lock_service" } as restate.ServiceApi<lockServiceType>;
+export function registerLockService(restate: restate.RestateServer | restate.LambdaRestateServer) {
+    restate.bindKeyedRouter(lockService.path, lockServiceRouter)
+}
+
+export type TriedLockAcquisition = {
+    acquired: boolean,
+    fencingToken?: string,
+}
+
+/**
+ * @example
+ * 
+ * import { lockServiceApi, registerLockService } from "./distributed_locks"
+ * 
+ * async function myRestateHandler(ctx: restate.RpcContext, request: MyRequestType) {
+ *   const lockName = request.userName;
+ *   const lockToken = await lockServiceApi.acquireBlocking(ctx, lockName);
+ *   try {
+ *     // do something
+ *   } finally {
+ *     lockServiceApi.release(lockName, lockToken);
+ *   }
+ * }
+ * 
+ * const r = restate.createServer();
+ * registerLockService(r);
+ * ...
+ */
+export const lockServiceApi = {
+
+    /**
+     * Tries to acquire the lock with the given ID and returns a {@link TriedLockAcquisition}
+     * to signal whether the acquisition succeeded, and (upon success) the associated
+     * fencing token.
+     */
+    tryAcquire: (ctx: restate.RpcContext, lockId: string): Promise<TriedLockAcquisition> => {
+        return ctx.rpc(lockService).tryAcquire(lockId);
+    },
+
+    /**
+     * Acquires the lock with the given ID, blocking until the lock could be acquired.
+     * Returns the fencing token.
+     */
+    acquireBlocking: (ctx: restate.RpcContext, lockId: string): Promise<string> => {
+        const awakeable = ctx.awakeable<string>();
+        ctx.send(lockService).acquireAsync(lockId, awakeable.id);
+        return awakeable.promise;
+    },
+
+    /**
+     * Acquires the lock with the given ID, asynchronously. Once the lock has been acquired,
+     * completes the awakeable with the given ID with the lock's fencing token.
+     */
+    acquireAsync: (ctx: restate.RpcContext, lockId: string, awakeableId: string): Promise<void> => {
+        return ctx.rpc(lockService).acquireAsync(lockId, awakeableId);
+    },
+
+    /**
+     * Checks whether the lock with the given ID is held by the given fencing token.
+     */
+    holdsLock: (ctx: restate.RpcContext, lockId: string, fencingToken: string): Promise<boolean> => {
+        return ctx.rpc(lockService).holdsLock(lockId, fencingToken);
+    },
+
+    /**
+     * Releases the lock with the given ID, if it is held with the given fencing token.
+     */
+    release: (ctx: restate.RpcContext, lockId: string, fencingToken: string): Promise<boolean> => {
+        return ctx.rpc(lockService).release(lockId, fencingToken);
+    }
+}

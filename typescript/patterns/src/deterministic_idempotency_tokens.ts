@@ -14,10 +14,8 @@ import { randomUUID } from "crypto";
 //
 // Generating idempotency tokens reliably can be surprisingly tricky, especially
 // when they should be stable under various forms of failures or network partition
-// scenarios.
-//
-// Restate makes this dead simple, in various different ways: 
-//
+// scenarios. Restate makes this dead simple, in various different ways.
+
 
 // ----------------------------------------------------------------------------
 //                   **option 1** use request parameter
@@ -29,7 +27,7 @@ import { randomUUID } from "crypto";
 
 async function makeIdempotentCall1(ctx: restate.RpcContext, request: any) {
 
-    await ctx.sideEffect(() => api.makeCall(request, request.idempotencyToken));
+    await ctx.sideEffect(() => api.makeCall(request, request.token));
 }
 
 // ----------------------------------------------------------------------------
@@ -92,6 +90,18 @@ async function makeIdempotentCall4(ctx: restate.RpcContext, request: any) {
     await ctx.sideEffect(() => api.makeCall(request, idempotencyToken));
 }
 
+
+// ----------------------------------------------------------------------------
+//  Idempotent external invocation
+// ----------------------------------------------------------------------------
+
+// Note: When externally triggering functions / workflows, use the 'idempotency-key'
+//       header to ensure the function is triggered only once.
+//
+// Example: `curl http://<restate-runtime>/my.service/theworkflow \
+//                -H 'idempotency-key: <idempotency-key>' \
+//                -H 'content-type: application/json'
+//                -d '{"name": "Restate"}'`
 
 // ----------------------------------------------------------------------------
 //  MOCKS FOR THE PATTERNS
