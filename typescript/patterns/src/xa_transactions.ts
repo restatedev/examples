@@ -71,7 +71,7 @@ export async function runXaDatabaseTransaction<QueryT, ResultT>(
 
         // step 2: if we actually ran that side effect to generate the txnId, (rather
         //         than replay it) then we execute the query. If we didn't execute that
-        //         side effect, then we won't attempt commit that query anyways and will
+        //         side effect, then we won't attempt committing that query anyways and will
         //         instead vote to roll it back, so it doesn't matter if the query was
         //         actually never run.
         //         As an optimization, we don't put this into a sideEffect, because it
