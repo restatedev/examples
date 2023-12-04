@@ -5,6 +5,7 @@
     "author": "Restate developers",
     "email": "code@restate.dev",
     "workspaces": [
+        "patterns",
         "lambda-greeter",
         "ticket-reservation",
         "payment-api",
