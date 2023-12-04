@@ -33,12 +33,6 @@ const lockServiceInternal = {
         return { acquired: true, fencingToken } as TriedLockAcquisition;
     },
 
-    acquireBlocking: async (ctx: restate.RpcContext, lockId: string): Promise<string> => {
-        const awakeable = ctx.awakeable<string>();
-        ctx.send(lockService).acquireAsync(lockId, awakeable.id);
-        return awakeable.promise;
-    },
-
     acquireAsync: async (ctx: restate.RpcContext, lockId: string, awakeableId: string): Promise<void> => {
         // we call this method here synchronously (we can, because we keep the same key)
         const immediateAcquisition = await lockServiceInternal.tryAcquire(ctx, lockId);
