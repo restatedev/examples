@@ -18,7 +18,7 @@ import { randomUUID } from "crypto";
 // commit according to vote 
 
 // In principle, the operation is as simple as
-// (1) sideEffect: (exequte query, prepare transaction under ID, return ID from sideEffect).
+// (1) sideEffect: (execute query, prepare transaction under ID, return ID from sideEffect).
 //                 This side effect commits once, to a single ID is stored in Restate for
 //                 committing.
 // (2) sideEffect: commit the prepared transaction
