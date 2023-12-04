@@ -45,7 +45,7 @@ export interface Database<QueryT, ResultT> {
 
     prepareTxn(txnId: string): Promise<void>          // prepared txn for commit under given ID
     commitPreparedTxn(txnId: string): Promise<void>   // commits a txn prepared under given ID
-    rollbackPreparedTxn(txnId: string): Promise<void> // rolls bacl a txn prepared under given ID
+    rollbackPreparedTxn(txnId: string): Promise<void> // rolls back a txn prepared under given ID
 }
 
 
