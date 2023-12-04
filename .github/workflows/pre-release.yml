@@ -83,8 +83,8 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          title: "[GithubActions] Update Restate SDK-Typescript '${{ inputs.sdkTypescriptVersion }}' SDK-Java '${{ inputs.sdkJavaVersion }}'"
-          commit-message: "[GithubActions] Update Restate SDK-Typescript '${{ inputs.sdkTypescriptVersion }}' SDK-Java '${{ inputs.sdkJavaVersion }}'"
+          title: "[GithubActions] Update Restate ${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }}${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0}', inputs.sdkJavaVersion) }}"
+          commit-message: "[GithubActions] Update Restate ${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }}${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0}', inputs.sdkJavaVersion) }}"
           add-paths: |
             **/package.json
             **/package-lock.json
