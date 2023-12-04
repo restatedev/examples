@@ -25,7 +25,7 @@ jobs:
           draft: true
           files: |
             typescript-lambda-greeter.zip
-            jvm-hello-world-java-http.zip
-            jvm-hello-world-java-lambda.zip
-            jvm-hello-world-kotlin-http.zip
-            jvm-hello-world-kotlin-lambda.zip
+            java-hello-world-http.zip
+            java-hello-world-lambda.zip
+            kotlin-hello-world-http.zip
+            kotlin-hello-world-lambda.zip

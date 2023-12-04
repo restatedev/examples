@@ -24,6 +24,7 @@ jobs:
           distribution: 'temurin'
           java-version: ${{ matrix.jvm-version }}
 
+      # When adding a new example make sure it's listed here
       - name: Test java/hello-world-http
         uses: gradle/gradle-build-action@v2
         with:

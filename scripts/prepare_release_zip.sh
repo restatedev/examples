@@ -3,10 +3,13 @@
 OUT_DIR="$(pwd)"
 
 gitzip() {
-  # Uses git to create the zip. This automatically excludes files excluded by .gitignore
+  # Uses git to zip current working directory.
+  # This automatically excludes files excluded by .gitignore
   git archive HEAD -o ${PWD##*/}.zip
 }
 
+# create_release_zip $language $template-name
+# Stores result in $OUT_DIR
 create_release_zip() {
   pushd $1/$2 && gitzip && popd || exit
   mv "$1/$2/$2.zip" "$OUT_DIR/$1-$2.zip"

@@ -11,7 +11,7 @@ Sample project configuration of a Restate service using the Java interface and H
 ## Download the example
 
 ```shell
-EXAMPLE=java-hello-world-http; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+wget https://github.com/restatedev/examples/releases/latest/download/java-hello-world-http.zip && unzip java-hello-world-http.zip -d java-hello-world-http && rm java-hello-world-http.zip
 ```
 
 ## Running the example
@@ -22,7 +22,7 @@ You can run the Java greeter service via:
 ./gradlew run
 ```
 
-Or from the IDE UI.
+Or from your IDE.
 
 ## Running the tests
 
@@ -32,4 +32,4 @@ You can run the tests either via:
 ./gradlew check
 ```
 
-Or from the IDE UI.
+Or from your IDE.

@@ -11,7 +11,7 @@ Sample project configuration of a Restate service using the Kotlin coroutines in
 ## Download the example
 
 ```shell
-EXAMPLE=kotlin-hello-world-http; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hello-world-http.zip && unzip kotlin-hello-world-http.zip -d kotlin-hello-world-http && rm kotlin-hello-world-http.zip
 ```
 
 ## Running the example
@@ -22,7 +22,7 @@ You can run the Kotlin greeter service via:
 ./gradlew run
 ```
 
-Or from the IDE UI.
+Or from your IDE.
 
 ## Running the tests
 
@@ -32,4 +32,4 @@ You can run the tests either via:
 ./gradlew check
 ```
 
-Or from the IDE UI.
+Or from your IDE.

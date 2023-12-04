@@ -12,7 +12,7 @@ Sample project configuration of a Restate service using the Kotlin coroutines in
 ## Download the example
 
 ```shell
-EXAMPLE=kotlin-hello-world-lambda; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hello-world-lambda.zip && unzip kotlin-hello-world-lambda.zip -d kotlin-hello-world-lambda && rm kotlin-hello-world-lambda.zip
 ```
 
 ## Package
@@ -35,4 +35,4 @@ You can run the tests either via:
 ./gradlew check
 ```
 
-Or from the IDE UI.
+Or from your IDE.

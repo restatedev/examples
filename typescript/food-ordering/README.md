@@ -18,7 +18,7 @@ The example illustrates the following aspects:
 ## Download the example
 
 ```shell
-EXAMPLE=typescript-food-ordering; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+wget https://github.com/restatedev/examples/releases/latest/download/typescript-food-ordering.zip && unzip typescript-food-ordering.zip -d typescript-food-ordering && rm typescript-food-ordering.zip
 ```
 
 ## Detailed description

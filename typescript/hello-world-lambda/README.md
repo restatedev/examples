@@ -8,5 +8,5 @@ Take a look at [how to deploy Restate services on AWS Lambda](https://docs.resta
 ## Download the example
 
 ```shell
-EXAMPLE=typescript-hello-world-lambda; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+wget https://github.com/restatedev/examples/releases/latest/download/typescript-hello-world-lambda.zip && unzip typescript-hello-world-lambda.zip -d typescript-hello-world-lambda && rm typescript-hello-world-lambda.zip
 ```

@@ -23,7 +23,7 @@ and failures.
 ## Download the example
 
 ```shell
-EXAMPLE=typescript-payment-api; wget https://github.com/restatedev/examples/releases/latest/download/$EXAMPLE.zip && unzip $EXAMPLE.zip -d $EXAMPLE && rm $EXAMPLE.zip
+wget https://github.com/restatedev/examples/releases/latest/download/typescript-payment-api.zip && unzip typescript-payment-api.zip -d typescript-payment-api && rm typescript-payment-api.zip
 ```
 
 ## Running this example
