@@ -11,7 +11,7 @@ import * as restate_db_txn from "./xa_transactions";
 //
 // Note that this is not a classical distributed 2-phase-commit transaction that
 // requires all databases to answer before being able to commit anything, but
-// a workflow that will always run to completion and ensure all changes will
+// a workflow that will always run to completion and ensure all changes will be
 // made and committed. The advantage of that is less blocking time for each
 // database, which is one of the major downsides of distributed 2-phase-commit
 // transactions.
