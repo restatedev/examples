@@ -20,7 +20,7 @@ import { randomUUID } from "crypto";
 //
 
 // ----------------------------------------------------------------------------
-//                   ** option 1** use request parameter
+//                   **option 1** use request parameter
 // ----------------------------------------------------------------------------
 
 // Restate persists the request parameter and ensures that all retries of the
