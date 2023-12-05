@@ -13,7 +13,7 @@
     "deploy": "npm run build && cdk deploy"
   },
   "devDependencies": {
-    "@restatedev/restate-cdk": "file:../cdk",
+    "@restatedev/restate-cdk": "^0.4.1",
     "@types/jest": "^29.5.8",
     "@types/node": "20.9.1",
     "aws-cdk": "2.113.0",
@@ -25,7 +25,7 @@
     "typescript": "~5.2.2"
   },
   "dependencies": {
-    "aws-cdk-lib": "2.113.0",
+    "aws-cdk-lib": "^2.113.0",
     "constructs": "^10.0.0",
     "source-map-support": "^0.5.21"
   }
