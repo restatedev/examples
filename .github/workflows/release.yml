@@ -1,0 +1,31 @@
+name: Create new release
+
+on:
+  push:
+    tags:
+      - v**
+
+jobs:
+  publish-release:
+    # prevent from running on forks
+    if: github.repository_owner == 'restatedev'
+    name: Publish release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Prepare zip files
+        run: ./scripts/prepare_release_zip.sh
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          # create a draft release which needs manual approval
+          draft: true
+          files: |
+            typescript-lambda-greeter.zip
+            java-hello-world-http.zip
+            java-hello-world-lambda.zip
+            kotlin-hello-world-http.zip
+            kotlin-hello-world-lambda.zip

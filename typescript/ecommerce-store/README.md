@@ -15,6 +15,12 @@ Restate is a system for easily building resilient applications using **distribut
 - Optional: Docker Compose
 - Optional: AWS account with permissions for ECS, RDS, ECR, security groups, VPC, service discovery, IAM roles.
 
+## Download the example
+
+```shell
+wget https://github.com/restatedev/examples/releases/latest/download/typescript-ecommerce-store.zip && unzip typescript-ecommerce-store.zip -d typescript-ecommerce-store && rm typescript-ecommerce-store.zip
+```
+
 ## Deployment on Docker Compose
 
 Build the Docker containers for the web app and services:

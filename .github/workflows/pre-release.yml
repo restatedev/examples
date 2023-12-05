@@ -1,0 +1,91 @@
+name: Pre-release updates
+
+on:
+  workflow_dispatch:
+    inputs:
+      sdkTypescriptVersion:
+        description: 'sdk-typescript version (without prepending v). Leave empty if you do not want to update it.'
+        required: false
+        type: string
+      sdkJavaVersion:
+        description: 'sdk-java version (without prepending v). Leave empty if you do not want to update it.'
+        required: false
+        type: string
+
+jobs:
+  updates:
+    # prevent from running on forks
+    if: github.repository_owner == 'restatedev'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Setup node
+      - uses: actions/setup-node@v3
+        if: github.event.inputs.sdkTypescriptVersion != ''
+        with:
+          node-version: "19.x"
+          registry-url: 'https://registry.npmjs.org'
+
+      # Bump sdk version in node examples and run checks
+      - name: Run npm updates
+        if: github.event.inputs.sdkTypescriptVersion != ''
+        run: npm --prefix typescript install @restatedev/restate-sdk@^${{ inputs.sdkTypescriptVersion }} --workspaces
+      - name: Check npm examples compile correctly
+        if: github.event.inputs.sdkTypescriptVersion != ''
+        run: npm --prefix typescript run verify --workspaces
+
+      # Setup Java
+      - uses: actions/setup-java@v3
+        if: github.event.inputs.sdkJavaVersion != ''
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # Bump sdk version in java/kotlin examples and run checks
+      # When adding a new example make sure it's listed here
+      - name: Find and replace restateVersion in build.gradle.kts for java templates
+        if: github.event.inputs.sdkJavaVersion != ''
+        run: for jvmDir in hello-world-http hello-world-lambda; do sed -i 's/val restateVersion = "[0-9A-Z.-]*"/val restateVersion = "${{ inputs.sdkJavaVersion }}"/' java/$jvmDir/build.gradle.kts; done
+      - name: Find and replace restateVersion in build.gradle.kts for kotlin templates
+        if: github.event.inputs.sdkJavaVersion != ''
+        run: for jvmDir in hello-world-http hello-world-lambda; do sed -i 's/val restateVersion = "[0-9A-Z.-]*"/val restateVersion = "${{ inputs.sdkJavaVersion }}"/' kotlin/$jvmDir/build.gradle.kts; done
+
+      # When adding a new example add the check task here
+      - name: Test java/hello-world-http
+        if: github.event.inputs.sdkJavaVersion != ''
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: check
+          build-root-directory: java/hello-world-http
+      - name: Test java/hello-world-lambda
+        if: github.event.inputs.sdkJavaVersion != ''
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: check
+          build-root-directory: java/hello-world-lambda
+      - name: Test kotlin/hello-world-http
+        if: github.event.inputs.sdkJavaVersion != ''
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: check
+          build-root-directory: kotlin/hello-world-http
+      - name: Test kotlin/hello-world-lambda
+        if: github.event.inputs.sdkJavaVersion != ''
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: check
+          build-root-directory: kotlin/hello-world-lambda
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          title: "[GithubActions] Update Restate ${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }}${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0}', inputs.sdkJavaVersion) }}"
+          commit-message: "[GithubActions] Update Restate ${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }}${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0}', inputs.sdkJavaVersion) }}"
+          add-paths: |
+            **/package.json
+            **/package-lock.json
+            **/build.gradle.kts

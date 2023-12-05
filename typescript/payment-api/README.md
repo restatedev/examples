@@ -20,6 +20,12 @@ Despite the relatively few lines of code (no careful synchronization, retries, o
 this application maintaines a high level of consistency in the presence of concurrent external requests
 and failures.
 
+## Download the example
+
+```shell
+wget https://github.com/restatedev/examples/releases/latest/download/typescript-payment-api.zip && unzip typescript-payment-api.zip -d typescript-payment-api && rm typescript-payment-api.zip
+```
+
 ## Running this example
 
 ### Prerequisites

@@ -15,6 +15,12 @@ The example illustrates the following aspects:
 - How to resolve Awakeables from an external service and thereby resuming Restate invocations.
 - How delayed calls can be used to schedule tasks for later moments in time.
 
+## Download the example
+
+```shell
+wget https://github.com/restatedev/examples/releases/latest/download/typescript-food-ordering.zip && unzip typescript-food-ordering.zip -d typescript-food-ordering && rm typescript-food-ordering.zip
+```
+
 ## Detailed description
 
 This application implements the order processing middleware that sits between food delivery providers and restaurants.
