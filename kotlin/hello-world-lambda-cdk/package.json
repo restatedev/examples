@@ -5,11 +5,13 @@
     "lambda-jvm-cdk": "bin/lambda-jvm-cdk.js"
   },
   "scripts": {
+    "lint": "eslint --ignore-path .eslintignore --ext .ts .",
     "build": "npm run build-lambda && npm run build-cdk",
     "build-lambda": "cd lambda && ./gradlew shadowJar",
     "build-cdk": "cdk synth",
     "watch": "tsc -w",
-    "test": "jest",
+    "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
+    "verify": "npm run format -- --check && npm run lint && npm run build",
     "deploy": "npm run build && cdk deploy"
   },
   "devDependencies": {

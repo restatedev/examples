@@ -1,20 +1,30 @@
 # Hello world - Kotlin Lambda (CDK) example
 
 Sample project deploying a Kotlin-based Restate service to AWS Lambda using CDK. This is functionally equivalent
-to the [`hello-world-lambda`](../hello-world-lambda) example but uses CDK to automate the deploy of the Lambda function
-to AWS, and the registration of the handler with Restate Cloud.
+to the [`hello-world-lambda`](../hello-world-lambda) example but uses CDK to automate the deployment of the Lambda
+function to AWS, and the registration of the handler with Restate Cloud.
+
+Sample project configuration of a Restate service using the Kotlin coroutines interface and AWS Lambda. It contains:
+
+* [CDK app entry point `lambda-jvm-cdk.ts`](bin/lambda-jvm-cdk.ts)
+* [CDK stack consisting of a Lambda function and providing Restate service registration](cdk/lambda-jvm-cdk-stack.ts)
+* [Kotlin Lambda handler](lambda) - based on [`hello-world-lambda`](../hello-world-lambda)
+
+## Download the example
+
+```shell
+wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hello-world-lambda-cdk.zip && unzip kotlin-hello-world-lambda-cdk.zip -d kotlin-hello-world-lambda-cdk && rm kotlin-hello-world-lambda-cdk.zip
+```
+
+## Deploy
 
 **Pre-requisites:**
 
 * npm
 * gradle
-* JDK
-* Restate Cloud access
-* AWS account
-
-## Deploy
-
-You should have two pieces of information about your Restate Cloud: a cluster identifier and an API authentication token.
+* JDK >= 11
+* Restate Cloud access (cluster id + API token)
+* AWS account, bootstrapped for CDK use
 
 Create a secret in Secrets Manager to hold the authentication token. The secret name is up to you -- we suggest
 using `/restate/` and an appropriate prefix to avoid confusion:
