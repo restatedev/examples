@@ -1,5 +1,7 @@
 import com.google.protobuf.gradle.id
 
+val restateSdkVersion = "0.0.1-SNAPSHOT"
+
 plugins {
   kotlin("jvm") version "1.9.10"
 
@@ -16,14 +18,12 @@ repositories {
   maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/") }
 }
 
-val restateVersion = "0.0.1-SNAPSHOT"
-
 dependencies {
   // Restate SDK
-  implementation("dev.restate:sdk-api-kotlin:$restateVersion")
-  implementation("dev.restate:sdk-lambda:$restateVersion")
+  implementation("dev.restate:sdk-api-kotlin:$restateSdkVersion")
+  implementation("dev.restate:sdk-lambda:$restateSdkVersion")
   // To use Jackson to read/write state entries (optional)
-  implementation("dev.restate:sdk-serde-jackson:$restateVersion")
+  implementation("dev.restate:sdk-serde-jackson:$restateSdkVersion")
 
   // Protobuf and grpc dependencies (we need the Java dependencies as well because the Kotlin dependencies rely on Java)
   implementation("com.google.protobuf:protobuf-java:3.24.3")
@@ -44,7 +44,7 @@ dependencies {
   // Testing (optional)
   testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-  testImplementation("dev.restate:sdk-testing:$restateVersion")
+  testImplementation("dev.restate:sdk-testing:$restateSdkVersion")
 }
 
 // Setup Java/Kotlin compiler target
