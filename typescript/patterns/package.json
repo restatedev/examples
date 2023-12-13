@@ -7,7 +7,7 @@
     "build": "tsc --noEmitOnError"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^0.5.1"
+    "@restatedev/restate-sdk": "^0.6.0"
   },
   "devDependencies": {
     "typescript": "^5.0.2"
