@@ -85,7 +85,7 @@ jobs:
       # examples workspace, so we test them separately here.
       - name: Test kotlin/hello-world-lambda-cdk
         if: github.event.inputs.sdkTypescriptVersion != '' && github.event.inputs.sdkJavaVersion != ''
-        run: npm --prefix kotlin/hello-world-lambda-cdk run verify --workspaces
+        run: npm --prefix kotlin/hello-world-lambda-cdk run verify
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
