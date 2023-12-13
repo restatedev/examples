@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Lambda name="Lambda" format="${env:AWS_LAMBDA_LOG_FORMAT:-TEXT}">
+            <LambdaTextFormat>
+                <PatternLayout>
+                    <pattern>%d{yyyy-MM-dd HH:mm:ss} %notEmpty{%X{AWSRequestId} }%notEmpty{[%X{restateServiceMethod}]}%notEmpty{[%X{restateInvocationId}]} %-5p %c - %m%n - customId=%X{customId}</pattern>
+                </PatternLayout>
+            </LambdaTextFormat>
+            <LambdaJSONFormat>
+                <JsonTemplateLayout eventTemplateUri="classpath:LambdaLayout.json"/>
+            </LambdaJSONFormat>
+        </Lambda>
+    </Appenders>
+    <Loggers>
+        <Root level="${env:AWS_LAMBDA_LOG_LEVEL:-INFO}">
+            <AppenderRef ref="Lambda"/>
+        </Root>
+        <Logger name="dev.restate" level="DEBUG"/>
+        <Logger name="software.amazon.awssdk" level="WARN"/>
+        <Logger name="software.amazon.awssdk.request" level="DEBUG"/>
+    </Loggers>
+</Configuration>

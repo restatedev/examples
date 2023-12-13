@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
 import com.google.protobuf.gradle.id
 
 val restateSdkVersion = "0.0.1-SNAPSHOT"
@@ -8,7 +10,7 @@ plugins {
   id("com.google.protobuf") version "0.9.1"
 
   // To package the dependency for Lambda
-  id("com.github.johnrengelman.shadow") version "7.1.2"
+  id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 repositories {
@@ -38,8 +40,11 @@ dependencies {
   // To specify the coroutines dispatcher
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
-  // Logging (optional)
-  implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+  // AWS Lambda-specific logging, see https://docs.aws.amazon.com/lambda/latest/dg/java-logging.html#java-logging-log4j2
+  val log4j2version = "2.22.0"
+  implementation("org.apache.logging.log4j:log4j-core:$log4j2version")
+  implementation("org.apache.logging.log4j:log4j-layout-template-json:$log4j2version")
+  implementation("com.amazonaws:aws-lambda-java-log4j2:1.6.0")
 
   // Testing (optional)
   testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
@@ -76,6 +81,11 @@ protobuf {
       }
     }
   }
+}
+
+// Configure shadowJar plugin to properly transform Log4j plugin configurations - needed for AWS Lambda logger
+tasks.withType<ShadowJar> {
+  transform(Log4j2PluginsCacheFileTransformer::class.java)
 }
 
 // Configure test platform
