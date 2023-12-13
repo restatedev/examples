@@ -11,12 +11,9 @@ plugins {
 
 repositories {
   mavenCentral()
-  // OSSRH Snapshots repo
-  // TODO remove it once we have the proper release
-  maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/") }
 }
 
-val restateVersion = "0.0.1-SNAPSHOT"
+val restateVersion = "0.6.0"
 
 dependencies {
   // Restate SDK
