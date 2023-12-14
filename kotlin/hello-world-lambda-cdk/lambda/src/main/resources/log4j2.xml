@@ -4,7 +4,7 @@
         <Lambda name="Lambda" format="${env:AWS_LAMBDA_LOG_FORMAT:-TEXT}">
             <LambdaTextFormat>
                 <PatternLayout>
-                    <pattern>%d{yyyy-MM-dd HH:mm:ss} %notEmpty{%X{AWSRequestId} }%notEmpty{[%X{restateServiceMethod}]}%notEmpty{[%X{restateInvocationId}]} %-5p %c - %m%n - customId=%X{customId}</pattern>
+                    <pattern>%d{yyyy-MM-dd HH:mm:ss} %notEmpty{%X{AWSRequestId} }%notEmpty{[%X{restateServiceMethod}]}%notEmpty{[%X{restateInvocationId}]} %-5p %c - %m%n</pattern>
                 </PatternLayout>
             </LambdaTextFormat>
             <LambdaJSONFormat>
