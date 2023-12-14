@@ -80,6 +80,13 @@ jobs:
           arguments: check
           build-root-directory: kotlin/hello-world-lambda
 
+      # CDK projects are a hybrid of TypeScript CDK stack + platform-specific handler code; the top-level npm CDK build
+      # is responsible for verifying the language-specific handler cod. They are also not a part of the TypeScript
+      # examples workspace, so we test them separately here.
+      - name: Test kotlin/hello-world-lambda-cdk
+        if: github.event.inputs.sdkTypescriptVersion != '' && github.event.inputs.sdkJavaVersion != ''
+        run: npm --prefix kotlin/hello-world-lambda-cdk run verify
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:

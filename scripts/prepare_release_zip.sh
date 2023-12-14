@@ -21,6 +21,7 @@ create_release_zip java hello-world-lambda
 
 create_release_zip kotlin hello-world-http
 create_release_zip kotlin hello-world-lambda
+create_release_zip kotlin hello-world-lambda-cdk
 
 create_release_zip typescript hello-world-lambda
 create_release_zip typescript ecommerce-store

@@ -34,3 +34,4 @@ jobs:
             java-hello-world-lambda.zip
             kotlin-hello-world-http.zip
             kotlin-hello-world-lambda.zip
+            kotlin-hello-world-lambda-cdk.zip
