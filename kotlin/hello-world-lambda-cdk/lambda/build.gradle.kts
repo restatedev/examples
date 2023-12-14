@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
 import com.google.protobuf.gradle.id
 
-val restateSdkVersion = "0.0.1-SNAPSHOT"
+val restateVersion = "0.6.0"
 
 plugins {
   kotlin("jvm") version "1.9.10"
@@ -15,17 +15,14 @@ plugins {
 
 repositories {
   mavenCentral()
-  // OSSRH Snapshots repo
-  // TODO remove it once we have the proper release
-  maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/") }
 }
 
 dependencies {
   // Restate SDK
-  implementation("dev.restate:sdk-api-kotlin:$restateSdkVersion")
-  implementation("dev.restate:sdk-lambda:$restateSdkVersion")
+  implementation("dev.restate:sdk-api-kotlin:$restateVersion")
+  implementation("dev.restate:sdk-lambda:$restateVersion")
   // To use Jackson to read/write state entries (optional)
-  implementation("dev.restate:sdk-serde-jackson:$restateSdkVersion")
+  implementation("dev.restate:sdk-serde-jackson:$restateVersion")
 
   // Protobuf and grpc dependencies (we need the Java dependencies as well because the Kotlin dependencies rely on Java)
   implementation("com.google.protobuf:protobuf-java:3.24.3")
@@ -49,7 +46,7 @@ dependencies {
   // Testing (optional)
   testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
   testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-  testImplementation("dev.restate:sdk-testing:$restateSdkVersion")
+  testImplementation("dev.restate:sdk-testing:$restateVersion")
 }
 
 // Setup Java/Kotlin compiler target
