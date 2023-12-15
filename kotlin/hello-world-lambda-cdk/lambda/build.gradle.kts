@@ -1,5 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
+import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 import com.google.protobuf.gradle.id
 
 val restateVersion = "0.6.0"
@@ -80,9 +81,10 @@ protobuf {
   }
 }
 
-// Configure shadowJar plugin to properly transform Log4j plugin configurations - needed for AWS Lambda logger
+// Configure shadowJar plugin to properly merge SPI files and Log4j plugin configurations
 tasks.withType<ShadowJar> {
   transform(Log4j2PluginsCacheFileTransformer::class.java)
+  transform(ServiceFileTransformer::class.java)
 }
 
 // Configure test platform
