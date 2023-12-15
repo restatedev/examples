@@ -1,5 +1,7 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
+import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 import com.google.protobuf.gradle.id
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   kotlin("jvm") version "1.9.10"
@@ -74,6 +76,12 @@ protobuf {
       }
     }
   }
+}
+
+// Configure shadowJar plugin to properly merge SPI files and Log4j plugin configurations
+tasks.withType<ShadowJar> {
+  transform(Log4j2PluginsCacheFileTransformer::class.java)
+  transform(ServiceFileTransformer::class.java)
 }
 
 // Configure test platform
