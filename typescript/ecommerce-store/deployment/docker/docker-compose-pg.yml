@@ -32,7 +32,7 @@ services:
       - runtime
       - services
     restart: "no"
-    entrypoint: ["sh", "-c", "sleep 5 && curl -X POST 'runtime:9070/endpoints' -H 'content-type: application/json' -d '{\"uri\": \"http://services:8080\"}' || exit 1"]
+    entrypoint: ["sh", "-c", "sleep 5 && curl -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://services:8080\"}' || exit 1"]
 
   db:
     image: 'postgres:15.0-alpine'
