@@ -40,7 +40,7 @@ variable "restate_runtime_ingress_port" {
 }
 
 variable "restate_runtime_discovery_port" {
-  description = "The port of the restate runtime to register service endpoints"
+  description = "The port of the restate runtime to register deployments"
   default     = 9070
 }
 
