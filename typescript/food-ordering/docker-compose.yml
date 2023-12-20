@@ -1,11 +1,58 @@
-version: "3.3"
-
+version: '3'
 services:
-  services:
-    image: dev.local/food-ordering/services:0.0.1
+  broker:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: broker
+    ports:
+      - "9092:9092"
+      - "9101:9101"
     environment:
-      - RESTATE_DEBUG_LOGGING=JOURNAL_VERBOSE
-      - POS_ENDPOINT=http://pos_server:5050
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@broker:29093
+      KAFKA_LISTENERS: PLAINTEXT://broker:29092,CONTROLLER://broker:29093,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+
+  init-kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - broker
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server broker:29092 --list
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic orders --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic driver-updates --replication-factor 1 --partitions 1
+
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server broker:29092 --list
+      "
+
+  rest-proxy:
+    image: confluentinc/cp-kafka-rest:7.5.0
+    ports:
+      - 8088:8088
+    hostname: rest-proxy
+    container_name: rest-proxy
+    environment:
+      KAFKA_REST_HOST_NAME: rest-proxy
+      KAFKA_REST_LISTENERS: "http://0.0.0.0:8088"
+      KAFKA_REST_BOOTSTRAP_SERVERS: "broker:29092"
+      KAFKA_REST_ACCESS_CONTROL_ALLOW_ORIGIN: "*"
+      KAFKA_REST_ACCESS_CONTROL_ALLOW_METHODS: "OPTIONS,GET,POST,PUT,DELETE"
+      KAFKA_REST_ACCESS_CONTROL_ALLOW_HEADERS: "origin,content-type,accept,authorization"
 
   jaeger:
     image: jaegertracing/all-in-one:1.47
@@ -15,41 +62,61 @@ services:
     environment:
       - COLLECTOR_OTLP_ENABLED=true
 
+  restate_app:
+    container_name: restate_app
+    build:
+      context: ./app
+    environment:
+      - RESTATE_DEBUG_LOGGING=INVOKE
+      - RESTAURANT_ENDPOINT=http://restaurant_pos:5050
+      - KAFKA_BOOTSTRAP_SERVERS=broker:29092
+
+  restaurant_pos:
+    container_name: restaurant_pos
+    build:
+      context: ./app
+      dockerfile: Dockerfile-restaurant
+    environment:
+      - RESTATE_RUNTIME_ENDPOINT=http://runtime:8080
+
   runtime:
     image: docker.io/restatedev/restate:latest
     depends_on:
-      - services
+      - restate_app
+      - restaurant_pos
+      - broker
+      - rest-proxy
       - jaeger
     ports:
-      - "8080:8080"
       - "9070:9070"
+      - "9071:9071"
+      - "8080:8080"
+    volumes:
+      - ./restate-docker.yaml:/restate.yaml
     environment:
       - RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://jaeger:4317
+      - RESTATE_CONFIG=/restate.yaml
 
   runtimesetup:
     image: alpine
     depends_on:
       - runtime
-      - services
+      - restate_app
     restart: "no"
-    entrypoint: ["sh", "-c", "sleep 5 && apk add --no-cache bash jq curl &&
-    curl -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://services:8080\"}'
-    || exit 1"]
+    entrypoint: ["sh", "-c", "sleep 5 && 
+    apk add --no-cache bash jq curl &&
+    curl -X POST 'runtime:9070/endpoints' -H 'content-type: application/json' -d '{\"uri\": \"http://restate_app:9080\"}' &&
+    sleep 3 && 
+    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/orders\", \"sink\":\"service://orders/eventHandler\" }' &&
+    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/driver-updates\", \"sink\":\"service://driver/handleUpdateEvent\" }' &&
+    curl -X POST -H 'content-type: application/json' runtime:8080/simulateddriver/startDriver -d '{\"key\": \"driver-01\", \"request\": {} }' &&
+    curl -X POST -H 'content-type: application/json' runtime:8080/simulateddriver/startDriver -d '{\"key\": \"driver-02\", \"request\": {} }' &&
+    exit 1"]
 
-  grpcui:
-    image: fullstorydev/grpcui:v1.3.1
-    ports:
-      - "3030:3030"
-    depends_on:
-      runtimesetup:
-        condition: service_completed_successfully
-    entrypoint: ["/bin/grpcui", "-bind=0.0.0.0", "-port=3030", "-plaintext", "runtime:8080"]
-
-  pos_server:
-    image: dev.local/food-ordering/pos_server:0.0.1
+  webui:
+    build:
+      context: ./webui
     depends_on:
       - runtimesetup
-    environment:
-      - RESTATE_RUNTIME_ENDPOINT=http://runtime:8080
     ports:
-      - "5050:5050"
+      - "3000:3000"
