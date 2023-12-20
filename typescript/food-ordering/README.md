@@ -1,4 +1,4 @@
-# Serverless food ordering app with Restate
+# Food ordering app with Restate
 
 The code in this repo was used for:
 - Current 2023 presentation
