@@ -3,11 +3,15 @@
 The code in this repo was used for:
 - Current 2023 presentation
 
-The app logic (order workflow) discussed in the presentation can be found under: `app/src/restate-app/services/order_service.ts`.
-
-The demo scenario looks as follows:
+The example application implements an order processing middleware which sits between third-party food ordering providers and restaurants.
+Food ordering providers interact with the application by publishing events to Kafka. 
+For each event, Restate triggers the `create` workflow of the order service.
+The order service interacts with the restaurants' external point of sale service to request the preparation of the orders.
+It also interacts with the delivery services to get the order delivered to the customer once preparation is done.
 
 ![demo_overview.png](demo_overview.png)
+
+The app logic (order workflow) discussed in the presentation can be found under: `app/src/restate-app/services/order_service.ts`.
 
 ## Running locally with Docker compose
 
