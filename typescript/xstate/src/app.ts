@@ -11,56 +11,69 @@
 
 import * as restate from "@restatedev/restate-sdk";
 
-import {createMachine} from 'xstate';
+import {createMachine, sendTo} from 'xstate';
 import {bindXStateRouter} from "./lib";
 import {fromPromise} from "./promise";
 
-export const workflow = createMachine(
-  {
-    id: 'async-function-invocation',
-    initial: 'Send email',
-    types: {} as {
-      context: {
-        customer: string;
-      };
-      input: {
-        customer: string;
-      };
-    },
-    context: ({input}) => ({
-      customer: input.customer
-    }),
-    states: {
-      'Send email': {
-        invoke: {
-          src: 'sendEmail',
-          input: ({context}) => ({
-            customer: context.customer
-          }),
-          onDone: 'Email sent'
-        }
+const authServerMachine = createMachine({
+  id: 'server',
+  initial: 'waitingForCode',
+  states: {
+    waitingForCode: {
+      on: {
+        CODE: {
+          target: "process"
+        },
       },
-      'Email sent': {
-        type: 'final'
+    },
+    process: {
+      invoke: {
+        id: 'process',
+        src: 'authorise',
+        onDone: {
+          actions: sendTo(
+            ({self}) => self._parent!,
+            { type: 'TOKEN' },
+            { delay: 1000 },
+          ),
+        },
       }
-    }
-  },
-  {
-    actors: {
-      sendEmail: fromPromise(async ({ input }) => {
-        console.log('Sending email to', input.customer);
-
-        await new Promise<void>((resolve) =>
-          setTimeout(() => {
-            console.log('Email sent to', input.customer);
-            resolve();
-          }, 1000)
-        );
-      })
-    }
+    },
   }
-);
+}, {
+  actors: {
+    authorise: fromPromise(() => new Promise((resolve) => setTimeout(resolve, 5000))),
+  }
+});
+
+const authClientMachine = createMachine({
+  id: 'client',
+  initial: 'idle',
+  states: {
+    idle: {
+      on: {
+        AUTH: {target: 'authorizing'},
+      },
+    },
+    authorizing: {
+      invoke: {
+        id: 'auth-server',
+        src: authServerMachine,
+      },
+      entry: sendTo('auth-server', ({self}) => ({
+        type: 'CODE',
+        sender: self,
+      })),
+      on: {
+        TOKEN: {target: 'authorized'},
+      },
+    },
+    authorized: {
+      type: 'final',
+    },
+  },
+});
 
 
-bindXStateRouter(restate.createServer(), "foo", workflow).listen()
+bindXStateRouter(restate.createServer(), "foo", authClientMachine).listen()
 
