@@ -9,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -19,15 +18,15 @@ import java.nio.charset.StandardCharsets;
 
 public class RestaurantMain {
     private static final Logger logger = LogManager.getLogger(RestaurantMain.class);
-
-    private static final String RESTATE_RUNTIME_ENDPOINT = "http://localhost:8080";
+    public static final String RESTATE_RUNTIME_ENDPOINT =
+            System.getenv("RESTATE_RUNTIME_ENDPOINT") != null ? System.getenv("RESTATE_RUNTIME_ENDPOINT") : "http://localhost:8080";
 
     public static void main(String[] args) throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(5050), 0);
         server.createContext("/prepare", new PrepareHandler());
         server.setExecutor(null);
         server.start();
-        System.out.println("Restaurant POS server is listening on port 5050...");
+        logger.info("Restaurant POS server is listening on port 5050...");
     }
 
     static class PrepareHandler implements HttpHandler {

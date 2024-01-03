@@ -7,12 +7,8 @@ import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.examples.generated.OrderProto;
 import dev.restate.sdk.examples.generated.OrderStatusServiceRestate;
 import dev.restate.sdk.examples.types.Status;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 public class OrderStatusService extends OrderStatusServiceRestate.OrderStatusServiceRestateImplBase {
-    private static final Logger logger = LogManager.getLogger(OrderStatusService.class);
-
     private final StateKey<String> ORDER_STATUS = StateKey.of("order-status", CoreSerdes.STRING_UTF8);
     private final StateKey<Long> ORDER_ETA = StateKey.of("order-eta", CoreSerdes.LONG);
 
@@ -26,7 +22,7 @@ public class OrderStatusService extends OrderStatusServiceRestate.OrderStatusSer
 
     @Override
     public void setStatus(RestateContext ctx, OrderProto.OrderStatus request) throws TerminalException {
-        ctx.set(ORDER_STATUS, request.getStatus().name().toString());
+        ctx.set(ORDER_STATUS, request.getStatus().name());
     }
 
     @Override

@@ -19,7 +19,6 @@ import java.util.UUID;
 
 import static dev.restate.sdk.examples.utils.TypeUtils.statusToProto;
 
-
 public class OrderService extends OrderServiceRestate.OrderServiceRestateImplBase {
     private final RestaurantClient restaurant = RestaurantClient.get();
 
@@ -32,7 +31,6 @@ public class OrderService extends OrderServiceRestate.OrderServiceRestateImplBas
 
         try {
             OrderRequest order = mapper.readValue(event.getPayload().toStringUtf8(), OrderRequest.class);
-            System.out.println("Received order: " + event.getPayload().toStringUtf8());
 
             // 1. Set status
             orderStatusSend.oneWay().setStatus(statusToProto(order.orderId, Status.CREATED));
@@ -61,14 +59,13 @@ public class OrderService extends OrderServiceRestate.OrderServiceRestateImplBas
 
             //5. Find a driver and start delivery
             var deliveryAwakeable = ctx.awakeable(CoreSerdes.VOID);
-            var deliveryClnt = DeliveryServiceRestate.newClient(ctx);
             var orderProto = OrderProto.Order.newBuilder().setOrderId(order.orderId).setRestaurantId(order.restaurantId).build();
             var deliveryRequest = OrderProto.DeliveryRequest.newBuilder().setOrderId(order.orderId).setOrder(orderProto).setCallback(deliveryAwakeable.id()).build();
-            deliveryClnt.oneWay().start(deliveryRequest);
+            DeliveryServiceRestate.newClient(ctx).oneWay().start(deliveryRequest);
             deliveryAwakeable.await();
             orderStatusSend.setStatus(statusToProto(order.orderId, Status.DELIVERED));
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new TerminalException("Parsing raw JSON order failed: " + e.getMessage());
         }
     }
 }

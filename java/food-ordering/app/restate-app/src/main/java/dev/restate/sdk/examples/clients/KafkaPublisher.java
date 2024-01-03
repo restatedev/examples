@@ -10,20 +10,24 @@ import java.util.Properties;
 
 public class KafkaPublisher {
 
+    public static final String KAFKA_BOOTSTRAP_SERVERS =
+            System.getenv("KAFKA_BOOTSTRAP_SERVERS") != null ? System.getenv("KAFKA_BOOTSTRAP_SERVERS") : "127.0.0.1:9092";
+
     KafkaProducer<String, byte[]> producer;
 
     public KafkaPublisher() {
-        String bootstrapServers = "127.0.0.1:9092";
-
-        // create Producer properties
-        Properties properties = new Properties();
-        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
-        this.producer = new KafkaProducer<>(properties);
+        this.producer = new KafkaProducer<>(properties());
     }
 
-    public void sendUpdate(String key, byte[] value){
+    public static Properties properties(){
+        Properties properties = new Properties();
+        properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_BOOTSTRAP_SERVERS);
+        properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
+        return properties;
+    }
+
+    public void sendDriverUpdate(String key, byte[] value){
         producer.send(new ProducerRecord<>("driver-updates", key, value));
     }
 }

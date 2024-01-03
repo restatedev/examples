@@ -34,7 +34,6 @@ public class DriverPoolService extends DriverPoolServiceRestate.DriverPoolServic
 
         // If there is a pending delivery, assign it to the driver
         var nextDelivery = pendingDeliveries.poll();
-        System.out.println("next Delivery: " + nextDelivery);
         if(nextDelivery != null){
             // Update the queue in state. Delivery was removed.
             ctx.set(PENDING_DELIVERIES, pendingDeliveries);

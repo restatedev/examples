@@ -62,18 +62,61 @@ services:
     environment:
       - COLLECTOR_OTLP_ENABLED=true
 
-#  restaurant_pos:
-#    image: restate-app:0.0.1
-#    environment:
-#      - RESTATE_RUNTIME_ENDPOINT=http://host.docker.internal:9090
-#    ports:
-#      - "5050:5050"
-#    entrypoint: ["java", "-cp", "@/app/jib-classpath-file", "dev.restate.sdk.examples.RestaurantMain"]
-#    extra_hosts:
-#      - "host.docker.internal:host-gateway"
+  restaurantpos:
+    container_name: restaurantpos
+    image: restaurant-app:0.0.1
+    environment:
+      - RESTATE_RUNTIME_ENDPOINT=http://runtime:8080
+    ports:
+      - "5050:5050"
+    entrypoint: ["java", "-cp", "@/app/jib-classpath-file", "dev.restate.sdk.examples.RestaurantMain"]
+
+  restate_app:
+    container_name: restate_app
+    image: restate-app:0.0.1
+    environment:
+      - RESTAURANT_ENDPOINT=http://restaurantpos:5050
+      - KAFKA_BOOTSTRAP_SERVERS=broker:29092
+
+  runtime:
+    image: docker.io/restatedev/restate:latest
+    depends_on:
+      - restate_app
+      - restaurantpos
+      - broker
+      - rest-proxy
+      - jaeger
+    ports:
+      - "9070:9070"
+      - "9071:9071"
+      - "8080:8080"
+    volumes:
+      - ./restate-docker.yaml:/restate.yaml
+    environment:
+      - RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://jaeger:4317
+      - RESTATE_CONFIG=/restate.yaml
+
+  runtimesetup:
+    image: alpine
+    depends_on:
+      - runtime
+      - restate_app
+    restart: "no"
+    entrypoint: ["sh", "-c", "sleep 5 && 
+    apk add --no-cache bash jq curl &&
+    curl -X POST 'runtime:9070/endpoints' -H 'content-type: application/json' -d '{\"uri\": \"http://restate_app:9080\"}' &&
+    sleep 3 && 
+    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/orders\", \"sink\":\"service://order.OrderService/HandleEvent\" }' &&
+    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/driver-updates\", \"sink\":\"service://order.DriverService/UpdateCoordinate\" }' &&
+    sleep 3 && 
+    curl -X POST -H 'content-type: application/json' 'runtime:8080/order.DriverSimService/StartDriver' -d '{\"driver_id\": \"driver-A\"}' && 
+    curl -X POST -H 'content-type: application/json' 'runtime:8080/order.DriverSimService/StartDriver' -d '{\"driver_id\": \"driver-B\"}' && 
+    exit 1"]
 
   webui:
     build:
       context: ./webui
+    depends_on:
+      - runtimesetup
     ports:
       - "3000:3000"

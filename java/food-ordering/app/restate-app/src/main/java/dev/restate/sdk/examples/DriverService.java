@@ -1,5 +1,6 @@
 package dev.restate.sdk.examples;
 
+import com.google.protobuf.Empty;
 import dev.restate.sdk.RestateContext;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
@@ -19,10 +20,8 @@ import dev.restate.sdk.serde.jackson.JacksonSerdes;
 public class DriverService extends DriverServiceRestate.DriverServiceRestateImplBase {
 
     StateKey<DriverStatus> DRIVER_STATUS = StateKey.of("driver-status", JacksonSerdes.of(DriverStatus.class));
-
-    StateKey<AssignedDelivery> ASSIGNED_DELIVERY = StateKey.of("delivery-status", JacksonSerdes.of(AssignedDelivery.class));
-
-    StateKey<Location> CURRENT_LOCATION = StateKey.of("location-status", JacksonSerdes.of(Location.class));
+    StateKey<AssignedDelivery> ASSIGNED_DELIVERY = StateKey.of("assigned-delivery", JacksonSerdes.of(AssignedDelivery.class));
+    StateKey<Location> DRIVER_LOCATION = StateKey.of("driver-location", JacksonSerdes.of(Location.class));
 
 
     @Override
@@ -81,7 +80,7 @@ public class DriverService extends DriverServiceRestate.DriverServiceRestateImpl
                 Location.fromProto(request.getRestaurantLocation()),
                 Location.fromProto(request.getCustomerLocation())));
 
-        ctx.get(CURRENT_LOCATION).ifPresent(loc ->
+        ctx.get(DRIVER_LOCATION).ifPresent(loc ->
                 DeliveryServiceRestate.newClient(ctx).oneWay().driverLocationUpdate(
                         OrderProto.DeliveryLocationUpdate.newBuilder()
                                 .setOrderId(request.getOrderId())
@@ -94,7 +93,7 @@ public class DriverService extends DriverServiceRestate.DriverServiceRestateImpl
     public void updateCoordinate(RestateContext ctx, OrderProto.KafkaDriverEvent request) throws TerminalException {
         // Update the location of the driver
         Location location = JacksonSerdes.of(Location.class).deserialize(request.getPayload());
-        ctx.set(CURRENT_LOCATION, location);
+        ctx.set(DRIVER_LOCATION, location);
 
         // Update the location of the delivery, if there is one
         ctx.get(ASSIGNED_DELIVERY)
@@ -109,21 +108,20 @@ public class DriverService extends DriverServiceRestate.DriverServiceRestateImpl
     }
 
     @Override
-    public AssignDeliveryRequest getAssignedDelivery(RestateContext ctx, OrderProto.DriverId request) throws TerminalException {
-        var optionalAssignedDelivery = ctx.get(ASSIGNED_DELIVERY);
+    public OrderProto.AssignedDeliveryResponse getAssignedDelivery(RestateContext ctx, OrderProto.DriverId request) throws TerminalException {
+        var assignedDelivery = ctx.get(ASSIGNED_DELIVERY);
 
-        if(optionalAssignedDelivery.isPresent()) {
-            var delivery = optionalAssignedDelivery.get();
-            return AssignDeliveryRequest.newBuilder()
-                    .setDriverId(delivery.driverId)
-                    .setOrderId(delivery.orderId)
-                    .setRestaurantId(delivery.restaurantId)
-                    .setCustomerLocation(delivery.customerLocation.toProto())
-                    .setRestaurantLocation(delivery.restaurantLocation.toProto())
-                    .build();
-        }else {
-            return AssignDeliveryRequest.getDefaultInstance();
-        }
+        return assignedDelivery.map(delivery ->
+                        OrderProto.AssignedDeliveryResponse.newBuilder()
+                                .setDelivery(OrderProto.Delivery.newBuilder()
+                                        .setDriverId(delivery.driverId)
+                                        .setOrderId(delivery.orderId)
+                                        .setRestaurantId(delivery.restaurantId)
+                                        .setCustomerLocation(delivery.customerLocation.toProto())
+                                        .setRestaurantLocation(delivery.restaurantLocation.toProto())
+                                        .build())
+                                .build())
+                .orElse(OrderProto.AssignedDeliveryResponse.newBuilder().setEmpty(Empty.getDefaultInstance()).build());
     }
 
     // Utility function to check if the driver is in the expected state

@@ -102,11 +102,26 @@ service DriverService {
   rpc SetDriverAvailable(DriverAvailableNotification) returns (google.protobuf.Empty);
   rpc NotifyDeliveryPickup(DriverId) returns (google.protobuf.Empty);
   rpc NotifyDeliveryDelivered(DriverId) returns (google.protobuf.Empty);
-  rpc GetAssignedDelivery(DriverId) returns (AssignDeliveryRequest);
+  rpc GetAssignedDelivery(DriverId) returns (AssignedDeliveryResponse);
 
   rpc AssignDeliveryJob(AssignDeliveryRequest) returns (google.protobuf.Empty);
 
   rpc UpdateCoordinate(KafkaDriverEvent) returns (google.protobuf.Empty);
+}
+
+message AssignedDeliveryResponse {
+  oneof response {
+    Delivery delivery = 1;
+    google.protobuf.Empty empty = 2;
+  }
+}
+
+message Delivery {
+  string driver_id = 1;
+  string order_id = 2;
+  string restaurant_id = 3;
+  Location restaurant_location = 4;
+  Location customer_location = 5;
 }
 
 message DriverAvailableNotification {

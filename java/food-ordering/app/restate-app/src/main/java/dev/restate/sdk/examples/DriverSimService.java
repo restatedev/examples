@@ -36,7 +36,7 @@ public class DriverSimService extends DriverSimServiceRestate.DriverSimServiceRe
     private final long PAUSE_BETWEEN_DELIVERIES = 2000;
 
 
-    StateKey<Location> CURRENT_LOCATION = StateKey.of("location", JacksonSerdes.of(Location.class));
+    StateKey<Location> CURRENT_LOCATION = StateKey.of("driversim-location", JacksonSerdes.of(Location.class));
 
     StateKey<DeliveryStatus> DELIVERY_STATUS = StateKey.of("delivery-status", JacksonSerdes.of(DeliveryStatus.class));
 
@@ -53,7 +53,7 @@ public class DriverSimService extends DriverSimServiceRestate.DriverSimServiceRe
         logger.info("Starting driver " + request.getDriverId());
         var location = ctx.sideEffect(JacksonSerdes.of(Location.class), GeoUtils::randomLocation);
         ctx.set(CURRENT_LOCATION, location);
-        producer.sendUpdate(request.getDriverId(), JacksonSerdes.of(Location.class).serialize(location));
+        producer.sendDriverUpdate(request.getDriverId(), JacksonSerdes.of(Location.class).serialize(location));
 
         // Tell the digital twin of the driver in the food ordering app, that he is available
         DriverServiceRestate.newClient(ctx).setDriverAvailable(
@@ -73,20 +73,20 @@ public class DriverSimService extends DriverSimServiceRestate.DriverSimServiceRe
         var driverSimClnt = DriverSimServiceRestate.newClient(ctx);
 
         // Ask the digital twin of the driver in the food ordering app, if he already got a job assigned
-        var newDeliveryJob = DriverServiceRestate.newClient(ctx).getAssignedDelivery(request).await();
-        if(newDeliveryJob.getOrderId().isEmpty()){
-            System.out.println("No delivery job yet");
+        var optionalAssignedDelivery = DriverServiceRestate.newClient(ctx).getAssignedDelivery(request).await();
+        if(optionalAssignedDelivery.hasEmpty()){
             driverSimClnt.delayed(Duration.ofMillis(POLL_INTERVAL)).pollForWork(request);
             return;
         }
 
         // If there is a job, start the delivery
+        var delivery = optionalAssignedDelivery.getDelivery();
         var newAssignedDelivery = new AssignedDelivery(
-                newDeliveryJob.getDriverId(),
-                newDeliveryJob.getOrderId(),
-                newDeliveryJob.getRestaurantId(),
-                Location.fromProto(newDeliveryJob.getRestaurantLocation()),
-                Location.fromProto(newDeliveryJob.getCustomerLocation()));
+                delivery.getDriverId(),
+                delivery.getOrderId(),
+                delivery.getRestaurantId(),
+                Location.fromProto(delivery.getRestaurantLocation()),
+                Location.fromProto(delivery.getCustomerLocation()));
         ctx.set(DELIVERY_STATUS, new DeliveryStatus(newAssignedDelivery, false));
 
         // Start moving to the delivery pickup location
@@ -105,7 +105,7 @@ public class DriverSimService extends DriverSimServiceRestate.DriverSimServiceRe
         // Move to the next location
         var newLocation = GeoUtils.moveToDestination(currentLocation, nextDestination);
         ctx.set(CURRENT_LOCATION, newLocation);
-        producer.sendUpdate(request.getDriverId(), JacksonSerdes.of(Location.class).serialize(newLocation));
+        producer.sendDriverUpdate(request.getDriverId(), JacksonSerdes.of(Location.class).serialize(newLocation));
 
         // If we reached the destination, notify the food ordering app
         if(newLocation.equals(nextDestination)){
