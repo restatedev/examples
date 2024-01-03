@@ -64,7 +64,7 @@ services:
 
   restaurantpos:
     container_name: restaurantpos
-    image: restate-app:0.0.1
+    image: restaurant-app:0.0.1
     environment:
       - RESTATE_RUNTIME_ENDPOINT=http://runtime:8080
     ports:

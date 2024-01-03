@@ -11,7 +11,7 @@ const useOrderStatus = () => {
     if (user) {
       console.debug(`Found user ${user}`);
       sendRequestToRestate('order.OrderStatusService', 'Get', {
-        id: user!.shopping_cart_id,
+        order_id: user!.shopping_cart_id,
       }).then((response) => {
         setOrderStatus(response.response);
       });

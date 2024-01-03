@@ -1,0 +1,161 @@
+syntax = "proto3";
+
+package order;
+
+import "google/protobuf/empty.proto";
+import "dev/restate/ext.proto";
+import "dev/restate/events.proto";
+
+option java_package = "dev.restate.sdk.examples.generated";
+option java_outer_classname = "OrderProto";
+
+service OrderService {
+  option (dev.restate.ext.service_type) = KEYED;
+
+  rpc HandleEvent(KafkaOrderEvent) returns (google.protobuf.Empty);
+}
+
+message KafkaOrderEvent {
+  string order_id = 1 [(dev.restate.ext.field) = KEY];
+  bytes payload = 2 [(dev.restate.ext.field) = EVENT_PAYLOAD];
+}
+
+service OrderStatusService {
+  option (dev.restate.ext.service_type) = KEYED;
+
+  rpc Get(OrderId) returns (OrderStatus);
+  rpc SetStatus(OrderStatus) returns (google.protobuf.Empty);
+  rpc SetETA(OrderStatus) returns (google.protobuf.Empty);
+  rpc HandleDriverUpdate(KafkaStringEvent) returns (google.protobuf.Empty);
+}
+
+message KafkaStringEvent {
+  string order_id = 1 [(dev.restate.ext.field) = KEY];
+  string payload = 2 [(dev.restate.ext.field) = EVENT_PAYLOAD];
+}
+
+message Order {
+  string order_id = 1 [(dev.restate.ext.field) = KEY];
+  string restaurant_id = 2;
+  repeated Product products = 3;
+  double total_cost = 6;
+  int64 delivery_delay = 7;
+}
+
+message Product {
+  string product_id = 1;
+  string description = 2;
+  int32 quantity = 3;
+}
+
+message OrderId {
+  string order_id = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message OrderStatus {
+  string order_id = 1 [(dev.restate.ext.field) = KEY];
+  Status status = 2;
+  int64 eta = 3;
+}
+
+enum Status {
+  NEW = 0;
+  CREATED = 1;
+  SCHEDULED = 2;
+  IN_PREPARATION = 3;
+  SCHEDULING_DELIVERY = 4;
+  WAITING_FOR_DRIVER = 5;
+  IN_DELIVERY = 6;
+  DELIVERED = 7;
+  REJECTED = 8;
+  CANCELLED = 9;
+}
+
+service DeliveryService {
+  option (dev.restate.ext.service_type) = KEYED;
+
+  rpc Start(DeliveryRequest) returns (google.protobuf.Empty);
+  rpc DeliveryPickedUp(OrderId) returns (google.protobuf.Empty);
+  rpc DeliveryDelivered(OrderId) returns (google.protobuf.Empty);
+  rpc DriverLocationUpdate(DeliveryLocationUpdate) returns (google.protobuf.Empty);
+}
+
+message DeliveryRequest {
+  string order_id = 1 [(dev.restate.ext.field) = KEY];
+  Order order = 2;
+  string callback = 3;
+}
+
+message DeliveryLocationUpdate {
+  string order_id = 1 [(dev.restate.ext.field) = KEY];
+  Location location = 2;
+}
+
+message Location {
+  double lon = 1;
+  double lat = 2;
+}
+
+service DriverService {
+  option (dev.restate.ext.service_type) = KEYED;
+
+  rpc SetDriverAvailable(DriverAvailableNotification) returns (google.protobuf.Empty);
+  rpc NotifyDeliveryPickup(DriverId) returns (google.protobuf.Empty);
+  rpc NotifyDeliveryDelivered(DriverId) returns (google.protobuf.Empty);
+  rpc GetAssignedDelivery(DriverId) returns (AssignDeliveryRequest);
+
+  rpc AssignDeliveryJob(AssignDeliveryRequest) returns (google.protobuf.Empty);
+
+  rpc UpdateCoordinate(KafkaDriverEvent) returns (google.protobuf.Empty);
+}
+
+message DriverAvailableNotification {
+  string driver_id = 1 [(dev.restate.ext.field) = KEY];
+  string region = 2;
+}
+
+message KafkaDriverEvent {
+  string driver_id = 1 [(dev.restate.ext.field) = KEY];
+  bytes payload = 2 [(dev.restate.ext.field) = EVENT_PAYLOAD];
+}
+
+service DriverPoolService {
+  option (dev.restate.ext.service_type) = KEYED;
+
+  rpc SetDriverAvailable(DriverPoolAvailableNotification) returns (google.protobuf.Empty);
+  rpc RequestDriverForDelivery(DeliveryCallback) returns (google.protobuf.Empty);
+}
+
+service DriverSimService {
+  option (dev.restate.ext.service_type) = KEYED;
+
+  rpc StartDriver(DriverId) returns (google.protobuf.Empty);
+  rpc PollForWork(DriverId) returns (google.protobuf.Empty);
+  rpc Move(DriverId) returns (google.protobuf.Empty);
+}
+
+message DriverId {
+  string driver_id = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message DriverPoolAvailableNotification {
+  string region = 1 [(dev.restate.ext.field) = KEY];
+  string driver_id = 2;
+}
+
+message DeliveryCallback {
+  string region = 1 [(dev.restate.ext.field) = KEY];
+  string delivery_callback_id = 2;
+}
+
+message AssignDeliveryRequest{
+  string driver_id = 1 [(dev.restate.ext.field) = KEY];
+  string order_id = 2;
+  string restaurant_id = 3;
+  Location restaurant_location = 7;
+  Location customer_location = 8;
+}
+
+message DriverRequest {
+  string region = 1 [(dev.restate.ext.field) = KEY];
+}

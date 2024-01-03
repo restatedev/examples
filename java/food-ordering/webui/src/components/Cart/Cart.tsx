@@ -72,7 +72,7 @@ const Cart = () => {
         };
       });
       return {
-        id: user!.user_id,
+        order_id: user!.user_id,
         restaurant_id: details.restaurant_id,
         products: productsToSend,
         total_cost: total.totalPrice,
@@ -103,7 +103,7 @@ const Cart = () => {
       let done = false;
       while (!done) {
         const newOrderStatus = await sendRequestToRestate('order.OrderStatusService', 'Get', {
-          id: user!.user_id,
+          order_id: user!.user_id,
         });
         console.info(newOrderStatus);
 
