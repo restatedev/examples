@@ -10,4 +10,9 @@ public class TypeUtils {
         .setStatus(OrderProto.Status.valueOf(status.name()))
         .build();
   }
+
+  public static OrderProto.OrderId toOrderIdProto(String id) {
+    return OrderProto.OrderId.newBuilder().setOrderId(id).build();
+  }
+
 }

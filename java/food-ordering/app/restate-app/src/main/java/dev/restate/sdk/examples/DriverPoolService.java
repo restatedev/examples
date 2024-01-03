@@ -16,11 +16,11 @@ public class DriverPoolService extends DriverPoolServiceRestate.DriverPoolServic
 
   // Deliveries that are waiting for a driver to become available
   private final StateKey<Queue<String>> PENDING_DELIVERIES =
-      StateKey.of("pending-deliveries", JacksonSerdes.of(new TypeReference<Queue<String>>() {}));
+      StateKey.of("pending-deliveries", JacksonSerdes.of(new TypeReference<>() {}));
 
   // Drivers that are waiting for new delivery requests
   private final StateKey<Queue<String>> AVAILABLE_DRIVERS =
-      StateKey.of("available-drivers", JacksonSerdes.of(new TypeReference<Queue<String>>() {}));
+      StateKey.of("available-drivers", JacksonSerdes.of(new TypeReference<>() {}));
 
   /**
    * Gets called when a new driver becomes available. Links the driver to the next delivery waiting

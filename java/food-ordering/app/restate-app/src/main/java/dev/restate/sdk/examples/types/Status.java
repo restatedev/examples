@@ -1,7 +1,5 @@
 package dev.restate.sdk.examples.types;
 
-import dev.restate.sdk.examples.generated.OrderProto;
-
 public enum Status {
   NEW(0),
   CREATED(1),

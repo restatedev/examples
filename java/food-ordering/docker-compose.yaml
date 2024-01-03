@@ -106,7 +106,7 @@ services:
     apk add --no-cache bash jq curl &&
     curl -X POST 'runtime:9070/endpoints' -H 'content-type: application/json' -d '{\"uri\": \"http://restate_app:9080\"}' &&
     sleep 3 && 
-    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/orders\", \"sink\":\"service://order.OrderService/HandleEvent\" }' &&
+    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/orders\", \"sink\":\"service://order.OrderService/HandleOrderCreationEvent\" }' &&
     curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/driver-updates\", \"sink\":\"service://order.DriverService/UpdateCoordinate\" }' &&
     sleep 3 && 
     curl -X POST -H 'content-type: application/json' 'runtime:8080/order.DriverSimService/StartDriver' -d '{\"driver_id\": \"driver-A\"}' && 

@@ -14,6 +14,8 @@ import dev.restate.sdk.examples.types.DriverStatus;
 import dev.restate.sdk.examples.types.Location;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
 
+import static dev.restate.sdk.examples.utils.TypeUtils.toOrderIdProto;
+
 /** Digital twin for the driver */
 public class DriverService extends DriverServiceRestate.DriverServiceRestateImplBase {
 
@@ -57,8 +59,7 @@ public class DriverService extends DriverServiceRestate.DriverServiceRestateImpl
     // Update the status of the delivery in the delivery service
     DeliveryServiceRestate.newClient(ctx)
         .oneWay()
-        .deliveryPickedUp(
-            OrderProto.OrderId.newBuilder().setOrderId(currentDelivery.orderId).build());
+        .deliveryPickedUp(toOrderIdProto(currentDelivery.orderId));
   }
 
   @Override
@@ -76,8 +77,7 @@ public class DriverService extends DriverServiceRestate.DriverServiceRestateImpl
     ctx.clear(ASSIGNED_DELIVERY);
     DeliveryServiceRestate.newClient(ctx)
         .oneWay()
-        .deliveryDelivered(
-            OrderProto.OrderId.newBuilder().setOrderId(assignedDelivery.orderId).build());
+        .deliveryDelivered(toOrderIdProto(assignedDelivery.orderId));
     ctx.set(DRIVER_STATUS, DriverStatus.IDLE);
   }
 
@@ -109,10 +109,10 @@ public class DriverService extends DriverServiceRestate.DriverServiceRestateImpl
   }
 
   @Override
-  public void updateCoordinate(RestateContext ctx, OrderProto.KafkaDriverEvent request)
+  public void updateCoordinate(RestateContext ctx, OrderProto.KafkaDriverLocationEvent request)
       throws TerminalException {
     // Update the location of the driver
-    Location location = JacksonSerdes.of(Location.class).deserialize(request.getPayload());
+    Location location = JacksonSerdes.of(Location.class).deserialize(request.getLocation());
     ctx.set(DRIVER_LOCATION, location);
 
     // Update the location of the delivery, if there is one

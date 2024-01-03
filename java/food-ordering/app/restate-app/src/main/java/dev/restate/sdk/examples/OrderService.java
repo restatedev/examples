@@ -20,16 +20,15 @@ import java.util.UUID;
 
 public class OrderService extends OrderServiceRestate.OrderServiceRestateImplBase {
   private final RestaurantClient restaurant = RestaurantClient.get();
+  private final PaymentClient paymentClnt = PaymentClient.get();
 
   @Override
-  public void handleEvent(RestateContext ctx, OrderProto.KafkaOrderEvent event)
+  public void handleOrderCreationEvent(RestateContext ctx, OrderProto.KafkaOrderEvent event)
       throws TerminalException {
-    ObjectMapper mapper = new ObjectMapper();
-
     var orderStatusSend = OrderStatusServiceRestate.newClient(ctx);
-    var paymentClnt = PaymentClient.get();
 
     try {
+      ObjectMapper mapper = new ObjectMapper();
       OrderRequest order = mapper.readValue(event.getPayload().toStringUtf8(), OrderRequest.class);
 
       // 1. Set status
@@ -60,15 +59,11 @@ public class OrderService extends OrderServiceRestate.OrderServiceRestateImplBas
 
       // 5. Find a driver and start delivery
       var deliveryAwakeable = ctx.awakeable(CoreSerdes.VOID);
-      var orderProto =
-          OrderProto.Order.newBuilder()
-              .setOrderId(order.orderId)
-              .setRestaurantId(order.restaurantId)
-              .build();
+
       var deliveryRequest =
           OrderProto.DeliveryRequest.newBuilder()
               .setOrderId(order.orderId)
-              .setOrder(orderProto)
+              .setRestaurantId(order.restaurantId)
               .setCallback(deliveryAwakeable.id())
               .build();
       DeliveryServiceRestate.newClient(ctx).oneWay().start(deliveryRequest);

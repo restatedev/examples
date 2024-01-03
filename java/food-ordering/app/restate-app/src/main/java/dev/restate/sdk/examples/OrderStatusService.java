@@ -38,9 +38,9 @@ public class OrderStatusService
   }
 
   @Override
-  public void handleDriverUpdate(RestateContext ctx, OrderProto.KafkaStringEvent event)
+  public void handleDriverETAUpdate(RestateContext ctx, OrderProto.KafkaDriverETAEvent event)
       throws TerminalException {
-    var eta = Long.parseLong(event.getPayload());
+    var eta = Long.parseLong(event.getEta());
     ctx.set(ORDER_ETA, eta);
   }
 }

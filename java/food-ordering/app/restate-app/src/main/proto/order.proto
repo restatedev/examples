@@ -12,7 +12,7 @@ option java_outer_classname = "OrderProto";
 service OrderService {
   option (dev.restate.ext.service_type) = KEYED;
 
-  rpc HandleEvent(KafkaOrderEvent) returns (google.protobuf.Empty);
+  rpc HandleOrderCreationEvent(KafkaOrderEvent) returns (google.protobuf.Empty);
 }
 
 message KafkaOrderEvent {
@@ -24,28 +24,11 @@ service OrderStatusService {
   option (dev.restate.ext.service_type) = KEYED;
 
   rpc Get(OrderId) returns (OrderStatus);
+
   rpc SetStatus(OrderStatus) returns (google.protobuf.Empty);
   rpc SetETA(OrderStatus) returns (google.protobuf.Empty);
-  rpc HandleDriverUpdate(KafkaStringEvent) returns (google.protobuf.Empty);
-}
 
-message KafkaStringEvent {
-  string order_id = 1 [(dev.restate.ext.field) = KEY];
-  string payload = 2 [(dev.restate.ext.field) = EVENT_PAYLOAD];
-}
-
-message Order {
-  string order_id = 1 [(dev.restate.ext.field) = KEY];
-  string restaurant_id = 2;
-  repeated Product products = 3;
-  double total_cost = 6;
-  int64 delivery_delay = 7;
-}
-
-message Product {
-  string product_id = 1;
-  string description = 2;
-  int32 quantity = 3;
+  rpc HandleDriverETAUpdate(KafkaDriverETAEvent) returns (google.protobuf.Empty);
 }
 
 message OrderId {
@@ -56,6 +39,11 @@ message OrderStatus {
   string order_id = 1 [(dev.restate.ext.field) = KEY];
   Status status = 2;
   int64 eta = 3;
+}
+
+message KafkaDriverETAEvent {
+  string order_id = 1 [(dev.restate.ext.field) = KEY];
+  string eta = 2 [(dev.restate.ext.field) = EVENT_PAYLOAD];
 }
 
 enum Status {
@@ -82,7 +70,7 @@ service DeliveryService {
 
 message DeliveryRequest {
   string order_id = 1 [(dev.restate.ext.field) = KEY];
-  Order order = 2;
+  string restaurant_id = 2;
   string callback = 3;
 }
 
@@ -106,7 +94,16 @@ service DriverService {
 
   rpc AssignDeliveryJob(AssignDeliveryRequest) returns (google.protobuf.Empty);
 
-  rpc UpdateCoordinate(KafkaDriverEvent) returns (google.protobuf.Empty);
+  rpc UpdateCoordinate(KafkaDriverLocationEvent) returns (google.protobuf.Empty);
+}
+
+message DriverAvailableNotification {
+  string driver_id = 1 [(dev.restate.ext.field) = KEY];
+  string region = 2;
+}
+
+message DriverId {
+  string driver_id = 1 [(dev.restate.ext.field) = KEY];
 }
 
 message AssignedDeliveryResponse {
@@ -124,14 +121,17 @@ message Delivery {
   Location customer_location = 5;
 }
 
-message DriverAvailableNotification {
+message AssignDeliveryRequest{
   string driver_id = 1 [(dev.restate.ext.field) = KEY];
-  string region = 2;
+  string order_id = 2;
+  string restaurant_id = 3;
+  Location restaurant_location = 7;
+  Location customer_location = 8;
 }
 
-message KafkaDriverEvent {
+message KafkaDriverLocationEvent {
   string driver_id = 1 [(dev.restate.ext.field) = KEY];
-  bytes payload = 2 [(dev.restate.ext.field) = EVENT_PAYLOAD];
+  bytes location = 2 [(dev.restate.ext.field) = EVENT_PAYLOAD];
 }
 
 service DriverPoolService {
@@ -139,18 +139,6 @@ service DriverPoolService {
 
   rpc SetDriverAvailable(DriverPoolAvailableNotification) returns (google.protobuf.Empty);
   rpc RequestDriverForDelivery(DeliveryCallback) returns (google.protobuf.Empty);
-}
-
-service DriverSimService {
-  option (dev.restate.ext.service_type) = KEYED;
-
-  rpc StartDriver(DriverId) returns (google.protobuf.Empty);
-  rpc PollForWork(DriverId) returns (google.protobuf.Empty);
-  rpc Move(DriverId) returns (google.protobuf.Empty);
-}
-
-message DriverId {
-  string driver_id = 1 [(dev.restate.ext.field) = KEY];
 }
 
 message DriverPoolAvailableNotification {
@@ -163,14 +151,10 @@ message DeliveryCallback {
   string delivery_callback_id = 2;
 }
 
-message AssignDeliveryRequest{
-  string driver_id = 1 [(dev.restate.ext.field) = KEY];
-  string order_id = 2;
-  string restaurant_id = 3;
-  Location restaurant_location = 7;
-  Location customer_location = 8;
-}
+service DriverSimService {
+  option (dev.restate.ext.service_type) = KEYED;
 
-message DriverRequest {
-  string region = 1 [(dev.restate.ext.field) = KEY];
+  rpc StartDriver(DriverId) returns (google.protobuf.Empty);
+  rpc PollForWork(DriverId) returns (google.protobuf.Empty);
+  rpc Move(DriverId) returns (google.protobuf.Empty);
 }

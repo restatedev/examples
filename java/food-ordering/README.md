@@ -2,7 +2,7 @@
 
 This example application implements an order processing middleware which sits between third-party food ordering providers and restaurants.
 Food ordering providers interact with the application by publishing events to Kafka.
-For each event, Restate triggers the `handleEvent` workflow of the order service.
+For each event, Restate triggers the `handleOrderCreationEvent` workflow of the order service.
 The order service interacts with the restaurants' external point of sale service to request the preparation of the orders.
 It also interacts with the delivery services to get the order delivered to the customer once preparation is done.
 

@@ -34,7 +34,7 @@ public class DeliveryService extends DeliveryServiceRestate.DeliveryServiceResta
         new DeliveryInformation(
             request.getOrderId(),
             request.getCallback(),
-            request.getOrder().getRestaurantId(),
+            request.getRestaurantId(),
             restaurantLocation,
             customerLocation,
             false);
@@ -58,7 +58,7 @@ public class DeliveryService extends DeliveryServiceRestate.DeliveryServiceResta
             OrderProto.AssignDeliveryRequest.newBuilder()
                 .setDriverId(driverId)
                 .setOrderId(request.getOrderId())
-                .setRestaurantId(request.getOrder().getRestaurantId())
+                .setRestaurantId(request.getRestaurantId())
                 .setRestaurantLocation(restaurantLocation.toProto())
                 .setCustomerLocation(customerLocation.toProto())
                 .build())
