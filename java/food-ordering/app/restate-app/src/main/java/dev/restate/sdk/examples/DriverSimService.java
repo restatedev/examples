@@ -12,133 +12,149 @@ import dev.restate.sdk.examples.types.DeliveryStatus;
 import dev.restate.sdk.examples.types.Location;
 import dev.restate.sdk.examples.utils.GeoUtils;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
+import java.time.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.time.Duration;
-
-
 /**
- * Simulated driver
- * This is not really part of the food ordering application.
- * This would actually be a mobile app that drivers use to accept delivery requests,
- * and to put themselves available.
+ * Simulated driver This is not really part of the food ordering application. This would actually be
+ * a mobile app that drivers use to accept delivery requests, and to put themselves available.
  *
- * For simplicity, we implemented this with Restate.
+ * <p>For simplicity, we implemented this with Restate.
  */
 public class DriverSimService extends DriverSimServiceRestate.DriverSimServiceRestateImplBase {
-    private static final Logger logger = LogManager.getLogger(DriverSimService.class);
+  private static final Logger logger = LogManager.getLogger(DriverSimService.class);
 
-    KafkaPublisher producer = new KafkaPublisher();
+  KafkaPublisher producer = new KafkaPublisher();
 
-    private final long POLL_INTERVAL = 1000;
-    private final long MOVE_INTERVAL = 1000;
-    private final long PAUSE_BETWEEN_DELIVERIES = 2000;
+  private final long POLL_INTERVAL = 1000;
+  private final long MOVE_INTERVAL = 1000;
+  private final long PAUSE_BETWEEN_DELIVERIES = 2000;
 
+  StateKey<Location> CURRENT_LOCATION =
+      StateKey.of("driversim-location", JacksonSerdes.of(Location.class));
 
-    StateKey<Location> CURRENT_LOCATION = StateKey.of("driversim-location", JacksonSerdes.of(Location.class));
+  StateKey<DeliveryStatus> DELIVERY_STATUS =
+      StateKey.of("delivery-status", JacksonSerdes.of(DeliveryStatus.class));
 
-    StateKey<DeliveryStatus> DELIVERY_STATUS = StateKey.of("delivery-status", JacksonSerdes.of(DeliveryStatus.class));
+  /** */
+  @Override
+  public void startDriver(RestateContext ctx, OrderProto.DriverId request)
+      throws TerminalException {
+    // If this driver was already created, do nothing
+    if (ctx.get(CURRENT_LOCATION).isPresent()) {
+      return;
+    }
 
-    /**
-     *
-     */
-    @Override
-    public void startDriver(RestateContext ctx, OrderProto.DriverId request) throws TerminalException {
-        // If this driver was already created, do nothing
-        if(ctx.get(CURRENT_LOCATION).isPresent()){
-            return;
-        }
+    logger.info("Starting driver " + request.getDriverId());
+    var location = ctx.sideEffect(JacksonSerdes.of(Location.class), GeoUtils::randomLocation);
+    ctx.set(CURRENT_LOCATION, location);
+    producer.sendDriverUpdate(
+        request.getDriverId(), JacksonSerdes.of(Location.class).serialize(location));
 
-        logger.info("Starting driver " + request.getDriverId());
-        var location = ctx.sideEffect(JacksonSerdes.of(Location.class), GeoUtils::randomLocation);
-        ctx.set(CURRENT_LOCATION, location);
-        producer.sendDriverUpdate(request.getDriverId(), JacksonSerdes.of(Location.class).serialize(location));
+    // Tell the digital twin of the driver in the food ordering app, that he is available
+    DriverServiceRestate.newClient(ctx)
+        .setDriverAvailable(
+            OrderProto.DriverAvailableNotification.newBuilder()
+                .setDriverId(request.getDriverId())
+                .setRegion(GeoUtils.DEMO_REGION)
+                .build())
+        .await();
 
-        // Tell the digital twin of the driver in the food ordering app, that he is available
-        DriverServiceRestate.newClient(ctx).setDriverAvailable(
-                OrderProto.DriverAvailableNotification.newBuilder().setDriverId(request.getDriverId()).setRegion(GeoUtils.DEMO_REGION).build()
-        ).await();
+    // Start polling for work
+    DriverSimServiceRestate.newClient(ctx).oneWay().pollForWork(request);
+  }
+
+  /**
+   * Asks the food ordering app to get a new delivery job. If there is no job, the driver will ask
+   * again after a short delay.
+   */
+  @Override
+  public void pollForWork(RestateContext ctx, OrderProto.DriverId request)
+      throws TerminalException {
+    var driverSimClnt = DriverSimServiceRestate.newClient(ctx);
+
+    // Ask the digital twin of the driver in the food ordering app, if he already got a job assigned
+    var optionalAssignedDelivery =
+        DriverServiceRestate.newClient(ctx).getAssignedDelivery(request).await();
+    if (optionalAssignedDelivery.hasEmpty()) {
+      driverSimClnt.delayed(Duration.ofMillis(POLL_INTERVAL)).pollForWork(request);
+      return;
+    }
+
+    // If there is a job, start the delivery
+    var delivery = optionalAssignedDelivery.getDelivery();
+    var newAssignedDelivery =
+        new AssignedDelivery(
+            delivery.getDriverId(),
+            delivery.getOrderId(),
+            delivery.getRestaurantId(),
+            Location.fromProto(delivery.getRestaurantLocation()),
+            Location.fromProto(delivery.getCustomerLocation()));
+    ctx.set(DELIVERY_STATUS, new DeliveryStatus(newAssignedDelivery, false));
+
+    // Start moving to the delivery pickup location
+    driverSimClnt.delayed(Duration.ofMillis(MOVE_INTERVAL)).move(request);
+  }
+
+  @Override
+  public void move(RestateContext ctx, OrderProto.DriverId request) throws TerminalException {
+    var thisDriverSim = DriverSimServiceRestate.newClient(ctx);
+    var deliveryStatus =
+        ctx.get(DELIVERY_STATUS)
+            .orElseThrow(() -> new TerminalException("Driver has no delivery assigned"));
+    var currentLocation =
+        ctx.get(CURRENT_LOCATION)
+            .orElseThrow(() -> new TerminalException("Driver has no location assigned"));
+
+    // Get next destination to go to
+    var nextDestination =
+        deliveryStatus.pickedUp
+            ? deliveryStatus.delivery.customerLocation
+            : deliveryStatus.delivery.restaurantLocation;
+
+    // Move to the next location
+    var newLocation = GeoUtils.moveToDestination(currentLocation, nextDestination);
+    ctx.set(CURRENT_LOCATION, newLocation);
+    producer.sendDriverUpdate(
+        request.getDriverId(), JacksonSerdes.of(Location.class).serialize(newLocation));
+
+    // If we reached the destination, notify the food ordering app
+    if (newLocation.equals(nextDestination)) {
+      // If the delivery was already picked up, then that means it now arrived at the customer
+      if (deliveryStatus.pickedUp) {
+        // Delivery is delivered to customer
+        ctx.clear(DELIVERY_STATUS);
+
+        // Notify the driver's digital twin in the food ordering app of the delivery success
+        DriverServiceRestate.newClient(ctx).notifyDeliveryDelivered(request).await();
+
+        // Take a small break before starting the next delivery
+        ctx.sleep(Duration.ofMillis(PAUSE_BETWEEN_DELIVERIES));
+
+        // Tell the driver's digital twin in the food ordering app, that he is available
+        DriverServiceRestate.newClient(ctx)
+            .oneWay()
+            .setDriverAvailable(
+                OrderProto.DriverAvailableNotification.newBuilder()
+                    .setDriverId(request.getDriverId())
+                    .setRegion(GeoUtils.DEMO_REGION)
+                    .build());
 
         // Start polling for work
         DriverSimServiceRestate.newClient(ctx).oneWay().pollForWork(request);
+        return;
+      }
+
+      // If the delivery was not picked up yet, then that means the driver now arrived at the
+      // restaurant
+      // and will start the delivery
+      deliveryStatus.pickedUp = true;
+      ctx.set(DELIVERY_STATUS, deliveryStatus);
+      DriverServiceRestate.newClient(ctx).notifyDeliveryPickup(request).await();
     }
 
-    /**
-     * Asks the food ordering app to get a new delivery job.
-     * If there is no job, the driver will ask again after a short delay.
-     */
-    @Override
-    public void pollForWork(RestateContext ctx, OrderProto.DriverId request) throws TerminalException {
-        var driverSimClnt = DriverSimServiceRestate.newClient(ctx);
-
-        // Ask the digital twin of the driver in the food ordering app, if he already got a job assigned
-        var optionalAssignedDelivery = DriverServiceRestate.newClient(ctx).getAssignedDelivery(request).await();
-        if(optionalAssignedDelivery.hasEmpty()){
-            driverSimClnt.delayed(Duration.ofMillis(POLL_INTERVAL)).pollForWork(request);
-            return;
-        }
-
-        // If there is a job, start the delivery
-        var delivery = optionalAssignedDelivery.getDelivery();
-        var newAssignedDelivery = new AssignedDelivery(
-                delivery.getDriverId(),
-                delivery.getOrderId(),
-                delivery.getRestaurantId(),
-                Location.fromProto(delivery.getRestaurantLocation()),
-                Location.fromProto(delivery.getCustomerLocation()));
-        ctx.set(DELIVERY_STATUS, new DeliveryStatus(newAssignedDelivery, false));
-
-        // Start moving to the delivery pickup location
-        driverSimClnt.delayed(Duration.ofMillis(MOVE_INTERVAL)).move(request);
-    }
-
-    @Override
-    public void move(RestateContext ctx, OrderProto.DriverId request) throws TerminalException {
-        var thisDriverSim = DriverSimServiceRestate.newClient(ctx);
-        var deliveryStatus = ctx.get(DELIVERY_STATUS).orElseThrow(() -> new TerminalException("Driver has no delivery assigned"));
-        var currentLocation = ctx.get(CURRENT_LOCATION).orElseThrow(() -> new TerminalException("Driver has no location assigned"));
-
-        // Get next destination to go to
-        var nextDestination = deliveryStatus.pickedUp ? deliveryStatus.delivery.customerLocation : deliveryStatus.delivery.restaurantLocation;
-
-        // Move to the next location
-        var newLocation = GeoUtils.moveToDestination(currentLocation, nextDestination);
-        ctx.set(CURRENT_LOCATION, newLocation);
-        producer.sendDriverUpdate(request.getDriverId(), JacksonSerdes.of(Location.class).serialize(newLocation));
-
-        // If we reached the destination, notify the food ordering app
-        if(newLocation.equals(nextDestination)){
-            // If the delivery was already picked up, then that means it now arrived at the customer
-            if(deliveryStatus.pickedUp){
-                // Delivery is delivered to customer
-                ctx.clear(DELIVERY_STATUS);
-
-                // Notify the driver's digital twin in the food ordering app of the delivery success
-                DriverServiceRestate.newClient(ctx).notifyDeliveryDelivered(request).await();
-
-                // Take a small break before starting the next delivery
-                ctx.sleep(Duration.ofMillis(PAUSE_BETWEEN_DELIVERIES));
-
-                // Tell the driver's digital twin in the food ordering app, that he is available
-                DriverServiceRestate.newClient(ctx).oneWay().setDriverAvailable(
-                        OrderProto.DriverAvailableNotification.newBuilder().setDriverId(request.getDriverId()).setRegion(GeoUtils.DEMO_REGION).build()
-                );
-
-                // Start polling for work
-                DriverSimServiceRestate.newClient(ctx).oneWay().pollForWork(request);
-                return;
-            }
-
-            // If the delivery was not picked up yet, then that means the driver now arrived at the restaurant
-            // and will start the delivery
-            deliveryStatus.pickedUp = true;
-            ctx.set(DELIVERY_STATUS, deliveryStatus);
-            DriverServiceRestate.newClient(ctx).notifyDeliveryPickup(request).await();
-        }
-
-        // Call this method again after a short delay
-        thisDriverSim.delayed(Duration.ofMillis(MOVE_INTERVAL)).move(request);
-    }
+    // Call this method again after a short delay
+    thisDriverSim.delayed(Duration.ofMillis(MOVE_INTERVAL)).move(request);
+  }
 }
-

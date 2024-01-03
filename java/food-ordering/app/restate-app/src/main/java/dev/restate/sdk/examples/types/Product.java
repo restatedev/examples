@@ -3,41 +3,41 @@ package dev.restate.sdk.examples.types;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Product {
-    @JsonProperty("product_id")
-    public String productId;
-    public String description;
-    public int quantity;
+  @JsonProperty("product_id")
+  public String productId;
 
-    public Product(String productId, String description, int quantity) {
-        this.productId = productId;
-        this.description = description;
-        this.quantity = quantity;
-    }
+  public String description;
+  public int quantity;
 
-    public Product() {
-    }
+  public Product(String productId, String description, int quantity) {
+    this.productId = productId;
+    this.description = description;
+    this.quantity = quantity;
+  }
 
-    public String getProductId() {
-        return productId;
-    }
+  public Product() {}
 
-    public void setProductId(String productId) {
-        this.productId = productId;
-    }
+  public String getProductId() {
+    return productId;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public void setProductId(String productId) {
+    this.productId = productId;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public int getQuantity() {
-        return quantity;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
+  public int getQuantity() {
+    return quantity;
+  }
+
+  public void setQuantity(int quantity) {
+    this.quantity = quantity;
+  }
 }
