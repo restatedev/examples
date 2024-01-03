@@ -1,0 +1,30 @@
+#!/bin/bash
+
+SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+
+## read config
+#source "$SCRIPTPATH/config"
+#
+## Check if Docker daemon is running
+#if ! docker info >/dev/null 2>&1; then
+#    echo "Docker daemon is not running."
+#    exit 1
+#fi
+#
+## Check if container exists and is running
+#if docker ps -f "name=$RESTATE_CONTAINER_NAME" | grep -wq "$RESTATE_CONTAINER_NAME"; then
+#    echo "Restate container is already running. Exiting."
+#    exit 1
+#fi
+#
+## Check if container exists but is not running
+#if docker ps -f status=exited -f "name=$RESTATE_CONTAINER_NAME" | grep -wq "$RESTATE_CONTAINER_NAME"; then
+#    echo "Starting existing Restate container and attaching..."
+#    docker start -a "$RESTATE_CONTAINER_NAME"
+#    exit 0
+#fi
+
+# Create and start container if nothing is the case
+echo "Creating and starting Restate container..."
+
+docker run --name "restate_dev" --network=host -v "./restate-docker.yaml:/restate.yaml:Z,ro" -e RESTATE_CONFIG=/restate.yaml ghcr.io/restatedev/restate-dist:latest

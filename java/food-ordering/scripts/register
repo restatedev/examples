@@ -1,0 +1,7 @@
+#!/bin/bash
+
+curl -X POST 'localhost:9070/endpoints' -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
+curl -X POST 'localhost:9070/subscriptions' -H 'content-type: application/json' -d '{ "source":"kafka://my-cluster/orders", "sink":"service://order.OrderService/HandleEvent" }'
+
+curl -X POST -H 'content-type: application/json' localhost:8080/order.DriverSimService/StartDriver -d '{"id": "driver-A"}'
+curl -X POST -H 'content-type: application/json' localhost:8080/order.DriverSimService/StartDriver -d '{"id": "driver-B"}'
