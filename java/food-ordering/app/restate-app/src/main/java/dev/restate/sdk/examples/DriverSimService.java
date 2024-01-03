@@ -8,7 +8,6 @@ import dev.restate.sdk.examples.generated.DriverServiceRestate;
 import dev.restate.sdk.examples.generated.DriverSimServiceRestate;
 import dev.restate.sdk.examples.generated.OrderProto;
 import dev.restate.sdk.examples.types.AssignedDelivery;
-import dev.restate.sdk.examples.types.DeliveryStatus;
 import dev.restate.sdk.examples.types.Location;
 import dev.restate.sdk.examples.utils.GeoUtils;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
@@ -34,8 +33,8 @@ public class DriverSimService extends DriverSimServiceRestate.DriverSimServiceRe
   StateKey<Location> CURRENT_LOCATION =
       StateKey.of("driversim-location", JacksonSerdes.of(Location.class));
 
-  StateKey<DeliveryStatus> DELIVERY_STATUS =
-      StateKey.of("delivery-status", JacksonSerdes.of(DeliveryStatus.class));
+  StateKey<AssignedDelivery> ASSIGNED_DELIVERY =
+      StateKey.of("assigned-delivery", JacksonSerdes.of(AssignedDelivery.class));
 
   /** */
   @Override
@@ -91,7 +90,7 @@ public class DriverSimService extends DriverSimServiceRestate.DriverSimServiceRe
             delivery.getRestaurantId(),
             Location.fromProto(delivery.getRestaurantLocation()),
             Location.fromProto(delivery.getCustomerLocation()));
-    ctx.set(DELIVERY_STATUS, new DeliveryStatus(newAssignedDelivery, false));
+    ctx.set(ASSIGNED_DELIVERY, newAssignedDelivery);
 
     // Start moving to the delivery pickup location
     driverSimClnt.delayed(Duration.ofMillis(MOVE_INTERVAL)).move(request);
@@ -100,8 +99,8 @@ public class DriverSimService extends DriverSimServiceRestate.DriverSimServiceRe
   @Override
   public void move(RestateContext ctx, OrderProto.DriverId request) throws TerminalException {
     var thisDriverSim = DriverSimServiceRestate.newClient(ctx);
-    var deliveryStatus =
-        ctx.get(DELIVERY_STATUS)
+    var assignedDelivery =
+        ctx.get(ASSIGNED_DELIVERY)
             .orElseThrow(() -> new TerminalException("Driver has no delivery assigned"));
     var currentLocation =
         ctx.get(CURRENT_LOCATION)
@@ -109,9 +108,9 @@ public class DriverSimService extends DriverSimServiceRestate.DriverSimServiceRe
 
     // Get next destination to go to
     var nextDestination =
-        deliveryStatus.pickedUp
-            ? deliveryStatus.delivery.customerLocation
-            : deliveryStatus.delivery.restaurantLocation;
+        assignedDelivery.orderPickedUp
+            ? assignedDelivery.customerLocation
+            : assignedDelivery.restaurantLocation;
 
     // Move to the next location
     var newLocation = GeoUtils.moveToDestination(currentLocation, nextDestination);
@@ -122,9 +121,9 @@ public class DriverSimService extends DriverSimServiceRestate.DriverSimServiceRe
     // If we reached the destination, notify the food ordering app
     if (newLocation.equals(nextDestination)) {
       // If the delivery was already picked up, then that means it now arrived at the customer
-      if (deliveryStatus.pickedUp) {
+      if (assignedDelivery.orderPickedUp) {
         // Delivery is delivered to customer
-        ctx.clear(DELIVERY_STATUS);
+        ctx.clear(ASSIGNED_DELIVERY);
 
         // Notify the driver's digital twin in the food ordering app of the delivery success
         DriverServiceRestate.newClient(ctx).notifyDeliveryDelivered(request).await();
@@ -149,8 +148,8 @@ public class DriverSimService extends DriverSimServiceRestate.DriverSimServiceRe
       // If the delivery was not picked up yet, then that means the driver now arrived at the
       // restaurant
       // and will start the delivery
-      deliveryStatus.pickedUp = true;
-      ctx.set(DELIVERY_STATUS, deliveryStatus);
+      assignedDelivery.notifyPickup();
+      ctx.set(ASSIGNED_DELIVERY, assignedDelivery);
       DriverServiceRestate.newClient(ctx).notifyDeliveryPickup(request).await();
     }
 

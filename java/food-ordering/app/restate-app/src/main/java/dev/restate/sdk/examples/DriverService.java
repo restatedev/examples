@@ -51,6 +51,8 @@ public class DriverService extends DriverServiceRestate.DriverServiceRestateImpl
                 () ->
                     new TerminalException(
                         "Driver is in status DELIVERING but there is no current delivery set."));
+    currentDelivery.notifyPickup();
+    ctx.set(ASSIGNED_DELIVERY, currentDelivery);
 
     // Update the status of the delivery in the delivery service
     DeliveryServiceRestate.newClient(ctx)
@@ -161,7 +163,7 @@ public class DriverService extends DriverServiceRestate.DriverServiceRestateImpl
       throw new TerminalException(
           String.format(
               "Driver status wrong. Expected %s but was %s",
-              expectedStatus.toString(), currentStatus.toString()));
+              expectedStatus.toString(), currentStatus));
     }
   }
 }

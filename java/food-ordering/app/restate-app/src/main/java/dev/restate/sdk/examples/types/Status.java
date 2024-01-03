@@ -1,7 +1,6 @@
 package dev.restate.sdk.examples.types;
 
-import java.util.HashMap;
-import java.util.Map;
+import dev.restate.sdk.examples.generated.OrderProto;
 
 public enum Status {
   NEW(0),
@@ -17,20 +16,9 @@ public enum Status {
   UNKNOWN(10);
 
   private final int value;
-  private static Map<Integer, Status> map = new HashMap<>();
 
-  private Status(int value) {
+  Status(int value) {
     this.value = value;
-  }
-
-  static {
-    for (Status stat : Status.values()) {
-      map.put(stat.value, stat);
-    }
-  }
-
-  public static Status valueOfLabel(int pageType) {
-    return map.get(pageType);
   }
 
   public int getValue() {

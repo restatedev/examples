@@ -7,6 +7,7 @@ public class AssignedDelivery {
   public String restaurantId;
   public Location restaurantLocation;
   public Location customerLocation;
+  public boolean orderPickedUp = false;
 
   public AssignedDelivery(
       String driverId,
@@ -22,4 +23,8 @@ public class AssignedDelivery {
   }
 
   public AssignedDelivery() {}
+
+  public void notifyPickup() {
+    this.orderPickedUp = true;
+  }
 }
