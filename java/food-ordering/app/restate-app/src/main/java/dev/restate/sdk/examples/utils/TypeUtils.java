@@ -14,5 +14,4 @@ public class TypeUtils {
   public static OrderProto.OrderId toOrderIdProto(String id) {
     return OrderProto.OrderId.newBuilder().setOrderId(id).build();
   }
-
 }

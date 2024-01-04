@@ -63,9 +63,9 @@ service DeliveryService {
   option (dev.restate.ext.service_type) = KEYED;
 
   rpc Start(DeliveryRequest) returns (google.protobuf.Empty);
-  rpc DeliveryPickedUp(OrderId) returns (google.protobuf.Empty);
-  rpc DeliveryDelivered(OrderId) returns (google.protobuf.Empty);
-  rpc DriverLocationUpdate(DeliveryLocationUpdate) returns (google.protobuf.Empty);
+  rpc NotifyDeliveryPickup(OrderId) returns (google.protobuf.Empty);
+  rpc NotifyDeliveryDelivered(OrderId) returns (google.protobuf.Empty);
+  rpc HandleDriverLocationUpdate(DeliveryLocationUpdate) returns (google.protobuf.Empty);
 }
 
 message DeliveryRequest {
@@ -94,7 +94,7 @@ service DriverService {
 
   rpc AssignDeliveryJob(AssignDeliveryRequest) returns (google.protobuf.Empty);
 
-  rpc UpdateCoordinate(KafkaDriverLocationEvent) returns (google.protobuf.Empty);
+  rpc HandleDriverLocationUpdateEvent(KafkaDriverLocationEvent) returns (google.protobuf.Empty);
 }
 
 message DriverAvailableNotification {

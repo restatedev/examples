@@ -1,4 +1,4 @@
-package dev.restate.sdk.examples;
+package dev.restate.sdk.examples.external;
 
 import dev.restate.sdk.RestateContext;
 import dev.restate.sdk.common.StateKey;
@@ -16,8 +16,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Simulated driver This is not really part of the food ordering application. This would actually be
- * a mobile app that drivers use to accept delivery requests, and to put themselves available.
+ * !!!SHOULD BE AN EXTERNAL APP ON THE DRIVER's PHONE!!! Simulated driver with application that
+ * interacts with the food ordering app. This is not really part of the food ordering application.
+ * This would actually be a mobile app that drivers use to accept delivery requests, and to set
+ * themselves as available.
  *
  * <p>For simplicity, we implemented this with Restate.
  */

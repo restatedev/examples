@@ -15,6 +15,11 @@ import java.nio.charset.StandardCharsets;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Restaurant POS system (HTTP server) that receives preparation requests for orders from the
+ * OrderService. Once a preparation has been completed, it notifies the OrderService via the
+ * callback.
+ */
 public class RestaurantMain {
   private static final Logger logger = LogManager.getLogger(RestaurantMain.class);
   public static final String RESTATE_RUNTIME_ENDPOINT =
@@ -30,6 +35,7 @@ public class RestaurantMain {
     logger.info("Restaurant POS server is listening on port 5050...");
   }
 
+  /** Preparation request handler. */
   static class PrepareHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange t) throws IOException {
@@ -47,6 +53,7 @@ public class RestaurantMain {
     }
   }
 
+  /** Notifies OrderService of the successful preparation */
   private static void resolveCb(String callbackId, String payload)
       throws IOException, InterruptedException {
     HttpClient httpClient = HttpClient.newHttpClient();

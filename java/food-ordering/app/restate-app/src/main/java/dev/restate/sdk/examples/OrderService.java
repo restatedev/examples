@@ -18,6 +18,11 @@ import dev.restate.sdk.examples.types.Status;
 import java.time.Duration;
 import java.util.UUID;
 
+/**
+ * Order processing workflow Gets called for each Kafka event that is published to the order topic.
+ * The event contains the order ID and the raw JSON order. The workflow handles the payment, asks
+ * the restaurant to start the preparation, and triggers the delivery.
+ */
 public class OrderService extends OrderServiceRestate.OrderServiceRestateImplBase {
   private final RestaurantClient restaurant = RestaurantClient.get();
   private final PaymentClient paymentClnt = PaymentClient.get();
@@ -69,6 +74,7 @@ public class OrderService extends OrderServiceRestate.OrderServiceRestateImplBas
       DeliveryServiceRestate.newClient(ctx).oneWay().start(deliveryRequest);
       deliveryAwakeable.await();
       orderStatusSend.setStatus(statusToProto(order.orderId, Status.DELIVERED));
+
     } catch (JsonProcessingException e) {
       throw new TerminalException("Parsing raw JSON order failed: " + e.getMessage());
     }

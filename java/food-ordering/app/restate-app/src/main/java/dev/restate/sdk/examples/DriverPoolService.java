@@ -11,7 +11,11 @@ import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import java.util.LinkedList;
 import java.util.Queue;
 
-/** Links available drivers to delivery requests */
+/**
+ * Links available drivers to delivery requests Keyed by the region. Each region has a pool of
+ * available drivers and orders waiting for a driver. This service is responsible for tracking and
+ * matching the two.
+ */
 public class DriverPoolService extends DriverPoolServiceRestate.DriverPoolServiceRestateImplBase {
 
   // Deliveries that are waiting for a driver to become available
