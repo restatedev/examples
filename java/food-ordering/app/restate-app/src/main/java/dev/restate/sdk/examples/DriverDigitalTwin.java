@@ -6,9 +6,9 @@ import com.google.protobuf.Empty;
 import dev.restate.sdk.RestateContext;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
-import dev.restate.sdk.examples.generated.DeliveryServiceRestate;
-import dev.restate.sdk.examples.generated.DriverPoolServiceRestate;
-import dev.restate.sdk.examples.generated.DriverServiceRestate;
+import dev.restate.sdk.examples.generated.DeliveryManagerRestate;
+import dev.restate.sdk.examples.generated.DriverDeliveryMatcherRestate;
+import dev.restate.sdk.examples.generated.DriverDigitalTwinRestate;
 import dev.restate.sdk.examples.generated.OrderProto;
 import dev.restate.sdk.examples.generated.OrderProto.AssignDeliveryRequest;
 import dev.restate.sdk.examples.types.AssignedDelivery;
@@ -21,7 +21,7 @@ import dev.restate.sdk.serde.jackson.JacksonSerdes;
  * Keyed by driver ID. The actual driver would have an application (mocked by DriverSimService) that
  * calls this service.
  */
-public class DriverService extends DriverServiceRestate.DriverServiceRestateImplBase {
+public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwinRestateImplBase {
 
   // Current status of the driver: idle, waiting for work, or delivering
   StateKey<DriverStatus> DRIVER_STATUS =
@@ -45,7 +45,7 @@ public class DriverService extends DriverServiceRestate.DriverServiceRestateImpl
     expectStatus(ctx, DriverStatus.IDLE);
 
     ctx.set(DRIVER_STATUS, DriverStatus.WAITING_FOR_WORK);
-    DriverPoolServiceRestate.newClient(ctx)
+    DriverDeliveryMatcherRestate.newClient(ctx)
         .oneWay()
         .setDriverAvailable(
             OrderProto.DriverPoolAvailableNotification.newBuilder()
@@ -79,7 +79,7 @@ public class DriverService extends DriverServiceRestate.DriverServiceRestateImpl
     ctx.get(DRIVER_LOCATION)
         .ifPresent(
             loc ->
-                DeliveryServiceRestate.newClient(ctx)
+                DeliveryManagerRestate.newClient(ctx)
                     .oneWay()
                     .handleDriverLocationUpdate(
                         OrderProto.DeliveryLocationUpdate.newBuilder()
@@ -107,7 +107,7 @@ public class DriverService extends DriverServiceRestate.DriverServiceRestateImpl
     ctx.set(ASSIGNED_DELIVERY, currentDelivery);
 
     // Update the status of the delivery in the delivery service
-    DeliveryServiceRestate.newClient(ctx)
+    DeliveryManagerRestate.newClient(ctx)
         .oneWay()
         .notifyDeliveryPickup(toOrderIdProto(currentDelivery.orderId));
   }
@@ -129,7 +129,7 @@ public class DriverService extends DriverServiceRestate.DriverServiceRestateImpl
     ctx.clear(ASSIGNED_DELIVERY);
 
     // Notify the delivery service that the delivery was delivered
-    DeliveryServiceRestate.newClient(ctx)
+    DeliveryManagerRestate.newClient(ctx)
         .oneWay()
         .notifyDeliveryDelivered(toOrderIdProto(assignedDelivery.orderId));
 
@@ -149,7 +149,7 @@ public class DriverService extends DriverServiceRestate.DriverServiceRestateImpl
     ctx.get(ASSIGNED_DELIVERY)
         .ifPresent(
             delivery ->
-                DeliveryServiceRestate.newClient(ctx)
+                DeliveryManagerRestate.newClient(ctx)
                     .oneWay()
                     .handleDriverLocationUpdate(
                         OrderProto.DeliveryLocationUpdate.newBuilder()

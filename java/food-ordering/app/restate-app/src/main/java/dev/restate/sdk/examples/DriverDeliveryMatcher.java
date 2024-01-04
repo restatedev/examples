@@ -5,7 +5,7 @@ import dev.restate.sdk.RestateContext;
 import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
-import dev.restate.sdk.examples.generated.DriverPoolServiceRestate;
+import dev.restate.sdk.examples.generated.DriverDeliveryMatcherRestate;
 import dev.restate.sdk.examples.generated.OrderProto;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import java.util.LinkedList;
@@ -16,7 +16,8 @@ import java.util.Queue;
  * available drivers and orders waiting for a driver. This service is responsible for tracking and
  * matching the two.
  */
-public class DriverPoolService extends DriverPoolServiceRestate.DriverPoolServiceRestateImplBase {
+public class DriverDeliveryMatcher
+    extends DriverDeliveryMatcherRestate.DriverDeliveryMatcherRestateImplBase {
 
   // Deliveries that are waiting for a driver to become available
   private final StateKey<Queue<String>> PENDING_DELIVERIES =

@@ -9,10 +9,10 @@ import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.examples.clients.PaymentClient;
 import dev.restate.sdk.examples.clients.RestaurantClient;
-import dev.restate.sdk.examples.generated.DeliveryServiceRestate;
+import dev.restate.sdk.examples.generated.DeliveryManagerRestate;
 import dev.restate.sdk.examples.generated.OrderProto;
-import dev.restate.sdk.examples.generated.OrderServiceRestate;
 import dev.restate.sdk.examples.generated.OrderStatusServiceRestate;
+import dev.restate.sdk.examples.generated.OrderWorkflowRestate;
 import dev.restate.sdk.examples.types.OrderRequest;
 import dev.restate.sdk.examples.types.Status;
 import java.time.Duration;
@@ -23,7 +23,7 @@ import java.util.UUID;
  * The event contains the order ID and the raw JSON order. The workflow handles the payment, asks
  * the restaurant to start the preparation, and triggers the delivery.
  */
-public class OrderService extends OrderServiceRestate.OrderServiceRestateImplBase {
+public class OrderWorkflow extends OrderWorkflowRestate.OrderWorkflowRestateImplBase {
   private final RestaurantClient restaurant = RestaurantClient.get();
   private final PaymentClient paymentClnt = PaymentClient.get();
 
@@ -71,7 +71,7 @@ public class OrderService extends OrderServiceRestate.OrderServiceRestateImplBas
               .setRestaurantId(order.restaurantId)
               .setCallback(deliveryAwakeable.id())
               .build();
-      DeliveryServiceRestate.newClient(ctx).oneWay().start(deliveryRequest);
+      DeliveryManagerRestate.newClient(ctx).oneWay().start(deliveryRequest);
       deliveryAwakeable.await();
       orderStatusSend.setStatus(statusToProto(order.orderId, Status.DELIVERED));
 

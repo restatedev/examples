@@ -1,6 +1,0 @@
-#!/bin/bash
-
-# Create and start container if nothing is the case
-echo "Creating and starting Restate container..."
-
-docker run --name "restate" --rm --network=host -v "./restate-docker.yaml:/restate.yaml:Z,ro" -e RESTATE_CONFIG=/restate.yaml docker.io/restatedev/restate:latest

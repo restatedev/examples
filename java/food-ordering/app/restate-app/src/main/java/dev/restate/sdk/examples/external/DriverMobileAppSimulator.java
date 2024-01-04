@@ -4,8 +4,8 @@ import dev.restate.sdk.RestateContext;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.examples.clients.KafkaPublisher;
-import dev.restate.sdk.examples.generated.DriverServiceRestate;
-import dev.restate.sdk.examples.generated.DriverSimServiceRestate;
+import dev.restate.sdk.examples.generated.DriverDigitalTwinRestate;
+import dev.restate.sdk.examples.generated.DriverMobileAppSimulatorRestate;
 import dev.restate.sdk.examples.generated.OrderProto;
 import dev.restate.sdk.examples.types.AssignedDelivery;
 import dev.restate.sdk.examples.types.Location;
@@ -23,8 +23,9 @@ import org.apache.logging.log4j.Logger;
  *
  * <p>For simplicity, we implemented this with Restate.
  */
-public class DriverSimService extends DriverSimServiceRestate.DriverSimServiceRestateImplBase {
-  private static final Logger logger = LogManager.getLogger(DriverSimService.class);
+public class DriverMobileAppSimulator
+    extends DriverMobileAppSimulatorRestate.DriverMobileAppSimulatorRestateImplBase {
+  private static final Logger logger = LogManager.getLogger(DriverMobileAppSimulator.class);
 
   KafkaPublisher producer = new KafkaPublisher();
 
@@ -54,7 +55,7 @@ public class DriverSimService extends DriverSimServiceRestate.DriverSimServiceRe
         request.getDriverId(), JacksonSerdes.of(Location.class).serialize(location));
 
     // Tell the digital twin of the driver in the food ordering app, that he is available
-    DriverServiceRestate.newClient(ctx)
+    DriverDigitalTwinRestate.newClient(ctx)
         .setDriverAvailable(
             OrderProto.DriverAvailableNotification.newBuilder()
                 .setDriverId(request.getDriverId())
@@ -63,7 +64,7 @@ public class DriverSimService extends DriverSimServiceRestate.DriverSimServiceRe
         .await();
 
     // Start polling for work
-    DriverSimServiceRestate.newClient(ctx).oneWay().pollForWork(request);
+    DriverMobileAppSimulatorRestate.newClient(ctx).oneWay().pollForWork(request);
   }
 
   /**
@@ -73,11 +74,13 @@ public class DriverSimService extends DriverSimServiceRestate.DriverSimServiceRe
   @Override
   public void pollForWork(RestateContext ctx, OrderProto.DriverId request)
       throws TerminalException {
-    var driverSimClnt = DriverSimServiceRestate.newClient(ctx);
+    var driverSimClnt = DriverMobileAppSimulatorRestate.newClient(ctx);
 
     // Ask the digital twin of the driver in the food ordering app, if he already got a job assigned
     var optionalAssignedDelivery =
-        DriverServiceRestate.newClient(ctx).getAssignedDelivery(request).await();
+        DriverDigitalTwinRestate.newClient(ctx).getAssignedDelivery(request).await();
+
+    // If there is no job, ask again after a short delay
     if (optionalAssignedDelivery.hasEmpty()) {
       driverSimClnt.delayed(Duration.ofMillis(POLL_INTERVAL)).pollForWork(request);
       return;
@@ -100,7 +103,7 @@ public class DriverSimService extends DriverSimServiceRestate.DriverSimServiceRe
 
   @Override
   public void move(RestateContext ctx, OrderProto.DriverId request) throws TerminalException {
-    var thisDriverSim = DriverSimServiceRestate.newClient(ctx);
+    var thisDriverSim = DriverMobileAppSimulatorRestate.newClient(ctx);
     var assignedDelivery =
         ctx.get(ASSIGNED_DELIVERY)
             .orElseThrow(() -> new TerminalException("Driver has no delivery assigned"));
@@ -128,13 +131,13 @@ public class DriverSimService extends DriverSimServiceRestate.DriverSimServiceRe
         ctx.clear(ASSIGNED_DELIVERY);
 
         // Notify the driver's digital twin in the food ordering app of the delivery success
-        DriverServiceRestate.newClient(ctx).notifyDeliveryDelivered(request).await();
+        DriverDigitalTwinRestate.newClient(ctx).notifyDeliveryDelivered(request).await();
 
         // Take a small break before starting the next delivery
         ctx.sleep(Duration.ofMillis(PAUSE_BETWEEN_DELIVERIES));
 
         // Tell the driver's digital twin in the food ordering app, that he is available
-        DriverServiceRestate.newClient(ctx)
+        DriverDigitalTwinRestate.newClient(ctx)
             .oneWay()
             .setDriverAvailable(
                 OrderProto.DriverAvailableNotification.newBuilder()
@@ -143,7 +146,7 @@ public class DriverSimService extends DriverSimServiceRestate.DriverSimServiceRe
                     .build());
 
         // Start polling for work
-        DriverSimServiceRestate.newClient(ctx).oneWay().pollForWork(request);
+        DriverMobileAppSimulatorRestate.newClient(ctx).oneWay().pollForWork(request);
         return;
       }
 
@@ -152,7 +155,7 @@ public class DriverSimService extends DriverSimServiceRestate.DriverSimServiceRe
       // and will start the delivery
       assignedDelivery.notifyPickup();
       ctx.set(ASSIGNED_DELIVERY, assignedDelivery);
-      DriverServiceRestate.newClient(ctx).notifyDeliveryPickup(request).await();
+      DriverDigitalTwinRestate.newClient(ctx).notifyDeliveryPickup(request).await();
     }
 
     // Call this method again after a short delay

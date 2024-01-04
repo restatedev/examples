@@ -9,7 +9,7 @@ import "dev/restate/events.proto";
 option java_package = "dev.restate.sdk.examples.generated";
 option java_outer_classname = "OrderProto";
 
-service OrderService {
+service OrderWorkflow {
   option (dev.restate.ext.service_type) = KEYED;
 
   rpc HandleOrderCreationEvent(KafkaOrderEvent) returns (google.protobuf.Empty);
@@ -59,7 +59,7 @@ enum Status {
   CANCELLED = 9;
 }
 
-service DeliveryService {
+service DeliveryManager {
   option (dev.restate.ext.service_type) = KEYED;
 
   rpc Start(DeliveryRequest) returns (google.protobuf.Empty);
@@ -84,7 +84,7 @@ message Location {
   double lat = 2;
 }
 
-service DriverService {
+service DriverDigitalTwin {
   option (dev.restate.ext.service_type) = KEYED;
 
   rpc SetDriverAvailable(DriverAvailableNotification) returns (google.protobuf.Empty);
@@ -134,7 +134,7 @@ message KafkaDriverLocationEvent {
   bytes location = 2 [(dev.restate.ext.field) = EVENT_PAYLOAD];
 }
 
-service DriverPoolService {
+service DriverDeliveryMatcher {
   option (dev.restate.ext.service_type) = KEYED;
 
   rpc SetDriverAvailable(DriverPoolAvailableNotification) returns (google.protobuf.Empty);
@@ -151,7 +151,7 @@ message DeliveryCallback {
   string delivery_callback_id = 2;
 }
 
-service DriverSimService {
+service DriverMobileAppSimulator {
   option (dev.restate.ext.service_type) = KEYED;
 
   rpc StartDriver(DriverId) returns (google.protobuf.Empty);

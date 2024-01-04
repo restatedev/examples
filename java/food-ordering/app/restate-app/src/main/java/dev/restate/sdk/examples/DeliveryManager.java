@@ -17,7 +17,7 @@ import dev.restate.sdk.serde.jackson.JacksonSerdes;
  * Manages the delivery of the order to the customer. Keyed by the order ID (similar to the
  * OrderService and OrderStatusService).
  */
-public class DeliveryService extends DeliveryServiceRestate.DeliveryServiceRestateImplBase {
+public class DeliveryManager extends DeliveryManagerRestate.DeliveryManagerRestateImplBase {
 
   // State key to store all relevant information about the delivery.
   StateKey<DeliveryInformation> DELIVERY_INFO =
@@ -50,7 +50,7 @@ public class DeliveryService extends DeliveryServiceRestate.DeliveryServiceResta
 
     // Acquire a driver
     var driverAwakeable = ctx.awakeable(CoreSerdes.STRING_UTF8);
-    DriverPoolServiceRestate.newClient(ctx)
+    DriverDeliveryMatcherRestate.newClient(ctx)
         .oneWay()
         .requestDriverForDelivery(
             OrderProto.DeliveryCallback.newBuilder()
@@ -63,7 +63,7 @@ public class DeliveryService extends DeliveryServiceRestate.DeliveryServiceResta
     var driverId = driverAwakeable.await();
 
     // Assign the driver to the job
-    DriverServiceRestate.newClient(ctx)
+    DriverDigitalTwinRestate.newClient(ctx)
         .assignDeliveryJob(
             OrderProto.AssignDeliveryRequest.newBuilder()
                 .setDriverId(driverId)
