@@ -1,0 +1,10 @@
+worker:
+  kafka:
+    clusters:
+      my-cluster:
+        bootstrap.servers: broker:29092
+  storage_query:
+    bind_address: 0.0.0.0:5432
+  invoker:
+    retry_policy:
+      max_interval: 2s

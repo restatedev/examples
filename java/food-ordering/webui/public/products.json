@@ -1,0 +1,58 @@
+{
+  "data": {
+    "products": [
+      {
+        "availableSizes": ["Pizza"],
+        "currencyFormat": "$",
+        "currencyId": "USD",
+        "description": "Pepperoni pizza",
+        "id": 1000,
+        "installments": 0,
+        "isFreeShipping": true,
+        "price": 10.9,
+        "sku": 1000,
+        "style": "Pepperoni pizza",
+        "title": "Pepperoni pizza"
+      },
+      {
+        "availableSizes": ["Sushi"],
+        "currencyFormat": "$",
+        "currencyId": "USD",
+        "description": "Sushi box",
+        "id": 1001,
+        "installments": 0,
+        "isFreeShipping": true,
+        "price": 17.6,
+        "sku": 1001,
+        "style": "Sushi box",
+        "title": "Sushi box"
+      },
+      {
+        "availableSizes": ["Burger"],
+        "currencyFormat": "$",
+        "currencyId": "USD",
+        "description": "Cheese burger",
+        "id": 1002,
+        "installments": 0,
+        "isFreeShipping": true,
+        "price": 8.5,
+        "sku": 1002,
+        "style": "Cheese burger",
+        "title": "Cheese burger"
+      },
+      {
+        "availableSizes": ["Snack"],
+        "currencyFormat": "$",
+        "currencyId": "USD",
+        "description": "Chicken wings",
+        "id": 1003,
+        "installments": 0,
+        "isFreeShipping": true,
+        "price": 3.4,
+        "sku": 1003,
+        "style": "Chicken wings",
+        "title": "Chicken wings"
+      }
+    ]
+  }
+}
