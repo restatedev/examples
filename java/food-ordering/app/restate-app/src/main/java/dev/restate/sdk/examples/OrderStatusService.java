@@ -13,6 +13,7 @@ public class OrderStatusService
   private final StateKey<String> ORDER_STATUS = StateKey.of("order-status", CoreSerdes.STRING_UTF8);
   private final StateKey<Long> ORDER_ETA = StateKey.of("order-eta", CoreSerdes.LONG);
 
+  /** Gets called by the webUI frontend to display the status of an order. */
   @Override
   public OrderProto.OrderStatus get(RestateContext ctx, OrderProto.OrderId request)
       throws TerminalException {
@@ -35,12 +36,5 @@ public class OrderStatusService
   @Override
   public void setETA(RestateContext ctx, OrderProto.OrderStatus request) throws TerminalException {
     ctx.set(ORDER_ETA, request.getEta());
-  }
-
-  @Override
-  public void handleDriverETAUpdate(RestateContext ctx, OrderProto.KafkaDriverETAEvent event)
-      throws TerminalException {
-    var eta = Long.parseLong(event.getEta());
-    ctx.set(ORDER_ETA, eta);
   }
 }

@@ -27,8 +27,6 @@ service OrderStatusService {
 
   rpc SetStatus(OrderStatus) returns (google.protobuf.Empty);
   rpc SetETA(OrderStatus) returns (google.protobuf.Empty);
-
-  rpc HandleDriverETAUpdate(KafkaDriverETAEvent) returns (google.protobuf.Empty);
 }
 
 message OrderId {
@@ -39,11 +37,6 @@ message OrderStatus {
   string order_id = 1 [(dev.restate.ext.field) = KEY];
   Status status = 2;
   int64 eta = 3;
-}
-
-message KafkaDriverETAEvent {
-  string order_id = 1 [(dev.restate.ext.field) = KEY];
-  string eta = 2 [(dev.restate.ext.field) = EVENT_PAYLOAD];
 }
 
 enum Status {
