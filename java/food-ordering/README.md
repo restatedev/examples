@@ -36,7 +36,7 @@ watch -n 1 'psql -h localhost -p 9071 -c "select service, service_key_utf8, key,
 
 Or have a look at the state of all the services, except for the driver simulator:
 ```shell
-watch -n 1 'psql -h localhost -p 9071 -c "select service, service_key_utf8, key, value_utf8 from state s where s.service not in ('"'"'order.DriverSimService'"'"');"'
+watch -n 1 'psql -h localhost -p 9071 -c "select service, service_key_utf8, key, value_utf8 from state s where s.service not in ('"'"'order.DriverMobileAppSimulator'"'"');"'
 ```
 
 Or you can check the state of the ongoing invocations via:
@@ -49,15 +49,15 @@ watch -n 1 'psql -h localhost -p 9071 -c "select service, method, service_key_ut
 ### The order workflow
 You can find the implementation of each of the services under `app/restate-app/src/main/java/dev/restate/sdk/examples/`.
 The flow of an incoming order is as follows:
-1. When the customer places an order via the web UI (localhost:3000), the food ordering provider publishes an order event to Kafka.
-2. Restate subscribes to the order topic and triggers the order workflow for each incoming event. This subscription is set up in the Docker compose file, by the `runtimesetup` container which executes two curl commands to the runtime to create the subscription.
+1. When the customer places an order via the web UI (localhost:3000), an order event is published to Kafka.
+2. Restate subscribes to the order topic and triggers the order workflow for each incoming event. This subscription is set up by executing two curl commands, as done in the Docker compose file (`docker-compose.yaml`) by the `runtimesetup` container.
 3. The order workflow is implemented in `OrderWorkflow.java` and consists of the following steps:
     1. When the order workflow is triggered, it first parses the raw Kafka event and extracts the order details.
     2. It then calls the `OrderStatusService` to create a new order in the system. The `OrderStatusService` is a keyed service which tracks the status of each order by storing it in Restate's key-value store.
-    3. The order workflow then triggers the payment by calling a third-party payment provider (implemented as a stub in this example). To do this, the order workflow first generates an idempotency token via a side effect, and then uses this to call the payment provider.
-    4. It sets the order status to `SCHEDULED` and sets a timer to continue processing after the delivery delay has passed. For example, if a customer ordered food for later in the day, the order will be scheduled for preparation at the requested time. If any failures occur during the sleep, Restate makes sure that the workflow will still wake up on time.
-    5. Once the timer fires, the order workflow creates an awakeable and calls the restaurant to start the preparation. The status of the order is set to `IN_PREPARATION`. The restaurant will use the awakeable callback to signal when the prepration is done. Once this happens, the order workflow will continue and set the order status to `SCHEDULING_DELIVERY`.
-    6. Finally, the order workflow calls the delivery manager to schedule the delivery of the order (see description below). It does this by using an awakeable, that the delivery manager will use to signal when the delivery is done. Once the delivery is done, the order workflow will set the order status to `DELIVERED`.
+    3. The order workflow then triggers the payment by calling a third-party payment provider (implemented as a stub in this example). To do this, the order workflow first generates an idempotency token via a side effect, and then uses this to call the payment provider. The payment provider can deduplicate retries via the idempotency key.
+    4. The workflow then sets the order status to `SCHEDULED` and sets a timer to continue processing after the delivery delay has passed. For example, if a customer ordered food for later in the day, the order will be scheduled for preparation at the requested time. If any failures occur during the sleep, Restate makes sure that the workflow will still wake up on time.
+    5. Once the timer fires, the order workflow creates an awakeable and sends a request to the restaurant point-of-sales system to start the preparation. This is done via an HTTP request from within a side effect. The status of the order is set to `IN_PREPARATION`. The restaurant will use the awakeable callback to signal when the prepration is done. Once this happens, the order workflow will continue and set the order status to `SCHEDULING_DELIVERY`.
+    6. Finally, the order workflow calls the delivery manager (`DeliveryManager.java`) to schedule the delivery of the order (see description below). It does this by using an awakeable, that the delivery manager will use to signal when the delivery is done. Once the delivery is done, the order workflow will set the order status to `DELIVERED`.
 
 ### The delivery workflow
 To get the order delivered a set of services work together. The delivery manager (`start` method in `DeliveryManager.java`) implements the delivery workflow. It tracks the delivery status, by storing it in Restate's state store, and then requests a driver to do the delivery. To do that, it requests a driver from the DriverDeliveryMatcher. The DriverDeliveryMatcher tracks available drivers and pending deliveries for each region, and matches drivers to deliveries.
