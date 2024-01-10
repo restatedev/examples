@@ -1,8 +1,8 @@
 import * as restate from "@restatedev/restate-sdk";
 import * as driver from "./driver";
 import * as driverpool from "./driver_pool";
-import * as geo from "../utils/geo";
-import { DEMO_REGION, Location, Order, Status } from "../types/types";
+import * as geo from "./utils/geo";
+import { DEMO_REGION, Location, Order, Status } from "./types/types";
 import * as orderstatus from "./order_status_service";
 import { v4 as uuidv4 } from "uuid";
 

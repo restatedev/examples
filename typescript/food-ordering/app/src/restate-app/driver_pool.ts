@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import { DriverRequest } from "../types/types";
+import { DriverRequest } from "./types/types";
 
 
 const AVAILABLE_DRIVERS_STATE = "available-drivers";
