@@ -10,10 +10,10 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import * as driver from "../driver";
+import * as driverDigitalTwin from "../driver-digital-twin";
 import * as geo from "../utils/geo";
 import {DEMO_REGION, Location, DeliveryState} from "../types/types";
-import { getPublisher, DriverUpdatesPublisher } from "../clients/publisher";
+import { getPublisher } from "../clients/kafka-publisher";
 import {updateLocation} from "./driver_mobile_app_sim_utils";
 
 /**
@@ -25,7 +25,7 @@ import {updateLocation} from "./driver_mobile_app_sim_utils";
  * For simplicity, we implemented this with Restate.
  */
 
-const locationPingSender: DriverUpdatesPublisher = getPublisher();
+const kafkaPublisher = getPublisher();
 
 const ASSIGNED_DELIVERY = "assigned-delivery";
 const CURRENT_LOCATION = "current-location";
@@ -47,9 +47,9 @@ async function startDriver(ctx: restate.RpcContext, driverId: string) {
 
   const location = await ctx.sideEffect(async () => geo.randomLocation());
   ctx.set(CURRENT_LOCATION, location);
-  await locationPingSender.send(ctx, driverId, location);
+  await kafkaPublisher.send(ctx, driverId, location);
 
-  ctx.send(driver.service).driverAvailable(driverId, DEMO_REGION);
+  ctx.send(driverDigitalTwin.service).setDriverAvailable(driverId, DEMO_REGION);
   ctx.send(service).pollForWork(driverId);
 }
 
@@ -58,7 +58,7 @@ async function startDriver(ctx: restate.RpcContext, driverId: string) {
  * again after a short delay.
  */
 async function pollForWork(ctx: restate.RpcContext, driverId: string) {
-  const optionalAssignedDelivery = await ctx.rpc(driver.service).pollAssignedDelivery(driverId);
+  const optionalAssignedDelivery = await ctx.rpc(driverDigitalTwin.service).getAssignedDelivery(driverId);
   if (optionalAssignedDelivery === null || optionalAssignedDelivery === undefined) {
     ctx.sendDelayed(service, POLL_INTERVAL).pollForWork(driverId);
     return;
@@ -86,16 +86,16 @@ async function move(ctx: restate.RpcContext, driverId: string) {
   const { newLocation, arrived } = updateLocation(currentLocation, nextTarget);
 
   ctx.set(CURRENT_LOCATION, newLocation);
-  await locationPingSender.send(ctx, driverId, currentLocation);
+  await kafkaPublisher.send(ctx, driverId, currentLocation);
 
   if (arrived) {
     if (assignedDelivery.orderPickedUp) {
       // fully done
       ctx.clear(ASSIGNED_DELIVERY);
 
-      await ctx.rpc(driver.service).notifyDeliveryDelivered(driverId);
+      await ctx.rpc(driverDigitalTwin.service).notifyDeliveryDelivered(driverId);
       await ctx.sleep(PAUSE_BETWEEN_DELIVERIES);
-      ctx.send(driver.service).driverAvailable(driverId, DEMO_REGION);
+      ctx.send(driverDigitalTwin.service).setDriverAvailable(driverId, DEMO_REGION);
       ctx.send(service).pollForWork(driverId);
       return;
     }
@@ -103,7 +103,7 @@ async function move(ctx: restate.RpcContext, driverId: string) {
     assignedDelivery.orderPickedUp = true;
     ctx.set(ASSIGNED_DELIVERY, assignedDelivery);
 
-    await ctx.rpc(driver.service).notifyDeliveryPickUp(driverId);
+    await ctx.rpc(driverDigitalTwin.service).notifyDeliveryPickUp(driverId);
   }
 
   ctx.sendDelayed(service, MOVE_INTERVAL).move(driverId);
