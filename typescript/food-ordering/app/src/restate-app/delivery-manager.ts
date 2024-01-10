@@ -1,6 +1,6 @@
 import * as restate from "@restatedev/restate-sdk";
 import * as driver from "./driver";
-import * as driverpool from "./driver_pool";
+import * as driverDeliveryMatcher from "./driver_delivery_matcher";
 import * as geo from "./utils/geo";
 import {DEMO_REGION, Location, DeliveryInformation, OrderAndPromise, Status} from "./types/types";
 import * as orderstatus from "./order_status_service";
@@ -35,7 +35,7 @@ async function start(ctx: restate.RpcContext, deliveryId: string, { order, promi
 
   // Acquire a driver
   const driverPromise = ctx.awakeable<string>();
-  ctx.send(driverpool.service).requestDriverForOrder(DEMO_REGION, { promiseId: driverPromise.id });
+  ctx.send(driverDeliveryMatcher.service).requestDriverForDelivery(DEMO_REGION, { promiseId: driverPromise.id });
   // Wait until the driver pool service has located a driver
   // This awakeable gets resolved either immediately when there is a pending delivery
   // or later, when a new delivery comes in.
