@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import * as delivery from "./delivery";
+import * as deliveryManager from "./delivery-manager";
 import {Order, Status} from "./types/types";
 import * as orderstatus from "./order_status_service";
 import { completed } from "./utils/utils";
@@ -53,7 +53,7 @@ const create = async (
   // 5. Find a driver and start delivery
   const deliveryId = ctx.rand.uuidv4();
   const deliveryPromise = ctx.awakeable<void>();
-  await ctx.rpc(delivery.service).start(deliveryId, {order, promise: deliveryPromise.id})
+  await ctx.rpc(deliveryManager.service).start(deliveryId, {order, promise: deliveryPromise.id})
   await deliveryPromise.promise;
   ctx.send(orderstatus.service).setStatus(id, Status.DELIVERED);
 };

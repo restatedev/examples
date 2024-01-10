@@ -12,7 +12,7 @@
 import * as restate from "@restatedev/restate-sdk";
 import * as driver from "../driver";
 import * as geo from "../utils/geo";
-import { DEMO_REGION, DeliveryRequest, Location } from "../types/types";
+import {DEMO_REGION, Location, DeliveryState} from "../types/types";
 import { getPublisher, DriverUpdatesPublisher } from "../clients/publisher";
 import {updateLocation} from "./driver_mobile_app_sim_utils";
 
@@ -26,11 +26,6 @@ import {updateLocation} from "./driver_mobile_app_sim_utils";
  */
 
 const locationPingSender: DriverUpdatesPublisher = getPublisher();
-
-type DeliveryState = {
-  currentDelivery: DeliveryRequest,
-  orderPickedUp: boolean
-}
 
 const ASSIGNED_DELIVERY = "assigned-delivery";
 const CURRENT_LOCATION = "current-location";
