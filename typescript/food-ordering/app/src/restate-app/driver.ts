@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import * as driverpool from "./driver_pool";
+import * as driverDeliveryMatcher from "./driver_delivery_matcher";
 import * as deliveryManager from "./delivery-manager";
 import { DeliveryRequest, Location } from "./types/types";
 
@@ -23,7 +23,7 @@ async function setDriverAvailable(ctx: restate.RpcContext, driverId: string, reg
   await expectStatus(DriverStatus.IDLE, ctx);
 
   ctx.set(DRIVER_STATUS_STATE, DriverStatus.WAITING_FOR_WORK);
-  ctx.send(driverpool.service).driverAvailable(region, driverId);
+  ctx.send(driverDeliveryMatcher.service).setDriverAvailable(region, driverId);
 }
 
 async function notifyDeliveryPickUp(ctx: restate.RpcContext, driverId: string): Promise<void> {

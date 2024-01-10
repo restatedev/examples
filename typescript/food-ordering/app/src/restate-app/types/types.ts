@@ -37,7 +37,7 @@ export type DeliveryRequest = {
   customerLocation: Location
 }
 
-export type DriverRequest = {
+export type PendingDelivery = {
   promiseId: string;
 }
 
