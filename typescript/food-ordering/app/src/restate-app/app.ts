@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import * as driver from "./driver";
+import * as driverDigitalTwin from "./driver-digital-twin";
 import * as driverDeliveryMatcher from "./driver_delivery_matcher";
 import * as deliveryManager from "./delivery-manager";
 import * as orders from "./order_service";
@@ -11,7 +11,7 @@ if (require.main === module) {
       .createServer()
       .bindKeyedRouter(orders.service.path, orders.router)
       .bindKeyedRouter(orderstatus.service.path, orderstatus.router)
-      .bindKeyedRouter(driver.service.path, driver.router)
+      .bindKeyedRouter(driverDigitalTwin.service.path, driverDigitalTwin.router)
       .bindKeyedRouter(driverDeliveryMatcher.service.path, driverDeliveryMatcher.router)
       .bindKeyedRouter(deliveryManager.service.path, deliveryManager.router)
       .bindKeyedRouter(driverMobileAppSimulator.service.path, driverMobileAppSimulator.router)

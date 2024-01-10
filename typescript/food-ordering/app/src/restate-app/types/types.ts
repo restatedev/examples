@@ -73,3 +73,9 @@ export type DeliveryState = {
   currentDelivery: DeliveryRequest,
   orderPickedUp: boolean
 }
+
+export enum DriverStatus {
+  IDLE = "IDLE",
+  WAITING_FOR_WORK = "WAITING_FOR_WORK",
+  DELIVERING = "DELIVERING"
+}

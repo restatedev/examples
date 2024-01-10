@@ -108,7 +108,7 @@ services:
     curl -X POST 'runtime:9070/endpoints' -H 'content-type: application/json' -d '{\"uri\": \"http://restate_app:9080\"}' &&
     sleep 3 && 
     curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/orders\", \"sink\":\"service://orders/eventHandler\" }' &&
-    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/driver-updates\", \"sink\":\"service://driver/handleUpdateEvent\" }' &&
+    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/driver-updates\", \"sink\":\"service://driver-digital-twin/handleDriverLocationUpdateEvent\" }' &&
     curl -X POST -H 'content-type: application/json' runtime:8080/driver-mobile-app/startDriver -d '{\"key\": \"driver-01\", \"request\": {} }' &&
     curl -X POST -H 'content-type: application/json' runtime:8080/driver-mobile-app/startDriver -d '{\"key\": \"driver-02\", \"request\": {} }' &&
     exit 1"]

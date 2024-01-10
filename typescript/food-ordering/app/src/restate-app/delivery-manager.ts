@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import * as driver from "./driver";
+import * as driverDigitalTwin from "./driver-digital-twin";
 import * as driverDeliveryMatcher from "./driver_delivery_matcher";
 import * as geo from "./utils/geo";
 import {DEMO_REGION, Location, DeliveryInformation, OrderAndPromise, Status} from "./types/types";
@@ -43,7 +43,7 @@ async function start(ctx: restate.RpcContext, deliveryId: string, { order, promi
 
   // Assign the driver to the job
   await ctx
-      .rpc(driver.service)
+      .rpc(driverDigitalTwin.service)
       .assignDeliveryJob(driverId, {
           deliveryId,
           restaurantId: order.restaurantId,
