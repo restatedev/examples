@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import { service as driverservice } from "../services/driver";
+import { service as driverservice } from "../driver";
 import { Location } from "../types/types";
 import { Kafka, KafkaConfig } from "kafkajs";
 

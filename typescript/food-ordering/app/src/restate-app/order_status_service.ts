@@ -1,4 +1,4 @@
-import { OrderStatus, Status } from "../types/types";
+import { OrderStatus, Status } from "./types/types";
 import * as restate from "@restatedev/restate-sdk";
 
 const ORDER_STATUS = "order_status";

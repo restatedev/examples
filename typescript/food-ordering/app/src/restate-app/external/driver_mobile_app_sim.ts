@@ -10,11 +10,11 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import * as driver from "../services/driver";
+import * as driver from "../driver";
 import * as geo from "../utils/geo";
 import { DEMO_REGION, DeliveryRequest, Location } from "../types/types";
 import { getPublisher, DriverUpdatesPublisher } from "../clients/publisher";
-import {updateLocation} from "./driversim_utils";
+import {updateLocation} from "./driver_mobile_app_sim_utils";
 
 /**
  * !!!SHOULD BE AN EXTERNAL APP ON THE DRIVER's PHONE!!! Simulated driver with application that

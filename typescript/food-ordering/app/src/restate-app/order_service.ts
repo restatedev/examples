@@ -1,10 +1,10 @@
 import * as restate from "@restatedev/restate-sdk";
 import * as delivery from "./delivery";
-import {Order, Status} from "../types/types";
+import {Order, Status} from "./types/types";
 import * as orderstatus from "./order_status_service";
-import { completed } from "../utils/utils";
-import {getPaymentClient} from "../clients/payment_client";
-import {getRestaurantClient} from "../clients/restaurant_client";
+import { completed } from "./utils/utils";
+import {getPaymentClient} from "./clients/payment_client";
+import {getRestaurantClient} from "./clients/restaurant_client";
 
 const restaurant = getRestaurantClient();
 const paymentClnt = getPaymentClient();
