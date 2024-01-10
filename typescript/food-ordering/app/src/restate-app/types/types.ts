@@ -53,3 +53,23 @@ export type LocationTimestamp = {
 }
 
 export const DEMO_REGION = "San Jose (CA)";
+
+
+export type OrderAndPromise = {
+  order: Order,
+  promise: string
+}
+
+export type DeliveryInformation = {
+  orderId: string,
+  orderPromise: string,
+  restaurantId: string,
+  restaurantLocation: Location,
+  customerLocation: Location,
+  orderPickedUp: boolean
+}
+
+export type DeliveryState = {
+  currentDelivery: DeliveryRequest,
+  orderPickedUp: boolean
+}
