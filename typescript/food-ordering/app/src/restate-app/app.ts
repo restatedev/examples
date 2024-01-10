@@ -1,10 +1,10 @@
 import * as restate from "@restatedev/restate-sdk";
-import * as driver from "./services/driver";
-import * as driver_pool from "./services/driver_pool";
-import * as delivery from "./services/delivery";
-import * as orders from "./services/order_service";
-import * as orderstatus from "./services/order_status_service";
-import * as driversim from "./external/driversim";
+import * as driver from "./driver";
+import * as driver_pool from "./driver_pool";
+import * as delivery from "./delivery";
+import * as orders from "./order_service";
+import * as orderstatus from "./order_status_service";
+import * as driverMobileAppSimulator from "./external/driver_mobile_app_sim";
 
 if (require.main === module) {
   restate
@@ -14,6 +14,6 @@ if (require.main === module) {
       .bindKeyedRouter(driver.service.path, driver.router)
       .bindKeyedRouter(driver_pool.service.path, driver_pool.router)
       .bindKeyedRouter(delivery.service.path, delivery.router)
-      .bindKeyedRouter(driversim.service.path, driversim.router)
+      .bindKeyedRouter(driverMobileAppSimulator.service.path, driverMobileAppSimulator.router)
       .listen(9080);
 }

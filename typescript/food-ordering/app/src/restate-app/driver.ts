@@ -1,7 +1,7 @@
 import * as restate from "@restatedev/restate-sdk";
 import * as driverpool from "./driver_pool";
 import * as delivery from "./delivery";
-import { DeliveryRequest, Location } from "../types/types";
+import { DeliveryRequest, Location } from "./types/types";
 
 // --------------------------------------------------------
 //  Digital Twin for the Driver
