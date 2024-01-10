@@ -1,6 +1,6 @@
 import * as restate from "@restatedev/restate-sdk";
 import * as driverpool from "./driver_pool";
-import * as delivery from "./delivery";
+import * as deliveryManager from "./delivery-manager";
 import { DeliveryRequest, Location } from "./types/types";
 
 // --------------------------------------------------------
@@ -30,7 +30,7 @@ async function notifyDeliveryPickUp(ctx: restate.RpcContext, driverId: string): 
   await expectStatus(DriverStatus.DELIVERING, ctx);
 
   const request = (await ctx.get<DeliveryRequest>(CURRENT_DELIVERY_STATE))!;
-  ctx.send(delivery.service).deliveryPickedUp(request.deliveryId);
+  ctx.send(deliveryManager.service).notifyDeliveryPickup(request.deliveryId);
 }
 
 async function notifyDeliveryDelivered(ctx: restate.RpcContext, driverId: string): Promise<void> {
@@ -38,7 +38,7 @@ async function notifyDeliveryDelivered(ctx: restate.RpcContext, driverId: string
 
   const request = (await ctx.get<DeliveryRequest>(CURRENT_DELIVERY_STATE))!;
   ctx.clear(CURRENT_DELIVERY_STATE);
-  ctx.send(delivery.service).deliveryDelivered(request.deliveryId);
+  ctx.send(deliveryManager.service).notifyDeliveryDelivered(request.deliveryId);
 
   ctx.set(DRIVER_STATUS_STATE, DriverStatus.IDLE);
 }
@@ -51,7 +51,7 @@ async function assignDeliveryJob(ctx: restate.RpcContext, _driverId: string, job
 
     const currentLocation = await ctx.get<Location>(LOCATION_STATE);
     if (currentLocation) {
-      ctx.send(delivery.service).driverLocationUpdate(job.deliveryId, currentLocation);
+      ctx.send(deliveryManager.service).handleDriverLocationUpdate(job.deliveryId, currentLocation);
     }
 }
 
@@ -98,7 +98,7 @@ export const service: restate.ServiceApi<api> = { path: "driver" };
 async function updateDeliveryIfExists(ctx: restate.RpcContext, location: Location): Promise<void> {
     const request = await ctx.get<DeliveryRequest>(CURRENT_DELIVERY_STATE);
     if (request) {
-      ctx.send(delivery.service).driverLocationUpdate(request.deliveryId, location);
+      ctx.send(deliveryManager.service).handleDriverLocationUpdate(request.deliveryId, location);
     }
 }
 
