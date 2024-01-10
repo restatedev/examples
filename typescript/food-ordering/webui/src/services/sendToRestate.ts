@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const RESTATE_HOST =
-  process.env.REACT_APP_RESTATE_HOST || 'http://localhost:9090';
+  process.env.REACT_APP_RESTATE_HOST || 'http://localhost:8080';
 const KAFKA_REST_PROXY_HOST = 'http://localhost:8088';
 
 const challenge = (): {challenge: string, challengeTime: string} => {

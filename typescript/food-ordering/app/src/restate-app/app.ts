@@ -4,7 +4,7 @@ import * as driver_pool from "./services/driver_pool";
 import * as delivery from "./services/delivery";
 import * as orders from "./services/order_service";
 import * as orderstatus from "./services/order_status_service";
-import * as driversim from "./services/driversim";
+import * as driversim from "./external/driversim";
 
 if (require.main === module) {
   restate
