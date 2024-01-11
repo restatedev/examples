@@ -11,7 +11,7 @@ It also interacts with the delivery services to get the order delivered to the c
 
 ![demo_overview.png](demo_overview.png)
 
-The app logic (order workflow) discussed in the presentation can be found under: `app/src/restate-app/services/order_service.ts`.
+The app logic (order workflow) discussed in the presentation can be found under: `app/src/restate-app/services/order_workflow.ts`.
 
 ## Running locally with Docker compose
 
@@ -23,6 +23,12 @@ docker compose up
 WebUI is running at http://localhost:3000
 
 Jaeger is running at http://localhost:16686
+
+When you are making changes to the code, and you want to trigger a build of the Docker images:
+
+```shell
+docker compose build --no-cache
+```
 
 Clean up after bringing setup down:
 ```shell

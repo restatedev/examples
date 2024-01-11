@@ -100,7 +100,7 @@ const Cart = () => {
         await publishToKafka(kafkaRecord);
       } else {
         console.info(request);
-        sendRequestToRestate('orders', 'create', request);
+        sendRequestToRestate('order-workflow', 'create', request);
       }
 
       let done = false;

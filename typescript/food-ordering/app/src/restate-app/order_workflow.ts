@@ -6,6 +6,12 @@ import { completed } from "./utils/utils";
 import {getPaymentClient} from "./clients/payment_client";
 import {getRestaurantClient} from "./clients/restaurant_client";
 
+/**
+ * Order processing workflow Gets called for each Kafka event that is published to the order topic.
+ * The event contains the order ID and the raw JSON order. The workflow handles the payment, asks
+ * the restaurant to start the preparation, and triggers the delivery.
+ */
+
 const restaurant = getRestaurantClient();
 const paymentClnt = getPaymentClient();
 
@@ -64,4 +70,4 @@ export const router = restate.keyedRouter({
 });
 
 export type orderApi = typeof router;
-export const service: restate.ServiceApi<orderApi> = { path: "orders" };
+export const service: restate.ServiceApi<orderApi> = { path: "order-workflow" };
