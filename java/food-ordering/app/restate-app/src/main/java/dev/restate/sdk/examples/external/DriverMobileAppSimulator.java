@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
  * This would actually be a mobile app that drivers use to accept delivery requests, and to set
  * themselves as available.
  *
- * <p>For simplicity, we implemented this with Restate.
+ * For simplicity, we implemented this with Restate.
  */
 public class DriverMobileAppSimulator
     extends DriverMobileAppSimulatorRestate.DriverMobileAppSimulatorRestateImplBase {
@@ -34,12 +34,14 @@ public class DriverMobileAppSimulator
   private final long PAUSE_BETWEEN_DELIVERIES = 2000;
 
   StateKey<Location> CURRENT_LOCATION =
-      StateKey.of("driversim-location", JacksonSerdes.of(Location.class));
+      StateKey.of("current-location", JacksonSerdes.of(Location.class));
 
   StateKey<AssignedDelivery> ASSIGNED_DELIVERY =
       StateKey.of("assigned-delivery", JacksonSerdes.of(AssignedDelivery.class));
 
-  /** */
+  /**
+   * Mimics the driver setting himself to available in the app
+   */
   @Override
   public void startDriver(RestateContext ctx, OrderProto.DriverId request)
       throws TerminalException {
@@ -74,7 +76,7 @@ public class DriverMobileAppSimulator
   @Override
   public void pollForWork(RestateContext ctx, OrderProto.DriverId request)
       throws TerminalException {
-    var driverSimClnt = DriverMobileAppSimulatorRestate.newClient(ctx);
+    var thisDriverSim = DriverMobileAppSimulatorRestate.newClient(ctx);
 
     // Ask the digital twin of the driver in the food ordering app, if he already got a job assigned
     var optionalAssignedDelivery =
@@ -82,7 +84,7 @@ public class DriverMobileAppSimulator
 
     // If there is no job, ask again after a short delay
     if (optionalAssignedDelivery.hasEmpty()) {
-      driverSimClnt.delayed(Duration.ofMillis(POLL_INTERVAL)).pollForWork(request);
+      thisDriverSim.delayed(Duration.ofMillis(POLL_INTERVAL)).pollForWork(request);
       return;
     }
 
@@ -98,9 +100,12 @@ public class DriverMobileAppSimulator
     ctx.set(ASSIGNED_DELIVERY, newAssignedDelivery);
 
     // Start moving to the delivery pickup location
-    driverSimClnt.delayed(Duration.ofMillis(MOVE_INTERVAL)).move(request);
+    thisDriverSim.delayed(Duration.ofMillis(MOVE_INTERVAL)).move(request);
   }
 
+  /**
+   * Periodically lets the food ordering app know the new location
+   */
   @Override
   public void move(RestateContext ctx, OrderProto.DriverId request) throws TerminalException {
     var thisDriverSim = DriverMobileAppSimulatorRestate.newClient(ctx);

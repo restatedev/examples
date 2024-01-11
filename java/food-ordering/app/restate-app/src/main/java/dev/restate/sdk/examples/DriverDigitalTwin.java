@@ -18,8 +18,8 @@ import dev.restate.sdk.serde.jackson.JacksonSerdes;
 
 /**
  * Digital twin for the driver. Represents a driver and his status, assigned delivery, and location.
- * Keyed by driver ID. The actual driver would have an application (mocked by DriverSimService) that
- * calls this service.
+ * Keyed by driver ID. The actual driver would have an application (mocked by DriverMobileAppSimulator
+ * ) that calls this service.
  */
 public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwinRestateImplBase {
 
@@ -36,7 +36,7 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
       StateKey.of("driver-location", JacksonSerdes.of(Location.class));
 
   /**
-   * When the driver starts his work day or finishes a delivery, his application (DriverSimService)
+   * When the driver starts his work day or finishes a delivery, his application (DriverMobileAppSimulator)
    * calls this method.
    */
   @Override
@@ -55,7 +55,7 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
   }
 
   /**
-   * Gets called by the delivery service when this driver was assigned to do the delivery. Updates
+   * Gets called by the delivery manager when this driver was assigned to do the delivery. Updates
    * the status of the digital driver twin, and notifies the delivery service of its current
    * location.
    */
@@ -106,13 +106,15 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
     currentDelivery.notifyPickup();
     ctx.set(ASSIGNED_DELIVERY, currentDelivery);
 
-    // Update the status of the delivery in the delivery service
+    // Update the status of the delivery in the delivery manager
     DeliveryManagerRestate.newClient(ctx)
         .oneWay()
         .notifyDeliveryPickup(toOrderIdProto(currentDelivery.orderId));
   }
 
-  /** */
+  /**
+   * Gets called by the driver's mobile app when he has delivered the order to the customer.
+   */
   @Override
   public void notifyDeliveryDelivered(RestateContext ctx, OrderProto.DriverId request)
       throws TerminalException {

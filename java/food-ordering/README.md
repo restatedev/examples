@@ -20,6 +20,12 @@ WebUI is running at http://localhost:3000
 
 Jaeger is running at http://localhost:16686
 
+When you are making changes to the code, and you want to trigger a build of the Docker images:
+
+```shell
+docker compose build --no-cache
+```
+
 Clean up after bringing setup down:
 ```shell
 docker compose rm 

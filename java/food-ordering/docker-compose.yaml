@@ -89,6 +89,7 @@ services:
     ports:
       - "9070:9070"
       - "9071:9071"
+      - "9072:9072"
       - "8080:8080"
     volumes:
       - ./restate-docker.yaml:/restate.yaml
