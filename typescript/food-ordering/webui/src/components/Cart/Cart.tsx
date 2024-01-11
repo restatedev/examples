@@ -106,7 +106,7 @@ const Cart = () => {
       let done = false;
       while (!done) {
         const newOrderStatus = (
-          await sendRequestToRestate('orderStatus', 'get', {
+          await sendRequestToRestate('order-status', 'get', {
             key: user!.user_id,
           })
         ).response;
