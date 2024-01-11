@@ -3,7 +3,8 @@ import * as restate from "@restatedev/restate-sdk";
 
 const ORDER_STATUS = "order_status";
 
-const get = async (ctx: restate.RpcContext, orderId: string) =>
+/** Gets called by the webUI frontend to display the status of an order. */
+const get = async (ctx: restate.RpcContext, _orderId: string) =>
   ctx.get<OrderStatus>(ORDER_STATUS);
 
 const setStatus = async (
@@ -48,5 +49,5 @@ export const router = restate.keyedRouter({
 });
 export type orderStatusApi = typeof router;
 export const service: restate.ServiceApi<orderStatusApi> = {
-  path: "orderStatus",
+  path: "order-status",
 };
