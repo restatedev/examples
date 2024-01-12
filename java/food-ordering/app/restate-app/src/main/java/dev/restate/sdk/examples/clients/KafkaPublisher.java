@@ -14,7 +14,7 @@ public class KafkaPublisher {
           ? System.getenv("KAFKA_BOOTSTRAP_SERVERS")
           : "127.0.0.1:9092";
 
-  KafkaProducer<String, byte[]> producer;
+  private final KafkaProducer<String, byte[]> producer;
 
   public KafkaPublisher() {
     this.producer = new KafkaProducer<>(properties());
