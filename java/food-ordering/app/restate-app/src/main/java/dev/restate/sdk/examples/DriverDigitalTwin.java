@@ -31,7 +31,7 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
       StateKey.of("assigned-delivery", JacksonSerdes.of(AssignedDelivery.class));
 
   // Current location of the driver
-  StateKey<Location> DRIVER_LOCATION =
+  private static final StateKey<Location> DRIVER_LOCATION =
       StateKey.of("driver-location", JacksonSerdes.of(Location.class));
 
   /**
