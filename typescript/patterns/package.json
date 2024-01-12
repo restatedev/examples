@@ -4,6 +4,7 @@
   "description": "A collection of useful patterns for distributed applications with Restate (https://github.com/restatedev/)",
   "type": "commonjs",
   "scripts": {
+    "verify": "npm run build",
     "build": "tsc --noEmitOnError"
   },
   "dependencies": {

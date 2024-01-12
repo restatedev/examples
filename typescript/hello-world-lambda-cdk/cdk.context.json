@@ -1,0 +1,4 @@
+{
+  "clusterId": "PLACEHOLDER",
+  "authTokenSecretArn": "arn:aws:secretsmanager:region:12345789012:secret:/restate/PLACEHOLDER-abcdef"
+}

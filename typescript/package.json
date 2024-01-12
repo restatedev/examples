@@ -6,7 +6,8 @@
     "email": "code@restate.dev",
     "workspaces": [
         "patterns",
-        "lambda-greeter",
+        "hello-world-lambda",
+        "hello-world-lambda-cdk",
         "ticket-reservation",
         "payment-api",
         "ecommerce-store/services",

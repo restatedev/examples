@@ -29,7 +29,8 @@ jobs:
             typescript-food-ordering.zip
             typescript-payment-api.zip
             typescript-ticket-reservation.zip
-            typescript-lambda-greeter.zip
+            typescript-hello-world-lambda.zip
+            typescript-hello-world-lambda-cdk.zip
             java-hello-world-http.zip
             java-hello-world-lambda.zip
             kotlin-hello-world-http.zip
