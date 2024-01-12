@@ -25,7 +25,7 @@ public class DriverDeliveryMatcher
       StateKey.of("pending-deliveries", JacksonSerdes.of(new TypeReference<>() {}));
 
   // Drivers that are waiting for new delivery requests
-  private final StateKey<Queue<String>> AVAILABLE_DRIVERS =
+  private static final StateKey<Queue<String>> AVAILABLE_DRIVERS =
       StateKey.of("available-drivers", JacksonSerdes.of(new TypeReference<>() {}));
 
   /**
