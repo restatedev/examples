@@ -58,7 +58,7 @@ wget https://github.com/restatedev/examples/releases/latest/download/typescript-
 
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 
-[Food ordering](typescript/food-ordering): Integrate Restate with external services
+[Food ordering - TypeScript](typescript/food-ordering): Integrate Restate with external services
 ```shell
 # Download the example
 wget https://github.com/restatedev/examples/releases/latest/download/typescript-food-ordering.zip && unzip typescript-food-ordering.zip -d typescript-food-ordering && rm typescript-food-ordering.zip
@@ -75,6 +75,15 @@ wget https://github.com/restatedev/examples/releases/latest/download/typescript-
 # Download the example
 wget https://github.com/restatedev/examples/releases/latest/download/typescript-ecommerce-store.zip && unzip typescript-ecommerce-store.zip -d typescript-ecommerce-store && rm typescript-ecommerce-store.zip
 ```
+
+![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
+
+[Food ordering - Java](java/food-ordering)
+```shell
+# Download the example
+wget https://github.com/restatedev/examples/releases/latest/download/java-food-ordering.zip && unzip java-food-ordering.zip -d java-food-ordering && rm java-food-ordering.zip
+```
+
 
 ## Joining the community
 
