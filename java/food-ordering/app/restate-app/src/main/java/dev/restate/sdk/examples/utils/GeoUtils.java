@@ -21,19 +21,19 @@ public class GeoUtils {
   }
 
   public static Location moveToDestination(Location location, Location destination) {
-    double dx = destination.lon - location.lon;
-    double dy = destination.lat - location.lat;
+    double dx = destination.getLon() - location.getLon();
+    double dy = destination.getLat() - location.getLat();
     double distance = Math.sqrt(dx * dx + dy * dy);
     if (distance < SPEED) {
       return destination;
     }
     double ratio = SPEED / distance;
-    return new Location(location.lon + dx * ratio, location.lat + dy * ratio);
+    return new Location(location.getLon() + dx * ratio, location.getLat() + dy * ratio);
   }
 
   public static Long calculateEtaMillis(Location currentLocation, Location targetLocation) {
-    var longDiff = Math.abs(targetLocation.lon - currentLocation.lon);
-    var latDiff = Math.abs(targetLocation.lat - currentLocation.lat);
+    var longDiff = Math.abs(targetLocation.getLon() - currentLocation.getLon());
+    var latDiff = Math.abs(targetLocation.getLat() - currentLocation.getLat());
     var distance = Math.max(longDiff, latDiff);
     return Math.round(1000 * distance / SPEED);
   }

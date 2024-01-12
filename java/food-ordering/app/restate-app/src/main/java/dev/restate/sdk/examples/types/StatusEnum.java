@@ -1,6 +1,6 @@
 package dev.restate.sdk.examples.types;
 
-public enum Status {
+public enum StatusEnum {
   NEW(0),
   CREATED(1),
   SCHEDULED(2),
@@ -15,7 +15,7 @@ public enum Status {
 
   private final int value;
 
-  Status(int value) {
+  StatusEnum(int value) {
     this.value = value;
   }
 

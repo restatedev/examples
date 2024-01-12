@@ -1,5 +1,6 @@
 package dev.restate.sdk.examples;
 
+import static dev.restate.sdk.examples.generated.OrderProto.*;
 import static dev.restate.sdk.examples.utils.TypeUtils.toOrderIdProto;
 
 import com.google.protobuf.Empty;
@@ -9,8 +10,6 @@ import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.examples.generated.DeliveryManagerRestate;
 import dev.restate.sdk.examples.generated.DriverDeliveryMatcherRestate;
 import dev.restate.sdk.examples.generated.DriverDigitalTwinRestate;
-import dev.restate.sdk.examples.generated.OrderProto;
-import dev.restate.sdk.examples.generated.OrderProto.AssignDeliveryRequest;
 import dev.restate.sdk.examples.types.AssignedDelivery;
 import dev.restate.sdk.examples.types.DriverStatus;
 import dev.restate.sdk.examples.types.Location;
@@ -18,8 +17,8 @@ import dev.restate.sdk.serde.jackson.JacksonSerdes;
 
 /**
  * Digital twin for the driver. Represents a driver and his status, assigned delivery, and location.
- * Keyed by driver ID. The actual driver would have an application (mocked by DriverMobileAppSimulator
- * ) that calls this service.
+ * Keyed by driver ID. The actual driver would have an application (mocked by
+ * DriverMobileAppSimulator ) that calls this service.
  */
 public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwinRestateImplBase {
 
@@ -36,11 +35,11 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
       StateKey.of("driver-location", JacksonSerdes.of(Location.class));
 
   /**
-   * When the driver starts his work day or finishes a delivery, his application (DriverMobileAppSimulator)
-   * calls this method.
+   * When the driver starts his work day or finishes a delivery, his application
+   * (DriverMobileAppSimulator) calls this method.
    */
   @Override
-  public void setDriverAvailable(RestateContext ctx, OrderProto.DriverAvailableNotification request)
+  public void setDriverAvailable(RestateContext ctx, DriverAvailableNotification request)
       throws TerminalException {
     expectStatus(ctx, DriverStatus.IDLE);
 
@@ -48,7 +47,7 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
     DriverDeliveryMatcherRestate.newClient(ctx)
         .oneWay()
         .setDriverAvailable(
-            OrderProto.DriverPoolAvailableNotification.newBuilder()
+            DriverPoolAvailableNotification.newBuilder()
                 .setRegion(request.getRegion())
                 .setDriverId(request.getDriverId())
                 .build());
@@ -82,7 +81,7 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
                 DeliveryManagerRestate.newClient(ctx)
                     .oneWay()
                     .handleDriverLocationUpdate(
-                        OrderProto.DeliveryLocationUpdate.newBuilder()
+                        DeliveryLocationUpdate.newBuilder()
                             .setOrderId(request.getOrderId())
                             .setLocation(loc.toProto())
                             .build()));
@@ -92,8 +91,7 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
    * Gets called by the driver's mobile app when he has picked up the delivery from the restaurant.
    */
   @Override
-  public void notifyDeliveryPickup(RestateContext ctx, OrderProto.DriverId request)
-      throws TerminalException {
+  public void notifyDeliveryPickup(RestateContext ctx, DriverId request) throws TerminalException {
     expectStatus(ctx, DriverStatus.DELIVERING);
 
     // Retrieve the ongoing delivery and update its status
@@ -109,14 +107,12 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
     // Update the status of the delivery in the delivery manager
     DeliveryManagerRestate.newClient(ctx)
         .oneWay()
-        .notifyDeliveryPickup(toOrderIdProto(currentDelivery.orderId));
+        .notifyDeliveryPickup(toOrderIdProto(currentDelivery.getOrderId()));
   }
 
-  /**
-   * Gets called by the driver's mobile app when he has delivered the order to the customer.
-   */
+  /** Gets called by the driver's mobile app when he has delivered the order to the customer. */
   @Override
-  public void notifyDeliveryDelivered(RestateContext ctx, OrderProto.DriverId request)
+  public void notifyDeliveryDelivered(RestateContext ctx, DriverId request)
       throws TerminalException {
     expectStatus(ctx, DriverStatus.DELIVERING);
 
@@ -133,7 +129,7 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
     // Notify the delivery service that the delivery was delivered
     DeliveryManagerRestate.newClient(ctx)
         .oneWay()
-        .notifyDeliveryDelivered(toOrderIdProto(assignedDelivery.orderId));
+        .notifyDeliveryDelivered(toOrderIdProto(assignedDelivery.getOrderId()));
 
     // Update the status of the driver to idle
     ctx.set(DRIVER_STATUS, DriverStatus.IDLE);
@@ -141,8 +137,8 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
 
   /** Gets called by the driver's mobile app when he has moved to a new location. */
   @Override
-  public void handleDriverLocationUpdateEvent(
-      RestateContext ctx, OrderProto.KafkaDriverLocationEvent request) throws TerminalException {
+  public void handleDriverLocationUpdateEvent(RestateContext ctx, KafkaDriverLocationEvent request)
+      throws TerminalException {
     // Update the location of the driver
     Location location = JacksonSerdes.of(Location.class).deserialize(request.getLocation());
     ctx.set(DRIVER_LOCATION, location);
@@ -154,8 +150,8 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
                 DeliveryManagerRestate.newClient(ctx)
                     .oneWay()
                     .handleDriverLocationUpdate(
-                        OrderProto.DeliveryLocationUpdate.newBuilder()
-                            .setOrderId(delivery.orderId)
+                        DeliveryLocationUpdate.newBuilder()
+                            .setOrderId(delivery.getOrderId())
                             .setLocation(location.toProto())
                             .build()));
   }
@@ -166,27 +162,24 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
    * got assigned to him.
    */
   @Override
-  public OrderProto.AssignedDeliveryResponse getAssignedDelivery(
-      RestateContext ctx, OrderProto.DriverId request) throws TerminalException {
+  public AssignedDeliveryResponse getAssignedDelivery(RestateContext ctx, DriverId request)
+      throws TerminalException {
     var assignedDelivery = ctx.get(ASSIGNED_DELIVERY);
 
     return assignedDelivery
         .map(
             delivery ->
-                OrderProto.AssignedDeliveryResponse.newBuilder()
+                AssignedDeliveryResponse.newBuilder()
                     .setDelivery(
-                        OrderProto.Delivery.newBuilder()
-                            .setDriverId(delivery.driverId)
-                            .setOrderId(delivery.orderId)
-                            .setRestaurantId(delivery.restaurantId)
-                            .setCustomerLocation(delivery.customerLocation.toProto())
-                            .setRestaurantLocation(delivery.restaurantLocation.toProto())
+                        Delivery.newBuilder()
+                            .setDriverId(delivery.getDriverId())
+                            .setOrderId(delivery.getOrderId())
+                            .setRestaurantId(delivery.getRestaurantId())
+                            .setCustomerLocation(delivery.getCustomerLocation().toProto())
+                            .setRestaurantLocation(delivery.getRestaurantLocation().toProto())
                             .build())
                     .build())
-        .orElse(
-            OrderProto.AssignedDeliveryResponse.newBuilder()
-                .setEmpty(Empty.getDefaultInstance())
-                .build());
+        .orElse(AssignedDeliveryResponse.newBuilder().setEmpty(Empty.getDefaultInstance()).build());
   }
 
   // Utility function to check if the driver is in the expected state

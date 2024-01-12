@@ -1,12 +1,13 @@
 package dev.restate.sdk.examples.external;
 
+import static dev.restate.sdk.examples.generated.OrderProto.*;
+
 import dev.restate.sdk.RestateContext;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.examples.clients.KafkaPublisher;
 import dev.restate.sdk.examples.generated.DriverDigitalTwinRestate;
 import dev.restate.sdk.examples.generated.DriverMobileAppSimulatorRestate;
-import dev.restate.sdk.examples.generated.OrderProto;
 import dev.restate.sdk.examples.types.AssignedDelivery;
 import dev.restate.sdk.examples.types.Location;
 import dev.restate.sdk.examples.utils.GeoUtils;
@@ -21,7 +22,7 @@ import org.apache.logging.log4j.Logger;
  * This would actually be a mobile app that drivers use to accept delivery requests, and to set
  * themselves as available.
  *
- * For simplicity, we implemented this with Restate.
+ * <p>For simplicity, we implemented this with Restate.
  */
 public class DriverMobileAppSimulator
     extends DriverMobileAppSimulatorRestate.DriverMobileAppSimulatorRestateImplBase {
@@ -39,12 +40,9 @@ public class DriverMobileAppSimulator
   StateKey<AssignedDelivery> ASSIGNED_DELIVERY =
       StateKey.of("assigned-delivery", JacksonSerdes.of(AssignedDelivery.class));
 
-  /**
-   * Mimics the driver setting himself to available in the app
-   */
+  /** Mimics the driver setting himself to available in the app */
   @Override
-  public void startDriver(RestateContext ctx, OrderProto.DriverId request)
-      throws TerminalException {
+  public void startDriver(RestateContext ctx, DriverId request) throws TerminalException {
     // If this driver was already created, do nothing
     if (ctx.get(CURRENT_LOCATION).isPresent()) {
       return;
@@ -59,7 +57,7 @@ public class DriverMobileAppSimulator
     // Tell the digital twin of the driver in the food ordering app, that he is available
     DriverDigitalTwinRestate.newClient(ctx)
         .setDriverAvailable(
-            OrderProto.DriverAvailableNotification.newBuilder()
+            DriverAvailableNotification.newBuilder()
                 .setDriverId(request.getDriverId())
                 .setRegion(GeoUtils.DEMO_REGION)
                 .build())
@@ -74,8 +72,7 @@ public class DriverMobileAppSimulator
    * again after a short delay.
    */
   @Override
-  public void pollForWork(RestateContext ctx, OrderProto.DriverId request)
-      throws TerminalException {
+  public void pollForWork(RestateContext ctx, DriverId request) throws TerminalException {
     var thisDriverSim = DriverMobileAppSimulatorRestate.newClient(ctx);
 
     // Ask the digital twin of the driver in the food ordering app, if he already got a job assigned
@@ -103,11 +100,9 @@ public class DriverMobileAppSimulator
     thisDriverSim.delayed(Duration.ofMillis(MOVE_INTERVAL)).move(request);
   }
 
-  /**
-   * Periodically lets the food ordering app know the new location
-   */
+  /** Periodically lets the food ordering app know the new location */
   @Override
-  public void move(RestateContext ctx, OrderProto.DriverId request) throws TerminalException {
+  public void move(RestateContext ctx, DriverId request) throws TerminalException {
     var thisDriverSim = DriverMobileAppSimulatorRestate.newClient(ctx);
     var assignedDelivery =
         ctx.get(ASSIGNED_DELIVERY)
@@ -118,9 +113,9 @@ public class DriverMobileAppSimulator
 
     // Get next destination to go to
     var nextDestination =
-        assignedDelivery.orderPickedUp
-            ? assignedDelivery.customerLocation
-            : assignedDelivery.restaurantLocation;
+        assignedDelivery.isOrderPickedUp()
+            ? assignedDelivery.getCustomerLocation()
+            : assignedDelivery.getRestaurantLocation();
 
     // Move to the next location
     var newLocation = GeoUtils.moveToDestination(currentLocation, nextDestination);
@@ -131,7 +126,7 @@ public class DriverMobileAppSimulator
     // If we reached the destination, notify the food ordering app
     if (newLocation.equals(nextDestination)) {
       // If the delivery was already picked up, then that means it now arrived at the customer
-      if (assignedDelivery.orderPickedUp) {
+      if (assignedDelivery.isOrderPickedUp()) {
         // Delivery is delivered to customer
         ctx.clear(ASSIGNED_DELIVERY);
 
@@ -145,7 +140,7 @@ public class DriverMobileAppSimulator
         DriverDigitalTwinRestate.newClient(ctx)
             .oneWay()
             .setDriverAvailable(
-                OrderProto.DriverAvailableNotification.newBuilder()
+                DriverAvailableNotification.newBuilder()
                     .setDriverId(request.getDriverId())
                     .setRegion(GeoUtils.DEMO_REGION)
                     .build());

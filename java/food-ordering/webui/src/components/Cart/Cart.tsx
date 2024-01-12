@@ -66,17 +66,17 @@ const Cart = () => {
     const generateJsonReq = () => {
       const productsToSend = products.map((prod) => {
         return {
-          product_id: prod.id.toString(),
+          productId: prod.id.toString(),
           description: prod.description,
           quantity: prod.quantity,
         };
       });
       return {
-        order_id: user!.user_id,
-        restaurant_id: details.restaurant_id,
+        orderId: user!.user_id,
+        restaurantId: details.restaurant_id,
         products: productsToSend,
-        total_cost: total.totalPrice,
-        delivery_delay: details.delivery_delay,
+        totalCost: total.totalPrice,
+        deliveryDelay: details.delivery_delay,
       };
     };
 

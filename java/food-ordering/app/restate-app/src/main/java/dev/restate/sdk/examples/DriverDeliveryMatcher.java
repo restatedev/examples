@@ -1,12 +1,13 @@
 package dev.restate.sdk.examples;
 
+import static dev.restate.sdk.examples.generated.OrderProto.*;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import dev.restate.sdk.RestateContext;
 import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.examples.generated.DriverDeliveryMatcherRestate;
-import dev.restate.sdk.examples.generated.OrderProto;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -32,8 +33,7 @@ public class DriverDeliveryMatcher
    * in line. If no pending deliveries, driver is added to the available driver pool
    */
   @Override
-  public void setDriverAvailable(
-      RestateContext ctx, OrderProto.DriverPoolAvailableNotification request)
+  public void setDriverAvailable(RestateContext ctx, DriverPoolAvailableNotification request)
       throws TerminalException {
     var pendingDeliveries = ctx.get(PENDING_DELIVERIES).orElse(new LinkedList<>());
 
@@ -58,7 +58,7 @@ public class DriverDeliveryMatcher
    * available. If no available drivers, the delivery is added to the pending deliveries queue
    */
   @Override
-  public void requestDriverForDelivery(RestateContext ctx, OrderProto.DeliveryCallback request)
+  public void requestDriverForDelivery(RestateContext ctx, DeliveryCallback request)
       throws TerminalException {
     var availableDrivers = ctx.get(AVAILABLE_DRIVERS).orElse(new LinkedList<>());
 

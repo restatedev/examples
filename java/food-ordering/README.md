@@ -11,6 +11,13 @@ It also interacts with the delivery services to get the order delivered to the c
 
 ## Running locally with Docker compose
 
+Build the docker containers:
+
+```shell
+cd app
+./gradlew clean build jibDockerBuild
+```
+
 Launch the Docker compose setup:
 ```shell
 docker compose up

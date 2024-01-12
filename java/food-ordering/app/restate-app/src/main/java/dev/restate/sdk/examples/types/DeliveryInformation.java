@@ -1,20 +1,24 @@
 package dev.restate.sdk.examples.types;
 
-public class DeliveryInformation {
-  String orderId;
-  String callbackId;
-  String restaurantId;
-  Location restaurantLocation;
-  Location customerLocation;
-  boolean orderPickedUp;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+public class DeliveryInformation {
+  private final String orderId;
+  private final String callbackId;
+  private final String restaurantId;
+  private final Location restaurantLocation;
+  private final Location customerLocation;
+  private boolean orderPickedUp;
+
+  @JsonCreator
   public DeliveryInformation(
-      String orderId,
-      String callbackId,
-      String restaurantId,
-      Location restaurantLocation,
-      Location customerLocation,
-      boolean orderPickedUp) {
+      @JsonProperty("orderId") String orderId,
+      @JsonProperty("callbackId") String callbackId,
+      @JsonProperty("restaurantId") String restaurantId,
+      @JsonProperty("restaurantLocation") Location restaurantLocation,
+      @JsonProperty("customerLocation") Location customerLocation,
+      @JsonProperty("orderPickedUp") boolean orderPickedUp) {
     this.orderId = orderId;
     this.callbackId = callbackId;
     this.restaurantId = restaurantId;
@@ -23,53 +27,31 @@ public class DeliveryInformation {
     this.orderPickedUp = orderPickedUp;
   }
 
-  public DeliveryInformation() {}
-
   public String getOrderId() {
     return orderId;
-  }
-
-  public void setOrderId(String orderId) {
-    this.orderId = orderId;
   }
 
   public String getCallbackId() {
     return callbackId;
   }
 
-  public void setCallbackId(String callbackId) {
-    this.callbackId = callbackId;
-  }
-
   public String getRestaurantId() {
     return restaurantId;
-  }
-
-  public void setRestaurantId(String restaurantId) {
-    this.restaurantId = restaurantId;
   }
 
   public Location getRestaurantLocation() {
     return restaurantLocation;
   }
 
-  public void setRestaurantLocation(Location restaurantLocation) {
-    this.restaurantLocation = restaurantLocation;
-  }
-
   public Location getCustomerLocation() {
     return customerLocation;
-  }
-
-  public void setCustomerLocation(Location customerLocation) {
-    this.customerLocation = customerLocation;
   }
 
   public boolean isOrderPickedUp() {
     return orderPickedUp;
   }
 
-  public void setOrderPickedUp(boolean orderPickedUp) {
-    this.orderPickedUp = orderPickedUp;
+  public void notifyPickup() {
+    this.orderPickedUp = true;
   }
 }
