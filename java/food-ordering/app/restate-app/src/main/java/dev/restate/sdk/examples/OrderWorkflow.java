@@ -32,52 +32,52 @@ public class OrderWorkflow extends OrderWorkflowRestate.OrderWorkflowRestateImpl
       throws TerminalException {
     var orderStatusSend = OrderStatusServiceRestate.newClient(ctx);
 
+    ObjectMapper mapper = new ObjectMapper();
+    OrderRequest order;
     try {
-      ObjectMapper mapper = new ObjectMapper();
-      OrderRequest order = mapper.readValue(event.getPayload().toStringUtf8(), OrderRequest.class);
-      String id = order.getOrderId();
-
-      // 1. Set status
-      orderStatusSend.oneWay().setStatus(statusToProto(id, StatusEnum.CREATED));
-
-      // 2. Handle payment
-      String token = ctx.sideEffect(CoreSerdes.STRING_UTF8, () -> UUID.randomUUID().toString());
-      boolean paid =
-          ctx.sideEffect(
-              CoreSerdes.BOOLEAN, () -> paymentClnt.charge(id, token, order.getTotalCost()));
-
-      if (!paid) {
-        orderStatusSend.oneWay().setStatus(statusToProto(id, StatusEnum.REJECTED));
-        return;
-      }
-
-      // 3. Schedule preparation
-      orderStatusSend.setStatus(statusToProto(order.getOrderId(), StatusEnum.SCHEDULED));
-      ctx.sleep(Duration.ofMillis(order.getDeliveryDelay()));
-
-      // 4. Trigger preparation
-      var preparationAwakeable = ctx.awakeable(CoreSerdes.VOID);
-      ctx.sideEffect(() -> restaurant.prepare(id, preparationAwakeable.id()));
-      orderStatusSend.setStatus(statusToProto(id, StatusEnum.IN_PREPARATION));
-
-      preparationAwakeable.await();
-      orderStatusSend.setStatus(statusToProto(id, StatusEnum.SCHEDULING_DELIVERY));
-
-      // 5. Find a driver and start delivery
-      var deliveryAwakeable = ctx.awakeable(CoreSerdes.VOID);
-
-      var deliveryRequest =
-          DeliveryRequest.newBuilder()
-              .setOrderId(id)
-              .setRestaurantId(order.getRestaurantId())
-              .setCallback(deliveryAwakeable.id())
-              .build();
-      DeliveryManagerRestate.newClient(ctx).oneWay().start(deliveryRequest);
-      deliveryAwakeable.await();
-      orderStatusSend.setStatus(statusToProto(order.getOrderId(), StatusEnum.DELIVERED));
-
+      order = mapper.readValue(event.getPayload().toStringUtf8(), OrderRequest.class);
     } catch (JsonProcessingException e) {
       throw new TerminalException("Parsing raw JSON order failed: " + e.getMessage());
     }
+    String id = order.getOrderId();
+
+    // 1. Set status
+    orderStatusSend.oneWay().setStatus(statusToProto(id, StatusEnum.CREATED));
+
+    // 2. Handle payment
+    String token = ctx.sideEffect(CoreSerdes.STRING_UTF8, () -> UUID.randomUUID().toString());
+    boolean paid =
+        ctx.sideEffect(
+            CoreSerdes.BOOLEAN, () -> paymentClnt.charge(id, token, order.getTotalCost()));
+
+    if (!paid) {
+      orderStatusSend.oneWay().setStatus(statusToProto(id, StatusEnum.REJECTED));
+      return;
+    }
+
+    // 3. Schedule preparation
+    orderStatusSend.setStatus(statusToProto(order.getOrderId(), StatusEnum.SCHEDULED));
+    ctx.sleep(Duration.ofMillis(order.getDeliveryDelay()));
+
+    // 4. Trigger preparation
+    var preparationAwakeable = ctx.awakeable(CoreSerdes.VOID);
+    ctx.sideEffect(() -> restaurant.prepare(id, preparationAwakeable.id()));
+    orderStatusSend.setStatus(statusToProto(id, StatusEnum.IN_PREPARATION));
+
+    preparationAwakeable.await();
+    orderStatusSend.setStatus(statusToProto(id, StatusEnum.SCHEDULING_DELIVERY));
+
+    // 5. Find a driver and start delivery
+    var deliveryAwakeable = ctx.awakeable(CoreSerdes.VOID);
+
+    var deliveryRequest =
+        DeliveryRequest.newBuilder()
+            .setOrderId(id)
+            .setRestaurantId(order.getRestaurantId())
+            .setCallback(deliveryAwakeable.id())
+            .build();
+    DeliveryManagerRestate.newClient(ctx).oneWay().start(deliveryRequest);
+    deliveryAwakeable.await();
+    orderStatusSend.setStatus(statusToProto(order.getOrderId(), StatusEnum.DELIVERED));
   }
 }

@@ -11,7 +11,8 @@ import dev.restate.sdk.examples.types.StatusEnum;
 
 public class OrderStatusService
     extends OrderStatusServiceRestate.OrderStatusServiceRestateImplBase {
-  private static final StateKey<String> ORDER_STATUS = StateKey.of("order-status", CoreSerdes.STRING_UTF8);
+  private static final StateKey<String> ORDER_STATUS =
+      StateKey.of("order-status", CoreSerdes.STRING_UTF8);
   private static final StateKey<Long> ORDER_ETA = StateKey.of("order-eta", CoreSerdes.LONG);
 
   /** Gets called by the webUI frontend to display the status of an order. */
