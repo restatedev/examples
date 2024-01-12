@@ -20,7 +20,7 @@
     "postbundle": "cd ../dist && zip -r index.zip index.js*"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^0.6.0",
+    "@restatedev/restate-sdk": "^0.7.0",
     "axios": "^1.4.0"
   },
   "devDependencies": {

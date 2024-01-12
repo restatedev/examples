@@ -139,7 +139,7 @@ function checkTypes(payment: Payment): Payment {
         `Type for amount (${typeof payment.amount}) cannot convert amount to number: ${
           payment.amount
         }`,
-        { cause: e }
+        { errorCode: restate.ErrorCodes.INVALID_ARGUMENT }
       );
     }
   }

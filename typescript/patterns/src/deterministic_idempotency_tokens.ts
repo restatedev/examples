@@ -1,5 +1,6 @@
 import * as restate from "@restatedev/restate-sdk";
 import { randomUUID } from "crypto";
+import fetch from "node-fetch";
 
 //  -----------------                                         -----------------
 //                      Idempotency Tokens / Unique Tokens 
