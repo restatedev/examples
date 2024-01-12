@@ -78,7 +78,7 @@ wget https://github.com/restatedev/examples/releases/latest/download/typescript-
 
 ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
 
-[Food ordering - Java](java/food-ordering)
+[Food ordering - Java](java/food-ordering): Java food order processing app and driver-to-delivery matching services.
 ```shell
 # Download the example
 wget https://github.com/restatedev/examples/releases/latest/download/java-food-ordering.zip && unzip java-food-ordering.zip -d java-food-ordering && rm java-food-ordering.zip
