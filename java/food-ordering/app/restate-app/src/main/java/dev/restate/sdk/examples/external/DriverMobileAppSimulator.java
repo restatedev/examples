@@ -28,16 +28,16 @@ public class DriverMobileAppSimulator
     extends DriverMobileAppSimulatorRestate.DriverMobileAppSimulatorRestateImplBase {
   private static final Logger logger = LogManager.getLogger(DriverMobileAppSimulator.class);
 
-  KafkaPublisher producer = new KafkaPublisher();
+  private final KafkaPublisher producer = new KafkaPublisher();
 
-  private final long POLL_INTERVAL = 1000;
-  private final long MOVE_INTERVAL = 1000;
-  private final long PAUSE_BETWEEN_DELIVERIES = 2000;
+  private static final long POLL_INTERVAL = 1000;
+  private static final long MOVE_INTERVAL = 1000;
+  private static final long PAUSE_BETWEEN_DELIVERIES = 2000;
 
-  StateKey<Location> CURRENT_LOCATION =
+  private final StateKey<Location> CURRENT_LOCATION =
       StateKey.of("current-location", JacksonSerdes.of(Location.class));
 
-  StateKey<AssignedDelivery> ASSIGNED_DELIVERY =
+  private final StateKey<AssignedDelivery> ASSIGNED_DELIVERY =
       StateKey.of("assigned-delivery", JacksonSerdes.of(AssignedDelivery.class));
 
   /** Mimics the driver setting himself to available in the app */
