@@ -21,7 +21,7 @@ public class DriverDeliveryMatcher
     extends DriverDeliveryMatcherRestate.DriverDeliveryMatcherRestateImplBase {
 
   // Deliveries that are waiting for a driver to become available
-  private final StateKey<Queue<String>> PENDING_DELIVERIES =
+  private static final StateKey<Queue<String>> PENDING_DELIVERIES =
       StateKey.of("pending-deliveries", JacksonSerdes.of(new TypeReference<>() {}));
 
   // Drivers that are waiting for new delivery requests
