@@ -25,7 +25,7 @@ import dev.restate.sdk.serde.jackson.JacksonSerdes;
 public class DeliveryManager extends DeliveryManagerRestate.DeliveryManagerRestateImplBase {
 
   // State key to store all relevant information about the delivery.
-  StateKey<DeliveryInformation> DELIVERY_INFO =
+  private static final StateKey<DeliveryInformation> DELIVERY_INFO =
       StateKey.of("delivery-info", JacksonSerdes.of(DeliveryInformation.class));
 
   private static final Serde<Location> locationSerde = JacksonSerdes.of(Location.class);
