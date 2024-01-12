@@ -27,7 +27,7 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
       StateKey.of("driver-status", JacksonSerdes.of(DriverStatus.class));
 
   // Only set if the driver is currently doing a delivery
-  StateKey<AssignedDelivery> ASSIGNED_DELIVERY =
+  private static final StateKey<AssignedDelivery> ASSIGNED_DELIVERY =
       StateKey.of("assigned-delivery", JacksonSerdes.of(AssignedDelivery.class));
 
   // Current location of the driver
