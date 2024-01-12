@@ -23,7 +23,7 @@ import dev.restate.sdk.serde.jackson.JacksonSerdes;
 public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwinRestateImplBase {
 
   // Current status of the driver: idle, waiting for work, or delivering
-  StateKey<DriverStatus> DRIVER_STATUS =
+  private static final StateKey<DriverStatus> DRIVER_STATUS =
       StateKey.of("driver-status", JacksonSerdes.of(DriverStatus.class));
 
   // Only set if the driver is currently doing a delivery
