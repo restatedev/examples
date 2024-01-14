@@ -3,7 +3,7 @@ import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCach
 import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
 import com.google.protobuf.gradle.id
 
-val restateVersion = "0.6.0"
+val restateVersion = "0.7.0"
 
 plugins {
   kotlin("jvm") version "1.9.10"
