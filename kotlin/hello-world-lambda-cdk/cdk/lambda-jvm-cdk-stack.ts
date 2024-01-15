@@ -25,32 +25,23 @@ export class LambdaJvmCdkStack extends cdk.Stack {
       systemLogLevel: "DEBUG",
     });
 
-    const restateInstance = new restate.RestateCloudEndpoint(this, "RestateCloud", {
+    const environment = new restate.RestateCloudEnvironment(this, "RestateCloud", {
       clusterId: props.clusterId,
       authTokenSecretArn: props.authTokenSecretArn,
     });
 
     // Alternatively, you can deploy Restate on your own infrastructure like this. See the Restate CDK docs for more.
-    // const restateInstance = new restate.SingleNodeRestateInstance(this, "Restate", {
+    // const environment = new restate.SingleNodeRestateInstance(this, "Restate", {
     //   logGroup: new logs.LogGroup(this, "RestateLogs", {
     //     retention: logs.RetentionDays.THREE_MONTHS,
     //   }),
     // });
 
-    const handlers = new restate.LambdaServiceRegistry(this, "RestateServices", {
-      serviceHandlers: {
+    new restate.LambdaServiceRegistry(this, "RestateServices", {
+      handlers: {
         "greeter.Greeter": greeter,
       },
-      restate: restateInstance,
-    });
-    handlers.register({
-      metaEndpoint: restateInstance.metaEndpoint,
-      invokerRoleArn: restateInstance.invokerRole.roleArn,
-      authTokenSecretArn: restateInstance.authToken.secretArn,
-    });
-
-    new cdk.CfnOutput(this, "HandlerFunction", {
-      value: greeter.functionName,
+      environment,
     });
   }
 }
