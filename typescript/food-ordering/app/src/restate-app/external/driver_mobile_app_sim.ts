@@ -116,4 +116,4 @@ export const router = restate.keyedRouter({
   move
 })
 
-export const service: restate.ServiceApi<typeof router> = { path : "driver-mobile-app" };
+export const service: restate.ServiceApi<typeof router> = { path : "drivermobileapp" };

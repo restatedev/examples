@@ -70,4 +70,4 @@ export const router = restate.keyedRouter({
 });
 
 export type orderApi = typeof router;
-export const service: restate.ServiceApi<orderApi> = { path: "order-workflow" };
+export const service: restate.ServiceApi<orderApi> = { path: "orderworkflow" };

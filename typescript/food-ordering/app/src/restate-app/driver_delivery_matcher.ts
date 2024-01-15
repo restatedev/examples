@@ -66,4 +66,4 @@ export const router = restate.keyedRouter({
 })
 
 export type api = typeof router;
-export const service : restate.ServiceApi<api> = { path: "driver-delivery-matcher" };
+export const service : restate.ServiceApi<api> = { path: "driverdeliverymatcher" };

@@ -49,5 +49,5 @@ export const router = restate.keyedRouter({
 });
 export type orderStatusApi = typeof router;
 export const service: restate.ServiceApi<orderStatusApi> = {
-  path: "order-status",
+  path: "orderstatus",
 };

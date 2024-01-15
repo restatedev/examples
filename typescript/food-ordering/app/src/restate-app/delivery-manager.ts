@@ -112,4 +112,4 @@ export const router = restate.keyedRouter({
 });
 
 export type api = typeof router;
-export const service: restate.ServiceApi<api> = { path: "delivery-manager" };
+export const service: restate.ServiceApi<api> = { path: "deliverymanager" };
