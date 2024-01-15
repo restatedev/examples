@@ -40,16 +40,22 @@ wget https://github.com/restatedev/examples/releases/latest/download/java-hello-
 
 ![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white)
 
-[Hello World HTTP](java/hello-world-kotlin-http)
+[Hello World HTTP](kotlin/hello-world-http)
 ```shell
 # Download the example
 wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hello-world-http.zip && unzip kotlin-hello-world-http.zip -d kotlin-hello-world-http && rm kotlin-hello-world-http.zip
 ```
 
-[Hello world on AWS Lambda](java/hello-world-kotlin-lambda)
+[Hello world on AWS Lambda](kotlin/hello-world-lambda)
 ```shell
 # Download the example
 wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hello-world-lambda.zip && unzip kotlin-hello-world-lambda.zip -d kotlin-hello-world-lambda && rm kotlin-hello-world-lambda.zip
+```
+
+[Hello world on AWS Lambda + CDK](kotlin/hello-world-lambda-cdk)
+```shell
+# Download the example
+wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hello-world-lambda-cdk.zip && unzip kotlin-hello-world-lambda-cdk.zip -d kotlin-hello-world-lambda-cdk && rm kotlin-hello-world-lambda-cdk.zip
 ```
 
 ## Patterns
