@@ -97,7 +97,7 @@ jobs:
       - name: Test kotlin/hello-world-lambda-cdk
         if: github.event.inputs.cdkVersion != '' || github.event.inputs.sdkJavaVersion != ''
         run: |
-          npm --prefix kotlin/hello-world-lambda-cdk install
+          npm --prefix kotlin/hello-world-lambda-cdk clean-install
           npm --prefix kotlin/hello-world-lambda-cdk run verify
 
       - name: Create Pull Request
