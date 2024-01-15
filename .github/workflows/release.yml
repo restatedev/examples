@@ -24,7 +24,6 @@ jobs:
           # create a draft release which needs manual approval
           draft: true
           files: |
-            typescript-hello-world-lambda.zip
             typescript-ecommerce-store.zip
             typescript-food-ordering.zip
             typescript-payment-api.zip
