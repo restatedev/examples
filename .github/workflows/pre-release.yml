@@ -49,7 +49,7 @@ jobs:
       # When adding a new example make sure it's listed here
       - name: Find and replace restateVersion in build.gradle.kts for java templates
         if: github.event.inputs.sdkJavaVersion != ''
-        run: for jvmDir in hello-world-http hello-world-lambda food-ordering; do sed -i 's/val restateVersion = "[0-9A-Z.-]*"/val restateVersion = "${{ inputs.sdkJavaVersion }}"/' java/$jvmDir/build.gradle.kts; done
+        run: for jvmDir in hello-world-http hello-world-lambda food-ordering/app; do sed -i 's/val restateVersion = "[0-9A-Z.-]*"/val restateVersion = "${{ inputs.sdkJavaVersion }}"/' java/$jvmDir/build.gradle.kts; done
       - name: Find and replace restateVersion in build.gradle.kts for kotlin templates
         if: github.event.inputs.sdkJavaVersion != ''
         run: for jvmDir in hello-world-http hello-world-lambda; do sed -i 's/val restateVersion = "[0-9A-Z.-]*"/val restateVersion = "${{ inputs.sdkJavaVersion }}"/' kotlin/$jvmDir/build.gradle.kts; done
