@@ -1,5 +1,6 @@
 import * as cdk from "aws-cdk-lib";
 import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as logs from "aws-cdk-lib/aws-logs";
 import * as restate from "@restatedev/restate-cdk";
 import { Construct } from "constructs";
 
@@ -7,10 +8,15 @@ export class LambdaJvmCdkStack extends cdk.Stack {
   constructor(
     scope: Construct,
     id: string,
-    props: {
-      clusterId: string;
-      authTokenSecretArn: string;
-    } & cdk.StackProps,
+    props: (
+      | { selfHosted: true }
+      | {
+          selfHosted: false;
+          clusterId: string;
+          authTokenSecretArn: string;
+        }
+    ) &
+      cdk.StackProps,
   ) {
     super(scope, id, props);
 
@@ -25,17 +31,17 @@ export class LambdaJvmCdkStack extends cdk.Stack {
       systemLogLevel: "DEBUG",
     });
 
-    const environment = new restate.RestateCloudEnvironment(this, "RestateCloud", {
-      clusterId: props.clusterId,
-      authTokenSecretArn: props.authTokenSecretArn,
-    });
-
-    // Alternatively, you can deploy Restate on your own infrastructure like this. See the Restate CDK docs for more.
-    // const environment = new restate.SingleNodeRestateInstance(this, "Restate", {
-    //   logGroup: new logs.LogGroup(this, "RestateLogs", {
-    //     retention: logs.RetentionDays.THREE_MONTHS,
-    //   }),
-    // });
+    const environment = props.selfHosted
+      ? new restate.SingleNodeRestateDeployment(this, "Restate", {
+          logGroup: new logs.LogGroup(this, "RestateLogs", {
+            retention: logs.RetentionDays.THREE_MONTHS,
+            removalPolicy: cdk.RemovalPolicy.DESTROY,
+          }),
+        })
+      : new restate.RestateCloudEnvironment(this, "RestateCloud", {
+          clusterId: props.clusterId,
+          authTokenSecretArn: props.authTokenSecretArn,
+        });
 
     new restate.LambdaServiceRegistry(this, "RestateServices", {
       handlers: {
