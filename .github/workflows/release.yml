@@ -32,6 +32,7 @@ jobs:
             typescript-hello-world-lambda-cdk.zip
             java-hello-world-http.zip
             java-hello-world-lambda.zip
+            java-food-ordering.zip
             kotlin-hello-world-http.zip
             kotlin-hello-world-lambda.zip
             kotlin-hello-world-lambda-cdk.zip
