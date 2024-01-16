@@ -70,7 +70,10 @@ curl -H "Authorization: Bearer ${RESTATE_API_TOKEN}" \
     https://${CLUSTER_ID}.dev.restate.cloud:8080/Greeter/greet
 ```
 
-### Useful commands
+## Cleanup
 
-* `npm run build`   compile the Lambda handler and synthesize CDK deployment artifacts
-* `npm run deploy`  perform a CDK deployment
+To tear down the stack, run:
+
+```shell
+npm run destroy
+```
