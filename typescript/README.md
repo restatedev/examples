@@ -2,6 +2,10 @@
 
 This directory contains Restate examples using the Typescript SDK.
 
+## Common patterns
+
+- A collection of [common patterns](patterns) you encounter when developing distributed applications.
+
 ## Starter examples
 
 - [Hello World - AWS Lambda](hello-world-lambda): A simple example of how you can run a Restate service on AWS Lambda.
