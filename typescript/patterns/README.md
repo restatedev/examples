@@ -12,9 +12,10 @@ that explains them.
 
 ### List of Patterns
 
-* [**Durable Event-based Asynchronous Communication as RPC**](src/async_calls_as_rpc.ts)
-* [**Idempotency Tokens**](src/deterministic_idempotency_tokens.ts)
-* [**Single-writer Concurrency**](src/single_writer_concurrency.ts)
-* [**Dual Writes**](src/dual_writes.ts)
-* [**Distributed Locks**](src/distributed_locks.ts)
-* [**Idempotent DynamoDB Updates**](src/dynamo_db_idempotency.ts)
+- [**Durable Event-based Asynchronous Communication as RPC**](src/async_calls_as_rpc.ts)
+- [**Idempotency Tokens**](src/deterministic_idempotency_tokens.ts)
+- [**Single-writer Concurrency**](src/single_writer_concurrency.ts)
+- [**Dual Writes**](src/dual_writes.ts)
+- [**Distributed Locks**](src/distributed_locks.ts)
+- [**Idempotent DynamoDB Updates**](src/dynamo_db_idempotency.ts)
+- [**Compensations**](src/compensations.ts)
