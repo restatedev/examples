@@ -1,4 +1,4 @@
-# Restate Promisify complex dependency example
+# Promisify anything: wrap a complex dependency in a durable promise
 
 This example shows how to use Restate to promisify a complex dependency, in this case executing queries on AWS Athena.
 A long-polling HTTP client is set up to simulate long-polling against the Restate ingress endpoint that wraps a query's

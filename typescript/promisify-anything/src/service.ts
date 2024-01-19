@@ -49,48 +49,38 @@ type QueryRequest = {
 const DEFAULT_QUERY_SQL = 'SELECT * FROM "demo_db"."table" limit 10;';
 
 const queryInternal = async (ctx: restate.RpcContext, requestId: string, request: QueryRequest) => {
-  // If you want to test the promise integration without actually calling Athena, you can just uncomment this instead:
-  // await ctx.sleep(5000);
-  // ctx.resolveAwakeable(request.awakeableId, { result: "foo", _id: requestId });
-  // return;
-
-  let executionId: string;
-  try {
-    executionId = (await ctx.sideEffect(async () => {
-      const startQueryResult = await client.send(
-        new athena.StartQueryExecutionCommand({
-          QueryString: request.query ?? DEFAULT_QUERY_SQL,
-          WorkGroup: "demo-workgroup",
-          ClientRequestToken: requestId,
-        }),
-      );
-      return startQueryResult.QueryExecutionId;
-    })) as string;
-  } catch (err) {
-    ctx.rejectAwakeable(request.awakeableId, "Unable to start query: " + err);
-    return;
-  }
-
-  const result = await ctx.sideEffect(async () => {
-    try {
-      return await client.send(
-        new athena.GetQueryResultsCommand({
-          QueryExecutionId: executionId,
-        }),
-      );
-    } catch (err) {
-      if (err instanceof athena.InvalidRequestException && err.message.match(/state: FAILED/)) {
-        return err; // side effect completes with an error result
-      }
-      throw err; // side effect will be retried
-    }
+  const executionId = await ctx.sideEffect(async () => {
+    const startQueryResult = await client.send(
+      new athena.StartQueryExecutionCommand({
+        QueryString: request.query ?? DEFAULT_QUERY_SQL,
+        WorkGroup: "demo-workgroup",
+        ClientRequestToken: requestId,
+      }),
+    );
+    return startQueryResult.QueryExecutionId as string;
   });
+  const queryId = { QueryExecutionId: executionId };
 
-  if (result instanceof athena.InvalidRequestException) {
-    ctx.rejectAwakeable(request.awakeableId, "Query execution failed: " + result.message);
-  } else {
-    ctx.resolveAwakeable(request.awakeableId, { result: result.ResultSet, _id: result.$metadata.requestId });
+  const state = await ctx.sideEffect(
+    async () => {
+      const response = await client.send(new athena.GetQueryExecutionCommand(queryId));
+      const state = response.QueryExecution?.Status?.State;
+      if (!state || !isQueryStateFinal(state)) throw new Error("Non-final state"); // trigger retry of side effect
+      return state;
+    },
+    {
+      name: "Wait for query execution to reach final state",
+    },
+  );
+
+  if (state !== "SUCCEEDED") {
+    ctx.rejectAwakeable(request.awakeableId, "Unable to execute query");
+    throw new restate.TerminalError("Unable to execute query");
   }
+
+  const result = await ctx.sideEffect(() => client.send(new athena.GetQueryResultsCommand(queryId)));
+
+  ctx.resolveAwakeable(request.awakeableId, { result: result.ResultSet, _id: result.$metadata.requestId });
 };
 
 export const internalAthenaApiRouter = restate.keyedRouter({
@@ -102,3 +92,15 @@ restate
   .bindRouter(publicApi.path, queryRouter)
   .bindKeyedRouter(internalApi.path, internalAthenaApiRouter)
   .listen(9080);
+
+function isQueryStateFinal(state: athena.QueryExecutionState): boolean {
+  return ["SUCCEEDED", "FAILED", "CANCELLED"].includes(state);
+}
+
+// If you want to test the promise integration without actually calling Athena, you can replace the service definition
+// above with the following simple mock instead:
+// const queryInternal = async (ctx: restate.RpcContext, requestId: string, request: QueryRequest) => {
+//   await ctx.sleep(5000);
+//   ctx.resolveAwakeable(request.awakeableId, { result: "foo", _id: requestId });
+//   return;
+// };
