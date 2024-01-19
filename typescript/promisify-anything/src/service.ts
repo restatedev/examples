@@ -21,13 +21,13 @@ export const internalApi: restate.ServiceApi<typeof internalAthenaApiRouter> = {
 
 // Public API implementation
 
-const query = async (ctx: restate.RpcContext, externalRequest: string) => {
+const query = async (ctx: restate.RpcContext, request: string) => {
   const uniqueId = ctx.rand.uuidv4();
   const awakeable = ctx.awakeable();
 
   ctx.send(internalApi).query(uniqueId, {
     awakeableId: awakeable.id,
-    query: externalRequest,
+    query: request,
   });
 
   return await awakeable.promise;
