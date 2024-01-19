@@ -8,8 +8,8 @@ result in a very simple promise. Using a consistent idempotency token turns this
 
 Prerequisites:
 
-- npm, jq, curl
-- Docker
+- npm
+- supported Restate OS environment (macOS, Linux, Docker)
 - [Optional] An AWS account where you can deploy a demo stack
 
 There are several components to running the example:
@@ -21,11 +21,15 @@ There are several components to running the example:
 
 ### Start Restate
 
-If you prefer, you can omit the `--rm` flag to retain the stored invocation state between container restarts.
+In a separate terminal, start a Restate server:
 
 ```shell
-docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 -e RUST_LOG=info,restate=debug docker.io/restatedev/restate:latest
+npx @restatedev/restate-server
 ```
+
+Note: the server keeps a persistent store of previous invocations, stored state, idempotency keys in a directory named
+`target`. If you would later like to drop the stored state without needing to re-register the service deployment again,
+you can relaunch the server with the `--wipe worker` flag.  
 
 ### [Optional] Deploy the AWS stack
 
@@ -38,24 +42,46 @@ demo stack:
 npm run deploy
 ```
 
-Note the value of the `BucketName` output. Now copy the sample data file into S3:
+Next, copy the sample data file into S3:
 
 ```shell
+BUCKET_NAME=$(aws cloudformation describe-stacks \
+  --stack-name AthenaTableStack --query "Stacks[0].Outputs[?OutputKey=='BucketName'].OutputValue" --output text)
+
 aws s3 cp data/sample.jsonl s3://${BUCKET_NAME}/data/
 ```
 
+You can confirm that the file landed under the `data/` prefix using the S3 console or the CLI using
+`aws s3 ls s3://${BUCKET_NAME}/data/`.
+
 ### Start the service
 
-Use the `DemoRoleArn` output from the stack deployment above to set the `ROLE_ARN` environment variable:
+The restate service houses the Athena adapter logic and requires AWS credentials. We can use short-term credentials from
+the AWS demo stack we deployed earlier. If you've commented out the AWS SDK interactions, you can directly start the
+service.
 
 ```shell
-output=$(aws sts assume-role --role-arn ${ROLE_ARN} --role-session-name restate-demo)
-export AWS_ACCESS_KEY_ID=$(echo $output | jq -r '.Credentials.AccessKeyId')
-export AWS_SECRET_ACCESS_KEY=$(echo $output | jq -r '.Credentials.SecretAccessKey')
-export AWS_SESSION_TOKEN=$(echo $output | jq -r '.Credentials.SessionToken')
+ROLE_ARN=$(aws cloudformation describe-stacks \
+  --stack-name AthenaTableStack --query "Stacks[0].Outputs[?OutputKey=='DemoRoleArn'].OutputValue" --output text)
+
+export $(printf "AWS_ACCESS_KEY_ID=%s AWS_SECRET_ACCESS_KEY=%s AWS_SESSION_TOKEN=%s" \
+    $(aws sts assume-role \
+        --role-arn ${ROLE_ARN} \
+        --role-session-name restate-demo \
+        --query "Credentials.[AccessKeyId,SecretAccessKey,SessionToken]" \
+        --output text))
 ```
 
-Now start the Restate service:
+If you ordinarily use an AWS credential profile with the CLI, you should unset that; you must also make sure that your
+preferred region is specified:
+
+```shell
+unset AWS_PROFILE
+export AWS_REGION=...
+```
+
+You can verify that you've obtained the correct short-term credentials using `aws sts get-caller-identity` - this should
+print out the ARN of the "DemoDbAccess" role. Now start the Restate service:
 
 ```shell
 npm run service
@@ -64,7 +90,7 @@ npm run service
 Register the service with Restate - you only need to do this once:
 
 ```shell
-curl -X POST http://localhost:9070/endpoints -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
+npx @restatedev/restate deployments register --yes localhost:9080
 ```
 
 ### Run the client

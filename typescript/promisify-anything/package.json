@@ -1,6 +1,6 @@
 {
   "name": "promisify-anything",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -17,18 +17,18 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-athena": "^3.470.0",
-    "@restatedev/restate-sdk": "^0.5.1",
+    "@aws-sdk/client-athena": "^3.495.0",
+    "@restatedev/restate-sdk": "^0.7.0",
     "@types/uuid": "^9.0.7",
     "axios-retry": "^4.0.0",
     "typescript": "^5.3.3"
   },
   "devDependencies": {
-    "@aws-cdk/aws-glue-alpha": "^2.115.0-alpha.0",
-    "aws-cdk-lib": "^2.115.0",
-    "cdk": "^2.115.0",
+    "@aws-cdk/aws-glue-alpha": "^2.122.0-alpha.0",
+    "aws-cdk-lib": "^2.121.1",
+    "cdk": "^2.121.1",
     "constructs": "^10.3.0",
-    "prettier": "^3.1.1",
+    "prettier": "^3.2.4",
     "ts-node-dev": "^2.0.0"
   }
 }
