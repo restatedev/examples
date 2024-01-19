@@ -11,7 +11,7 @@ This directory contains Restate examples using the Typescript SDK.
 - [Hello World - AWS Lambda](hello-world-lambda): A simple example of how you can run a Restate service on AWS Lambda.
 - [Hello World - AWS Lambda & CDK](hello-world-lambda-cdk): A simple example of automating deployment to AWS Lambda using CDK.
 - [Payment api](payment-api/): Example API for payments, inspired by the Stripe API.
-- [Food ordering](typescript/food-ordering): See how to integrate Restate with external services using Awakeables and side effects.
+- [Food ordering](food-ordering): See how to integrate Restate with external services using Awakeables and side effects.
 
 ## Intermediate examples
 
