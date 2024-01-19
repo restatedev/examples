@@ -50,12 +50,11 @@ class AthenaTableStack extends cdk.Stack {
     });
 
     const dbAccessRole = new iam.Role(this, "DemoDbAccess", {
-      assumedBy: new iam.ArnPrincipal(
-        "arn:aws:sts::663487780041:assumed-role/AWSReservedSSO_EngineerAccess_d82d10a8890c4e29/pavel",
-      ),
+      assumedBy: new iam.AccountRootPrincipal(),
     });
     bucket.grantRead(dbAccessRole);
     bucket.grantWrite(dbAccessRole, "data/*");
+    bucket.grantWrite(dbAccessRole, "results/*");
     table.grantRead(dbAccessRole);
 
     dbAccessRole.addToPolicy(
