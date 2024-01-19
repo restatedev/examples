@@ -40,6 +40,11 @@ jobs:
         with:
           arguments: check
           build-root-directory: java/food-ordering/app
+      - name: Test java/patterns
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: check
+          build-root-directory: java/patterns
       - name: Test kotlin/hello-world-http
         uses: gradle/gradle-build-action@v2
         with:

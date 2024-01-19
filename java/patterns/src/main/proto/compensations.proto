@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package compensations;
+
+import "google/protobuf/empty.proto";
+
+import "dev/restate/ext.proto";
+
+option java_package = "dev.restate.patterns.compensations.generated";
+option java_outer_classname = "Proto";
+
+/**
+ * Travel service.
+ */
+service Travel {
+  // See https://docs.restate.dev/services/service_type for more details.
+  option (dev.restate.ext.service_type) = UNKEYED;
+
+  rpc Reserve (TravelBookingRequest) returns (google.protobuf.Empty);
+}
+
+message TravelBookingRequest {
+  string tripID = 1;
+}
+
+service Flights {
+  // See https://docs.restate.dev/services/service_type for more details.
+  option (dev.restate.ext.service_type) = KEYED;
+
+  rpc Reserve(FlightBookingRequest) returns (FlightBookingId);
+  rpc Confirm(FlightBookingId) returns (google.protobuf.Empty);
+  rpc Cancel(FlightBookingId) returns (google.protobuf.Empty);
+}
+
+message FlightBookingRequest {
+  string tripId = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message FlightBookingId {
+  string tripId = 1 [(dev.restate.ext.field) = KEY];
+  string bookingId = 2;
+}
+
+service CarRental {
+  // See https://docs.restate.dev/services/service_type for more details.
+  option (dev.restate.ext.service_type) = KEYED;
+
+  rpc Reserve(CarRentalRequest) returns (CarRentalId);
+  rpc Confirm(CarRentalId) returns (google.protobuf.Empty);
+  rpc Cancel(CarRentalId) returns (google.protobuf.Empty);
+}
+
+message CarRentalRequest {
+  string tripId = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message CarRentalId {
+  string tripId = 1 [(dev.restate.ext.field) = KEY];
+  string bookingId = 2;
+}
+
+service Payment {
+  // See https://docs.restate.dev/services/service_type for more details.
+  option (dev.restate.ext.service_type) = KEYED;
+
+  rpc Process(PaymentRequest) returns (PaymentId);
+  rpc Refund(PaymentId) returns (google.protobuf.Empty);
+}
+
+message PaymentRequest {
+  string tripId = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message PaymentId {
+  string tripId = 1 [(dev.restate.ext.field) = KEY];
+  string paymentId = 2;
+}
