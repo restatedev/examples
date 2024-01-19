@@ -18,7 +18,7 @@ axiosRetry(axios, {
   shouldResetTimeout: true, // the timeout set is per request, not for the overall interaction
   retryDelay: (retryCount, error) => {
     const delay = axiosRetry.exponentialDelay(retryCount, error, 100);
-    console.log(`Attempt #${retryCount} failed with ${error}. Backing off for ${delay}ms...`);
+    console.log(`Attempt #${retryCount} failed with ${JSON.stringify(error)}. Backing off for ${delay}ms...`);
     return delay;
   },
 });
@@ -51,6 +51,6 @@ const idempotencyKey = () => {
 };
 
 (async () => {
-  const result = await query(idempotencyKey(), "foo");
+  const result = await query(process.argv[2] ?? idempotencyKey(), "foo");
   console.log({ status: "SUCCESS", result: result.data });
 })();
