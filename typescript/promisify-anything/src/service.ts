@@ -46,9 +46,9 @@ type QueryRequest = {
   query?: string;
 };
 
-const queryInternal = async (ctx: restate.RpcContext, requestId: string, request: QueryRequest) => {
-  console.log("Starting query: " + request + " with id: " + requestId);
+const DEFAULT_QUERY_SQL = 'SELECT * FROM "demo_db"."table" limit 10;';
 
+const queryInternal = async (ctx: restate.RpcContext, requestId: string, request: QueryRequest) => {
   // If you want to test the promise integration without actually calling Athena, you can just uncomment this instead:
   // await ctx.sleep(5000);
   // ctx.resolveAwakeable(request.awakeableId, { result: "foo", _id: requestId });
@@ -59,7 +59,7 @@ const queryInternal = async (ctx: restate.RpcContext, requestId: string, request
     executionId = (await ctx.sideEffect(async () => {
       const startQueryResult = await client.send(
         new athena.StartQueryExecutionCommand({
-          QueryString: request.query ?? 'SELECT * FROM "demo_db"."table" limit 10;',
+          QueryString: request.query ?? DEFAULT_QUERY_SQL,
           WorkGroup: "demo-workgroup",
           ClientRequestToken: requestId,
         }),
@@ -67,7 +67,6 @@ const queryInternal = async (ctx: restate.RpcContext, requestId: string, request
       return startQueryResult.QueryExecutionId;
     })) as string;
   } catch (err) {
-    //throw new restate.TerminalError("Unable to start query: " + err);
     ctx.rejectAwakeable(request.awakeableId, "Unable to start query: " + err);
     return;
   }
