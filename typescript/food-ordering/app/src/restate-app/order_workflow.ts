@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import * as deliveryManager from "./delivery-manager";
+import * as deliveryManager from "./delivery_manager";
 import {Order, Status} from "./types/types";
 import * as orderstatus from "./order_status_service";
 import { completed } from "./utils/utils";

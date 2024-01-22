@@ -6,13 +6,13 @@ const KAFKA_BOOTSTRAP_SERVERS = process.env.KAFKA_BOOTSTRAP_SERVERS || "localhos
 const KAFKA_CONFIG: KafkaConfig = { brokers: [KAFKA_BOOTSTRAP_SERVERS] };
 const KAFKA_TOPIC = "driver-updates";
 
-export class KafkaPublisher {
+export class Kafka_publisher {
 
   private readonly kafka = new Kafka(KAFKA_CONFIG);
   private readonly producer = this.kafka.producer();
   private connected = false;
 
-  public async send(_ctx: restate.RpcContext, driverId: string, location: Location) {
+  public async send(driverId: string, location: Location) {
     if (!this.connected) {
       console.info("Connecting Kafka producer");
       await this.producer.connect();
@@ -26,6 +26,6 @@ export class KafkaPublisher {
   }
 }
 
-export function getPublisher(): KafkaPublisher {
-    return new KafkaPublisher();
+export function getPublisher(): Kafka_publisher {
+    return new Kafka_publisher();
 }

@@ -10,10 +10,10 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import * as driverDigitalTwin from "../driver-digital-twin";
+import * as driverDigitalTwin from "../driver_digital_twin";
 import * as geo from "../utils/geo";
 import {DEMO_REGION, Location, DeliveryState} from "../types/types";
-import { getPublisher } from "../clients/kafka-publisher";
+import { getPublisher } from "../clients/kafka_publisher";
 import {updateLocation} from "./driver_mobile_app_sim_utils";
 
 /**
@@ -47,7 +47,7 @@ async function startDriver(ctx: restate.RpcContext, driverId: string) {
 
   const location = await ctx.sideEffect(async () => geo.randomLocation());
   ctx.set(CURRENT_LOCATION, location);
-  await kafkaPublisher.send(ctx, driverId, location);
+  await kafkaPublisher.send(driverId, location);
 
   ctx.send(driverDigitalTwin.service).setDriverAvailable(driverId, DEMO_REGION);
   ctx.send(service).pollForWork(driverId);
@@ -86,7 +86,7 @@ async function move(ctx: restate.RpcContext, driverId: string) {
   const { newLocation, arrived } = updateLocation(currentLocation, nextTarget);
 
   ctx.set(CURRENT_LOCATION, newLocation);
-  await kafkaPublisher.send(ctx, driverId, currentLocation);
+  await kafkaPublisher.send(driverId, currentLocation);
 
   if (arrived) {
     if (assignedDelivery.orderPickedUp) {

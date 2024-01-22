@@ -1,6 +1,6 @@
 import * as restate from "@restatedev/restate-sdk";
 import * as driverDeliveryMatcher from "./driver_delivery_matcher";
-import * as deliveryManager from "./delivery-manager";
+import * as deliveryManager from "./delivery_manager";
 import {DeliveryRequest, DriverStatus, Location} from "./types/types";
 
 /**
