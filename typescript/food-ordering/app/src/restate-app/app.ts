@@ -1,7 +1,7 @@
 import * as restate from "@restatedev/restate-sdk";
-import * as driverDigitalTwin from "./driver-digital-twin";
+import * as driverDigitalTwin from "./driver_digital_twin";
 import * as driverDeliveryMatcher from "./driver_delivery_matcher";
-import * as deliveryManager from "./delivery-manager";
+import * as deliveryManager from "./delivery_manager";
 import * as orderWorkflow from "./order_workflow";
 import * as orderstatus from "./order_status_service";
 import * as driverMobileAppSimulator from "./external/driver_mobile_app_sim";

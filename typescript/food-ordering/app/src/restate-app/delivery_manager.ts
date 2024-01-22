@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import * as driverDigitalTwin from "./driver-digital-twin";
+import * as driverDigitalTwin from "./driver_digital_twin";
 import * as driverDeliveryMatcher from "./driver_delivery_matcher";
 import * as geo from "./utils/geo";
 import {DEMO_REGION, Location, DeliveryInformation, OrderAndPromise, Status} from "./types/types";

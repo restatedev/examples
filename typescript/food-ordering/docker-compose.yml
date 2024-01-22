@@ -80,7 +80,7 @@ services:
       - RESTATE_RUNTIME_ENDPOINT=http://runtime:8080
 
   runtime:
-    image: docker.io/restatedev/restate:latest
+    image: docker.io/restatedev/restate:0.7
     depends_on:
       - restate_app
       - restaurant_pos
@@ -105,7 +105,7 @@ services:
     restart: "no"
     entrypoint: ["sh", "-c", "sleep 5 && 
     apk add --no-cache bash jq curl &&
-    curl -X POST 'runtime:9070/endpoints' -H 'content-type: application/json' -d '{\"uri\": \"http://restate_app:9080\"}' &&
+    curl -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://restate_app:9080\"}' &&
     sleep 3 && 
     curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/orders\", \"sink\":\"service://order-workflow/eventHandler\" }' &&
     curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/driver-updates\", \"sink\":\"service://driver-digital-twin/handleDriverLocationUpdateEvent\" }' &&
