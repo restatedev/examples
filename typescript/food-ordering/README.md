@@ -1,151 +1,93 @@
-# Food ordering example: How to integrate with external services by using Awakeables and side effects
+# Food ordering app with Restate
 
-This example demonstrates how you can integrate [Restate](https://restate.dev) with external services by using Awakeables and side effects.
+The code in this repo was used for:
+- Current 2023 presentation
 
-The example application implements an order processing middleware which sits between food delivery providers and restaurants.
-Delivery providers interact with the application by calling the Restate `OrderService`.
-The `OrderService` interacts with the restaurants' external point of sale service to dispatch the orders.
+The example application implements an order processing middleware which sits between third-party food ordering providers and restaurants.
+Food ordering providers interact with the application by publishing events to Kafka. 
+For each event, Restate triggers the `create` workflow of the order service.
+The order service interacts with the restaurants' external point of sale service to request the preparation of the orders.
+It also interacts with the delivery services to get the order delivered to the customer once preparation is done.
 
-![Example diagrams.png](./img/arch.png)
+![demo_overview.png](demo_overview.png)
 
-The example illustrates the following aspects:
+The app logic (order workflow) discussed in the presentation can be found under: `app/src/restate-app/services/order_workflow.ts`.
 
-- How you can use Restate's side effects to make synchronous calls to external services.
-- How you can use Awakeables to connect Restate handlers with asynchronous external services.
-- How to resolve Awakeables from an external service and thereby resuming Restate invocations.
-- How delayed calls can be used to schedule tasks for later moments in time.
-
-## Download the example
-
-```shell
-wget https://github.com/restatedev/examples/releases/latest/download/typescript-food-ordering.zip && unzip typescript-food-ordering.zip -d typescript-food-ordering && rm typescript-food-ordering.zip
-```
-
-## Detailed description
-
-This application implements the order processing middleware that sits between food delivery providers and restaurants.
-Delivery providers forward orders to the Restate application via API requests (CreateOrder / CancelOrder / PrepareOrder).
-The Restate services process the order and forward it to the appropriate point-of-sale (restaurant handling the order).
-
-The app is implemented as a single keyed service that is keyed by `orderId`` and maintains the state machine of that order (i.e. the status of the order) as state in Restate.
-
-When an order is created a workflow is executed to check if the restaurant is open.
-If this is the case then the order is accepted and gets created in the point of sales system of the restaurant.
-The workflow becomes just another gRPC method that can be called and retried.
-It calls the point of sales software of the restaurants as side effects and saves the state of the workflow in Restate.
-
-### Delayed calls
-
-Customers can schedule an order for later on (deliveryDelay).
-This is implemented via Restate's delayed calls that schedule the preparation of the order to take place at the desired time.
-This delayed call is persisted in Restate.
-Restate ensures that it happens, and takes care of retries to prevent lost orders and unhappy customers.
-
-Have a look at the implementation of the `createOrder` function in the OrderService in `services/src/order_service.ts`.
-
-### Awakeables
-
-When the order needs to be prepared, the `OrderService` creates an awakeable (persistent promise) and sends the awakeable ID together with the preparation request to the point of sales API of the restaurant.
-The preparation is an asynchronous operation during which the workflow is paused.
-Once the restaurant has finished the preparation, it resolves the awakeable to resume the `OrderService`.
-The `OrderService` then notifies the delivery provider that they should send a driver to the restaurant.
-
-Have a look at the implementation of the `prepareOrder` function in the ` OrderService`` in  `services/src/order_service.ts`.
-
-## Running this example
-
-- Latest stable version of [NodeJS](https://nodejs.org/en/) >= v18.17.1 and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7 installed.
-- [Docker Engine](https://docs.docker.com/engine/install/) to launch the Restate runtime (not needed for the app implementation itself).
-- Optional: Docker Compose
-
-## Deployment with Docker Compose
-
-Build the services:
-
-```shell
-docker build ./services/ -t dev.local/food-ordering/services:0.0.1 && \
-docker build ./pos_server/ -t dev.local/food-ordering/pos_server:0.0.1
-```
+## Running locally with Docker compose
 
 Launch the Docker compose setup:
-
 ```shell
 docker compose up
 ```
 
-### Send requests to the service
+WebUI is running at http://localhost:3000
 
-Create a new order for five cheeseburgers at `FastFood123` with immediate delivery
+Jaeger is running at http://localhost:16686
 
-You can do this via curl:
-
-```shell
-curl -X POST http://localhost:8080/OrderService/createOrder -H 'content-type: application/json' -d '{
-  "key": "134",
-  "request": {"restaurantId": "FastFood123", "deliveryDelay": 0, "items": [{"productName": "cheeseburger", "quantity": 5}]}
-}'
-```
-
-Create a new order for five cheeseburgers at `FastFood123` with delivery delayed for 10 seconds:
+When you are making changes to the code, and you want to trigger a build of the Docker images:
 
 ```shell
-curl -X POST http://localhost:8080/OrderService/createOrder -H 'content-type: application/json' -d '{
-  "key": "174",
-  "request": {"restaurantId": "FastFood123", "deliveryDelay": 10000, "items": [{"productName": "cheeseburger", "quantity": 5}]}
-}'
+docker compose build --no-cache
 ```
 
-You can also check the status of the delivery via:
-
+Clean up after bringing setup down:
 ```shell
-curl -X POST http://localhost:8080/OrderService/getOrderStatus -H 'content-type: application/json' -d '{ "key": "174" }'
+docker compose rm 
 ```
 
-To understand the requests that are done, you can have a look at the logs of the runtime, service and PoS server.
-For the delayed order request, you will see the late order being scheduled for preparation after 10 seconds.
+### Inspecting state and ongoing invocations
 
-## Running locally
-
-### Run the services
-
-Install the dependencies and build the application:
-
+Restate has a psql interface to query the state of the system. 
+ 
+If you buy some products via the webUI, you can see how the order workflow is executed by querying the state of the order status service:
 ```shell
-cd services
-npm install && npm run build
+watch -n 1 'psql -h localhost -p 9071 -c "select service, service_key_utf8, key, value_utf8 from state s where s.service='"'"'orderStatus'"'"';"'
 ```
 
-Run the application with:
-
+Or have a look at the state of all the services, except for the driver simulator:
 ```shell
-npm run app
+watch -n 1 'psql -h localhost -p 9071 -c "select service, service_key_utf8, key, value_utf8 from state s where s.service not in ('"'"'driverSimulator'"'"');"'
 ```
 
-### Run the point of sales server
-
-In another terminal session, run the point of sales server.
-
-Install the dependencies and build the application:
-
+Or you can check the state of the ongoing invocations via:
 ```shell
-cd pos_server
-npm install && npm run build
+watch -n 1 'psql -h localhost -p 9071 -c "select service, method, service_key_utf8, id, status, invoked_by_service, invoked_by_id from sys_status;"'
 ```
 
-Run the application with:
+## Exploring the demo
 
-```shell
-npm run app
-```
+### The order workflow
+You can find the implementation of each of the services under `app/src/restate-app/`.
+The flow of an incoming order is as follows:
+1. When the customer places an order via the web UI (localhost:3000), an order event is published to Kafka.
+2. Restate subscribes to the order topic and triggers the order workflow for each incoming event. This subscription is set up by executing two curl commands, as done in the Docker compose file (`docker-compose.yaml`) by the `runtimesetup` container.
+3. The order workflow is implemented in `order_workflow.ts` and consists of the following steps:
+    1. When the order workflow is triggered, it first parses the raw Kafka event and extracts the order details.
+    2. It then calls the order status service (`order_status.ts`) to create a new order in the system. The order status service is a keyed service which tracks the status of each order by storing it in Restate's key-value store.
+    3. The order workflow then triggers the payment by calling a third-party payment provider (implemented as a stub in this example). To do this, the order workflow first generates an idempotency token via a side effect, and then uses this to call the payment provider. The payment provider can deduplicate retries via the idempotency key.
+    4. The workflow then sets the order status to `SCHEDULED` and sets a timer to continue processing after the delivery delay has passed. For example, if a customer ordered food for later in the day, the order will be scheduled for preparation at the requested time. If any failures occur during the sleep, Restate makes sure that the workflow will still wake up on time.
+    5. Once the timer fires, the order workflow creates an awakeable and sends a request to the restaurant point-of-sales system to start the preparation. This is done via an HTTP request from within a side effect. The status of the order is set to `IN_PREPARATION`. The restaurant will use the awakeable callback to signal when the prepration is done. Once this happens, the order workflow will continue and set the order status to `SCHEDULING_DELIVERY`.
+    6. Finally, the order workflow calls the delivery manager (`delivery_manager.ts`) to schedule the delivery of the order (see description below). It does this by using an awakeable, that the delivery manager will use to signal when the delivery is done. Once the delivery is done, the order workflow will set the order status to `DELIVERED`.
 
-### Start the Restate runtime
+### The delivery workflow
+To get the order delivered a set of services work together. The delivery manager (`start` method in `delivery_manager.ts`) implements the delivery workflow. It tracks the delivery status, by storing it in Restate's state store, and then requests a driver to do the delivery. To do that, it requests a driver from the driver-delivery matcher. The driver-delivery matcher tracks available drivers and pending deliveries for each region, and matches drivers to deliveries.
+Once a driver has been found, the delivery manager assigns the delivery to the driver and sets the order status to `WAITING_FOR_DRIVER`. The delivery has started now. The delivery manager relies for the rest of the delivery updates on the driver digital twin.
 
-Now [launch the runtime](../../README.md#launching-the-runtime) and [discover the services](../../README.md#connect-runtime-and-services).
+The driver's digital twin (`driver_digital_twin.ts`) is the digital representation of a driver in the field. Each driver has a mobile app on his phone (here simulated by `external/driver_mobile_app_sim.ts`) which continuously sends updates to the digital twin of the driver:
+1. The driver can notify when they start working: have a look at `driver-mobile-app/startDriver` which calls `driver-digital-twin/setDriverAvailable`.
+2. The mobile app also polls the digital twin to check if a new delivery was assigned to the driver. Have a look at `driver-mobile-app/pollForWork` which regularly calls `driver-digital-twin/getAssignedDelivery`.
+3. During delivery, the mobile app sends regular location updates over Kafka to the digital twin of the driver. Have a look at the method `driver-digital-twin/handleDriverLocationUpdateEvent`.
+4. Once the driver has arrived at the restaurant, the driver's mobile app notifies its digital twin (by calling `driver-digital-twin/notifyDeliveryPickup`). The digital twin then notifies the delivery manager that the driver has picked up the delivery (by calling `delivery-manager/notifyDeliveryPickup`).
+5. Finally, the driver arrives at the customer and the driver's mobile app notifies its digital twin (by calling `driver-digital-twin/notifyDeliveryDelivered`). The digital twin then notifies the delivery manager that the driver has picked up the delivery (by calling `delivery-manager/notifyDeliveryDelivered`).
+6. The delivery manager then sets the order status to `DELIVERED`. And the order workflow gets completed, by resolving the awakeable.
 
-Now you can send requests to the application as described [here](README.md#send-requests-to-the-service).
+## Attribution
 
-## Releasing
+The implementation of the web app is based on the MIT Licensed repository here: https://github.com/jeffersonRibeiro/react-shopping-cart.
+
+## Releasing (for Restate developers)
 
 ### Upgrading Typescript SDK
 
 Upgrade the `@restatedev/restate-sdk` version as described [here](../../README.md#upgrading-the-sdk-dependency-for-restate-developers).
+Then run the example via Docker compose.
