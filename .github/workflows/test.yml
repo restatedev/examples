@@ -80,3 +80,7 @@ jobs:
 
       - run: npm ci --prefix typescript
       - run: npm run --prefix typescript -ws verify
+
+      - name: "Test typescript-end-to-end-testing example"
+        working-directory: ./typescript/end-to-end-testing
+        run: npm ci && npm run proto && npm run test

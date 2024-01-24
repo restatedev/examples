@@ -42,6 +42,10 @@ jobs:
         if: github.event.inputs.sdkTypescriptVersion != ''
         run: npm --prefix typescript run verify --workspaces
 
+      - name: "Test typescript-end-to-end-testing example"
+        working-directory: ./typescript/end-to-end-testing
+        run: npm ci && npm run proto && npm run test
+
       # Setup Java
       - uses: actions/setup-java@v3
         if: github.event.inputs.sdkJavaVersion != ''
