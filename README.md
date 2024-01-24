@@ -68,6 +68,11 @@ wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hell
 wget https://github.com/restatedev/examples/releases/latest/download/typescript-payment-api.zip && unzip typescript-payment-api.zip -d typescript-payment-api && rm typescript-payment-api.zip
 ```
 
+[End to End testing](typescript/end-to-end-testing): Example of how to test End to End Restate services
+```shell
+wget https://github.com/restatedev/examples/releases/latest/download/typescript-end-to-end-testing.zip && unzip typescript-end-to-end-testing.zip -d typescript-end-to-end-testing && rm typescript-end-to-end-testing.zip
+```
+
 ## Applications
 
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
