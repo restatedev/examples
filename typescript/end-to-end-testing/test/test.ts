@@ -70,7 +70,7 @@ async function prepareRestateTestContainer(
     const res = await fetch(
       `http://${startedRestateContainer.getHost()}:${startedRestateContainer.getMappedPort(
         9070
-      )}/endpoints`,
+      )}/deployments`,
       {
         method: "POST",
         headers: {
