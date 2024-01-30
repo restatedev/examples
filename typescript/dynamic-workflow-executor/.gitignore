@@ -1,0 +1,7 @@
+dist/*
+.idea
+node_modules
+dist
+generated-images
+/stable-diffusion/
+target
