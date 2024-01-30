@@ -13,6 +13,26 @@ It also interacts with the delivery services to get the order delivered to the c
 
 The app logic (order workflow) discussed in the presentation can be found under: `app/src/restate-app/services/order_workflow.ts`.
 
+## Download the example
+
+Via the CLI:
+```shell
+restate example typescript-food-ordering && cd typescript-food-ordering
+```
+
+Or clone the entire git repo:
+
+```shell
+git clone git@github.com:restatedev/examples.git
+cd examples/typescript/food-ordering
+```
+
+Or download the example with `wget`:
+```shell
+wget https://github.com/restatedev/examples/releases/latest/download/typescript-food-ordering.zip && unzip typescript-food-ordering.zip -d typescript-food-ordering && rm typescript-food-ordering.zip
+```
+
+
 ## Running locally with Docker compose
 
 Launch the Docker compose setup:

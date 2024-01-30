@@ -8,6 +8,19 @@ for a walk through guide to deploying this service.
 
 ## Download the example
 
+Via the CLI:
+```shell
+restate example typescript-hello-world-lambda && cd typescript-hello-world-lambda
+```
+
+Or clone the entire git repo:
+
+```shell
+git clone git@github.com:restatedev/examples.git
+cd examples/typescript/hello-world-lambda
+```
+
+Or download the example with `wget`:
 ```shell
 wget https://github.com/restatedev/examples/releases/latest/download/typescript-hello-world-lambda.zip && unzip typescript-hello-world-lambda.zip -d typescript-hello-world-lambda && rm typescript-hello-world-lambda.zip
 ```
