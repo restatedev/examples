@@ -12,9 +12,21 @@ For more information on CDK, please see [Getting started with the AWS CDK](https
 
 ## Download the example
 
-```shell
-wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hello-world-lambda-cdk.zip && unzip kotlin-hello-world-lambda-cdk.zip -d kotlin-hello-world-lambda-cdk && rm kotlin-hello-world-lambda-cdk.zip
-```
+- Via the CLI:
+    ```shell
+    restate example kotlin-hello-world-lambda-cdk && cd kotlin-hello-world-lambda-cdk
+    ```
+
+- Via git clone:
+    ```shell
+    git clone git@github.com:restatedev/examples.git
+    cd examples/kotlin/hello-world-lambda-cdk
+    ```
+
+- Via `wget`:
+    ```shell
+    wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hello-world-lambda-cdk.zip && unzip kotlin-hello-world-lambda-cdk.zip -d kotlin-hello-world-lambda-cdk && rm kotlin-hello-world-lambda-cdk.zip
+    ```
 
 ## Deploy
 

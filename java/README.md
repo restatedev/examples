@@ -2,14 +2,21 @@
 
 This directory contains Restate examples using the Java SDK.
 
-## Common patterns
+## Starters
+| Language  | Name / Link                                                     |
+|-----------|-----------------------------------------------------------------|
+| Java      | [Hello World HTTP](hello-world-http)                       |
+| Java      | [Hello world on AWS Lambda](hello-world-lambda)             |
 
-- A collection of [common patterns](patterns) you encounter when developing distributed applications.
+## Patterns
 
-## Starter examples
+| Language   | Name / Link                                                                                                             |
+|------------|-------------------------------------------------------------------------------------------------------------------------|
+| Java       | [Common patterns](patterns) Set of common patterns you encounter when developing distributed Java applications     |
 
-- [Hello World](hello-world-http): A simple example of a Restate service.
-- [Hello World - AWS Lambda](hello-world-lambda): A simple example of how you can run a Restate service on AWS Lambda.
 
 ## Applications
-- [Food ordering](food-ordering): See how to integrate Restate with external services using Awakeables and side effects.
+
+| Language  | Name / Link                                                     |
+|-----------|-----------------------------------------------------------------|
+| Java      | [Food ordering - Java](food-ordering): Java food order processing app and driver-to-delivery matching services |

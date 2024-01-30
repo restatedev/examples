@@ -19,11 +19,12 @@ Browse this repository to see how easy distributed applications development beco
 
 ## Patterns
 
-| Language  | Name / Link                                                                                                          |
-|-----------|----------------------------------------------------------------------------------------------------------------------|
-| TypeScript| [Payment API](typescript/payment-api): Example API for payments, inspired by the Stripe API                          |
-| TypeScript| [End-to-end testing](typescript/end-to-end-testing): Example of how to test Restate services end-to-end              |
-| TypeScript| [Common patterns](typescript/patterns) Set of common patterns you encounter when developing distributed applications |
+| Language   | Name / Link                                                                                                             |
+|------------|-------------------------------------------------------------------------------------------------------------------------|
+| TypeScript | [Payment API](typescript/payment-api): Example API for payments, inspired by the Stripe API                             |
+| TypeScript | [End-to-end testing](typescript/end-to-end-testing): Example of how to test Restate services end-to-end                 |
+| TypeScript | [Common patterns](typescript/patterns) Set of common patterns you encounter when developing distributed TS applications |
+| Java       | [Common patterns](java/patterns) Set of common patterns you encounter when developing distributed Java applications     |
 
 
 ## Applications

@@ -10,9 +10,21 @@ Sample project configuration of a Restate service using the Java interface and H
 
 ## Download the example
 
-```shell
-wget https://github.com/restatedev/examples/releases/latest/download/java-hello-world-http.zip && unzip java-hello-world-http.zip -d java-hello-world-http && rm java-hello-world-http.zip
-```
+- Via the CLI:
+    ```shell
+    restate example java-hello-world-http && cd java-hello-world-http
+    ```
+
+- Via git clone:
+    ```shell
+    git clone git@github.com:restatedev/examples.git
+    cd examples/java/hello-world-http
+    ```
+
+- Via `wget`:
+    ```shell
+    wget https://github.com/restatedev/examples/releases/latest/download/java-hello-world-http.zip && unzip java-hello-world-http.zip -d java-hello-world-http && rm java-hello-world-http.zip
+    ```
 
 ## Running the example
 

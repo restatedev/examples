@@ -10,11 +10,11 @@ This directory contains Restate examples using the Typescript SDK.
 
 ## Patterns
 
-| Language  | Name / Link                                                                                                          |
-|-----------|----------------------------------------------------------------------------------------------------------------------|
-| TypeScript| [Payment API](payment-api): Example API for payments, inspired by the Stripe API                          |
-| TypeScript| [End-to-end testing](end-to-end-testing): Example of how to test Restate services end-to-end              |
-| TypeScript| [Common patterns](patterns) Set of common patterns you encounter when developing distributed applications |
+| Language  | Name / Link                                                                                                  |
+|-----------|--------------------------------------------------------------------------------------------------------------|
+| TypeScript| [Payment API](payment-api): Example API for payments, inspired by the Stripe API                             |
+| TypeScript| [End-to-end testing](end-to-end-testing): Example of how to test Restate services end-to-end                 |
+| TypeScript| [Common patterns](patterns) Set of common patterns you encounter when developing distributed TS applications |
 
 
 ## Applications
