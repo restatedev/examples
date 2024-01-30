@@ -30,7 +30,9 @@ describe("ExampleService", () => {
 
   // Stop Restate and the Service endpoint
   afterAll(async () => {
-    await restateTestEnvironment.stop();
+    if (restateTestEnvironment !== undefined) {
+      await restateTestEnvironment.stop();
+    }
   });
 
   it("works", async () => {

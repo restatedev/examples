@@ -12,10 +12,10 @@ wget https://github.com/restatedev/examples/releases/latest/download/typescript-
 
 ## Run
 
-Run the `buf` code generation first:
+Install the dependencies and run the `buf` code generation first:
 
 ```shell
-npm run proto
+npm install & npm run proto
 ```
 
 Now you can run the tests:
