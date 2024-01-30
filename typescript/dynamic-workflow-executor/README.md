@@ -21,7 +21,8 @@ Here is an overview of the services:
 ![](dynamic_workflow_executor.png)
 
 
-**Note:** This app stores images locally in the `generated-images` folder. These images would of course get lost when the app is restarted. This is just a demo app, so it's not a problem. But in a real app, you would store the images in some persistent storage.
+**Note:** This app stores images locally in the shared locally accessible folder `generated-images`.
+In a real deployment, this would need to be a shared storage, like S3.
 
 ## Running the example
 
