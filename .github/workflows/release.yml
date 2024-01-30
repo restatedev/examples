@@ -30,6 +30,7 @@ jobs:
             typescript-ticket-reservation.zip
             typescript-hello-world-lambda.zip
             typescript-hello-world-lambda-cdk.zip
+            typescript-dynamic-workflow-executor.zip
             java-hello-world-http.zip
             java-hello-world-lambda.zip
             java-food-ordering.zip

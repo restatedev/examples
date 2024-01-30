@@ -90,6 +90,12 @@ wget https://github.com/restatedev/examples/releases/latest/download/typescript-
 wget https://github.com/restatedev/examples/releases/latest/download/typescript-ecommerce-store.zip && unzip typescript-ecommerce-store.zip -d typescript-ecommerce-store && rm typescript-ecommerce-store.zip
 ```
 
+[Dynamic workflow executor](typescript/dynamic-workflow-executor): A workflow executor that dynamically executes a list of steps as specified in the JSON input.
+```shell
+# Download the example
+wget https://github.com/restatedev/examples/releases/latest/download/typescript-dynamic-workflow-executor.zip && unzip typescript-dynamic-workflow-executor.zip -d typescript-dynamic-workflow-executor && rm typescript-dynamic-workflow-executor.zip
+```
+
 ![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
 
 [Food ordering - Java](java/food-ordering): Java food order processing app and driver-to-delivery matching services.
