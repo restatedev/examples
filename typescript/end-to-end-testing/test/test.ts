@@ -26,7 +26,7 @@ describe("ExampleService", () => {
       baseUrl: restateTestEnvironment.baseUrl(),
       httpVersion: "1.1",
     });
-  }, 10_000);
+  }, 20_000);
 
   // Stop Restate and the Service endpoint
   afterAll(async () => {
