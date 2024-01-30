@@ -23,3 +23,5 @@ Now you can run the tests:
 ```shell
 npm run test
 ```
+
+If you are encountering errors, try to pull the latest docker image: `docker pull docker.io/restatedev/restate:latest`.
