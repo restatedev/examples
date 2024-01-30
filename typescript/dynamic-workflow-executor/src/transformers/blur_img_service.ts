@@ -9,6 +9,14 @@ export const router = restate.router({
         const blurParams = wfStep.parameters as { blur: number };
         console.info("Blurring image with parameters: " + JSON.stringify(blurParams))
 
+        // we don't want to retry this too often, because failures here are most likely
+        // terminal (path issues, etc.), so limit the reties to 5
+        const retrySettings = {
+            initialDelayMs: 100,
+            maxRetries: 5,
+            name: "image blurring"
+        };
+
         await ctx.sideEffect(async () => {
             let image;
             try {
@@ -18,7 +26,7 @@ export const router = restate.router({
             }
             const blurredImg = image.blur(blurParams.blur);
             await blurredImg.writeAsync(wfStep.imgOutputPath!)
-        })
+        }, retrySettings);
 
         return {
             msg: "[Blurred image with parameters: " + JSON.stringify(blurParams) + "]"
