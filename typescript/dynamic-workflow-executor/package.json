@@ -2,7 +2,9 @@
   "name": "dynamic-workflow-executor",
   "version": "0.0.1",
   "description": "An application that executes a workflow based on a workflow definition",
-  "main": "app.js",
+  "author": "Restate Developers",
+  "license": "MIT",
+  "email": "code@restate.dev",
   "type": "commonjs",
   "scripts": {
     "build": "tsc --noEmitOnError",
