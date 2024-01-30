@@ -42,27 +42,27 @@ npm install
 
 Run puppeteer service:
 ```shell
-npm run puppeteer-dev
+npm run puppeteer-service
 ```
 
 Run transformers service:
 ```shell
-npm run transformers-dev
+npm run transformers-service
 ```
 
 Run stable diffusion service:
 ```shell
-npm run stable-diffusion-dev
+npm run stable-diffusion-service
 ```
 
 Run external stable diffusion service:
 ```shell
-npm run external-stable-diffusion-dev
+npm run external-stable-diffusion-service
 ```
 
 Run workflow service:
 ```shell
-npm run workflow-dev
+npm run workflow-service
 ```
 
 Register the services at the Restate Server, using the CLI:

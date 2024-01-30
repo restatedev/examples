@@ -6,11 +6,11 @@
   "type": "commonjs",
   "scripts": {
     "build": "tsc --noEmitOnError",
-    "puppeteer-dev": "ts-node-dev --watch ./src --respawn --transpile-only src/puppeteer/puppeteer.ts",
-    "stable-diffusion-dev": "ts-node-dev --watch ./src --respawn --transpile-only src/stable-diffusion/stable_diffusion.ts",
-    "external-stable-diffusion-dev": "ts-node-dev --watch ./src --respawn --transpile-only src/external/stable_diffusion.ts",
-    "transformers-dev": "ts-node-dev --watch ./src --respawn --transpile-only src/transformers/transformers.ts",
-    "workflow-dev": "ts-node-dev --watch ./src --respawn --transpile-only src/workflow/workflow.ts"
+    "puppeteer-service": "ts-node-dev --watch ./src --respawn --transpile-only src/puppeteer/puppeteer.ts",
+    "stable-diffusion-service": "ts-node-dev --watch ./src --respawn --transpile-only src/stable-diffusion/stable_diffusion.ts",
+    "external-stable-diffusion-service": "ts-node-dev --watch ./src --respawn --transpile-only src/external/stable_diffusion.ts",
+    "transformers-service": "ts-node-dev --watch ./src --respawn --transpile-only src/transformers/transformers.ts",
+    "workflow-service": "ts-node-dev --watch ./src --respawn --transpile-only src/workflow/workflow.ts"
   },
   "dependencies": {
     "@restatedev/restate-sdk": "^0.7.0",
