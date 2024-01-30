@@ -11,9 +11,21 @@ Sample project configuration of a Restate service using the Kotlin coroutines in
 
 ## Download the example
 
-```shell
-wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hello-world-lambda.zip && unzip kotlin-hello-world-lambda.zip -d kotlin-hello-world-lambda && rm kotlin-hello-world-lambda.zip
-```
+- Via the CLI:
+    ```shell
+    restate example kotlin-hello-world-lambda && cd kotlin-hello-world-lambda
+    ```
+
+- Via git clone:
+    ```shell
+    git clone git@github.com:restatedev/examples.git
+    cd examples/kotlin/hello-world-lambda
+    ```
+
+- Via `wget`:
+    ```shell
+    wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hello-world-lambda.zip && unzip kotlin-hello-world-lambda.zip -d kotlin-hello-world-lambda && rm kotlin-hello-world-lambda.zip
+    ```
 
 ## Package
 

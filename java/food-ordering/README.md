@@ -8,7 +8,24 @@ It also interacts with the delivery services to get the order delivered to the c
 
 ![demo_overview.png](demo_overview.png)
 
+## Download the example
 
+- Via the CLI:
+    ```shell
+    restate example java-food-ordering && cd java-food-ordering
+    ```
+
+- Via git clone:
+    ```shell
+    git clone git@github.com:restatedev/examples.git
+    cd examples/java/food-ordering
+    ```
+
+- Via `wget`:
+    ```shell
+   wget https://github.com/restatedev/examples/releases/latest/download/java-food-ordering.zip && unzip java-food-ordering.zip -d java-food-ordering && rm java-food-ordering.zip
+    ```
+  
 ## Running locally with Docker compose
 
 Build the docker containers:

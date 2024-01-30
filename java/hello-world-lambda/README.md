@@ -10,10 +10,21 @@ Sample project configuration of a Restate service using the Java interface and A
 * [Logging configuration](src/main/resources/log4j2.properties)
 
 ## Download the example
+- Via the CLI:
+    ```shell
+    restate example java-hello-world-lambda && cd java-hello-world-lambda
+    ```
 
-```shell
-wget https://github.com/restatedev/examples/releases/latest/download/java-hello-world-lambda.zip && unzip java-hello-world-lambda.zip -d java-hello-world-lambda && rm java-hello-world-lambda.zip
-```
+- Via git clone:
+    ```shell
+    git clone git@github.com:restatedev/examples.git
+    cd examples/java/hello-world-lambda
+    ```
+
+- Via `wget`:
+    ```shell
+    wget https://github.com/restatedev/examples/releases/latest/download/java-hello-world-lambda.zip && unzip java-hello-world-lambda.zip -d java-hello-world-lambda && rm java-hello-world-lambda.zip
+    ```
 
 ## Package
 

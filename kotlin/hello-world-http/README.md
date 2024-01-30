@@ -10,9 +10,21 @@ Sample project configuration of a Restate service using the Kotlin coroutines in
 
 ## Download the example
 
-```shell
-wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hello-world-http.zip && unzip kotlin-hello-world-http.zip -d kotlin-hello-world-http && rm kotlin-hello-world-http.zip
-```
+- Via the CLI:
+    ```shell
+    restate example kotlin-hello-world-http && cd kotlin-hello-world-http
+    ```
+
+- Via git clone:
+    ```shell
+    git clone git@github.com:restatedev/examples.git
+    cd examples/kotlin/hello-world-http
+    ```
+
+- Via `wget`:
+    ```shell
+    wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hello-world-http.zip && unzip kotlin-hello-world-http.zip -d kotlin-hello-world-http && rm kotlin-hello-world-http.zip
+    ```
 
 ## Running the example
 

@@ -12,9 +12,21 @@ For more information on CDK, please see [Getting started with the AWS CDK](https
 
 ## Download the example
 
-```shell
-wget https://github.com/restatedev/examples/releases/latest/download/typescript-hello-world-lambda-cdk.zip && unzip typescript-hello-world-lambda-cdk.zip -d typescript-hello-world-lambda-cdk && rm typescript-hello-world-lambda-cdk.zip
-```
+- Via the CLI:
+    ```shell
+    restate example typescript-hello-world-lambda-cdk && cd typescript-hello-world-lambda-cdk
+    ```
+
+- Via git clone:
+    ```shell
+    git clone git@github.com:restatedev/examples.git
+    cd examples/typescript/hello-world-lambda-cdk
+    ```
+
+- Via `wget`:
+    ```shell
+    wget https://github.com/restatedev/examples/releases/latest/download/typescript-hello-world-lambda-cdk.zip && unzip typescript-hello-world-lambda-cdk.zip -d typescript-hello-world-lambda-cdk && rm typescript-hello-world-lambda-cdk.zip
+    ```
 
 ## Deploy
 

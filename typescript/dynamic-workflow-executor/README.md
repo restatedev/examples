@@ -24,6 +24,24 @@ Here is an overview of the services:
 **Note:** This app stores images locally in the shared locally accessible folder `generated-images`.
 In a real deployment, this would need to be a shared storage, like S3.
 
+## Download the example
+
+- Via the CLI:
+    ```shell
+    restate example typescript-dynamic-workflow-executor && cd typescript-dynamic-workflow-executor
+    ```
+
+- Via git clone:
+    ```shell
+    git clone git@github.com:restatedev/examples.git
+    cd examples/typescript/dynamic-workflow-executor
+    ```
+
+- Via `wget`:
+    ```shell
+    wget https://github.com/restatedev/examples/releases/latest/download/typescript-dynamic-workflow-executor.zip && unzip typescript-dynamic-workflow-executor.zip -d typescript-dynamic-workflow-executor && rm typescript-dynamic-workflow-executor.zip
+    ```
+
 ## Running the example
 
 ### Deploy Restate Server

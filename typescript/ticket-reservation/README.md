@@ -8,9 +8,22 @@ Restate is a system for easily building resilient applications using **distribut
 
 ## Download the example
 
-```shell
-wget https://github.com/restatedev/examples/releases/latest/download/typescript-ticket-reservation.zip && unzip typescript-ticket-reservation.zip -d typescript-ticket-reservation && rm typescript-ticket-reservation.zip
-```
+- Via the CLI:
+    ```shell
+    restate example typescript-ticket-reservation && cd typescript-ticket-reservation
+    ```
+
+- Via git clone:
+    ```shell
+    git clone git@github.com:restatedev/examples.git
+    cd examples/typescript/ticket-reservation
+    ```
+
+- Via `wget`:
+    ```shell
+    wget https://github.com/restatedev/examples/releases/latest/download/typescript-ticket-reservation.zip && unzip typescript-ticket-reservation.zip -d typescript-ticket-reservation && rm typescript-ticket-reservation.zip
+    ```
+
 
 ## Quickstart
 
