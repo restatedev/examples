@@ -21,7 +21,8 @@ Here is an overview of the services:
 ![](dynamic_workflow_executor.png)
 
 
-**Note:** This app stores images locally in the `generated-images` folder. These images would of course get lost when the app is restarted. This is just a demo app, so it's not a problem. But in a real app, you would store the images in some persistent storage.
+**Note:** This app stores images locally in the shared locally accessible folder `generated-images`.
+In a real deployment, this would need to be a shared storage, like S3.
 
 ## Running the example
 
@@ -41,27 +42,27 @@ npm install
 
 Run puppeteer service:
 ```shell
-npm run puppeteer-dev
+npm run puppeteer-service
 ```
 
 Run transformers service:
 ```shell
-npm run transformers-dev
+npm run transformers-service
 ```
 
 Run stable diffusion service:
 ```shell
-npm run stable-diffusion-dev
+npm run stable-diffusion-service
 ```
 
 Run external stable diffusion service:
 ```shell
-npm run external-stable-diffusion-dev
+npm run external-stable-diffusion-service
 ```
 
 Run workflow service:
 ```shell
-npm run workflow-dev
+npm run workflow-service
 ```
 
 Register the services at the Restate Server, using the CLI:

@@ -2,20 +2,17 @@
   "name": "dynamic-workflow-executor",
   "version": "0.0.1",
   "description": "An application that executes a workflow based on a workflow definition",
-  "main": "app.js",
+  "author": "Restate Developers",
+  "license": "MIT",
+  "email": "code@restate.dev",
   "type": "commonjs",
   "scripts": {
     "build": "tsc --noEmitOnError",
-    "prebundle": "rm -rf dist",
-    "bundle": "esbuild src/app.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
-    "postbundle": "cd dist && zip -r index.zip index.js*",
-    "app": "node ./dist/app.js",
-    "app-dev": "ts-node-dev --watch ./src --respawn --transpile-only ./src/app.ts",
-    "puppeteer-dev": "ts-node-dev --watch ./src --respawn --transpile-only src/puppeteer/puppeteer.ts",
-    "stable-diffusion-dev": "ts-node-dev --watch ./src --respawn --transpile-only src/stable-diffusion/stable_diffusion.ts",
-    "external-stable-diffusion-dev": "ts-node-dev --watch ./src --respawn --transpile-only src/external/stable_diffusion.ts",
-    "transformers-dev": "ts-node-dev --watch ./src --respawn --transpile-only src/transformers/transformers.ts",
-    "workflow-dev": "ts-node-dev --watch ./src --respawn --transpile-only src/workflow/workflow.ts"
+    "puppeteer-service": "ts-node-dev --watch ./src --respawn --transpile-only src/puppeteer/puppeteer.ts",
+    "stable-diffusion-service": "ts-node-dev --watch ./src --respawn --transpile-only src/stable-diffusion/stable_diffusion.ts",
+    "external-stable-diffusion-service": "ts-node-dev --watch ./src --respawn --transpile-only src/external/stable_diffusion.ts",
+    "transformers-service": "ts-node-dev --watch ./src --respawn --transpile-only src/transformers/transformers.ts",
+    "workflow-service": "ts-node-dev --watch ./src --respawn --transpile-only src/workflow/workflow.ts"
   },
   "dependencies": {
     "@restatedev/restate-sdk": "^0.7.0",
