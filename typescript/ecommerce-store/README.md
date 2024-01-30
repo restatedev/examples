@@ -17,23 +17,21 @@ Restate is a system for easily building resilient applications using **distribut
 
 ## Download the example
 
-Via the CLI:
-```shell
-restate example typescript-ecommerce-store && cd typescript-ecommerce-store
-```
+- Via the CLI:
+    ```shell
+    restate example typescript-ecommerce-store && cd typescript-ecommerce-store
+    ```
 
-Or clone the entire git repo:
+- Via git clone:
+    ```shell
+    git clone git@github.com:restatedev/examples.git
+    cd examples/typescript/ecommerce-store
+    ```
 
-```shell
-git clone git@github.com:restatedev/examples.git
-cd examples/typescript/ecommerce-store
-```
-
-Or download the example with `wget`:
-```shell
-# Download the example
-wget https://github.com/restatedev/examples/releases/latest/download/typescript-ecommerce-store.zip && unzip typescript-ecommerce-store.zip -d typescript-ecommerce-store && rm typescript-ecommerce-store.zip
-```
+- Via `wget`:
+    ```shell
+    wget https://github.com/restatedev/examples/releases/latest/download/typescript-ecommerce-store.zip && unzip typescript-ecommerce-store.zip -d typescript-ecommerce-store && rm typescript-ecommerce-store.zip
+    ```
 
 
 ## Deployment on Docker Compose

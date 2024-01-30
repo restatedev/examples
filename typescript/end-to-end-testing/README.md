@@ -6,22 +6,21 @@ This example shows how to test Restate services by deploying Restate with [TestC
 
 ## Download the example
 
-Via the CLI:
-```shell
-restate example typescript-end-to-end-testing && cd typescript-end-to-end-testing
-```
+- Via the CLI:
+    ```shell
+    restate example typescript-end-to-end-testing && cd typescript-end-to-end-testing
+    ```
 
-Or clone the entire git repo:
+- Via git clone:
+    ```shell
+    git clone git@github.com:restatedev/examples.git
+    cd examples/typescript/end-to-end-testing
+    ```
 
-```shell
-git clone git@github.com:restatedev/examples.git
-cd examples/typescript/end-to-end-testing
-```
-
-Or download the example with `wget`:
-```shell
-wget https://github.com/restatedev/examples/releases/latest/download/typescript-end-to-end-testing.zip && unzip typescript-end-to-end-testing.zip -d typescript-end-to-end-testing && rm typescript-end-to-end-testing.zip
-```
+- Via `wget`:
+    ```shell
+    wget https://github.com/restatedev/examples/releases/latest/download/typescript-end-to-end-testing.zip && unzip typescript-end-to-end-testing.zip -d typescript-end-to-end-testing && rm typescript-end-to-end-testing.zip
+    ```
 
 ## Run
 

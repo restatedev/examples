@@ -22,22 +22,21 @@ and failures.
 
 ## Download the example
 
-Via the CLI:
-```shell
-restate example typescript-payment-api && cd typescript-payment-api
-```
+- Via the CLI:
+  ```shell
+  restate example typescript-payment-api && cd typescript-payment-api
+  ```
 
-Or clone the entire git repo:
+- Via git clone:
+  ```shell
+  git clone git@github.com:restatedev/examples.git
+  cd examples/typescript/payment-api
+  ```
 
-```shell
-git clone git@github.com:restatedev/examples.git
-cd examples/typescript/payment-api
-```
-
-Or download the example with `wget`:
-```shell
-wget https://github.com/restatedev/examples/releases/latest/download/typescript-payment-api.zip && unzip typescript-payment-api.zip -d typescript-payment-api && rm typescript-payment-api.zip
-```
+- Via `wget`:
+  ```shell
+  wget https://github.com/restatedev/examples/releases/latest/download/typescript-payment-api.zip && unzip typescript-payment-api.zip -d typescript-payment-api && rm typescript-payment-api.zip
+  ```
 
 ## Running this example
 

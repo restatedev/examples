@@ -15,22 +15,21 @@ The app logic (order workflow) discussed in the presentation can be found under:
 
 ## Download the example
 
-Via the CLI:
-```shell
-restate example typescript-food-ordering && cd typescript-food-ordering
-```
+- Via the CLI:
+   ```shell
+   restate example typescript-food-ordering && cd typescript-food-ordering
+   ```
 
-Or clone the entire git repo:
+- Via git clone:
+   ```shell
+   git clone git@github.com:restatedev/examples.git
+   cd examples/typescript/food-ordering
+   ```
 
-```shell
-git clone git@github.com:restatedev/examples.git
-cd examples/typescript/food-ordering
-```
-
-Or download the example with `wget`:
-```shell
-wget https://github.com/restatedev/examples/releases/latest/download/typescript-food-ordering.zip && unzip typescript-food-ordering.zip -d typescript-food-ordering && rm typescript-food-ordering.zip
-```
+- Via `wget`:
+   ```shell
+   wget https://github.com/restatedev/examples/releases/latest/download/typescript-food-ordering.zip && unzip typescript-food-ordering.zip -d typescript-food-ordering && rm typescript-food-ordering.zip
+   ```
 
 
 ## Running locally with Docker compose
