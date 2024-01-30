@@ -26,6 +26,7 @@ create_release_zip kotlin hello-world-lambda-cdk
 
 create_release_zip typescript hello-world-lambda
 create_release_zip typescript hello-world-lambda-cdk
+create_release_zip typescript end-to-end-testing
 create_release_zip typescript ecommerce-store
 create_release_zip typescript food-ordering
 create_release_zip typescript payment-api

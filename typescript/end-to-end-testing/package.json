@@ -1,0 +1,38 @@
+{
+  "name": "end-to-end-testing",
+  "version": "0.0.1",
+  "description": "Example showing how to test Restate applications E2E using testcontainers",
+  "main": "app.js",
+  "type": "commonjs",
+  "scripts": {
+    "proto": "cd proto && npx buf mod update && npx buf generate .",
+    "build": "tsc --noEmitOnError",
+    "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
+    "prebundle": "rm -rf dist",
+    "bundle": "esbuild src/app.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
+    "postbundle": "cd dist && zip -r index.zip index.js*",
+    "app": "node ./dist/app.js",
+    "app-dev": "ts-node-dev --watch ./src --respawn --transpile-only ./src/app.ts",
+    "test": "DEBUG=testcontainers,testcontainers:exec,testcontainers:containers jest --maxWorkers=1 --detectOpenHandles"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "^0.7.0",
+    "protobufjs": "^7.2.2",
+    "ts-proto": "^1.140.0"
+  },
+  "devDependencies": {
+    "@bufbuild/buf": "^1.15.0",
+    "@bufbuild/protobuf": "^1.6.0",
+    "@bufbuild/protoc-gen-es": "^1.6.0",
+    "@connectrpc/connect": "^1.2.0",
+    "@connectrpc/connect-node": "^1.2.0",
+    "@connectrpc/protoc-gen-connect-es": "^1.2.0",
+    "@types/jest": "^29.4.0",
+    "esbuild": "^0.18.12",
+    "testcontainers": "^10.4.0",
+    "ts-jest": "^29.0.5",
+    "prettier": "^2.8.8",
+    "ts-node-dev": "^1.1.1",
+    "typescript": "^5.0.2"
+  }
+}
