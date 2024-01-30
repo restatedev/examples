@@ -6,11 +6,6 @@
   "type": "commonjs",
   "scripts": {
     "build": "tsc --noEmitOnError",
-    "prebundle": "rm -rf dist",
-    "bundle": "esbuild src/app.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
-    "postbundle": "cd dist && zip -r index.zip index.js*",
-    "app": "node ./dist/app.js",
-    "app-dev": "ts-node-dev --watch ./src --respawn --transpile-only ./src/app.ts",
     "puppeteer-dev": "ts-node-dev --watch ./src --respawn --transpile-only src/puppeteer/puppeteer.ts",
     "stable-diffusion-dev": "ts-node-dev --watch ./src --respawn --transpile-only src/stable-diffusion/stable_diffusion.ts",
     "external-stable-diffusion-dev": "ts-node-dev --watch ./src --respawn --transpile-only src/external/stable_diffusion.ts",
