@@ -44,13 +44,6 @@ In a real deployment, this would need to be a shared storage, like S3.
 
 ## Running the example
 
-### Deploy Restate Server
-
-Start the restate server via `npx`:
-```shell
-npx @restatedev/restate-server@latest
-```
-
 ### Deploy the services 
 
 Install the dependencies
@@ -83,14 +76,7 @@ Run workflow service:
 npm run workflow-service
 ```
 
-Register the services at the Restate Server, using the CLI:
-
-```shell
-npx @restatedev/restate dp reg localhost:9080
-npx @restatedev/restate dp reg localhost:9081
-npx @restatedev/restate dp reg localhost:9082
-npx @restatedev/restate dp reg localhost:9083
-```
+Now [launch the Restate Server](../../README.md#launching-the-restate-server) and [register the services](../../README.md#register-the-deployment-in-restate).
 
 ### OPTIONAL: Install and run stable diffusion server
 

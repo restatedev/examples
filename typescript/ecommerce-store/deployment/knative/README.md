@@ -53,7 +53,7 @@ You can visit the web app at http://localhost:3000
 kubectl port-forward -n shopping-cart svc/restate-runtime 8080:8080 9070:9070 9071:9071
 ```
 
-7. Execute the service discovery:
+7. Register the deployment in Restate:
 
 ```shell
 curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://services.shopping-cart.svc.cluster.local"}'

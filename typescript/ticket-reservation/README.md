@@ -92,9 +92,9 @@ npm run app
 
 The user session service, ticket service and checkout service are now up and running!
 
-### Launch Restate and discover services
+### Launch Restate and register services
 
-Now [launch the runtime](../../README.md#launching-the-runtime) and [discover the services](../../README.md#connect-runtime-and-services).
+Now [launch the Restate Server](../../README.md#launching-the-restate-server) and [register the services](../../README.md#register-the-deployment-in-restate).
 
 ### Call the service
 
