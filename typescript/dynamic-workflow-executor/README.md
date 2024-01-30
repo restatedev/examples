@@ -28,7 +28,7 @@ In a real deployment, this would need to be a shared storage, like S3.
 
 - Via the CLI:
     ```shell
-    restate example typescript-ecommerce-store && cd typescript-dynamic-workflow-executor
+    restate example typescript-dynamic-workflow-executor && cd typescript-dynamic-workflow-executor
     ```
 
 - Via git clone:
