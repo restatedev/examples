@@ -74,10 +74,12 @@ Once Restate is up, register the deployment in Restate by executing:
     ```shell
     restate dp register http://host.docker.internal:9080
     ```
+  When running Restate with Docker, use `host.docker.internal` instead of `localhost` for the service deployment URI.
 - Via `curl`:
     ```shell
     curl localhost:9070/deployments  -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
     ```
+  When running Restate with Docker, use `host.docker.internal` instead of `localhost` for the service deployment URI.
 
 This should give you the following output in case of the ticket reservation example:
 ```json
