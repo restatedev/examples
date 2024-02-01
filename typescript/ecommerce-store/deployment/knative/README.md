@@ -33,7 +33,7 @@ kubectl create ns shopping-cart
 4. Deploy application
 
 The `deploy.yaml` file lists the services that will be deployed on Kubernetes.
-You can deploy them via:
+From the root of the `ecommerce-store` example, you can deploy them via:
 
 ```shell
 kubectl apply -n shopping-cart -f deployment/knative/deploy.yaml
@@ -50,13 +50,13 @@ You can visit the web app at http://localhost:3000
 6. Forwards the ports of the Restate runtime:
 
 ```shell
-kubectl port-forward -n shopping-cart svc/restate-runtime 8080:8080 9070:9070
+kubectl port-forward -n shopping-cart svc/restate-runtime 8080:8080 9070:9070 9071:9071
 ```
 
 7. Execute the service discovery:
 
 ```shell
-curl -X POST http://localhost:9070/endpoint/discover -H 'content-type: application/json' -d '{"uri": "http://services.shopping-cart.svc.cluster.local"}'
+curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://services.shopping-cart.svc.cluster.local"}'
 ```
 
 8. Fill the state of the product service with a list of products:
@@ -76,10 +76,10 @@ If you order some T-shirts in the UI, you will see services spin up.
 
 ## Deleting the application
 
-In order to delete the deployed application run:
+To delete the deployed application run:
 
 ```shell
-kubectl delete -n shopping-cart -f deploy.yaml
+kubectl delete -n shopping-cart -f deployment/knative/deploy.yaml
 ```
 
 Then bring down the cluster via:

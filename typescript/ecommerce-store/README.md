@@ -36,24 +36,19 @@ Restate is a system for easily building resilient applications using **distribut
 
 ## Deployment on Docker Compose
 
-Build the Docker containers for the web app and services:
-
-```shell
-docker build -t dev.local/shopping-cart/react-app:0.0.1 ./react-shopping-cart
-docker build ./services/ -t dev.local/shopping-cart/services:0.0.1
-```
-
 You can store the products data in the Restate runtime or in a separate Postgres DB:
 
 1. To store the products in Restate state, bring up the Docker Compose setup via:
 
 ```shell
+docker compose -f deployment/docker/docker-compose.yml build --no-cache
 docker compose -f deployment/docker/docker-compose.yml up
 ```
 
 2. To store the products in a Postgres DB, bring up the Docker Compose setup via:
 
 ```shell
+docker compose -f deployment/docker/docker-compose-pg.yml build --no-cache
 docker compose -f deployment/docker/docker-compose-pg.yml up
 ```
 
