@@ -81,26 +81,11 @@ Here is an incomplete list of simplifications to the application that are possib
 - Latest stable version of [NodeJS](https://nodejs.org/en/) >= v18.17.1 and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7 installed.
 - [Docker Engine](https://docs.docker.com/engine/install/) to launch the Restate runtime (not needed for the app implementation itself).
 
-### Setup
-
-Clone this GitHub repository and navigate to the `ticket-reservation` folder:
-
-```shell
-git clone git@github.com:restatedev/examples.git
-cd ticket-reservation
-```
-
-Next, install the dependencies:
+### Run the example
+Install the dependencies, build the app and run it:
 
 ```shell
 npm install
-```
-
-### Run the service
-
-Once you are done with the implementation, build/run the example app with:
-
-```shell
 npm run build
 npm run app
 ```
