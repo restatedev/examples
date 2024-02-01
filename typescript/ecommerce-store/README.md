@@ -79,7 +79,7 @@ npm run app
 
 The services are now running.
 
-See [how to launch the runtime](../../README.md#launching-the-runtime) and [how to discover services](../../README.md#connect-runtime-and-services) for details.
+See [how to launch the Restate Server](../../README.md#launching-the-restate-server) and [how to register services](../../README.md#register-the-deployment-in-restate) for details.
 
 Run the web app:
 

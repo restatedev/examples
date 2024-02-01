@@ -45,52 +45,61 @@ The Discord server is also the perfect place for sharing your feedback with us, 
 
 ## Running the examples
 
-The readme for each example will explain how to get it running. Once the example is running, it needs to be discovered by an instance of the Restate runtime.
+The readme for each example will explain how to get it running. Once the services of the example are running, the deployment needs to be registered in Restate.
 
-### Launching the runtime
+### Launching the Restate Server
 
-Have a look at how to start up the runtime in a Docker container in [this repository]* or run the following commands:
+**NOTE:** Some examples can be run with Docker Compose. For those, you can ignore this section.
 
-- For MacOS:
-```shell
-docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 docker.io/restatedev/restate:latest
-```
-- For Linux:
-```shell
-docker run --name restate_dev --rm --network=host docker.io/restatedev/restate:latest
-```
+For running Restate locally and downloading the binaries, have a look at the options on the [`Get Restate` page](https://restate.dev/get-restate/).
 
-### Connect runtime and services
+- To run Restate in a Docker container:
+    ```shell
+    docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:latest
+    ```
+- To run Restate with `npx`:
+    ```shell
+    npx @restatedev/restate-server@latest
+    ```
+- To run Restate with Homebrew:
+    ```
+    brew install restatedev/tap/restate-server
+    restate-server 
+    ```
 
-Once the runtime is up, let it discover the services of the example by executing:
+### Register the deployment in Restate
 
-- For MacOS:
-```shell
-curl -X POST http://localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
-```
-- For Linux:
-```shell
-curl -X POST http://localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
-```
+Once Restate is up, register the deployment in Restate by executing:
+
+- Via the [CLI](https://docs.restate.dev/restate/cli):
+    ```shell
+    restate dp register localhost:9080
+    ```
+- Via `curl`:
+    ```shell
+    curl localhost:9070/deployments  -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
+    ```
+  
+When running Restate with Docker, use `host.docker.internal` instead of `localhost` for the service deployment URI.
 
 This should give you the following output in case of the ticket reservation example:
 ```json
 {
-    "id": "bG9jYWxob3N0OjgwODAv",
-    "services": [
-        {
-            "name": "UserSession",
-            "revision": 1
-        },
-        {
-            "name": "TicketDb",
-            "revision": 1
-        },
-        {
-            "name": "CheckoutProcess",
-            "revision": 1
-        }
-    ]
+  "id": "bG9jYWxob3N0OjgwODAv",
+  "services": [
+    {
+      "name": "UserSession",
+      "revision": 1
+    },
+    {
+      "name": "TicketDb",
+      "revision": 1
+    },
+    {
+      "name": "CheckoutProcess",
+      "revision": 1
+    }
+  ]
 }
 ```
 
