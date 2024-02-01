@@ -78,6 +78,8 @@ npm run workflow-service
 
 Now [launch the Restate Server](../../README.md#launching-the-restate-server) and [register the services](../../README.md#register-the-deployment-in-restate).
 
+Make sure you register all four services with the following ports: `9080`, `9081`, `9082` and `9083`.
+
 ### OPTIONAL: Install and run stable diffusion server
 
 **Note:** You can run this demo without Stable Diffusion. In that case, you cannot use workflow steps that call Stable Diffusion.

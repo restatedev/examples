@@ -64,6 +64,7 @@ For running Restate locally and downloading the binaries, have a look at the opt
 - To run Restate with Homebrew:
     ```
     brew install restatedev/tap/restate-server
+    restate-server 
     ```
 
 ### Register the deployment in Restate
@@ -72,14 +73,14 @@ Once Restate is up, register the deployment in Restate by executing:
 
 - Via the [CLI](https://docs.restate.dev/restate/cli):
     ```shell
-    restate dp register http://host.docker.internal:9080
+    restate dp register localhost:9080
     ```
-  When running Restate with Docker, use `host.docker.internal` instead of `localhost` for the service deployment URI.
 - Via `curl`:
     ```shell
-    curl localhost:9070/deployments  -H 'content-type: application/json' -d '{"uri": "http://host.docker.internal:9080"}'
+    curl localhost:9070/deployments  -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
     ```
-  When running Restate with Docker, use `host.docker.internal` instead of `localhost` for the service deployment URI.
+  
+When running Restate with Docker, use `host.docker.internal` instead of `localhost` for the service deployment URI.
 
 This should give you the following output in case of the ticket reservation example:
 ```json
