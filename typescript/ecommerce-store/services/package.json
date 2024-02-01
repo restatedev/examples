@@ -27,11 +27,13 @@
     "pg": "^8.10.0",
     "pg-hstore": "^2.3.4",
     "sequelize": "^6.30.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "protobufjs": "^7.2.2",
+    "ts-proto": "^1.140.0"
   },
   "devDependencies": {
     "@aws-sdk/client-rds-data": "^3.289.0",
-    "@bufbuild/buf": "^1.26.1",
+    "@bufbuild/buf": "1.26.1",
     "@types/node": "^18.14.2",
     "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^6.3.0",

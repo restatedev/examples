@@ -23,6 +23,8 @@ spec:
               name: grpc
             - containerPort: 9070
               name: meta
+            - containerPort: 9071
+              name: admin
 
 ---
 apiVersion: v1
@@ -43,6 +45,10 @@ spec:
       port: 9070
       protocol: TCP
       targetPort: 9070
+    - name: admin
+      port: 9071
+      protocol: TCP
+      targetPort: 9071
 
 ---
 apiVersion: apps/v1
@@ -87,7 +93,7 @@ spec:
           imagePullPolicy: Never
           ports:
             - name: h2c
-              containerPort: 8080
+              containerPort: 9080
           env:
             - name: RESTATE_DEBUG_LOGGING
               value: JOURNAL_VERBOSE
