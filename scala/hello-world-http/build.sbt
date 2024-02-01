@@ -27,7 +27,6 @@ libraryDependencies ++= Seq(
   "org.apache.logging.log4j" % "log4j-core" % "2.20.0",
   "org.apache.logging.log4j" %% "log4j-api-scala" % "13.0.0",
 
-//  "dev.restate" % "protoc-gen-restate" % restateVersion artifacts Artifact("protoc-gen-restate-all", PB.ProtocPlugin, "jar"),
   "io.grpc" % "protoc-gen-grpc-java" % "1.58.0" asProtocPlugin ()
 )
 
