@@ -63,10 +63,6 @@ You can find the Jaeger UI at http://localhost:16686. Have a look at the demo sc
 
 You can find the deployment guide for Kubernetes (kind) and Knative [here](./deployment/knative/README.md).
 
-## Deployment on AWS - Fargate - Terraform
-
-You can find the deployment guide for AWS Fargate [here](./deployment/aws/README.md).
-
 ## Running locally
 
 The demo also runs locally. This option doesn't store the products in a Postgres database.
