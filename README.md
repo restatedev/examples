@@ -17,6 +17,12 @@ Browse this repository to see how easy distributed applications development beco
 | Kotlin    | [Hello world on AWS Lambda](kotlin/hello-world-lambda)           |
 | Kotlin    | [Hello world on AWS Lambda + CDK](kotlin/hello-world-lambda-cdk) |
 
+## Tutorials
+
+| Language    | Name / Link                                                                                   |
+|-------------|-----------------------------------------------------------------------------------------------|
+| TypeScript  | [Tour of Restate](typescript/tour-of-restate): A tour of the essentials of the Typescript SDK |
+
 ## Patterns
 
 | Language   | Name / Link                                                                                                             |

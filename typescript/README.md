@@ -8,6 +8,12 @@ This directory contains Restate examples using the Typescript SDK.
 | TypeScript| [Hello world on AWS Lambda](hello-world-lambda)       |
 | TypeScript| [Hello world on AWS Lambda + CDK](hello-world-lambda-cdk) |
 
+## Tutorials
+
+| Language    | Name / Link                                                                        |
+|-------------|------------------------------------------------------------------------------------|
+| TypeScript  | [Tour of Restate](tour-of-restate): A tour of the essentials of the Typescript SDK |
+
 ## Patterns
 
 | Language    | Name / Link                                                                                                  |
