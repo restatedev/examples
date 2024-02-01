@@ -8,6 +8,11 @@ This directory contains Restate examples using the Java SDK.
 | Java      | [Hello World HTTP](hello-world-http)                       |
 | Java      | [Hello world on AWS Lambda](hello-world-lambda)             |
 
+## Tutorials
+| Language | Name / Link                             |
+|----------|-----------------------------------------|
+| Java     | [Tour of Restate](java/tour-of-restate) |
+
 ## Patterns
 
 | Language   | Name / Link                                                                                                             |
