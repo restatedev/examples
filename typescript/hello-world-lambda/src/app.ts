@@ -11,21 +11,17 @@
 
 import * as restate from "@restatedev/restate-sdk";
 
-const doGreet = async (ctx: restate.RpcContext, name: string) => {
-  return `Hello ${name} :-)`;
-};
-
-const doGreetAndRemember = async (ctx: restate.RpcContext, name: string) => {
-  let seen = (await ctx.get<number>("seen")) ?? 0;
-  seen += 1;
-
-  ctx.set("seen", seen);
-  return `Hello ${name} for the #${seen} time :-)`;
-};
-
 const router = restate.keyedRouter({
-  greet: doGreet,
-  greetAndRemember: doGreetAndRemember,
+  greet: async (ctx: restate.RpcContext, name: string) => {
+    return `Hello ${name} :-)`;
+  },
+  greetAndRemember: async (ctx: restate.RpcContext, name: string) => {
+    let seen = (await ctx.get<number>("seen")) ?? 0;
+    seen += 1;
+
+    ctx.set("seen", seen);
+    return `Hello ${name} for the #${seen} time :-)`;
+  },
 });
 
 export const handler = restate
