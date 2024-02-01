@@ -1,8 +1,10 @@
+package dev.restate.sdk.examples
+
 import dev.restate.sdk.RestateService
-import greeter.{GreetRequest, GreetResponse}
-import io.grpc.stub.StreamObserver
 import dev.restate.sdk.common.{CoreSerdes, StateKey}
 import greeter.GreeterGrpc.GreeterImplBase
+import greeter.{GreetRequest, GreetResponse}
+import io.grpc.stub.StreamObserver
 
 class Greeter extends GreeterImplBase with RestateService {
   private val COUNT = StateKey.of[Integer]("count", CoreSerdes.INT)

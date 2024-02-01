@@ -27,15 +27,9 @@ libraryDependencies ++= Seq(
   "org.apache.logging.log4j" % "log4j-core" % "2.20.0",
   "org.apache.logging.log4j" %% "log4j-api-scala" % "13.0.0",
 
-  // Testing (optional)
-  "org.junit.jupiter" % "junit-jupiter" % "5.9.1",
-  "dev.restate" % "sdk-testing" % restateVersion % "test",
-
 //  "dev.restate" % "protoc-gen-restate" % restateVersion artifacts Artifact("protoc-gen-restate-all", PB.ProtocPlugin, "jar"),
   "io.grpc" % "protoc-gen-grpc-java" % "1.58.0" asProtocPlugin ()
 )
-
-
 
 Compile / PB.targets := Seq(
   PB.gens.java                -> (Compile / sourceManaged).value,
@@ -44,6 +38,7 @@ Compile / PB.targets := Seq(
 // Configure test platform
 testFrameworks += new TestFramework("org.junit.platform.sbt.JUnitPlatform")
 // Set main class
-Compile / mainClass := Some("dev.restate.sdk.examples.Greeter")
-run / mainClass := Some("dev.restate.sdk.examples.Greeter")
+Compile / mainClass := Some("dev.restate.sdk.examples.Main")
+run / mainClass := Some("dev.restate.sdk.examples.Main")
+Compile / run / fork := true
 

@@ -1,3 +1,5 @@
+package dev.restate.sdk.examples
+
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
 
 object Main {
