@@ -12,95 +12,68 @@
 import * as restate from "@restatedev/restate-sdk";
 import * as athena from "@aws-sdk/client-athena";
 
+const client = new athena.AthenaClient({});
+
+const DEFAULT_QUERY_SQL = 'SELECT sum("table"."value") AS answer FROM "demo_db"."table"';
+
 export const publicApi: restate.ServiceApi<typeof queryRouter> = {
   path: "query",
 };
-export const internalApi: restate.ServiceApi<typeof internalAthenaApiRouter> = {
-  path: "internal",
-};
 
-// Public API implementation
+const query = async (ctx: restate.RpcContext, query?: string) => {
+  const requestId = ctx.rand.uuidv4(); // make up a stable idempotency token for calling Athena API
 
-const query = async (ctx: restate.RpcContext, request: string) => {
-  const uniqueId = ctx.rand.uuidv4();
-  const awakeable = ctx.awakeable();
+  const executionId = await ctx.sideEffect(async () => {
+    try {
+      const startQueryResult = await client.send(
+        new athena.StartQueryExecutionCommand({
+          QueryString: query ?? DEFAULT_QUERY_SQL,
+          WorkGroup: "demo-workgroup",
+          ClientRequestToken: requestId,
+        }),
+      );
+      return startQueryResult.QueryExecutionId as string;
+    } catch (error) {
+      if (error instanceof athena.AthenaServiceException)
+        if (error.$fault === "client") throw new restate.TerminalError(error.message);
 
-  ctx.send(internalApi).query(uniqueId, {
-    awakeableId: awakeable.id,
-    query: request,
+      throw error; // rethrow other exceptions -- side effect retry policy will handle them
+    }
+  });
+  const queryId = { QueryExecutionId: executionId };
+
+  const state = await ctx.sideEffect(async () => {
+    const response = await client.send(new athena.GetQueryExecutionCommand(queryId));
+    const state = response.QueryExecution?.Status?.State;
+    if (!state || !isQueryStateFinal(state)) throw new Error("Non-final state"); // trigger retry of side effect
+    return state;
   });
 
-  return await awakeable.promise;
+  if (state !== "SUCCEEDED") {
+    throw new restate.TerminalError(`Query execution failed: ${state}. Please see logs for error details.`);
+  }
+
+  const result = await ctx.sideEffect(() => client.send(new athena.GetQueryResultsCommand(queryId)));
+  return { result: result.ResultSet, _id: executionId };
+};
+
+// If you want to test client retries and idempotent request processing without an AWS stack, you can replace the
+// handler definition above in the queryRouter with the following simple mock instead:
+const mockQuery = async (ctx: restate.RpcContext) => {
+  await ctx.sleep(2000); // simulate a long-running query
+  return {
+    result: { Rows: [{ Data: [{ VarCharValue: "answer" }] }, { Data: [{ VarCharValue: "fake" }] }] },
+    _id: ctx.rand.uuidv4(),
+  };
 };
 
 export const queryRouter = restate.router({
   query,
+  // query: mockQuery,
 });
 
-// Internal API implementation
-
-const client = new athena.AthenaClient({});
-
-type QueryRequest = {
-  awakeableId: string;
-  query?: string;
-};
-
-const DEFAULT_QUERY_SQL = 'SELECT * FROM "demo_db"."table" limit 10;';
-
-const queryInternal = async (ctx: restate.RpcContext, requestId: string, request: QueryRequest) => {
-  const executionId = await ctx.sideEffect(async () => {
-    const startQueryResult = await client.send(
-      new athena.StartQueryExecutionCommand({
-        QueryString: request.query ?? DEFAULT_QUERY_SQL,
-        WorkGroup: "demo-workgroup",
-        ClientRequestToken: requestId,
-      }),
-    );
-    return startQueryResult.QueryExecutionId as string;
-  });
-  const queryId = { QueryExecutionId: executionId };
-
-  const state = await ctx.sideEffect(
-    async () => {
-      const response = await client.send(new athena.GetQueryExecutionCommand(queryId));
-      const state = response.QueryExecution?.Status?.State;
-      if (!state || !isQueryStateFinal(state)) throw new Error("Non-final state"); // trigger retry of side effect
-      return state;
-    },
-    {
-      name: "Wait for query execution to reach final state",
-    },
-  );
-
-  if (state !== "SUCCEEDED") {
-    ctx.rejectAwakeable(request.awakeableId, "Unable to execute query");
-    throw new restate.TerminalError("Unable to execute query");
-  }
-
-  const result = await ctx.sideEffect(() => client.send(new athena.GetQueryResultsCommand(queryId)));
-
-  ctx.resolveAwakeable(request.awakeableId, { result: result.ResultSet, _id: result.$metadata.requestId });
-};
-
-export const internalAthenaApiRouter = restate.keyedRouter({
-  query: queryInternal,
-});
-
-restate
-  .createServer()
-  .bindRouter(publicApi.path, queryRouter)
-  .bindKeyedRouter(internalApi.path, internalAthenaApiRouter)
-  .listen(9080);
+restate.createServer().bindRouter(publicApi.path, queryRouter).listen(9080);
 
 function isQueryStateFinal(state: athena.QueryExecutionState): boolean {
   return ["SUCCEEDED", "FAILED", "CANCELLED"].includes(state);
 }
-
-// If you want to test the promise integration without actually calling Athena, you can replace the service definition
-// above with the following simple mock instead:
-// const queryInternal = async (ctx: restate.RpcContext, requestId: string, request: QueryRequest) => {
-//   await ctx.sleep(5000);
-//   ctx.resolveAwakeable(request.awakeableId, { result: "foo", _id: requestId });
-//   return;
-// };

@@ -128,16 +128,14 @@ disconnect and retry. This demonstrates the built-in idempotency support that ma
 client against the Restate ingress endpoint with `npm run client`. You should see the following output:
 
 ```
-Starting query with idempotency key: 6pbxlpuwect ...
-Attempt #1 failed with AxiosError: timeout of 500ms exceeded. Backing off for 225.4295680836923ms...
-Attempt #2 failed with AxiosError: timeout of 500ms exceeded. Backing off for 421.82781013856396ms...
+% npm run client
+...
+Starting query with idempotency key: xkmwm95dxln ...
+Attempt #1 failed with: AxiosError: timeout of 500ms exceeded. Backing off for 230.90111823134313ms...
+Attempt #2 failed with: AxiosError: timeout of 500ms exceeded. Backing off for 437.00865138660356ms...
+Attempt #3 failed with: AxiosError: timeout of 500ms exceeded. Backing off for 934.4729307670398ms...
 Query finished with status: 200.
-{
-  status: 'SUCCESS',
-  result: {
-    response: { _id: 'd69d08af-299f-4068-9bd2-42d11dca603a', result: [Object] }
-  }
-}
+Response: answer = ...
 ```
 
 Let's look at the server logs: we see that the side effect wrapping the call to retrieve the query results has most
@@ -145,37 +143,27 @@ likely been retried several times because Athena takes some time to start, execu
 Our logic in the service handler didn't have to deal with any of that backing off - Restate did it all for us:
 
 ```
-[restate] [2023-12-15T15:20:03.451Z] DEBUG: [query/query] [Ogrphy5abhwAYxuEC5ecQa5i7mwGNNa0g] : Invoking function.
-[restate] [2023-12-15T15:20:03.458Z] DEBUG: [internal/query] [pua_tEavBlwAYxuEC58fyigRM4drFneMA] : Invoking function.
-Starting query: [object Object] with id: 06d81b82-1a77-4eb2-ae0e-039828efff08
-[restate] [2023-12-15T15:20:03.851Z] DEBUG: Error while executing side effect 'side-effect': InvalidRequestException - Query has not yet finished. Current state: QUEUED
-[restate] [2023-12-15T15:20:03.852Z] DEBUG: InvalidRequestException: Query has not yet finished. Current state: QUEUED
+[restate] [2024-02-02T13:12:22.736Z] DEBUG: [query/query] [xOUF1k8jX60AY1p8uXId_O58UCosW6etQ] : Invoking function.
+[restate] [2024-02-02T13:12:24.607Z] DEBUG: Error while executing side effect 'side-effect': Error - Non-final state
+[restate] [2024-02-02T13:12:24.619Z] DEBUG: Error: Non-final state
+...
+[restate] [2024-02-02T13:12:24.620Z] DEBUG: Retrying in 10 ms
+[restate] [2024-02-02T13:12:24.837Z] DEBUG: Error while executing side effect 'side-effect': Error - Non-final state
 ...
 ...
-...
-[restate] [2023-12-15T15:20:03.995Z] DEBUG: Retrying in 40 ms
-[restate] [2023-12-15T15:20:04.092Z] DEBUG: Error while executing side effect 'side-effect': InvalidRequestException - Query has not yet finished. Current state: RUNNING
-[restate] [2023-12-15T15:20:04.099Z] DEBUG: InvalidRequestException: Query has not yet finished. Current state: RUNNING
-...
-...
-...
-[restate] [2023-12-15T15:20:04.452Z] DEBUG: Retrying in 320 ms
-[restate] [2023-12-15T15:20:04.882Z] DEBUG: [internal/query] [pua_tEavBlwAYxuEC58fyigRM4drFneMA] : Function completed successfully.
-[restate] [2023-12-15T15:20:04.905Z] DEBUG: [query/query] [Ogrphy5abhwAYxuEC5ecQa5i7mwGNNa0g] : Function completed successfully.
+[restate] [2024-02-02T13:12:25.051Z] DEBUG: Retrying in 320 ms
+[restate] [2024-02-02T13:12:25.542Z] DEBUG: [query/query] [xOUF1k8jX60AY1p8uXId_O58UCosW6etQ] : Function completed successfully.
 ```
 
-Notice how if you re-run the client with the same idempotency token as a previous run
-using `IDEMPOTENCY_KEY=${TOKEN} npm run client`, the server will immediately return a cached result:
+Notice how if you re-run the client with the same idempotency token as that of a previous run
+using `npm run client -- ${TOKEN}`, the server will immediately return a cached result:
 
 ```
-Starting query with idempotency key: 6pbxlpuwect ...
+% npm run client -- xkmwm95dxln
+...
+Starting query with idempotency key: xkmwm95dxln ...
 Query finished with status: 200.
-{
-  status: 'SUCCESS',
-  result: {
-    response: { _id: 'd69d08af-299f-4068-9bd2-42d11dca603a', result: [Object] }
-  }
-}
+Response: answer = ...
 ```
 
 ### Clean up

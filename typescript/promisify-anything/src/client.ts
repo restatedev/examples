@@ -16,7 +16,7 @@ axiosRetry(axios, {
   retries: Infinity,
   // requests are explicitly idempotent, retry on any error
   retryCondition(error) {
-    return error.response?.status != 404;
+    return error.response?.status != 404 && error.response?.status != 500;
   },
   retryDelay(retryCount, error) {
     const delay = axiosRetry.exponentialDelay(retryCount, error, 100);
@@ -27,7 +27,7 @@ axiosRetry(axios, {
   shouldResetTimeout: true,
 });
 
-const query = async (idempotencyKey: string, input: string): Promise<AxiosResponse> => {
+const query = async (idempotencyKey: string, query?: string): Promise<AxiosResponse> => {
   const url = "http://localhost:8080/query/query";
   const timeout = 500; // short .5s request timeout to demonstrate retries
   console.log(`Starting query with idempotency key: ${idempotencyKey} ...`);
@@ -35,7 +35,7 @@ const query = async (idempotencyKey: string, input: string): Promise<AxiosRespon
   let response = await axios.post(
     url,
     {
-      request: input,
+      request: query,
     },
     {
       headers: {
@@ -55,6 +55,7 @@ const idempotencyKey = () => {
 };
 
 (async () => {
-  const result = await query(process.argv[2] ?? idempotencyKey(), 'SELECT * FROM "demo_db"."table" limit 10;');
-  console.log({ status: "SUCCESS", result: result.data });
+  const result = await query(process.argv[2] ?? idempotencyKey());
+  const rows = result.data.response?.result?.Rows;
+  if (rows) console.log(`Response: ${rows[0]?.Data?.[0]?.VarCharValue} = ${rows[1]?.Data?.[0]?.VarCharValue}`);
 })();

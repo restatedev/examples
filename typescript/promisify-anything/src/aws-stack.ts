@@ -33,7 +33,7 @@ class AthenaTableStack extends cdk.Stack {
       dataFormat: glue.DataFormat.JSON,
     });
 
-    const workgroup = new athena.CfnWorkGroup(this, "Workgroup", {
+    new athena.CfnWorkGroup(this, "Workgroup", {
       name: "demo-workgroup",
       recursiveDeleteOption: true,
       state: "ENABLED",
