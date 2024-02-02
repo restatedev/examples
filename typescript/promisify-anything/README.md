@@ -29,7 +29,7 @@ npx @restatedev/restate-server
 
 Note: the server keeps a persistent store of previous invocations, stored state, idempotency keys in a directory named
 `target`. If you would later like to drop the stored state without needing to re-register the service deployment again,
-you can relaunch the server with the `--wipe worker` flag.  
+you can relaunch the server with the `--wipe worker` flag.
 
 ### [Optional] Deploy the AWS stack
 
@@ -56,9 +56,32 @@ You can confirm that the file landed under the `data/` prefix using the S3 conso
 
 ### Start the service
 
+#### Obtain service AWS credentials
+
 The restate service houses the Athena adapter logic and requires AWS credentials. We can use short-term credentials from
-the AWS demo stack we deployed earlier. If you've commented out the AWS SDK interactions, you can directly start the
-service.
+the AWS demo stack we deployed earlier. If you've chosen to skip AWS integration, make sure you've commented out the AWS
+SDK interactions and skip ahead to running the service.
+
+The easiest way to configure your service to operate under the IAM Role we create for the purpose in the AWS stack is to
+create a profile. In your `~/.aws/config` file, create a new section that looks like this:
+
+```
+[profile restate-demo]
+source_profile = {{profile for the account where you deployed the stack}}
+role_arn = {{role ARN from the stack output}}
+region = {{region where you deployed the stack}}
+```
+
+You can name the profile anything you like; set the `source_profile` to the name of the profile you use to access AWS -
+this is probably your default profile that you used to deploy the CDK stack earlier. Specify the profile to use by
+setting the `AWS_PROFILE` environment variable:
+
+```shell
+export AWS_PROFILE=restate-demo
+```
+
+You can proceed to run the service. If you don't want to create an AWS profile, you can use the following commands to
+obtain short-term credentials and make them available via environment variables instead:
 
 ```shell
 ROLE_ARN=$(aws cloudformation describe-stacks \
@@ -80,14 +103,19 @@ unset AWS_PROFILE
 export AWS_REGION=...
 ```
 
-You can verify that you've obtained the correct short-term credentials using `aws sts get-caller-identity` - this should
-print out the ARN of the "DemoDbAccess" role. Now start the Restate service:
+#### Running the service
+
+You can verify that you've obtained the correct short-term AWS credentials with `aws sts get-caller-identity` - it should
+report a valid session under the assumed "DemoDbAccess" role.
+
+Now start the Restate service:
 
 ```shell
 npm run service
 ```
 
-Register the service with Restate - you only need to do this once:
+In a new terminal, register the service with the Restate server - you only need to do this once; the registration will
+be persisted across Restate server and service restarts until you wipe the Restate meta state. 
 
 ```shell
 npx @restatedev/restate deployments register --yes localhost:9080
@@ -136,8 +164,8 @@ Starting query: [object Object] with id: 06d81b82-1a77-4eb2-ae0e-039828efff08
 [restate] [2023-12-15T15:20:04.905Z] DEBUG: [query/query] [Ogrphy5abhwAYxuEC5ecQa5i7mwGNNa0g] : Function completed successfully.
 ```
 
-Notice how if you re-run the client with the same idempotency token as a previous run using `IDEMPOTENCY_KEY=${TOKEN} npm run client`,
-the server will immediately return a cached result:
+Notice how if you re-run the client with the same idempotency token as a previous run
+using `IDEMPOTENCY_KEY=${TOKEN} npm run client`, the server will immediately return a cached result:
 
 ```
 Starting query with idempotency key: 6pbxlpuwect ...

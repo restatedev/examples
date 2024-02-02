@@ -11,15 +11,15 @@
     "client": "ts-node src/client.ts",
     "service": "ts-node src/service.ts",
     "service:dev": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only src/service.ts",
-    "deploy": "npx cdk --app src/aws-stack.ts deploy"
+    "deploy": "npx cdk deploy"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-athena": "^3.495.0",
+    "@aws-sdk/client-athena": "^3.504.0",
     "@restatedev/restate-sdk": "^0.7.0",
-    "@types/uuid": "^9.0.7",
+    "@types/uuid": "^9.0.8",
     "axios-retry": "^4.0.0",
     "typescript": "^5.3.3"
   },

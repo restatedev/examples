@@ -14,18 +14,22 @@ import axiosRetry from "axios-retry";
 
 axiosRetry(axios, {
   retries: Infinity,
-  retryCondition: () => true, // requests are explicitly idempotent, retry on any error
-  shouldResetTimeout: true, // the timeout set is per request, not for the overall interaction
-  retryDelay: (retryCount, error) => {
+  // requests are explicitly idempotent, retry on any error
+  retryCondition(error) {
+    return error.response?.status != 404;
+  },
+  retryDelay(retryCount, error) {
     const delay = axiosRetry.exponentialDelay(retryCount, error, 100);
     console.log(`Attempt #${retryCount} failed with: ${error}. Backing off for ${delay}ms...`);
     return delay;
   },
+  // the timeout set is per request, not for the overall interaction
+  shouldResetTimeout: true,
 });
 
 const query = async (idempotencyKey: string, input: string): Promise<AxiosResponse> => {
   const url = "http://localhost:8080/query/query";
-  const timeout = 500; // short .5s timeout to demonstrate retries
+  const timeout = 500; // short .5s request timeout to demonstrate retries
   console.log(`Starting query with idempotency key: ${idempotencyKey} ...`);
 
   let response = await axios.post(
