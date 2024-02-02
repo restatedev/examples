@@ -20,6 +20,8 @@ create_release_zip java hello-world-http
 create_release_zip java hello-world-lambda
 create_release_zip java food-ordering
 
+create_release_zip scala hello-world-http
+
 create_release_zip kotlin hello-world-http
 create_release_zip kotlin hello-world-lambda
 create_release_zip kotlin hello-world-lambda-cdk
