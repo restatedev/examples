@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package serverlessworfklow;
+
+import "dev/restate/ext.proto";
+import "cloudevents.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/empty.proto";
+
+option java_package = "dev.restate.examples.serverlessworkflow.generated";
+option java_outer_classname = "ServerlessWorkflowProto";
+
+service WorkflowExecutor {
+  option (dev.restate.ext.service_type) = KEYED;
+
+  rpc Execute(ExecuteRequest) returns (google.protobuf.Empty);
+}
+
+message ExecuteRequest {
+  string workflow_id = 1 [(dev.restate.ext.field) = KEY];
+  string workflow_definition = 2;
+  google.protobuf.Value input = 3;
+}
+
+// -- WorkflowManager, managing state and events
+service WorkflowManager {
+  option (dev.restate.ext.service_type) = KEYED;
+
+  // State
+  rpc GetState(GetStateRequest) returns (GetStateResponse);
+  rpc SetState(SetStateRequest) returns (google.protobuf.Empty);
+
+  // Events
+  rpc WaitEvent(WaitEventRequest) returns (google.protobuf.Empty);
+  rpc NotifyEvent(NotifyEventRequest) returns (google.protobuf.Empty);
+  rpc ListEvents(ListEventsRequest) returns (ListEventsResponse);
+
+  // Output
+  rpc GetOutput(GetOutputRequest) returns (GetOutputResponse);
+  rpc SetOutput(SetOutputRequest) returns (google.protobuf.Empty);
+}
+
+message GetStateRequest {
+  string workflow_id = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message GetStateResponse {
+  oneof result {
+    string state = 1;
+    google.protobuf.Empty empty = 2;
+  }
+}
+
+message SetStateRequest {
+  string workflow_id = 1 [(dev.restate.ext.field) = KEY];
+  string state = 2;
+}
+
+message WaitEventRequest {
+  string workflow_id = 1 [(dev.restate.ext.field) = KEY];
+
+  string event_name = 2;
+  string awakeable_id = 3;
+}
+
+message NotifyEventRequest {
+  string workflow_id = 1 [(dev.restate.ext.field) = KEY];
+  io.cloudevents.v1.CloudEvent cloudevent = 2;
+}
+
+message ListEventsRequest {
+  string workflow_id = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message ListEventsResponse {
+  repeated io.cloudevents.v1.CloudEvent cloudevent = 1;
+}
+
+message GetOutputRequest {
+  string workflow_id = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message GetOutputResponse {
+  oneof result {
+    google.protobuf.Value output = 1;
+    google.protobuf.Empty empty = 2;
+  }
+}
+
+message SetOutputRequest {
+  string workflow_id = 1 [(dev.restate.ext.field) = KEY];
+  google.protobuf.Value output = 2;
+}

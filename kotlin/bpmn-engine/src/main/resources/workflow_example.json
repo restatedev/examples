@@ -1,0 +1,45 @@
+{
+  "id": "helloworld",
+  "version": "1.0",
+  "specVersion": "0.8",
+  "name": "Hello World Workflow",
+  "description": "Inject Hello World",
+  "start": "check-sleep",
+  "states": [
+    {
+      "name": "check-sleep",
+      "type": "switch",
+      "dataConditions": [
+        {
+          "name": "should-sleep",
+          "condition": "${ fn:should-sleep }",
+          "transition": "sleep-some-time"
+        }
+      ],
+      "defaultCondition": {
+        "transition": "hello-world"
+      }
+    },
+    {
+      "name": "sleep-some-time",
+      "duration": "PT10S",
+      "type": "sleep",
+      "transition": "hello-world"
+    },
+    {
+      "name": "hello-world",
+      "type": "inject",
+      "data": {
+        "result": "Hello World!"
+      },
+      "end": true
+    }
+  ],
+  "functions": [
+    {
+      "name": "should-sleep",
+      "operation": ".shouldSleep",
+      "type": "expression"
+    }
+  ]
+}

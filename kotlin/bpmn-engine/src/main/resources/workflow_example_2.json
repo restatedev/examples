@@ -1,0 +1,38 @@
+{
+  "id": "helloworld",
+  "version": "1.0",
+  "specVersion": "0.8",
+  "name": "Hello World Workflow",
+  "description": "Inject Hello World",
+  "start": "initialize-count",
+  "states": [
+    {
+      "name": "initialize-count",
+      "type": "inject",
+      "data": {
+        "count": 0
+      },
+      "transition": "increment-count"
+    },
+    {
+      "name": "increment-count",
+      "type": "operation",
+      "actions": [
+        {
+          "functionRef": "increment-count-function",
+          "actionDataFilter": {
+            "toStateData": "${ .count }"
+          }
+        }
+      ],
+      "end": true
+    }
+  ],
+  "functions": [
+    {
+      "name": "increment-count-function",
+      "type": "expression",
+      "operation": ".count += 1 | .count"
+    }
+  ]
+}
