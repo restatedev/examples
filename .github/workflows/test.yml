@@ -59,6 +59,10 @@ jobs:
         run: |
           npm --prefix kotlin/hello-world-lambda-cdk clean-install
           npm --prefix kotlin/hello-world-lambda-cdk run verify
+      - name: Build Scala HTTP template
+        if: github.event.inputs.sdkJavaVersion != ''
+        run: sbt clean compile
+        working-directory: scala/hello-world-http
 
   build-ts:
     # prevent from running on forks
