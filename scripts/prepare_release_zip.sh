@@ -19,6 +19,7 @@ create_release_zip() {
 create_release_zip java hello-world-http
 create_release_zip java hello-world-lambda
 create_release_zip java food-ordering
+create_release_zip java tour-of-restate
 
 create_release_zip scala hello-world-http
 
@@ -34,3 +35,4 @@ create_release_zip typescript food-ordering
 create_release_zip typescript payment-api
 create_release_zip typescript ticket-reservation
 create_release_zip typescript dynamic-workflow-executor
+create_release_zip typescript tour-of-restate
