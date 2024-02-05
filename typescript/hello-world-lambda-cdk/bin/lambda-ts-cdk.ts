@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /*
  * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
  *
@@ -9,7 +11,6 @@
  * https://github.com/restatedev/examples/
  */
 
-#!/usr/bin/env node
 import "source-map-support/register";
 import * as cdk from "aws-cdk-lib";
 import { LambdaTsCdkStack } from "../lib/lambda-ts-cdk-stack";
