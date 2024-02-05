@@ -18,13 +18,13 @@ export const publicApi: restate.ServiceApi<typeof queryRouter> = {
 
 // If you want to test client retries and idempotent request processing without an AWS stack, you can replace the
 // handler definition above in the queryRouter with the following simple mock instead:
-const mockQuery = async (ctx: restate.RpcContext) => {
-  await ctx.sleep(2000); // simulate a long-running query
-  return {
-    result: { Rows: [{ Data: [{ VarCharValue: "answer" }] }, { Data: [{ VarCharValue: "fake" }] }] },
-    _id: ctx.rand.uuidv4(),
-  };
-};
+// const mockQuery = async (ctx: restate.RpcContext) => {
+//   await ctx.sleep(2000); // simulate a long-running query
+//   return {
+//     result: { Rows: [{ Data: [{ VarCharValue: "answer" }] }, { Data: [{ VarCharValue: "fake" }] }] },
+//     _id: ctx.rand.uuidv4(),
+//   };
+// };
 
 export const queryRouter = restate.router({
   query: queryAthena,
