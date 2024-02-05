@@ -113,7 +113,7 @@ jobs:
           build-root-directory: kotlin/hello-world-lambda
       - name: Build Scala HTTP template
         if: github.event.inputs.sdkJavaVersion != ''
-        run: sbt -v +compile
+        run: sbt -v +package
         working-directory: scala/hello-world-http
 
       - name: Update cdk version
