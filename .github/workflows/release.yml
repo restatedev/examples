@@ -32,6 +32,7 @@ jobs:
             typescript-hello-world-lambda-cdk.zip
             typescript-dynamic-workflow-executor.zip
             typescript-end-to-end-testing.zip
+            scala-hello-world-http.zip
             typescript-tour-of-restate.zip
             java-hello-world-http.zip
             java-hello-world-lambda.zip

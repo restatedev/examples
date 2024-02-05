@@ -7,15 +7,16 @@
 Browse this repository to see how easy distributed applications development becomes with Restate.
 
 ## Starters
-| Language  | Name / Link                                                     |
-|-----------|-----------------------------------------------------------------|
-| TypeScript| [Hello world on AWS Lambda](typescript/hello-world-lambda)       |
-| TypeScript| [Hello world on AWS Lambda + CDK](typescript/hello-world-lambda-cdk) |
-| Java      | [Hello World HTTP](java/hello-world-http)                       |
-| Java      | [Hello world on AWS Lambda](java/hello-world-lambda)             |
-| Kotlin    | [Hello World HTTP](kotlin/hello-world-http)                     |
-| Kotlin    | [Hello world on AWS Lambda](kotlin/hello-world-lambda)           |
-| Kotlin    | [Hello world on AWS Lambda + CDK](kotlin/hello-world-lambda-cdk) |
+| Language   | Name / Link                                                          |
+|------------|----------------------------------------------------------------------|
+| TypeScript | [Hello world on AWS Lambda](typescript/hello-world-lambda)           |
+| TypeScript | [Hello world on AWS Lambda + CDK](typescript/hello-world-lambda-cdk) |
+| Java       | [Hello World HTTP](java/hello-world-http)                            |
+| Java       | [Hello world on AWS Lambda](java/hello-world-lambda)                 |
+| Kotlin     | [Hello World HTTP](kotlin/hello-world-http)                          |
+| Kotlin     | [Hello world on AWS Lambda](kotlin/hello-world-lambda)               |
+| Kotlin     | [Hello world on AWS Lambda + CDK](kotlin/hello-world-lambda-cdk)     |
+| Scala      | [Hello world HTTP](scala/hello-world-http)                           |
 
 ## Tutorials
 | Language    | Name / Link                                                                                   |

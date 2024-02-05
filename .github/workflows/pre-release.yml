@@ -55,7 +55,7 @@ jobs:
 
       # Bump sdk version in java/kotlin examples and run checks
       # When adding a new example make sure it's listed here
-      - name: Find and replace restateVersion in build.gradle.kts for java templates
+      - name: Find and replace restateVersion in build.gradle.kts for java examples
         if: github.event.inputs.sdkJavaVersion != ''
         run: for jvmDir in hello-world-http hello-world-lambda food-ordering/app tour-of-restate patterns; do sed -i 's/val restateVersion = "[0-9A-Z.-]*"/val restateVersion = "${{ inputs.sdkJavaVersion }}"/' java/$jvmDir/build.gradle.kts; done
       - name: Find and replace restateVersion in build.gradle.kts for kotlin templates
@@ -64,6 +64,9 @@ jobs:
       - name: Find and replace restateVersion in build.gradle.kts for kotlin/hello-world-lambda-cdk
         if: github.event.inputs.sdkJavaVersion != ''
         run: sed -i 's/val restateVersion = "[0-9A-Z.-]*"/val restateVersion = "${{ inputs.sdkJavaVersion }}"/' kotlin/hello-world-lambda-cdk/lambda/build.gradle.kts
+      - name: Find and replace restateVersion in Dependencies.scala for scala templates
+        if: github.event.inputs.sdkJavaVersion != ''
+        run: for scalaDir in hello-world-http; do sed -i 's/lazy val restate = "[0-9A-Z.-]*"/lazy val restate = "${{ inputs.sdkJavaVersion }}"/' scala/$scalaDir/project/Dependencies.scala; done
 
       # When adding a new example add the check task here
       - name: Test java/hello-world-http
@@ -108,6 +111,10 @@ jobs:
         with:
           arguments: check
           build-root-directory: kotlin/hello-world-lambda
+      - name: Build Scala HTTP template
+        if: github.event.inputs.sdkJavaVersion != ''
+        run: sbt -v +package
+        working-directory: scala/hello-world-http
 
       - name: Update cdk version
         if: github.event.inputs.cdkVersion != ''
