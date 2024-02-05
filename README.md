@@ -17,6 +17,11 @@ Browse this repository to see how easy distributed applications development beco
 | Kotlin    | [Hello world on AWS Lambda](kotlin/hello-world-lambda)           |
 | Kotlin    | [Hello world on AWS Lambda + CDK](kotlin/hello-world-lambda-cdk) |
 
+## Tutorials
+| Language | Name / Link                             |
+|----------|-----------------------------------------|
+| Java     | [Tour of Restate](java/tour-of-restate) |
+
 ## Patterns
 
 | Language   | Name / Link                                                                                                             |
@@ -119,3 +124,5 @@ Before releasing, trigger the "pre-release" workflow to update sdk versions. Thi
 Once the repo is ready for the release, push a tag of the form `vX.Y.Z`.
 
 This triggers a workflow that [creates a draft release](https://github.com/restatedev/examples/releases) on Github, which you need to approve to finalize it.
+
+Please update the version tag referenced on the [Tour of Restate](https://github.com/restatedev/documentation/blob/main/docs/tour.mdx) documentation page.
