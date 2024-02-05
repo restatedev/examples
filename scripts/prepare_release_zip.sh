@@ -33,3 +33,4 @@ create_release_zip typescript food-ordering
 create_release_zip typescript payment-api
 create_release_zip typescript ticket-reservation
 create_release_zip typescript dynamic-workflow-executor
+create_release_zip typescript tour-of-restate
