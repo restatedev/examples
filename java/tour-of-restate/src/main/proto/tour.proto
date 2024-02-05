@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package example;
+
+option java_package = "dev.restate.tour.generated";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+import "dev/restate/ext.proto";
+
+service UserSession {
+  option (dev.restate.ext.service_type) = KEYED;
+
+  rpc AddTicket (ReserveTicket) returns (google.protobuf.BoolValue);
+
+  rpc Checkout (CheckoutRequest) returns (google.protobuf.BoolValue);
+
+  rpc ExpireTicket (ExpireTicketRequest) returns (google.protobuf.Empty);
+}
+
+message ReserveTicket {
+  string user_id = 1 [(dev.restate.ext.field) = KEY];
+  string ticket_id = 2;
+}
+
+message CheckoutRequest {
+  string user_id = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message ExpireTicketRequest {
+  string user_id = 1 [(dev.restate.ext.field) = KEY];
+  string ticket_id = 2;
+}
+
+service TicketService {
+  option (dev.restate.ext.service_type) = KEYED;
+
+  rpc Reserve (Ticket) returns (google.protobuf.BoolValue);
+
+  rpc Unreserve (Ticket) returns (google.protobuf.Empty);
+
+  rpc MarkAsSold (Ticket) returns (google.protobuf.Empty);
+}
+
+message Ticket {
+  string ticket_id = 1 [(dev.restate.ext.field) = KEY];
+}
+
+message ResultValue {
+  bool value = 1;
+}
+
+service Checkout {
+  option (dev.restate.ext.service_type) = UNKEYED;
+
+  rpc Checkout (CheckoutFlowRequest) returns (google.protobuf.BoolValue);
+}
+
+message CheckoutFlowRequest {
+  string user_id = 1;
+  repeated string tickets = 2;
+}
