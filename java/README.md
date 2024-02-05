@@ -9,9 +9,9 @@ This directory contains Restate examples using the Java SDK.
 | Java      | [Hello world on AWS Lambda](hello-world-lambda)             |
 
 ## Tutorials
-| Language | Name / Link                             |
-|----------|-----------------------------------------|
-| Java     | [Tour of Restate](java/tour-of-restate) |
+| Language | Name / Link                                                                  |
+|----------|------------------------------------------------------------------------------|
+| Java     | [Tour of Restate](tour-of-restate): A tour of the essentials of the Java SDK |
 
 ## Patterns
 
