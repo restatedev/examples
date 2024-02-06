@@ -20,7 +20,7 @@ axiosRetry(axios, {
   },
   retryDelay(retryCount, error) {
     const delay = axiosRetry.exponentialDelay(retryCount, error, 100);
-    console.log(`Attempt #${retryCount} failed with: ${error}. Backing off for ${delay}ms...`);
+    console.log(`Attempt #${retryCount} failed with: ${error}. Backing off for ${Math.round(delay)}ms...`);
     return delay;
   },
   // the timeout set is per request, not for the overall interaction
