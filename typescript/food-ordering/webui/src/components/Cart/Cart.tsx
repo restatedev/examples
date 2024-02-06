@@ -8,8 +8,6 @@ import { useOrderStatusContext } from '../../contexts/status-context/OrderStatus
 import { useState } from 'react';
 import Dropdown from '../Dropdown';
 
-const isKafkaEnabled = process.env.REACT_APP_ENABLE_KAFKA !== 'false';
-
 const Cart = () => {
   const {
     products,
@@ -80,10 +78,6 @@ const Cart = () => {
       };
     };
 
-    const kafkaRecord = JSON.stringify({
-      key: user!.user_id,
-      value: JSON.stringify(generateJsonReq()),
-    });
     const request = JSON.stringify({
       key: user!.user_id,
       request: generateJsonReq(),
@@ -94,14 +88,8 @@ const Cart = () => {
       const checkedOutStatus = { checked_out: true };
       updateCartDetails({ ...details, ...checkedOutStatus });
 
-      if (isKafkaEnabled) {
-        console.info('Generating Kafka record');
-        console.info(kafkaRecord);
-        await publishToKafka(kafkaRecord);
-      } else {
-        console.info(request);
-        sendRequestToRestate('order-workflow', 'create', request);
-      }
+      console.info(request);
+      sendRequestToRestate('order-workflow', 'create', request);
 
       let done = false;
       while (!done) {

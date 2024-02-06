@@ -17,7 +17,6 @@ const KAFKA_CONFIG: KafkaConfig = { brokers: [KAFKA_BOOTSTRAP_SERVERS] };
 const KAFKA_TOPIC = "driver-updates";
 
 export class Kafka_publisher {
-
   private readonly kafka = new Kafka(KAFKA_CONFIG);
   private readonly producer = this.kafka.producer();
   private connected = false;
