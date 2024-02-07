@@ -100,44 +100,6 @@ The driver's digital twin (`driver_digital_twin.ts`) is the digital representati
 5. Finally, the driver arrives at the customer and the driver's mobile app notifies its digital twin (by calling `driver-digital-twin/notifyDeliveryDelivered`). The digital twin then notifies the delivery manager that the driver has picked up the delivery (by calling `delivery-manager/notifyDeliveryDelivered`).
 6. The delivery manager then sets the order status to `DELIVERED`. And the order workflow gets completed, by resolving the awakeable.
 
-## Presenting the demo at conferences
-To present the demo at conferences, you can run the Restate server and restate-app outside of Docker compose. 
-This allows you to show the code execution retries via ts-node-dev and the logs of the services in the terminal.
-
-### Run the order app
-
-```shell    
-cd app
-npm install 
-npm run app-dev
-```
-
-
-### Launch Restate and register services
-
-Run with `npx` or have a look at other options to [launch the Restate Server](../../README.md#launching-the-restate-server).
-```shell
-npx @restatedev/restate-server@latest --config-file restate-local.yaml --wipe all 
-```
-
-Assuming you have the CLI installed, register the services:
-```shell
-restate dp reg order_app:9080
-restate dp reg delivery_app:9081
-```
-
-Subscribe Restate to the Kafka `driver-updates` topic:
-
-```shell
-curl localhost:9070/subscriptions -H 'content-type: application/json' -d '{"source":"kafka://my-cluster/driver-updates", "sink":"service://driver-digital-twin/handleDriverLocationUpdateEvent" }'
-```
-
-Start a driver:
-
-```shell
-curl localhost:8080/driver-mobile-app/startDriver -H 'content-type: application/json' -d '{"key": "driver-01", "request": {} }' 
-```
-
 ## Attribution
 
 The implementation of the web app is based on the MIT Licensed repository here: https://github.com/jeffersonRibeiro/react-shopping-cart.
