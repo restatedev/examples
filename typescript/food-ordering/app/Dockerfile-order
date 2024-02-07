@@ -18,4 +18,4 @@ ENV NODE_ENV production
 
 EXPOSE 9080
 USER node
-ENTRYPOINT ["dumb-init", "node", "./dist/restate-app/app.js"]
+ENTRYPOINT ["dumb-init", "node", "./dist/order-app/app.js"]

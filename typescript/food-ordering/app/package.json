@@ -7,11 +7,12 @@
   "scripts": {
     "build": "tsc --noEmitOnError",
     "prebundle": "rm -rf dist",
-    "bundle": "esbuild src/restate-app/app.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
+    "bundle": "esbuild src/delivery-app/app.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
     "postbundle": "cd dist && zip -r index.zip index.js*",
-    "app": "node ./dist/app/app.js",
+    "order-app": "node ./dist/app/order-app.js",
+    "delivery-app": "node ./dist/app/delivery-app.js",
     "restaurant-app": "node ./dist/restaurant/server.js",
-    "app-dev": "ts-node-dev --watch src --respawn --transpile-only src/restate-app/app.ts"
+    "app-dev": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --watch src --respawn --transpile-only src/order-app/app.ts"
   },
   "dependencies": {
     "@types/node": "^20.6.3",

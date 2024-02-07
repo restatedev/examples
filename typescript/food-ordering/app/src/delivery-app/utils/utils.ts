@@ -17,10 +17,3 @@ export function fail(id: string, msg: string) {
   throw new Error(errorMsg);
 }
 
-export const completed = async (ctx: restate.RpcContext): Promise<boolean> => {
-  if (await ctx.get<boolean>("completed") === true) {
-    return true
-  }
-  ctx.set("completed", true)
-  return false
-}
