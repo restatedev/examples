@@ -1,26 +1,11 @@
-/*
- * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
- *
- * This file is part of the Restate examples,
- * which is released under the MIT license.
- *
- * You can find a copy of the license in the file LICENSE
- * in the root directory of this repository or package or at
- * https://github.com/restatedev/examples/
- */
-
 import * as restate from "@restatedev/restate-sdk";
 import * as deliveryManager from "../delivery-app/delivery_manager";
 import {Order, Status} from "./types/types";
 import * as orderstatus from "./order_status_service";
 import {getPaymentClient} from "./clients/payment_client";
 import {getRestaurantClient} from "./clients/restaurant_client";
+import {fail} from "./utils/utils";
 
-/**
- * Order processing workflow Gets called for each Kafka event that is published to the order topic.
- * The event contains the order ID and the raw JSON order. The workflow handles the payment, asks
- * the restaurant to start the preparation, and triggers the delivery.
- */
 export const service: restate.ServiceApi<typeof router> = { path: "order-workflow" };
 
 const restaurant = getRestaurantClient();
@@ -35,14 +20,15 @@ export const router = restate.keyedRouter({
 
     // 2. Handle payment
     const token = ctx.rand.uuidv4();
-    const paid = await ctx.sideEffect(() => paymentClnt.charge(id, token, totalCost));
+    // console.info(token);
+    const paid = await ctx.sideEffect(async () => paymentClnt.charge(id, token, totalCost));
 
     if (!paid) {
       ctx.send(orderstatus.service).setStatus(id, Status.REJECTED);
       return;
     }
 
-    // 3. Schedule preparation
+    // 3. Wait for desired preparation time
     ctx.send(orderstatus.service).setStatus(id, Status.SCHEDULED);
     await ctx.sleep(deliveryDelay);
 
@@ -54,9 +40,11 @@ export const router = restate.keyedRouter({
     await preparationPromise.promise;
     ctx.send(orderstatus.service).setStatus(id, Status.SCHEDULING_DELIVERY);
 
+    // fail(orderId, "Failed");
     // 5. Find a driver and start delivery
     await deliver(ctx, order);
     ctx.send(orderstatus.service).setStatus(id, Status.DELIVERED);
+    //
   }
 });
 

@@ -9,11 +9,9 @@
  * https://github.com/restatedev/examples/
  */
 
-import * as restate from "@restatedev/restate-sdk";
-
 export function fail(id: string, msg: string) {
   const errorMsg = `[${id}] Error: ${msg}`;
-  console.error(errorMsg);
+  console.info(errorMsg)
   throw new Error(errorMsg);
 }
 

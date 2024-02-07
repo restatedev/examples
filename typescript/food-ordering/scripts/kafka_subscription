@@ -1,0 +1,1 @@
+curl localhost:9070/subscriptions -H 'content-type: application/json' -d '{"source":"kafka://my-cluster/driver-updates", "sink":"service://driver-digital-twin/handleDriverLocationUpdateEvent" }'

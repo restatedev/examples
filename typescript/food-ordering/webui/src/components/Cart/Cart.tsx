@@ -5,6 +5,7 @@ import * as S from './style';
 import { publishToKafka, sendRequestToRestate } from 'services/sendToRestate';
 import { useUser } from 'contexts/user-context';
 import { useOrderStatusContext } from '../../contexts/status-context/OrderStatusProvider';
+// @ts-ignore
 import { useState } from 'react';
 import Dropdown from '../Dropdown';
 
@@ -118,8 +119,8 @@ const Cart = () => {
   const handleToggleCart = (isOpen: boolean) => () =>
     isOpen ? closeCart() : openCart();
 
-  return (
-    <S.Container isOpen={isOpen}>
+  // @ts-ignore
+  return (<S.Container isOpen={isOpen}>
       <S.CartButton onClick={handleToggleCart(isOpen)}>
         {isOpen ? (
           <span>X</span>
