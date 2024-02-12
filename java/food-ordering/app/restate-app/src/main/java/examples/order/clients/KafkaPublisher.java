@@ -9,7 +9,7 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.sdk.examples.clients;
+package examples.order.clients;
 
 import java.util.Properties;
 import org.apache.kafka.clients.producer.KafkaProducer;

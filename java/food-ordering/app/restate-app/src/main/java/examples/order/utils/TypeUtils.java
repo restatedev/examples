@@ -9,10 +9,13 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.sdk.examples.types;
+package examples.order.utils;
 
-public enum DriverStatus {
-  IDLE,
-  WAITING_FOR_WORK,
-  DELIVERING
+import examples.order.generated.OrderProto;
+
+public class TypeUtils {
+
+  public static OrderProto.OrderId toOrderIdProto(String id) {
+    return OrderProto.OrderId.newBuilder().setOrderId(id).build();
+  }
 }

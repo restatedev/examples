@@ -9,7 +9,7 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.sdk.examples.clients;
+package examples.order.clients;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

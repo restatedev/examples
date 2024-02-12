@@ -97,12 +97,12 @@ const Cart = () => {
         await publishToKafka(kafkaRecord);
       } else {
         console.info(request);
-        sendRequestToRestate('order.OrderService', 'Create', request);
+        sendRequestToRestate('examples.order.OrderService', 'Create', request);
       }
 
       let done = false;
       while (!done) {
-        const newOrderStatus = await sendRequestToRestate('order.OrderStatusService', 'Get', {
+        const newOrderStatus = await sendRequestToRestate('examples.order.OrderStatusService', 'Get', {
           order_id: user!.user_id,
         });
         console.info(newOrderStatus);

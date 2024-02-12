@@ -9,7 +9,7 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.sdk.examples.types;
+package examples.order.types;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
