@@ -3,10 +3,11 @@
 This directory contains Restate examples using the Java SDK.
 
 ## Starters
-| Language  | Name / Link                                                     |
-|-----------|-----------------------------------------------------------------|
-| Java      | [Hello World HTTP](hello-world-http)                       |
-| Java      | [Hello world on AWS Lambda](hello-world-lambda)             |
+| Language  | Name / Link                                     |
+|-----------|-------------------------------------------------|
+| Java      | [Hello World HTTP](hello-world-http)            |
+| Java      | [Hello world on AWS Lambda](hello-world-lambda) |
+| Java      | [Hello World Workflow](hello-world-workflow)    |
 
 ## Tutorials
 | Language | Name / Link                                                                  |
