@@ -13,6 +13,7 @@ Browse this repository to see how easy distributed applications development beco
 | TypeScript | [Hello world on AWS Lambda + CDK](typescript/hello-world-lambda-cdk) |
 | Java       | [Hello World HTTP](java/hello-world-http)                            |
 | Java       | [Hello world on AWS Lambda](java/hello-world-lambda)                 |
+| Java       | [Hello World Workflow](java/hello-world-workflow)                    |
 | Kotlin     | [Hello World HTTP](kotlin/hello-world-http)                          |
 | Kotlin     | [Hello world on AWS Lambda](kotlin/hello-world-lambda)               |
 | Kotlin     | [Hello world on AWS Lambda + CDK](kotlin/hello-world-lambda-cdk)     |

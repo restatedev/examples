@@ -9,7 +9,7 @@
  * https://github.com/restatedev/examples/
  */
 
- package dev.restate.sdk.examples;
+package dev.restate.sdk.examples;
 
 import dev.restate.sdk.RestateContext;
 import dev.restate.sdk.common.CoreSerdes;
