@@ -9,17 +9,17 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.sdk.examples;
+package examples.order;
 
-import dev.restate.sdk.examples.external.DriverMobileAppSimulator;
+import examples.order.external.DriverMobileAppSimulator;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
 public class AppMain {
   public static void main(String[] args) {
     RestateHttpEndpointBuilder.builder()
-        .withService(new OrderWorkflow())
+        .with(new OrderWorkflow())
+        .withService(new OrderWorkflowSubmitter())
         .withService(new OrderStatusService())
-        .withService(new DeliveryManager())
         .withService(new DriverDeliveryMatcher())
         .withService(new DriverDigitalTwin())
         .withService(new DriverMobileAppSimulator()) // external mobile app on driver's phone

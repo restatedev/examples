@@ -1,15 +1,15 @@
 syntax = "proto3";
 
-package order;
+package examples.order;
 
 import "google/protobuf/empty.proto";
 import "dev/restate/ext.proto";
 import "dev/restate/events.proto";
 
-option java_package = "dev.restate.sdk.examples.generated";
+option java_package = "examples.order.generated";
 option java_outer_classname = "OrderProto";
 
-service OrderWorkflow {
+service OrderWorkflowSubmitter {
   option (dev.restate.ext.service_type) = KEYED;
 
   rpc HandleOrderCreationEvent(KafkaOrderEvent) returns (google.protobuf.Empty);
@@ -20,13 +20,13 @@ message KafkaOrderEvent {
   bytes payload = 2 [(dev.restate.ext.field) = EVENT_PAYLOAD];
 }
 
+// Interface to retrieve status
 service OrderStatusService {
   option (dev.restate.ext.service_type) = KEYED;
 
   rpc Get(OrderId) returns (OrderStatus);
 
-  rpc SetStatus(OrderStatus) returns (google.protobuf.Empty);
-  rpc SetETA(OrderStatus) returns (google.protobuf.Empty);
+  rpc SetETA(NewOrderETA) returns (google.protobuf.Empty);
 }
 
 message OrderId {
@@ -36,6 +36,11 @@ message OrderId {
 message OrderStatus {
   string order_id = 1 [(dev.restate.ext.field) = KEY];
   Status status = 2;
+  int64 eta = 3;
+}
+
+message NewOrderETA {
+  string order_id = 1 [(dev.restate.ext.field) = KEY];
   int64 eta = 3;
 }
 
@@ -50,26 +55,6 @@ enum Status {
   DELIVERED = 7;
   REJECTED = 8;
   CANCELLED = 9;
-}
-
-service DeliveryManager {
-  option (dev.restate.ext.service_type) = KEYED;
-
-  rpc Start(DeliveryRequest) returns (google.protobuf.Empty);
-  rpc NotifyDeliveryPickup(OrderId) returns (google.protobuf.Empty);
-  rpc NotifyDeliveryDelivered(OrderId) returns (google.protobuf.Empty);
-  rpc HandleDriverLocationUpdate(DeliveryLocationUpdate) returns (google.protobuf.Empty);
-}
-
-message DeliveryRequest {
-  string order_id = 1 [(dev.restate.ext.field) = KEY];
-  string restaurant_id = 2;
-  string callback = 3;
-}
-
-message DeliveryLocationUpdate {
-  string order_id = 1 [(dev.restate.ext.field) = KEY];
-  Location location = 2;
 }
 
 message Location {

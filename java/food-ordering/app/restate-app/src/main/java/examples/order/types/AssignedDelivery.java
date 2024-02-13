@@ -9,41 +9,40 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.sdk.examples.types;
+package examples.order.types;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class DeliveryInformation {
+public class AssignedDelivery {
+
+  private final String driverId;
   private final String orderId;
-  private final String callbackId;
   private final String restaurantId;
   private final Location restaurantLocation;
   private final Location customerLocation;
-  private boolean orderPickedUp;
+  private boolean orderPickedUp = false;
 
   @JsonCreator
-  public DeliveryInformation(
+  public AssignedDelivery(
+      @JsonProperty("driverId") String driverId,
       @JsonProperty("orderId") String orderId,
-      @JsonProperty("callbackId") String callbackId,
       @JsonProperty("restaurantId") String restaurantId,
       @JsonProperty("restaurantLocation") Location restaurantLocation,
-      @JsonProperty("customerLocation") Location customerLocation,
-      @JsonProperty("orderPickedUp") boolean orderPickedUp) {
+      @JsonProperty("customerLocation") Location customerLocation) {
+    this.driverId = driverId;
     this.orderId = orderId;
-    this.callbackId = callbackId;
     this.restaurantId = restaurantId;
     this.restaurantLocation = restaurantLocation;
     this.customerLocation = customerLocation;
-    this.orderPickedUp = orderPickedUp;
+  }
+
+  public String getDriverId() {
+    return driverId;
   }
 
   public String getOrderId() {
     return orderId;
-  }
-
-  public String getCallbackId() {
-    return callbackId;
   }
 
   public String getRestaurantId() {
@@ -63,6 +62,6 @@ public class DeliveryInformation {
   }
 
   public void notifyPickup() {
-    this.orderPickedUp = true;
+    orderPickedUp = true;
   }
 }

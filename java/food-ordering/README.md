@@ -61,12 +61,12 @@ Restate has a psql interface to query the state of the system.
 
 If you buy some products via the webUI, you can see how the order workflow is executed by querying the state of the order status service:
 ```shell
-watch -n 1 'psql -h localhost -p 9071 -c "select service, service_key_utf8, key, value_utf8 from state s where s.service='"'"'order.OrderStatusService'"'"';"'
+watch -n 1 'psql -h localhost -p 9071 -c "select service, service_key_utf8, key, value_utf8 from state s where s.service='"'"'examples.order.OrderStatusService'"'"';"'
 ```
 
 Or have a look at the state of all the services, except for the driver simulator:
 ```shell
-watch -n 1 'psql -h localhost -p 9071 -c "select service, service_key_utf8, key, value_utf8 from state s where s.service not in ('"'"'order.DriverMobileAppSimulator'"'"');"'
+watch -n 1 'psql -h localhost -p 9071 -c "select service, service_key_utf8, key, value_utf8 from state s where s.service not in ('"'"'examples.order.DriverMobileAppSimulator'"'"');"'
 ```
 
 Or you can check the state of the ongoing invocations via:
@@ -77,7 +77,7 @@ watch -n 1 'psql -h localhost -p 9071 -c "select service, method, service_key_ut
 ## Exploring the demo
 
 ### The order workflow
-You can find the implementation of each of the services under `app/restate-app/src/main/java/dev/restate/sdk/examples/`.
+You can find the implementation of each of the services under [`app/restate-app/src/main/java/examples/order`](app/restate-app/src/main/java/examples/order).
 The flow of an incoming order is as follows:
 1. When the customer places an order via the web UI (localhost:3000), an order event is published to Kafka.
 2. Restate subscribes to the order topic and triggers the order workflow for each incoming event. This subscription is set up by executing two curl commands, as done in the Docker compose file (`docker-compose.yaml`) by the `runtimesetup` container.

@@ -9,11 +9,11 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.sdk.examples.types;
+package examples.order.types;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import dev.restate.sdk.examples.generated.OrderProto;
+import examples.order.generated.OrderProto;
 
 public class Location {
   private final double lon;

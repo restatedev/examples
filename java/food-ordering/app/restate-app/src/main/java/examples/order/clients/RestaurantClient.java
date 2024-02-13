@@ -9,7 +9,7 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.sdk.examples.clients;
+package examples.order.clients;
 
 import dev.restate.sdk.common.TerminalException;
 import java.io.IOException;

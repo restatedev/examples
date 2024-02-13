@@ -9,19 +9,18 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.sdk.examples.external;
+package examples.order.external;
 
-import static dev.restate.sdk.examples.generated.OrderProto.*;
-
-import dev.restate.sdk.RestateContext;
+import dev.restate.sdk.KeyedContext;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
-import dev.restate.sdk.examples.clients.KafkaPublisher;
-import dev.restate.sdk.examples.generated.DriverDigitalTwinRestate;
-import dev.restate.sdk.examples.generated.DriverMobileAppSimulatorRestate;
-import dev.restate.sdk.examples.types.AssignedDelivery;
-import dev.restate.sdk.examples.types.Location;
-import dev.restate.sdk.examples.utils.GeoUtils;
+import examples.order.clients.KafkaPublisher;
+import examples.order.generated.DriverDigitalTwinRestate;
+import examples.order.generated.DriverMobileAppSimulatorRestate;
+import examples.order.types.AssignedDelivery;
+import examples.order.types.Location;
+import examples.order.utils.GeoUtils;
+import examples.order.generated.OrderProto;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import java.time.Duration;
 import org.apache.logging.log4j.LogManager;
@@ -53,7 +52,7 @@ public class DriverMobileAppSimulator
 
   /** Mimics the driver setting himself to available in the app */
   @Override
-  public void startDriver(RestateContext ctx, DriverId request) throws TerminalException {
+  public void startDriver(KeyedContext ctx, OrderProto.DriverId request) throws TerminalException {
     // If this driver was already created, do nothing
     if (ctx.get(CURRENT_LOCATION).isPresent()) {
       return;
@@ -68,7 +67,7 @@ public class DriverMobileAppSimulator
     // Tell the digital twin of the driver in the food ordering app, that he is available
     DriverDigitalTwinRestate.newClient(ctx)
         .setDriverAvailable(
-            DriverAvailableNotification.newBuilder()
+            OrderProto.DriverAvailableNotification.newBuilder()
                 .setDriverId(request.getDriverId())
                 .setRegion(GeoUtils.DEMO_REGION)
                 .build())
@@ -83,7 +82,7 @@ public class DriverMobileAppSimulator
    * again after a short delay.
    */
   @Override
-  public void pollForWork(RestateContext ctx, DriverId request) throws TerminalException {
+  public void pollForWork(KeyedContext ctx, OrderProto.DriverId request) throws TerminalException {
     var thisDriverSim = DriverMobileAppSimulatorRestate.newClient(ctx);
 
     // Ask the digital twin of the driver in the food ordering app, if he already got a job assigned
@@ -113,7 +112,7 @@ public class DriverMobileAppSimulator
 
   /** Periodically lets the food ordering app know the new location */
   @Override
-  public void move(RestateContext ctx, DriverId request) throws TerminalException {
+  public void move(KeyedContext ctx, OrderProto.DriverId request) throws TerminalException {
     var thisDriverSim = DriverMobileAppSimulatorRestate.newClient(ctx);
     var assignedDelivery =
         ctx.get(ASSIGNED_DELIVERY)
@@ -151,7 +150,7 @@ public class DriverMobileAppSimulator
         DriverDigitalTwinRestate.newClient(ctx)
             .oneWay()
             .setDriverAvailable(
-                DriverAvailableNotification.newBuilder()
+                OrderProto.DriverAvailableNotification.newBuilder()
                     .setDriverId(request.getDriverId())
                     .setRegion(GeoUtils.DEMO_REGION)
                     .build());

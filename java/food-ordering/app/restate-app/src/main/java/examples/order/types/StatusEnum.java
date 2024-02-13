@@ -9,7 +9,7 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.sdk.examples.types;
+package examples.order.types;
 
 public enum StatusEnum {
   NEW(0),
@@ -21,8 +21,7 @@ public enum StatusEnum {
   IN_DELIVERY(6),
   DELIVERED(7),
   REJECTED(8),
-  CANCELLED(9),
-  UNKNOWN(10);
+  CANCELLED(9);
 
   private final int value;
 

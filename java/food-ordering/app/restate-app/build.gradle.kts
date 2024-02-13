@@ -9,13 +9,16 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
 }
 
-val restateVersion = "0.7.0"
+val restateVersion = "0.8.0-SNAPSHOT"
 
 dependencies {
     // Restate SDK
+    annotationProcessor("dev.restate:sdk-api-gen:$restateVersion")
     implementation("dev.restate:sdk-api:$restateVersion")
+    implementation("dev.restate:sdk-workflow-api:$restateVersion")
     implementation("dev.restate:sdk-http-vertx:$restateVersion")
     // To use Jackson to read/write state entries (optional)
     implementation("dev.restate:sdk-serde-jackson:$restateVersion")
@@ -29,7 +32,7 @@ dependencies {
     compileOnly("org.apache.tomcat:annotations-api:6.0.53")
 
     //Kafka
-    implementation("org.apache.kafka:kafka-clients:3.0.0")
+    implementation("org.apache.kafka:kafka-clients:3.6.1")
 
     // Logging (optional)
     implementation("org.apache.logging.log4j:log4j-core:2.20.0")
@@ -63,11 +66,11 @@ protobuf {
 
 // Set main class
 application {
-    mainClass.set("dev.restate.sdk.examples.AppMain")
+    mainClass.set("examples.order.AppMain")
 }
 
 
 jib {
     to.image = "restate-app:0.0.1"
-    container.mainClass  = "dev.restate.sdk.examples.AppMain"
+    container.mainClass  = "examples.order.AppMain"
 }
