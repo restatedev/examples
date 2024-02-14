@@ -9,12 +9,6 @@ import "dev/restate/events.proto";
 option java_package = "examples.order.generated";
 option java_outer_classname = "OrderProto";
 
-service OrderWorkflowSubmitter {
-  option (dev.restate.ext.service_type) = KEYED;
-
-  rpc HandleOrderCreationEvent(KafkaOrderEvent) returns (google.protobuf.Empty);
-}
-
 message KafkaOrderEvent {
   string order_id = 1 [(dev.restate.ext.field) = KEY];
   bytes payload = 2 [(dev.restate.ext.field) = EVENT_PAYLOAD];

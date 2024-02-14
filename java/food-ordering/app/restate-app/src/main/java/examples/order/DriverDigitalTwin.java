@@ -15,14 +15,18 @@ import static examples.order.generated.OrderProto.*;
 
 import com.google.protobuf.Empty;
 import dev.restate.sdk.KeyedContext;
+import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
 import examples.order.generated.DriverDeliveryMatcherRestate;
 import examples.order.generated.DriverDigitalTwinRestate;
+import examples.order.generated.OrderStatusServiceRestate;
 import examples.order.types.AssignedDelivery;
 import examples.order.types.DriverStatus;
 import examples.order.types.Location;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
+import examples.order.types.StatusEnum;
+import examples.order.utils.GeoUtils;
 
 /**
  * Digital twin for the driver. Represents a driver and his status, assigned delivery, and location.
@@ -31,15 +35,10 @@ import dev.restate.sdk.serde.jackson.JacksonSerdes;
  */
 public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwinRestateImplBase {
 
-  // Current status of the driver: idle, waiting for work, or delivering
   private static final StateKey<DriverStatus> DRIVER_STATUS =
       StateKey.of("driver-status", JacksonSerdes.of(DriverStatus.class));
-
-  // Only set if the driver is currently doing a delivery
   private static final StateKey<AssignedDelivery> ASSIGNED_DELIVERY =
       StateKey.of("assigned-delivery", JacksonSerdes.of(AssignedDelivery.class));
-
-  // Current location of the driver
   private static final StateKey<Location> DRIVER_LOCATION =
       StateKey.of("driver-location", JacksonSerdes.of(Location.class));
 
@@ -85,11 +84,7 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
 
     // Notify current location to the delivery service
     ctx.get(DRIVER_LOCATION)
-        .ifPresent(
-            loc ->
-                new OrderWorkflowRestateClient(ctx, request.getOrderId())
-                    .oneWay()
-                    .handleDriverLocationUpdate(loc));
+        .ifPresent(loc -> handleDriverLocationUpdate(ctx, loc));
   }
 
   /**
@@ -150,11 +145,27 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
 
     // Update the location of the delivery, if there is one
     ctx.get(ASSIGNED_DELIVERY)
-        .ifPresent(
-            delivery ->
-                    new OrderWorkflowRestateClient(ctx, delivery.getOrderId())
-                            .oneWay()
-                            .handleDriverLocationUpdate(location));
+        .ifPresent(delivery -> handleDriverLocationUpdate(ctx, location));
+  }
+
+  public void handleDriverLocationUpdate(KeyedContext ctx, Location location)
+          throws TerminalException {
+    var currentDelivery =
+            ctx.get(ASSIGNED_DELIVERY)
+                    .orElseThrow(
+                            () ->
+                                    new TerminalException(
+                                            "Driver is in status DELIVERING but there is no current delivery set."));
+
+    // Parse the new location, and calculate the ETA of the delivery to the customer
+    var eta =
+            currentDelivery.isOrderPickedUp()
+                    ? GeoUtils.calculateEtaMillis(location, currentDelivery.getCustomerLocation())
+                    : GeoUtils.calculateEtaMillis(location, currentDelivery.getRestaurantLocation())
+                    + GeoUtils.calculateEtaMillis(currentDelivery.getRestaurantLocation(), currentDelivery.getCustomerLocation());
+
+    OrderStatusServiceRestate.newClient(ctx).oneWay().setETA(
+            NewOrderETA.newBuilder().setOrderId(currentDelivery.getOrderId()).setEta(eta).build());
   }
 
   /**

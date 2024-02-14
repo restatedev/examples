@@ -2,13 +2,11 @@ import formatPrice from 'utils/formatPrice';
 import CartProducts from './CartProducts';
 import { useCart } from 'contexts/cart-context';
 import * as S from './style';
-import { publishToKafka, sendRequestToRestate } from 'services/sendToRestate';
+import { sendRequestToRestate } from 'services/sendToRestate';
 import { useUser } from 'contexts/user-context';
 import { useOrderStatusContext } from '../../contexts/status-context/OrderStatusProvider';
 import { useState } from 'react';
 import Dropdown from '../Dropdown';
-
-const isKafkaEnabled = process.env.REACT_APP_ENABLE_KAFKA !== 'false';
 
 const Cart = () => {
   const {
@@ -72,18 +70,17 @@ const Cart = () => {
         };
       });
       return {
-        orderId: user!.user_id,
-        restaurantId: details.restaurant_id,
-        products: productsToSend,
-        totalCost: total.totalPrice,
-        deliveryDelay: details.delivery_delay,
+        key: user!.user_id,
+        payload: {
+          orderId: user!.user_id,
+          restaurantId: details.restaurant_id,
+          products: productsToSend,
+          totalCost: total.totalPrice,
+          deliveryDelay: details.delivery_delay,
+        }
       };
     };
 
-    const kafkaRecord = JSON.stringify({
-      key: user!.user_id,
-      value: generateJsonReq(),
-    });
     const request = JSON.stringify(generateJsonReq());
 
     const flow = async () => {
@@ -91,18 +88,12 @@ const Cart = () => {
       const checkedOutStatus = { checked_out: true };
       updateCartDetails({ ...details, ...checkedOutStatus });
 
-      if (isKafkaEnabled) {
-        console.info('Generating Kafka record');
-        console.info(kafkaRecord);
-        await publishToKafka(kafkaRecord);
-      } else {
-        console.info(request);
-        sendRequestToRestate('examples.order.OrderService', 'Create', request);
-      }
+      console.info(request);
+      sendRequestToRestate('examples.order.OrderWorkflowWorkflow', 'Submit', request);
 
       let done = false;
       while (!done) {
-        const newOrderStatus = await sendRequestToRestate('examples.order.OrderStatusService', 'Get', {
+        const newOrderStatus = await sendRequestToRestate('examples.order.OrderWorkflowWorkflowManager', 'Get', {
           order_id: user!.user_id,
         });
         console.info(newOrderStatus);

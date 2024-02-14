@@ -11,6 +11,7 @@
 
 package examples.order;
 
+import dev.restate.sdk.KeyedContext;
 import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.annotation.ServiceType;
 import dev.restate.sdk.annotation.Shared;
@@ -23,21 +24,19 @@ import examples.order.clients.PaymentClient;
 import examples.order.clients.RestaurantClient;
 import examples.order.generated.DriverDeliveryMatcherRestate;
 import examples.order.generated.DriverDigitalTwinRestate;
-import examples.order.generated.OrderProto;
-import examples.order.generated.OrderStatusServiceRestate;
+import static examples.order.generated.OrderProto.*;
 import examples.order.types.DeliveryInformation;
 import examples.order.types.Location;
 import examples.order.types.OrderRequest;
 import examples.order.types.StatusEnum;
 import examples.order.utils.GeoUtils;
-import examples.order.generated.DriverDeliveryMatcherRestate;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import dev.restate.sdk.workflow.DurablePromiseKey;
 import dev.restate.sdk.workflow.WorkflowContext;
 import dev.restate.sdk.workflow.WorkflowSharedContext;
+import org.apache.logging.log4j.core.Core;
 
 import java.time.Duration;
-import java.util.UUID;
 
 /**
  * Order processing workflow Gets called for each Kafka event that is published to the order topic.
@@ -48,7 +47,7 @@ import java.util.UUID;
 public class OrderWorkflow {
 
   public final static StateKey<StatusEnum> STATUS = StateKey.of("status", JacksonSerdes.of(StatusEnum.class));
-  private static final StateKey<DeliveryInformation> DELIVERY_INFO = StateKey.of("delivery-info", JacksonSerdes.of(DeliveryInformation.class));
+  private static final StateKey<String> DRIVER_ID = StateKey.of("driver-id", CoreSerdes.JSON_STRING);
 
   private static final Serde<Location> LOCATION_SERDE = JacksonSerdes.of(Location.class);
 
@@ -62,12 +61,10 @@ public class OrderWorkflow {
   public void run(WorkflowContext ctx, OrderRequest order)
       throws TerminalException {
     String orderId = ctx.workflowKey();
-
-    // 1. Set status
     ctx.set(STATUS, StatusEnum.CREATED);
 
     // 2. Handle payment
-    String token = ctx.sideEffect(CoreSerdes.JSON_STRING, () -> UUID.randomUUID().toString());
+    String token = ctx.random().nextUUID().toString();
     boolean paid =
         ctx.sideEffect(
             CoreSerdes.JSON_BOOLEAN, () -> paymentClnt.charge(orderId, token, order.getTotalCost()));
@@ -76,68 +73,68 @@ public class OrderWorkflow {
       ctx.set(STATUS, StatusEnum.REJECTED);
       return;
     }
-
-    // 3. Schedule preparation
     ctx.set(STATUS, StatusEnum.SCHEDULED);
+
     ctx.sleep(Duration.ofMillis(order.getDeliveryDelay()));
 
     // 4. Trigger preparation
     var preparationAwakeable = ctx.awakeable(CoreSerdes.VOID);
     ctx.sideEffect(() -> restaurant.prepare(orderId, preparationAwakeable.id()));
     ctx.set(STATUS, StatusEnum.IN_PREPARATION);
-
     preparationAwakeable.await();
     ctx.set(STATUS, StatusEnum.SCHEDULING_DELIVERY);
 
+    // 7. Assign the driver and track the delivery
+    var driverId = acquireDriver(ctx, order);
+    ctx.set(DRIVER_ID, driverId);
+    ctx.set(STATUS, StatusEnum.SCHEDULING_DELIVERY);
+    ctx.durablePromise(PICKED_UP_SIGNAL).awaitable().await();
+    ctx.set(STATUS, StatusEnum.IN_DELIVERY);
+    ctx.durablePromise(DELIVERED_SIGNAL).awaitable().await();
+    ctx.set(STATUS, StatusEnum.DELIVERED);
+  }
+
+  private String acquireDriver(WorkflowContext ctx, OrderRequest order){
+    var driverAwakeable = ctx.awakeable(CoreSerdes.JSON_STRING);
+    DriverDeliveryMatcherRestate.newClient(ctx).oneWay()
+            .requestDriverForDelivery(getDeliveryCallback(driverAwakeable.id()));
+
+    ctx.set(STATUS, StatusEnum.WAITING_FOR_DRIVER);
+    var driverId = driverAwakeable.await();
+
+    var deliveryInfo = getDeliveryInfo(ctx, order.getRestaurantId());
+    DriverDigitalTwinRestate.newClient(ctx)
+            .assignDeliveryJob(
+                    getAssignDeliveryRequest(driverId, ctx.workflowKey(), deliveryInfo)
+            ).await();
+    return driverId;
+  }
+
+  private DeliveryInformation getDeliveryInfo(WorkflowContext ctx, String restaurantId){
     var restaurantLocation = ctx.sideEffect(LOCATION_SERDE, GeoUtils::randomLocation);
     var customerLocation = ctx.sideEffect(LOCATION_SERDE, GeoUtils::randomLocation);
-
-    // 5. Store the delivery information in Restate's state store, the UI can query this
-    DeliveryInformation deliveryInfo =
-            new DeliveryInformation(
-                    order.getRestaurantId(),
+    return new DeliveryInformation(
+                    restaurantId,
                     restaurantLocation,
                     customerLocation,
                     false);
-    ctx.set(DELIVERY_INFO, deliveryInfo);
+  }
 
-    // 6. Acquire a driver
-    var driverAwakeable = ctx.awakeable(CoreSerdes.JSON_STRING);
-    DriverDeliveryMatcherRestate.newClient(ctx)
-            .oneWay()
-            .requestDriverForDelivery(
-                    OrderProto.DeliveryCallback.newBuilder()
-                            .setRegion(GeoUtils.DEMO_REGION)
-                            .setDeliveryCallbackId(driverAwakeable.id())
-                            .build());
-    ctx.set(STATUS, StatusEnum.WAITING_FOR_DRIVER);
-    // Wait until the driver pool service has located a driver
-    // This awakeable gets resolved either immediately when there is a pending delivery
-    // or later, when a new delivery comes in.
-    var driverId = driverAwakeable.await();
+  private DeliveryCallback getDeliveryCallback(String driverAwakeableId){
+    return DeliveryCallback.newBuilder()
+            .setRegion(GeoUtils.DEMO_REGION)
+            .setDeliveryCallbackId(driverAwakeableId)
+            .build();
+  }
 
-    // 7. Assign the driver to the job, the driver will notify back the workflow by using the other methods
-    DriverDigitalTwinRestate.newClient(ctx)
-            .assignDeliveryJob(
-                    OrderProto.AssignDeliveryRequest.newBuilder()
-                            .setDriverId(driverId)
-                            .setOrderId(orderId)
-                            .setRestaurantId(order.getRestaurantId())
-                            .setRestaurantLocation(restaurantLocation.toProto())
-                            .setCustomerLocation(customerLocation.toProto())
-                            .build())
-            .await();
-    ctx.set(STATUS, StatusEnum.SCHEDULING_DELIVERY);
-
-    // 8. Wait for the delivery to be picked up by the driver
-    ctx.durablePromise(PICKED_UP_SIGNAL).awaitable().await();
-    ctx.set(STATUS, StatusEnum.IN_DELIVERY);
-
-    // 9. Wait for the delivery to be completed
-    ctx.durablePromise(DELIVERED_SIGNAL).awaitable().await();
-
-    // 10. Delivered, enjoy the food!
-    ctx.set(STATUS, StatusEnum.DELIVERED);
+  private AssignDeliveryRequest getAssignDeliveryRequest(String driverId, String orderId, DeliveryInformation info){
+    return AssignDeliveryRequest.newBuilder()
+            .setDriverId(driverId)
+            .setOrderId(orderId)
+            .setRestaurantId(info.getRestaurantId())
+            .setRestaurantLocation(info.getRestaurantLocation().toProto())
+            .setCustomerLocation(info.getCustomerLocation().toProto())
+            .build();
   }
 
   // --- Methods invoked by DriverDigitalTwin to update the delivery status
@@ -157,32 +154,5 @@ public class OrderWorkflow {
   public void notifyDeliveryDelivered(WorkflowSharedContext ctx)
           throws TerminalException {
     ctx.durablePromiseHandle(DELIVERED_SIGNAL).resolve(null);
-  }
-
-  /**
-   * Updates the location of the order.
-   */
-  @Shared
-  public void handleDriverLocationUpdate(WorkflowSharedContext ctx, Location location)
-          throws TerminalException {
-    // Retrieve the delivery information for this delivery
-    var delivery =
-            ctx.get(DELIVERY_INFO)
-                    .orElseThrow(
-                            () ->
-                                    new TerminalException(
-                                            "We expect the order already has a delivery registered."));
-
-    // Parse the new location, and calculate the ETA of the delivery to the customer
-    var eta =
-            delivery.isOrderPickedUp()
-                    ? GeoUtils.calculateEtaMillis(location, delivery.getCustomerLocation())
-                    : GeoUtils.calculateEtaMillis(location, delivery.getRestaurantLocation())
-                    + GeoUtils.calculateEtaMillis(delivery.getRestaurantLocation(), delivery.getCustomerLocation());
-
-    // Update the ETA of the order
-    OrderStatusServiceRestate.newClient(ctx)
-            .oneWay()
-            .setETA(OrderProto.NewOrderETA.newBuilder().setOrderId(ctx.workflowKey()).setEta(eta).build());
   }
 }

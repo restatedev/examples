@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Restaurant POS system (HTTP server) that receives preparation requests for orders from the
- * OrderService. Once a preparation has been completed, it notifies the OrderService via the
+ * OrderWorkflow. Once a preparation has been completed, it notifies the OrderService via the
  * callback.
  */
 public class RestaurantMain {
@@ -53,7 +53,7 @@ public class RestaurantMain {
     }
   }
 
-  /** Notifies OrderService of the successful preparation */
+  /** Notifies OrderWorkflow of the successful preparation */
   private static void resolveCb(String callbackId, String payload)
       throws IOException, InterruptedException {
     HttpClient httpClient = HttpClient.newHttpClient();

@@ -105,8 +105,7 @@ services:
     entrypoint: ["sh", "-c", "sleep 5 && 
     apk add --no-cache bash jq curl &&
     curl -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://restate_app:9080\"}' &&
-    sleep 3 && 
-    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/orders\", \"sink\":\"service://examples.order.OrderWorkflowSubmitter/HandleOrderCreationEvent\" }' &&
+    sleep 5 && 
     curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/driver-updates\", \"sink\":\"service://examples.order.DriverDigitalTwin/HandleDriverLocationUpdateEvent\" }' &&
     sleep 3 && 
     curl -X POST -H 'content-type: application/json' 'runtime:8080/examples.order.DriverMobileAppSimulator/StartDriver' -d '{\"driver_id\": \"driver-A\"}' && 

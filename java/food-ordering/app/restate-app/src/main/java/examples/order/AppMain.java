@@ -18,7 +18,6 @@ public class AppMain {
   public static void main(String[] args) {
     RestateHttpEndpointBuilder.builder()
         .with(new OrderWorkflow())
-        .withService(new OrderWorkflowSubmitter())
         .withService(new OrderStatusService())
         .withService(new DriverDeliveryMatcher())
         .withService(new DriverDigitalTwin())
