@@ -48,9 +48,11 @@ function terminateOnError<T>(isTerminal: (e: Error) => boolean, fn: () => Promis
   };
 }
 
+class RetryableError extends Error {}
+
 function assertFinalState(state?: athena.QueryExecutionState): athena.QueryExecutionState {
   if (state == undefined || !["SUCCEEDED", "FAILED", "CANCELLED"].includes(state)) {
-    throw new Error(`Non-final state ${state ?? "undefined"}`);
+    throw new RetryableError(`Non-final state ${state ?? "undefined"}`);
   }
   return state;
 }
