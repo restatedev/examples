@@ -29,7 +29,7 @@ axiosRetry(axios, {
 
 const query = async (idempotencyKey: string, query?: string): Promise<AxiosResponse> => {
   const url = "http://localhost:8080/query/query";
-  const timeout = 500; // short .5s request timeout to demonstrate retries
+  const timeout = 3600_000;
   console.log(`Starting query with idempotency key: ${idempotencyKey} ...`);
 
   let response = await axios.post(
