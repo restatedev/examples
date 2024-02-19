@@ -2,3 +2,5 @@
 **/dist
 **/.vscode
 **/.idea
+cdk.out
+.DS_Store
