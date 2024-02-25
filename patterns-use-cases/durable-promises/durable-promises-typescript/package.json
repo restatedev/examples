@@ -1,0 +1,27 @@
+{
+  "name": "@restatedev/examples-basics",
+  "version": "0.7.0",
+  "description": "An examples of the using Restate for Durable Promises",
+  "type": "commonjs",
+  "license": "MIT",
+  "author": "Restate developers",
+  "email": "code@restate.dev",
+  "scripts": {
+    "proto": "cd proto && npx buf mod update && npx buf generate .",
+    "build": "tsc --noEmitOnError",
+    "promisesvc": "ts-node --transpile-only ./src/durable_promises_server.ts",
+    "example": "ts-node --transpile-only ./src/example.ts"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "^0.7.0",
+    "protobufjs": "^7.2.2",
+    "ts-proto": "^1.140.0"
+  },
+  "devDependencies": {
+    "@restatedev/restate": "^0.7.1",
+    "@restatedev/restate-server": "^0.7.1",
+    "@bufbuild/buf": "1.15.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.2"
+  }
+}

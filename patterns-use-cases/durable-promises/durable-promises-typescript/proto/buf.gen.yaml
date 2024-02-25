@@ -1,0 +1,10 @@
+# Config file used by 'buf' when generating code from proto files
+# 'buf' is used by default when calling 'npm run proto'
+# If you use protoc instead, you can ignore (or delete) this file
+version: v1
+managed:
+  enabled: true
+plugins:
+  - plugin: buf.build/community/stephenh-ts-proto:v1.145.0
+    out: ../src/generated/proto
+    opt: outputSchema=true,env=node,esModuleInterop=true,lowerCaseServiceMethods=true,paths=source_relative,useExactTypes=false
