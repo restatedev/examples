@@ -18,7 +18,7 @@ This tutorial takes your through key Restate features by developing an end-to-en
 - Via git clone:
     ```shell
     git clone git@github.com:restatedev/examples.git
-    cd examples/java/tour-of-restate
+    cd examples/tutorials/tour-of-restate-java
     ```
 
 - Via `wget`:

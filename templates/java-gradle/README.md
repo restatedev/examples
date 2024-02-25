@@ -18,7 +18,7 @@ Sample project configuration of a Restate service using the Java interface and H
 - Via git clone:
     ```shell
     git clone git@github.com:restatedev/examples.git
-    cd examples/java/hello-world-http
+    cd examples/templates/java-gradle
     ```
 
 - Via `wget`:

@@ -4,7 +4,37 @@
 
 # Restate examples
 
-Browse this repository to see how easy distributed applications development becomes with Restate.
+A collection of examples that illustrate how Restate code looks and feels.
+
+* **[Use Cases and Patterns](patterns-use-cases):** Small specific use cases, like webhooks,
+  workflows, asynchronous task queuing.
+
+* **[Basics](basics):** Small examples highlighting the basic building blocks, like
+  durable execution or virtual objects.
+
+* **[End-to-End Applications](end-to-end-applications):** Runnable demo applications that consist
+  of many components, e.g., a fodo ordering app, or an e-commerce site.
+  Typically packaged as a docker compose setup.
+
+* **[Tutorials](tutorials):** A step-by-step guide that builds an application and introduces
+  the Restate concepts on the way.
+
+* **[Templates](templates):** Project templates for various languages and build systems.
+  Simple 'Hello World!' examples in a proper build setup that you can use if you want to start
+  a brand new project for a service or lambda that will be invoked through Restate.
+
+### Languages
+
+
+
+Project templates exist additionally in 
+
+
+### Use Case Examples by Language
+
+The majority of the examples currently exist as TypeScript versions, Java versions are catching up.
+Here is a (incomplete) list of examples per language.
+
 
 ## Starters
 | Language   | Name / Link                                                          |
