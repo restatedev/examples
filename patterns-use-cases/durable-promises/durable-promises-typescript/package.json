@@ -7,20 +7,17 @@
   "author": "Restate developers",
   "email": "code@restate.dev",
   "scripts": {
-    "proto": "cd proto && npx buf mod update && npx buf generate .",
     "build": "tsc --noEmitOnError",
-    "promisesvc": "ts-node --transpile-only ./src/durable_promises_server.ts",
-    "example": "ts-node --transpile-only ./src/example.ts"
+    "promisesvc": "ts-node --transpile-only ./src/dp/durable_promises_service.ts",
+    "example": "ts-node --transpile-only ./src/1_durable_promises.ts",
+    "example-parallel": "ts-node --transpile-only ./src/2_promises_parallel.ts"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^0.7.0",
-    "protobufjs": "^7.2.2",
-    "ts-proto": "^1.140.0"
+    "@restatedev/restate-sdk": "^0.7.0"
   },
   "devDependencies": {
     "@restatedev/restate": "^0.7.1",
     "@restatedev/restate-server": "^0.7.1",
-    "@bufbuild/buf": "1.15.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.0.2"
   }
