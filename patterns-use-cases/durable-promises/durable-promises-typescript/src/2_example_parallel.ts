@@ -9,6 +9,8 @@
  * https://github.com/restatedev/sdk-typescript/blob/main/LICENSE
  */
 
+import { spawn } from "child_process";
+
 // The standalone Durable Promises here work like regular futures/promises
 // but are durable cross process and failures.
 
@@ -23,8 +25,6 @@
 //    ensuring stable deterministic values are used during execution.
 //  - Durable executed functions use the regular code and control flow,
 //    no custom DSLs
-
-import { spawn } from "child_process";
 
 const promiseId = process.argv.length > 2 ? process.argv[2] : "my-durable-promise-id";
 const restateUri = process.argv.length > 3 ? process.argv[3] : "http://localhost:8080";
@@ -48,12 +48,11 @@ function executeScript() {
 
 // Main function to execute the script 10 times in parallel
 async function main() {
+    console.log(`Running ${numProcesses} forks of the promise example process...`);
     const promises = [];
-
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < numProcesses; i++) {
         promises.push(executeScript());
     }
-
     await Promise.all(promises);
     console.log("Done.");
 }

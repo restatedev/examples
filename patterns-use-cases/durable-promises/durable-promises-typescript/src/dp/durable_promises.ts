@@ -9,9 +9,6 @@
  * https://github.com/restatedev/sdk-typescript/blob/main/LICENSE
  */
 
-// import * as restate from "@restatedev/restate-sdk";
-// import { durablePromisesApi } from "./durable_promises_service";
-
 export type DurablePromise<T> = {
     get(): Promise<T>,
     peek(): Promise<T | null>,
@@ -21,14 +18,37 @@ export type DurablePromise<T> = {
 
 export function durablePromise<T>(restateUri: string, promiseId: string): DurablePromise<T> {
   return {
-    get: () => makeRestateCall(restateUri, "await", promiseId, {}) as Promise<T>,
-    peek: () => makeRestateCall(restateUri, "peek", promiseId, {}) as Promise<T | null>,
-    resolve: (value: T) => makeRestateCall(restateUri, "resolve", promiseId, { value }) as Promise<T>,
-    reject: (errorMessage: string) => makeRestateCall(restateUri, "reject", promiseId, { errorMessage }) as Promise<T>,
+    get: async () => {
+      const result: ValueOrError<T> = await makeRestateCall(restateUri, "await", promiseId, {});
+      return resultToPromise(result);
+    },
+    peek: async () => {
+      const result: undefined | null | ValueOrError<T> = await makeRestateCall(restateUri, "peek", promiseId, {});
+      return result ? resultToPromise(result): null;
+    },
+    resolve: async (value: T) => {
+      const result: ValueOrError<T> = await makeRestateCall(restateUri, "resolve", promiseId, { value });
+      return resultToPromise(result);
+    },
+    reject: async (errorMessage: string) => {
+      const result: ValueOrError<T> = await makeRestateCall(restateUri, "reject", promiseId, { errorMessage });
+      return resultToPromise(result);
+    }
   } satisfies DurablePromise<T>
 }
 
+export type ValueOrError<T> = {
+  value?: T;
+  error?: string;
+};
+
 // ----------------------------------- utils ----------------------------------
+
+export function resultToPromise<T>(result: ValueOrError<unknown>): Promise<T> {
+  return result.error !== undefined
+    ? Promise.reject(new Error(result.error))
+    : Promise.resolve(result.value as T);
+}
 
 async function makeRestateCall<R, T>(
   restateUri: string,

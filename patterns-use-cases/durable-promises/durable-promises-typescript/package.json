@@ -8,9 +8,9 @@
   "email": "code@restate.dev",
   "scripts": {
     "build": "tsc --noEmitOnError",
-    "promisesvc": "ts-node --transpile-only ./src/dp/durable_promises_service.ts",
-    "example": "ts-node --transpile-only ./src/1_durable_promises.ts",
-    "example-parallel": "ts-node --transpile-only ./src/2_promises_parallel.ts"
+    "promise-svc": "ts-node --transpile-only ./src/dp/durable_promises_service.ts",
+    "example": "ts-node --transpile-only ./src/1_example.ts",
+    "example-parallel": "ts-node --transpile-only ./src/2_example_parallel.ts"
   },
   "dependencies": {
     "@restatedev/restate-sdk": "^0.7.0"

@@ -11,22 +11,25 @@
 
 import * as dp from "./dp/durable_promises"
 
-// The standalone Promises here work like regular futures/promises
-// but are durable cross process and failures.
-
-// ensures code runs to the end, even in the presence of
-// failures. Use this for code that updates different systems and needs to
-// make sure all updates are applied.
+// The Durable Promises work like regular futures/promises, but are
+// durable cross processes and failures.
 //
-//  - Failures are automatically retried, unless they are explicitly labeled
-//    as terminal errors
-//  - Restate journals execution progress. Re-tries use that journal to replay
-//    previous alread completed results, avoiding a repetition of that work and
-//    ensuring stable deterministic values are used during execution.
-//  - Durable executed functions use the regular code and control flow,
-//    no custom DSLs
+//  - A promise is uniquely identified by a name
+//  - An arbitrary number of awaiters (listeners) across different
+//    processes can await the promise. 
+//  - That promise can be resolved/rejected once. If multiple attempts
+//    to resolve or reject are made, only the first will take effect. The
+//    resolution is idempotent.
+//   
+// The promises are a simple but expressive way to signal across distributed
+// processes:
 //
-// ToDo: Can we re-write this example to use 
+//  - Their idempotency on resolution guarantees a stable value
+//  - Listeners can await the value for a long time, and retrieve the value
+//    again after a failure/restart (await again, get the same value).
+//  - The result is durable once set. Completer and listeners do not need to
+//    be alive at the same time.
+//  - It does not matter whether listener or completer comes first. 
 
 const promiseId = process.argv.length > 2 ? process.argv[2] : "my-durable-promise-id";
 const restateUri = process.argv.length > 3 ? process.argv[3] : "http://localhost:8080";

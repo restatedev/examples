@@ -10,7 +10,7 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import { durablePromise as durablePromiseExt, DurablePromise } from "./durable_promises";
+import { DurablePromise, ValueOrError, resultToPromise } from "./durable_promises";
 
 // ----------------------------------------------------------------------------
 //           The implementation of the Durable Promises Service
@@ -21,8 +21,6 @@ import { durablePromise as durablePromiseExt, DurablePromise } from "./durable_p
 //  of such constructs is.
 // ----------------------------------------------------------------------------
 
-const PORT = Number(process.env.PORT || 9087);
-
 /**
  * The Virtual Object implementing Durable Promises.
  * 
@@ -32,47 +30,27 @@ const PORT = Number(process.env.PORT || 9087);
  */
 export const durablePromiseObject = restate.keyedRouter({
 
-  resolve: async <T>(
-    ctx: restate.RpcContext,
-    _promiseName: string,
-    result: T
-  ): Promise<T> => {
+  resolve: <T>(ctx: restate.RpcContext, _id: string, result: T): Promise<ValueOrError<T>> => {
     const completion = { value: result };
-    const promiseResult = await completePromise(ctx, completion);
-    return resultToPromise(promiseResult);
+    return completePromise(ctx, completion);
   },
 
-  reject: async <T>(
-    ctx: restate.RpcContext,
-    _promiseName: string,
-    errorMessage: string
-  ): Promise<T> => {
+  reject: <T>(ctx: restate.RpcContext, _id: string, errorMessage: string): Promise<ValueOrError<T>> => {
     const completion = { error: ensureErrorMessage(errorMessage) };
-    const promiseResult = await completePromise<T>(ctx, completion);
-    return resultToPromise(promiseResult);
+    return completePromise<T>(ctx, completion);
   },
 
-  peek: async <T>(ctx: restate.RpcContext): Promise<T | null> => {
-    const currentValue = await ctx.get<ValueOrError<T>>(PROMISE_RESULT_STATE);
-    return currentValue === null ? Promise.resolve(null) : resultToPromise(currentValue);
+  peek: async <T>(ctx: restate.RpcContext): Promise<ValueOrError<T> | null> => {
+    return ctx.get<ValueOrError<T>>(PROMISE_RESULT_STATE);
   },
 
-  await: async <T>(
-    ctx: restate.RpcContext,
-    _promiseName: string,
-    awakeableId: string
-  ): Promise<T | null> => {
-
+  await: async <T>(ctx: restate.RpcContext, _id: string, awakeableId: string): Promise<ValueOrError<T> | null> => {
     const currVal = await ctx.get<ValueOrError<T>>(PROMISE_RESULT_STATE);
 
     // case (a), we have a value already
     if (currVal !== null) {
-      if (currVal.error !== undefined) {
-        ctx.rejectAwakeable(awakeableId, currVal.error);
-      } else {
-        ctx.resolveAwakeable(awakeableId, currVal.value);
-      }
-      return resultToPromise(currVal);
+      ctx.resolveAwakeable(awakeableId, currVal);
+      return currVal;
     }
 
     // case (b), we remember the awk Id and get when we have a value
@@ -107,23 +85,28 @@ export const durablePromiseObject = restate.keyedRouter({
 export function durablePromise<T>(ctx: restate.RpcContext, promiseId: string): DurablePromise<T> {
   return {
     get: async () => {
-      const awk = ctx.awakeable<T>();
+      const awk = ctx.awakeable<ValueOrError<T>>();
       await ctx.rpc(durablePromisesApi).await(promiseId, awk.id);
-      return awk.promise;
+      const result = await awk.promise;
+      return resultToPromise(result);
     },
-    peek: () => ctx.rpc(durablePromisesApi).peek(promiseId) as Promise<T | null>,
-    resolve: (value?: T) => ctx.rpc(durablePromisesApi).resolve(promiseId, value) as Promise<T>,
-    reject: (errorMsg: string) => ctx.rpc(durablePromisesApi).reject(promiseId, errorMsg) as Promise<T>,
+    peek: async () => {
+      const result = await ctx.rpc(durablePromisesApi).peek(promiseId) as ValueOrError<T> | null;
+      return result === null ? null : resultToPromise(result);
+    },
+    resolve: async (value?: T) => {
+      const result = await ctx.rpc(durablePromisesApi).resolve(promiseId, value) as ValueOrError<T>;
+      return resultToPromise(result);
+    },
+    reject: async (errorMsg: string) => {
+      const result = await ctx.rpc(durablePromisesApi).reject(promiseId, errorMsg) as ValueOrError<T>;
+      return resultToPromise(result);
+    }
   } satisfies DurablePromise<T>;
 }
 
 export const durablePromisePath = "durablePromise"
 export const durablePromiseHttpServerPath = "durablePromiseServer"
-
-type ValueOrError<T> = {
-  value?: T;
-  error?: string;
-};
 
 const PROMISE_RESULT_STATE = "value";
 const PROMISE_LISTENER_STATE = "listeners";
@@ -141,25 +124,25 @@ const durablePromisesApi = { path: durablePromisePath } as restate.ServiceApi<ty
 
 export const durablePromiseServer = restate.router({
 
-  resolve: (ctx: restate.RpcContext, request: { promiseName: string, value: any }): Promise<any> => {
+  resolve: (ctx: restate.RpcContext, request: { promiseName: string, value: any }): Promise<ValueOrError<any>> => {
     const name = ensureName(request?.promiseName);
     return ctx.rpc(durablePromisesApi).resolve(name, request?.value);
   },
 
-  reject: (ctx: restate.RpcContext, request: { promiseName: string, errorMessage: string }): Promise<any> => {
+  reject: (ctx: restate.RpcContext, request: { promiseName: string, errorMessage: string }): Promise<ValueOrError<any>> => {
     const name = ensureName(request?.promiseName);
     const message = ensureErrorMessage(request?.errorMessage);
     return ctx.rpc(durablePromisesApi).reject(name, message);
   },
 
-  peek: (ctx: restate.RpcContext, request: { promiseName: string }): Promise<any> => {
+  peek: (ctx: restate.RpcContext, request: { promiseName: string }): Promise<null | ValueOrError<any>> => {
     const name = ensureName(request?.promiseName);
     return ctx.rpc(durablePromisesApi).peek(name);
   },
 
-  await: async (ctx: restate.RpcContext, request: { promiseName: string }): Promise<any> => {
+  await: async (ctx: restate.RpcContext, request: { promiseName: string }): Promise<ValueOrError<any>> => {
     const name = ensureName(request.promiseName);
-    const awakeable = ctx.awakeable();
+    const awakeable = ctx.awakeable<ValueOrError<any>>();
     await ctx.rpc(durablePromisesApi).await(name, awakeable.id);
     return awakeable.promise;
   },
@@ -175,7 +158,7 @@ if (require.main === module) {
   restate.createServer()
     .bindKeyedRouter(durablePromisePath, durablePromiseObject)
     .bindRouter(durablePromiseHttpServerPath, durablePromiseServer)
-    .listen(PORT);
+    .listen();
 }
 
 // ----------------------------------------------------------------------------
@@ -184,22 +167,16 @@ if (require.main === module) {
 
 function ensureName(promiseName: string | undefined) : string {
   if (promiseName === undefined) {
-      throw new restate.TerminalError("promise name is undefined");
+      throw new restate.TerminalError("'promiseName' is undefined");
   }
   return promiseName;
 }
 
 function ensureErrorMessage(message: string | undefined) : string {
   if (message === undefined) {
-      throw new restate.TerminalError("error message is undefined");
+      throw new restate.TerminalError("'errorMessage' is undefined");
   }
   return message;
-}
-
-function resultToPromise<T>(result: ValueOrError<unknown>): Promise<T> {
-  return result.error !== undefined
-    ? Promise.reject(new Error(result.error))
-    : Promise.resolve(result.value as T);
 }
 
 async function completePromise<T>(
@@ -217,12 +194,7 @@ async function completePromise<T>(
 
   //  notify awaiting awakeables
   const listeners = (await ctx.get<string[]>(PROMISE_LISTENER_STATE)) ?? [];
-  if (completion.error !== undefined) {
-    const msg = completion.error;
-    listeners.forEach((awkId: string) => ctx.rejectAwakeable(awkId, msg))
-  } else {
-    listeners.forEach((awkId: string) => ctx.resolveAwakeable(awkId, completion.value))
-  }
+  listeners.forEach((awkId: string) => ctx.resolveAwakeable(awkId, completion))
   ctx.clear(PROMISE_LISTENER_STATE);
   return completion;
 }
