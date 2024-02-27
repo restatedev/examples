@@ -1,0 +1,22 @@
+{
+  "name": "cloudflare-worker",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev-http1": "wrangler dev --port 8786",
+    "dev-http2": "nghttpx --frontend '0.0.0.0,8787;no-tls' -b127.0.0.1,8786",
+    "dev": "concurrently npm:dev-http1 npm:dev-http2",
+    "start": "wrangler dev"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240222.0",
+    "esbuild": "^0.20.1",
+    "typescript": "^5.0.4",
+    "wrangler": "^3.0.0",
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "0.7.3-worker"
+  }
+}
