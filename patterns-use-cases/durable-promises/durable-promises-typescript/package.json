@@ -8,12 +8,13 @@
   "email": "code@restate.dev",
   "scripts": {
     "build": "tsc --noEmitOnError",
-    "promise-svc": "ts-node --transpile-only ./src/dp/durable_promises_service.ts",
-    "example": "ts-node --transpile-only ./src/1_example.ts",
-    "example-parallel": "ts-node --transpile-only ./src/2_example_parallel.ts"
+    "promises": "ts-node --transpile-only ./src/dp/runner.ts 9080",
+    "example1": "ts-node --transpile-only ./src/1_example.ts",
+    "example2": "ts-node --transpile-only ./src/2_example_process.ts",
+    "example3": "ts-node --transpile-only ./src/3_example_parallel_processes.ts"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^0.7.0"
+    "@restatedev/restate-sdk": "dev"
   },
   "devDependencies": {
     "@restatedev/restate": "^0.7.1",

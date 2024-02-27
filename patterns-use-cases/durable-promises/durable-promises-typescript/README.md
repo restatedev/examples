@@ -20,32 +20,30 @@ processes:
   be alive at the same time.
 * It does not matter whether listener or completer comes first. 
 
-### Overview
+**Using promises from TypeScript**
 
-The Durable Promises are a simple service implemented in two files:
+```typescript
+const promiseId = "my-durable-promise-id";
+const restateUri = "restate:8080";
 
-* The [durable_promises_service.ts](src/dp/durable_promises_service.ts) file implements
-  the service that backs the durable promise logic. It is primarily one state-backing
-  Restate Virtual Object.
-* [durable_promises.ts](src/dp/durable_promises.ts) has the interfaces for the typed
-  TypeScript promise API that uses the Durable Service.
+// get a reference to a durable promise
+const durablePromise = dp.durablePromise<string>(restateUri, promiseId);
 
-* The [simple example](src/1_example.ts) is a standalone process that uses a durable promise.
-* The [parallel example](src/2_example_parallel.ts) runs the above example in multiple forks
-  to illustrate concurrent use of the durable promises across processes.
+// check the promise without blocking
+const peeked = await durablePromise.peek();
 
-### Run the example
+// awaiting the result
+const resultProm = await durablePromise.get();
 
-Launch the Durable Promises Server
-* Install the dependencies: `npm install`
-* Start Restate in one shell: `npx restate-server` (or run via Docker or native binary)
-* Start the Durable Promises implementation in another shell: `npm run promise-svc`
-* Register Durable Promises service: `npx restate -y dep reg "localhost:9080"`
+// completing the promise. if we are the first to complete, the actual result
+// will be our completion value
+const actualResult = await durablePromise.resolve("This promise will notify everyone");
 
-You can now await and resolve promises from different processes at different times.
-With via simple HTTP calls or a TypeScript API.
+// Likewise for rejections
+const actualResult2 = await durablePromise.reject("Oh dear, rejected");
+```
 
-**HTTP / curl:**
+**Using promises via HTTP/curl**
 
 * **peek:** `curl localhost:8080/durablePromiseServer/peek -H 'content-type: application/json' -d '{ "request": { "promiseName": "prom-1" } }'`
 
@@ -56,13 +54,34 @@ With via simple HTTP calls or a TypeScript API.
 * **reject:** `curl localhost:8080/durablePromiseServer/reject -H 'content-type: application/json' -d '{ "request": { "promiseName": "prom-1", "errorMessage": "help!" } }'`
 
 
-**TypeScript/JavaScript Promise API**
+### Implementation
 
-The example programs illustrate how to use the durable promises from TypeScript/JavaScript:
+The Durable Promises are a simple application implemented on top of Restate, making
+use of Restate's Virtual Objects to consistently manage state, and of the Durable
+Execution to allow awaiters (and their HTTP calls) to efficiently wait (and suspend
+while waiting).
 
-`npm run example [promise-id] [restateUri]` instantiates a promise with the given id (or
-a default id) and randomly either awaits or resolves it. Start multiple processes to see
-how one resolution completes all listeners.
+* The [durable_promises_service.ts](src/dp/durable_promises_service.ts) file implements
+  the service that backs the durable promise logic. It is primarily one state-backing
+  Restate Virtual Object.
+* [durable_promises.ts](src/dp/durable_promises.ts) has the interfaces for the typed
+  TypeScript promise API that uses the Durable Service.
 
-`npm run example-parallel [promise-id] [restateUri] [numParallel]` runs the above example in
-parallel (default 10 times) to see the promises across processes in action.
+You can even use this simple implementation and add it to your application or infra,
+if you want.
+
+### Running
+
+* Install the dependencies: `npm install`
+* Start Restate in one shell: `npx restate-server` (or run via Docker or native binary)
+* Start the Durable Promises implementation in another shell: `npm run promises`
+* Register Durable Promises service: `npx restate -y dep reg "localhost:9080" --force`
+
+_Note: the '--force' flag here is to circumvent all checks relating to graceful upgrades,
+because this here is only an example/playground, not a production setup._
+
+You can now await and resolve promises from different processes at different times.
+With via simple HTTP calls or a TypeScript API.
+
+You can run the examples via `npm run example1`, `npm run example2`, `npm run example3`,
+optionally passing `[promise-id] [restateUri]` as parameters.

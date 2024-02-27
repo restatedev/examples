@@ -26,13 +26,13 @@ import { spawn } from "child_process";
 //  - Durable executed functions use the regular code and control flow,
 //    no custom DSLs
 
-const promiseId = process.argv.length > 2 ? process.argv[2] : "my-durable-promise-id";
+const promiseId = process.argv.length > 2 ? process.argv[2] : "my-example-3-id";
 const restateUri = process.argv.length > 3 ? process.argv[3] : "http://localhost:8080";
 const numProcesses = process.argv.length > 4 ? Number(process.argv[4]) : 10;
 
 // Function to execute an external script with the same stdout and stderr as the parent
 function executeScript() {
-    const args = ["run", "example", promiseId, restateUri];
+    const args = ["run", "example2", promiseId, restateUri];
     const child = spawn("npm", args, { stdio: "inherit" });
 
     return new Promise<void>((resolve, reject) => {

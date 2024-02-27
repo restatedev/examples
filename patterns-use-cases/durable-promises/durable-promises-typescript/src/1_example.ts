@@ -31,34 +31,32 @@ import * as dp from "./dp/durable_promises"
 //    be alive at the same time.
 //  - It does not matter whether listener or completer comes first. 
 
-const promiseId = process.argv.length > 2 ? process.argv[2] : "my-durable-promise-id";
-const restateUri = process.argv.length > 3 ? process.argv[3] : "http://localhost:8080";
-const pid = process.pid;
+const promiseId = "my-durable-promise-id";
+const restateUri = "http://localhost:8080";
 
 async function run() {
     // get a reference to a durable promise
     const durablePromise = dp.durablePromise<string>(restateUri, promiseId);
 
-    // determine whether we'll be a reader or writer to the promise
-    const resolve = Math.random() < 0.3;
-    console.log(`${pid} will ${resolve ? "RESOLVE" : "AWAIT"} the promise`);
-
     // check the promise without blocking
-    const peeked = await durablePromise.peek()
-    console.log(`${pid} : Peek '${promiseId}' = '${peeked}'`);
+    const peeked = await durablePromise.peek();
+    console.log("Peeked value: " + peeked);
 
-    // resolve or listen, depending on our role
-    if (resolve) {
-        const resolveValue = `Completed by ${pid}`;
-        console.log(`${pid} : Resolving '${promiseId}' to '${resolveValue}'`);
-        const result = await durablePromise.resolve(resolveValue);
-        console.log(`${pid} : '${promiseId}' actually resolved to '${result}'`);
-    } else {
-        console.log(`${pid} : Awaiting '${promiseId}'...`);
-        const result = await durablePromise.get()
-        console.log(`${pid} : Got result for '${promiseId}' = '${result}'`);
-    }
+    // awaiting the result
+    const resultProm = durablePromise.get();
+    resultProm
+        .then((val) => console.log("Result value: " + val))
+        .catch(console.error);
+
+    // completing the promise. if we are the first to complete, the actual result
+    // will be our completion value
+    const actualResult = await durablePromise.resolve("This promise will notify everyone");
+    console.log("Actual result after completing: " + actualResult);
+
+    // this will never make it, because the promise is already completed
+    const actualResult2 = await durablePromise.reject("Oh dear, rejected");
+    console.log("Actual result after rejection: " + actualResult2);
 }
 
 run()
-  .catch((err) => console.error(err?.message));
+    .catch((err) => console.error(err?.message));

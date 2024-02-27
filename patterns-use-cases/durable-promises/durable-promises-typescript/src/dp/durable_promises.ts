@@ -9,15 +9,44 @@
  * https://github.com/restatedev/sdk-typescript/blob/main/LICENSE
  */
 
+// ----------------------------------------------------------------------------
+//               Interfaces and Types for the Durable Promises 
+// ----------------------------------------------------------------------------
+
+/**
+ * The core durable promise type.
+ */
 export type DurablePromise<T> = {
+    /** The ID of the durable promise. */
+    id(): string,
+
+    /** A JS promises that represents the durable promise.
+     * Will complete when the durable promise completes */
     get(): Promise<T>,
+
+    /** A JS promises that represents the current value, and return 'null'
+     * if the durable promise is not yet complete. */
     peek(): Promise<T | null>,
+
+    /** Resolves the durable promise. The returned promise resolves to the
+     * actual value of the promise, which can be different if the promise was
+     * completed before by some other request. */
     resolve(value?: T): Promise<T>,
+
+    /** Rejects the durable promise with an error message (not an actual Error, due
+     * to the footguns in serializing Errors across processes).
+     * The returned promise resolves to the actual value of the promise, which can
+     * be different if the promise was completed before by some other request. */
     reject(errorMsg: string): Promise<T>,
 }
 
+/**
+ * Creates a durable promise with the given name. The promise is stored/tracked by
+ * the Restate instance at the given URI.
+ */
 export function durablePromise<T>(restateUri: string, promiseId: string): DurablePromise<T> {
   return {
+    id: () => promiseId,
     get: async () => {
       const result: ValueOrError<T> = await makeRestateCall(restateUri, "await", promiseId, {});
       return resultToPromise(result);
@@ -37,6 +66,9 @@ export function durablePromise<T>(restateUri: string, promiseId: string): Durabl
   } satisfies DurablePromise<T>
 }
 
+/**
+ * Internal type to represent a result.
+ */
 export type ValueOrError<T> = {
   value?: T;
   error?: string;
@@ -60,6 +92,10 @@ async function makeRestateCall<R, T>(
   checkParameter("method", method);
   checkParameter("promiseName", promiseName);
 
+  if (!(restateUri.startsWith("http://") || restateUri.startsWith("https://"))) {
+    throw new Error("Invalid Restate URI: You need a protocol prefix ('http://' or 'https://')");
+  }
+
   const url = `${restateUri}/durablePromiseServer/${method}`;
   const data = {
     request: {
@@ -75,15 +111,20 @@ async function makeRestateCall<R, T>(
     throw new Error("Cannot encode request: " + err, { cause: err });
   }
 
-  // console.debug(`Making call to Restate at ${url}`);
-
-  const httpResponse = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body,
-  });
+  let httpResponse;
+  try {
+      httpResponse = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body,
+    });
+  } catch (err: any) {
+    throw new Error(
+      `Could not contact Restate server at ${restateUri}: ${err.message}`,
+      { cause: err })
+  }
 
   const responseText = await httpResponse.text();
   if (!httpResponse.ok) {
