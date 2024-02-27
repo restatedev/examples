@@ -43,8 +43,6 @@ async function applyRoleUpdate(ctx: restate.RpcContext, update: UpdateRequest) {
   for (const permission of permissons) {
      await ctx.sideEffect(() => applyPermission(userId, permission));
   }
-
-  return true;
 }
 
 // Add this function to the application:
@@ -52,12 +50,31 @@ async function applyRoleUpdate(ctx: restate.RpcContext, update: UpdateRequest) {
 // (a) Add it to an application task, process, HTTP server, RPC handler, ...
 //    -> embedded function
 
+console.log("HELLO")
+
+const testPayload: UpdateRequest = {
+  userId: "Sam Beckett",
+  role: { roleKey: "content-manager", roleDescription: "Add/remove documents" },
+  permissons : [
+    { permissionKey: "add", setting: "allow" },
+    { permissionKey: "remove", setting: "allow" },
+    { permissionKey: "share", setting: "block" }
+  ]
+}
+
+const result = restate.connection("http://127.0.0.1:8080").invoke("test-id", testPayload, applyRoleUpdate)
+
+console.log("connected")
+
+result
+  .then(() =>console.log("DONE"))
+  .catch(console.error);
 
 // (b) Expose it as its own HTTP request handler through Restate
 
-restate.createServer()
-  .bindRouter("roleUpdate", restate.router({ applyRoleUpdate }))
-  .listen(9080);
+// restate.createServer()
+//   .bindRouter("roleUpdate", restate.router({ applyRoleUpdate }))
+//   .listen(9080);
 
 //
 // See README for details on how to start and connect Restate server.

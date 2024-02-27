@@ -95,11 +95,11 @@ restate.createServer()
 // the log of the NodeJs process that the requests queue per object key and safely execute
 // unaffected by crashes and recoveries.
 /*
-curl localhost:8080/resource/setUp  -H 'content-type: application/json' -d '{ "key": "A" }' &
-curl localhost:8080/resource/tearDown  -H 'content-type: application/json' -d '{ "key": "A" }' &
-curl localhost:8080/resource/setUp  -H 'content-type: application/json' -d '{ "key": "B" }' &
-curl localhost:8080/resource/setUp  -H 'content-type: application/json' -d '{ "key": "B" }' &
-curl localhost:8080/resource/tearDown  -H 'content-type: application/json' -d '{ "key": "B" }' &
+curl localhost:8080/resource/setUp    -H 'content-type: application/json' -d '{ "key": "A" }' &
+curl localhost:8080/resource/tearDown -H 'content-type: application/json' -d '{ "key": "A" }' &
+curl localhost:8080/resource/setUp    -H 'content-type: application/json' -d '{ "key": "B" }' &
+curl localhost:8080/resource/setUp    -H 'content-type: application/json' -d '{ "key": "B" }' &
+curl localhost:8080/resource/tearDown -H 'content-type: application/json' -d '{ "key": "B" }' &
 for job in `jobs -p`; do wait $job; done
 ;
 */
