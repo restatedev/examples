@@ -14,7 +14,7 @@ import * as stableDiffusionGenerator from "./stable_diffusion_generator";
 import * as stableDiffusionTransformer from "./stable_diffusion_transformer";
 
 restate
-    .createServer()
+    .endpoint()
     .bindRouter(stableDiffusionGenerator.service.path, stableDiffusionGenerator.router)
     .bindRouter(stableDiffusionTransformer.service.path, stableDiffusionTransformer.router)
     .listen(9082);

@@ -17,7 +17,7 @@ import * as fs from "fs";
 type StableDiffusionParams = { prompt: string, steps?: number }
 
 export const router = restate.router({
-    run: async (ctx: restate.RpcContext, wf: WorkflowStep) => {
+    run: async (ctx: restate.Context, wf: WorkflowStep) => {
         const stableDiffusionParams = wf.parameters as StableDiffusionParams;
 
         console.info("Generating image with stable diffusion with parameters: " + JSON.stringify(stableDiffusionParams))
@@ -29,7 +29,7 @@ export const router = restate.router({
     }
 })
 
-async function generateStableDiffusionImg(ctx: restate.RpcContext, imgOutputPath: string, params: StableDiffusionParams) {
+async function generateStableDiffusionImg(ctx: restate.Context, imgOutputPath: string, params: StableDiffusionParams) {
     const awakeable = ctx.awakeable<string>();
 
     await ctx.sideEffect(async () => {

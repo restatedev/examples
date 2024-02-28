@@ -17,7 +17,7 @@ import { workflowStepRegistry } from "./workflow_step_registry";
 import fs from 'fs';
 
 export const router = restate.router({
-    execute: async (ctx: restate.RpcContext, jsonWf: string) => {
+    execute: async (ctx: restate.Context, jsonWf: string) => {
         const wfDefinition = asValidatedWorkflowDefinition(jsonWf);
 
         // Generate a stable image storage path and add it to the workflow definition
@@ -102,7 +102,7 @@ function addImgPathToSteps(wfDefinition: WorkflowDefinition, imgName: string) {
     return enrichedWfDefinition;
 }
 
-function executeWorkflowStep(ctx: restate.RpcContext, step: WorkflowStep) {
+function executeWorkflowStep(ctx: restate.Context, step: WorkflowStep) {
     const servicePath = workflowStepRegistry.get(step.service)!;
     return ctx.rpc(servicePath.api).run(step);
 }

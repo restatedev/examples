@@ -18,7 +18,7 @@ import Jimp from "jimp";
 type StableDiffusionParams = { prompt: string, steps?: number }
 
 export const router = restate.router({
-    run: async (ctx: restate.RpcContext, wf: WorkflowStep) => {
+    run: async (ctx: restate.Context, wf: WorkflowStep) => {
         const prompt = wf.parameters as { prompt: string };
         const image = await Jimp.read(wf.imgInputPath!)
         const base64EncodedImg = (await image.getBufferAsync(Jimp.MIME_PNG)).toString('base64')
@@ -33,7 +33,7 @@ export const router = restate.router({
     }
 })
 
-async function transformImgWithStableDiffusion(ctx: restate.RpcContext, imgOutputPath: string, params: StableDiffusionParams) {
+async function transformImgWithStableDiffusion(ctx: restate.Context, imgOutputPath: string, params: StableDiffusionParams) {
     const awakeable = ctx.awakeable<string>();
 
     await ctx.sideEffect(async () => {

@@ -16,7 +16,7 @@ import {TerminalError} from "@restatedev/restate-sdk";
 
 
 export const router = restate.router({
-    run: async (ctx: restate.RpcContext, wfStep: WorkflowStep) => {
+    run: async (ctx: restate.Context, wfStep: WorkflowStep) => {
         const blurParams = wfStep.parameters as { blur: number };
         console.info("Blurring image with parameters: " + JSON.stringify(blurParams))
 

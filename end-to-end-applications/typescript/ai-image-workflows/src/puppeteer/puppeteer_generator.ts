@@ -16,7 +16,7 @@ import { WorkflowStep } from "../types/types";
 type PuppeteerParams = { url: string, viewport?: { width?: number, height?: number } }
 
 export const router = restate.router({
-    run: async (ctx: restate.RpcContext, wf: WorkflowStep) => {
+    run: async (ctx: restate.Context, wf: WorkflowStep) => {
         const puppeteerParams = wf.parameters as PuppeteerParams;
 
         console.info("Taking screenshot of website with parameters: " + JSON.stringify(puppeteerParams))
@@ -28,7 +28,7 @@ export const router = restate.router({
     }
 })
 
-async function takeWebsiteScreenshot(ctx: restate.RpcContext, imgOutputPath: string, params: PuppeteerParams) {
+async function takeWebsiteScreenshot(ctx: restate.Context, imgOutputPath: string, params: PuppeteerParams) {
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.setViewport({ width: params.viewport?.width ?? 1388, height: params.viewport?.height ?? 800 });

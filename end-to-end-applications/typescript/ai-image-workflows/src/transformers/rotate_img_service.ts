@@ -15,7 +15,7 @@ import Jimp from "jimp";
 import {TerminalError} from "@restatedev/restate-sdk";
 
 export const router = restate.router({
-    run: async (ctx: restate.RpcContext, wfStep: WorkflowStep) => {
+    run: async (ctx: restate.Context, wfStep: WorkflowStep) => {
         const rotateParams = wfStep.parameters as { angle: number };
         console.info("Rotating image with parameters: " + JSON.stringify(rotateParams))
 

@@ -13,12 +13,12 @@ import * as restate from "@restatedev/restate-sdk";
 import {WorfklowStatus} from "../types/types";
 
 export const router = restate.keyedRouter({
-    get: async (ctx: restate.RpcContext, id: string) => {
+    get: async (ctx: restate.KeyedContext, id: string) => {
         const status = await ctx.get<WorfklowStatus>("status") ?? "{}";
         return status;
     },
 
-    update: async (ctx: restate.RpcContext, id: string, newStatus: WorfklowStatus) => {
+    update: async (ctx: restate.KeyedContext, id: string, newStatus: WorfklowStatus) => {
         ctx.set("status", newStatus);
     }
 })
