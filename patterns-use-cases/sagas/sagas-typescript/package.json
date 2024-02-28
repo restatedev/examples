@@ -1,15 +1,13 @@
 {
-  "name": "restate-pattern-collection",
-  "version": "0.0.1",
-  "description": "A collection of useful patterns for distributed applications with Restate (https://github.com/restatedev/)",
+  "name": "@restatedev/example-pattern-sagas",
+  "version": "0.8.0",
+  "description": "A Restate example showing the SAGAs pattern for workflows",
   "type": "commonjs",
   "scripts": {
-    "verify": "npm run build",
     "build": "tsc --noEmitOnError"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^0.7.0",
-    "node-fetch": "3.3.2"
+    "@restatedev/restate-sdk": "dev"
   },
   "devDependencies": {
     "typescript": "^5.0.2"

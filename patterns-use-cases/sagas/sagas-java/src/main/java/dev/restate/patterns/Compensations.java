@@ -24,29 +24,23 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
 
-/**
- * -------------------------------------- Compensations --------------------------------------
- * Restate guarantees that your invocations are run to completion no matter what happens. However,
- * in case you want your services to be able to respond with exceptions as part of the normal
- * control flow (i.e. denoting a negative outcome) you can let the callee throw a
- * `TerminalException`. If the caller has completed previous steps before receiving the
- * `TerminalException`, it will have to undo those steps in order to leave the system in a
- * consistent state. The way to undo steps is by registering compensations and running them for all
- * completed steps. With Restate, this can be naturally expressed as part of the service code.
- * Moreover, Restate runs the compensations with the same guarantees as the service code, i.e. it
- * executes them durably until they complete, which guarantees that the system will be left in a
- * consistent state.
- *
- * <p>The very same mechanism of undoing completed steps via compensations is also needed if you
- * want to gracefully cancel an invocation, i.e. because it is no longer needed or stuck, and leave
- * the system in a consistent state. The way a graceful cancellation manifests is by throwing a
- * `TerminalException` at the next Restate API call. In fact, Restate starts cancelling your
- * invocation call tree starting with the leaf invocations first and then propagating the
- * cancellation error up. Given that your service code is properly instrumented with compensations,
- * you know that an invocation which completed with a `TerminalException` has not made any changes
- * to the system and the caller only needs to undo the steps that have been completed successfully
- * before.
- */
+//
+// SAGAs / Compensations
+//
+// An example of a trip reservation workflow, using the SAGAs pattern to
+// undo previous steps in case of an error.
+//
+// Durable Execution's guarantee to run code to the end in the presence
+// of failures, and to deterministically recover previous steps from the
+// journal, makes SAGAs easy.
+// Every step pushes a compensation action (an undo operation) to a stack.
+// in the case of an error, those operations are run.
+//
+// The main requirement is that steps are implemented as journalled
+// operations, like `ctx.sideEffect()` or RPC calls/messages executed
+// through the Restate Context.
+//
+
 public class Compensations {
 
   /**
