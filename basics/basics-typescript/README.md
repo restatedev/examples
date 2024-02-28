@@ -24,15 +24,9 @@ about how they work and how they can be run.
   through durable promises. The example is a user-signup flow that takes multiple
   operations, including verifying the email address. 
 
-* **[Virtual Objects (state)](src/4_virtual_objects_state.ts):** Stateful objects with
-  identities and methods that share durable consistent state.
-  The example is a stateful greeter service that remembers how often each person said
-  hello. _Stateful serverless_ in a nutshell.
-  
-* **[Virtual Objects (concurrency)](src/5_virtual_objects_concurrency.ts):**
-  Concurrency and queueing of method calls on Virtual Objects. The example uses the
-  single-writer-per-object semantics to build a state machine that ensures no
-  concurrent conflicting actions can happen.
+* **[Virtual Objects](src/4_virtual_objects.ts):** Stateful serverless objects
+  to manage durable consistent state and state-manipulating logic.
+
 
 
 ### Running the examples
@@ -43,17 +37,11 @@ about how they work and how they can be run.
 
 3. Start the relevant example, i.e., `npm run example-1` for the first example.
 
-4. If the example is deployed as a service or endpoint (rather than a local function), register
-   that endpoint at Restate server by calling `npx restate -y deployment register --force "localhost:9080"`
-   from a separate terminal.
+4. Register the example at Restate server by calling
+   `npx restate -y deployment register --force "localhost:9080"`.
 
-   If the example is implemented as a local function, this step  not necessary.
-
-   _Note: the '--force' flag here is to let the new example's deployment override the previous example's._
-   _That's fine here, because it is only a playground, not a production setup._
-
+   _Note: the '--force' flag here is to circumvent all checks relating to graceful upgrades, because it is only a playground, not a production setup._
 
 5. Check the comments in the example for how to interact with the example.
 
-**NOTE:** When you get an error of the type _'{"code":"not_found","message":"Service 'greeter' not found. ...}'_,
-then you forgot step (4) for that example.
+**NOTE:** When you get an error of the type `{"code":"not_found","message":"Service 'greeter' not found. ...}`, then you forgot step (4) for that example.

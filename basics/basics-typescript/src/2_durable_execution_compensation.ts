@@ -10,7 +10,8 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import { maybeCrash, applicationError } from "./utils/failures";
+import { UpdateRequest, UserRole, Permission} from "./utils/example_stubs";
+import { getCurrentRole, tryApplyUserRole, tryApplyPermission} from "./utils/example_stubs";
 
 // Durable execution ensures code runs to the end, even in the presence of
 // failures. That allows developers to implement error handling with common
@@ -22,21 +23,21 @@ import { maybeCrash, applicationError } from "./utils/failures";
 //    the previous values to restore
 //
 
-async function applyRoleUpdate(ctx: restate.RpcContext, update: UpdateRequest) {
+async function applyRoleUpdate(ctx: restate.Context, update: UpdateRequest) {
   // parameters are durable across retries
   const { userId, role, permissons } = update;
 
   // regular failures are re-tries, TerminalErrors are propagated
   // nothing applied so far, so we propagate the error directly
   const previousRole = await ctx.sideEffect(() => getCurrentRole(userId));
-  await ctx.sideEffect(() => applyUserRole(userId, role));
+  await ctx.sideEffect(() => tryApplyUserRole(userId, role));
 
   // apply all permissions in order
   // we collect the previous permission settings to reset if the process fails
   const previousPermissions: Permission[] = []
   for (const permission of permissons) {
     try {
-      const previous = await ctx.sideEffect(() => applyPermission(userId, permission));
+      const previous = await ctx.sideEffect(() => tryApplyPermission(userId, permission));
       previousPermissions.push(previous); // remember the previous setting
     } catch (err) {
       if (err instanceof restate.TerminalError) {
@@ -47,29 +48,29 @@ async function applyRoleUpdate(ctx: restate.RpcContext, update: UpdateRequest) {
   }
 }
 
-async function rollback(ctx: restate.RpcContext, userId: string, role: UserRole, permissions: Permission[]) {
-  console.log(">>> Rolling back changes.");
+async function rollback(ctx: restate.Context, userId: string, role: UserRole, permissions: Permission[]) {
+  console.log(">>> !!! ROLLING BACK CHANGES !!! <<<");
   for (const prev of permissions.reverse()) {
-    await ctx.sideEffect(() => applyPermission(userId, prev));
+    await ctx.sideEffect(() => tryApplyPermission(userId, prev));
   }
-  await ctx.sideEffect(() => applyUserRole(userId, role));
+  await ctx.sideEffect(() => tryApplyUserRole(userId, role));
 }
 
-// Add this function to the application:
 
-// (a) Add it to an application task, process, HTTP server, RPC handler, ...
-//    -> embedded function
+// ---------------------------- deploying / running ---------------------------
 
-
-// (b) Expose it as its own HTTP request handler through Restate
-
-
-restate.createServer()
+const serve = restate
+  .endpoint()
   .bindRouter("roleUpdate", restate.router({ applyRoleUpdate }))
-  .listen(9080);
+
+serve.listen(9080);
+// or serve.lambdaHandler();
+// or serve.http2Handler();
+// or ...
+
 
 //
-// See README for details on how to start and connect Restate server.
+// See README for details on how to start and connect Restate.
 //
 // When invoking this function (see below for sample request), you will see that
 // all role/permission changes are attempted. Upon an unrecoverable error (like a
@@ -95,58 +96,3 @@ curl localhost:8080/roleUpdate/applyRoleUpdate -H 'content-type: application/jso
   }
 }'
 */
-
-// ---------------------------------------------------------------------------
-//                           stubs for this example
-// ---------------------------------------------------------------------------
-
-type UpdateRequest = {
-  userId: string,
-  role: UserRole,
-  permissons: Permission[]
-}
-
-type UserRole = {
-  roleKey: string,
-  roleDescription: string
-}
-
-type Permission = {
-  permissionKey: string,
-  setting: string
-}
-
-/*
- * This function would typically call the service or API to record the new user role.
- * For the sake of this example, we sometimes fail when applying an advanced role
- * and otherwise return success.
- */
-async function applyUserRole(userId: string, userRole: UserRole): Promise<void> {
-  maybeCrash(0.3); // sometimes infra goes away
-
-  if (userRole.roleKey !== "viewer") {
-    applicationError(0.3, `Role ${userRole.roleKey} is not possible for user ${userId}`);
-  }
-  console.log(`>>> Applied role ${userRole.roleKey} for user ${userId}`);
-}
-
-async function getCurrentRole(userId: string): Promise<UserRole> {
-  // in this example, the previous role was always just 'viewer'
-  return { roleKey: "viewer", roleDescription: "User that cannot do much" }
-}
-
-/*
- * This function would call the service or API to apply a permission.
- * For the sake of this example, we sometimes fail when applying an 'allow' permission
- * and otherwise return success. Also, we sometimes crash the process.
- */
-async function applyPermission(userId: string, permission: Permission): Promise<Permission> {
-  const { permissionKey, setting } = permission;
-  maybeCrash(0.3); // sometimes infra goes away
-
-  if (setting !== "blocked") {
-    applicationError(0.4, `Could not apply permission ${permissionKey}:${setting} for user ${userId} due to a conflict.`);
-  }
-  console.log(`>>> Applied permission ${permissionKey}:${setting} for user ${userId}`);
-  return { permissionKey, setting: "blocked" }
-}

@@ -10,7 +10,7 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import { maybeCrash } from "./utils/failures";
+import {UpdateRequest, applyUserRole, applyPermission} from "./utils/example_stubs";
 
 // Durable execution ensures code runs to the end, even in the presence of
 // failures. Use this for code that updates different systems and needs to
@@ -25,7 +25,7 @@ import { maybeCrash } from "./utils/failures";
 //    no custom DSLs
 //
 
-async function applyRoleUpdate(ctx: restate.RpcContext, update: UpdateRequest) {
+async function applyRoleUpdate(ctx: restate.Context, update: UpdateRequest) {
   // parameters are durable across retries
   const { userId, role, permissons } = update;
   
@@ -45,39 +45,20 @@ async function applyRoleUpdate(ctx: restate.RpcContext, update: UpdateRequest) {
   }
 }
 
-// Add this function to the application:
 
-// (a) Add it to an application task, process, HTTP server, RPC handler, ...
-//    -> embedded function
+// ---------------------------- deploying / running ---------------------------
 
-console.log("HELLO")
+const serve = restate
+  .endpoint()
+  .bindRouter("roleUpdate", restate.router({ applyRoleUpdate }))
 
-const testPayload: UpdateRequest = {
-  userId: "Sam Beckett",
-  role: { roleKey: "content-manager", roleDescription: "Add/remove documents" },
-  permissons : [
-    { permissionKey: "add", setting: "allow" },
-    { permissionKey: "remove", setting: "allow" },
-    { permissionKey: "share", setting: "block" }
-  ]
-}
-
-const result = restate.connection("http://127.0.0.1:8080").invoke("test-id", testPayload, applyRoleUpdate)
-
-console.log("connected")
-
-result
-  .then(() =>console.log("DONE"))
-  .catch(console.error);
-
-// (b) Expose it as its own HTTP request handler through Restate
-
-// restate.createServer()
-//   .bindRouter("roleUpdate", restate.router({ applyRoleUpdate }))
-//   .listen(9080);
+serve.listen(9080);
+// or serve.lambdaHandler();
+// or serve.http2Handler();
+// or ...
 
 //
-// See README for details on how to start and connect Restate server.
+// See README for details on how to start and connect Restate.
 //
 // When invoking this function (see below for sample request), it will apply all
 // role and permission changes, regardless of crashes.
@@ -98,45 +79,3 @@ curl localhost:8080/roleUpdate/applyRoleUpdate -H 'content-type: application/jso
   }
 }'
 */
-
-// ---------------------------------------------------------------------------
-//                           stubs for this example
-// ---------------------------------------------------------------------------
-
-type UserRole = {
-  roleKey: string,
-  roleDescription: string
-}
-
-type Permission = {
-  permissionKey: string,
-  setting: string
-}
-
-type UpdateRequest = {
-  userId: string,
-  role: UserRole,
-  permissons: Permission[]
-
-}
-
-/*
- * This function would call the service or API to record the new user role.
- * For the sake of this example, we just fail with a random probability and
- * otherwise return success.
- */
-async function applyUserRole(userId: string, userRole: UserRole): Promise<boolean> {
-  maybeCrash(0.3);
-  console.log(`>>> Applied role ${userRole.roleKey} for user ${userId}`);
-  return true;
-}
-
-/*
- * This function would call the service or API to apply a permission.
- * For the sake of this example, we just fail with a random probability
- * and otherwise return success.
- */
-async function applyPermission(userId: string, permission: Permission): Promise<void> {
-  maybeCrash(0.2);
-  console.log(`>>> Applied permission ${permission.permissionKey}:${permission.setting} for user ${userId}`);
-}
