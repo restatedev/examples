@@ -17,7 +17,7 @@ import * as driverMobileAppSimulator from "./external/driver_mobile_app_sim";
 
 if (require.main === module) {
   restate
-      .createServer()
+      .endpoint()
       .bindKeyedRouter(driverDigitalTwin.service.path, driverDigitalTwin.router)
       .bindKeyedRouter(driverDeliveryMatcher.service.path, driverDeliveryMatcher.router)
       .bindKeyedRouter(deliveryManager.service.path, deliveryManager.router)

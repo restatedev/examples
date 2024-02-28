@@ -36,7 +36,7 @@ const MOVE_INTERVAL = 1000;
 const PAUSE_BETWEEN_DELIVERIES = 2000;
 
 export const router = restate.keyedRouter({
-    startDriver: async (ctx: restate.RpcContext, driverId: string) => {
+    startDriver: async (ctx: restate.KeyedContext, driverId: string) => {
     // check if we exist already
     if (await ctx.get<Location>(CURRENT_LOCATION) !== null) {
       return;
@@ -52,7 +52,7 @@ export const router = restate.keyedRouter({
     ctx.send(service).pollForWork(driverId);
   },
 
-  pollForWork: async (ctx: restate.RpcContext, driverId: string) => {
+  pollForWork: async (ctx: restate.KeyedContext, driverId: string) => {
     const optionalAssignedDelivery = await ctx.rpc(driverDigitalTwin.service).getAssignedDelivery(driverId);
     if (optionalAssignedDelivery === null || optionalAssignedDelivery === undefined) {
       ctx.sendDelayed(service, POLL_INTERVAL).pollForWork(driverId);
@@ -67,7 +67,7 @@ export const router = restate.keyedRouter({
     ctx.sendDelayed(service, MOVE_INTERVAL).move(driverId);
 },
 
-  move: async (ctx: restate.RpcContext, driverId: string) => {
+  move: async (ctx: restate.KeyedContext, driverId: string) => {
     const currentLocation = (await ctx.get<Location>(CURRENT_LOCATION))!;
     const assignedDelivery = (await ctx.get<DeliveryState>(ASSIGNED_DELIVERY))!;
 

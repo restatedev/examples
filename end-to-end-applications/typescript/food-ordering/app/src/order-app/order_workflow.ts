@@ -27,7 +27,7 @@ const restaurant = getRestaurantClient();
 const paymentClnt = getPaymentClient();
 
 export const router = restate.keyedRouter({
-  create: async ( ctx: restate.RpcContext, orderId: string, order: Order) => {
+  create: async ( ctx: restate.KeyedContext, orderId: string, order: Order) => {
     const { id, totalCost, deliveryDelay } = order;
 
     // 1. Set status
@@ -60,7 +60,7 @@ export const router = restate.keyedRouter({
   }
 });
 
-async function deliver(ctx: restate.RpcContext, order: Order) {
+async function deliver(ctx: restate.Context, order: Order) {
   const deliveryId = ctx.rand.uuidv4();
   const deliveryPromise = ctx.awakeable<void>();
   await ctx.rpc(deliveryManager.service).start(deliveryId, {order, promise: deliveryPromise.id})

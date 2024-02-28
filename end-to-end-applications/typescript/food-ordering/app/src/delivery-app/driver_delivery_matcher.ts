@@ -23,7 +23,7 @@ const PENDING_DELIVERIES = "pending-deliveries";
 const AVAILABLE_DRIVERS = "available-drivers";
 
 export const router = restate.keyedRouter({
-    setDriverAvailable: async (ctx: restate.RpcContext, _region: string, driverId: string) => {
+    setDriverAvailable: async (ctx: restate.KeyedContext, _region: string, driverId: string) => {
         // if we have deliveries already waiting, assign those
         const pendingDeliveries = await ctx.get<PendingDelivery[]>(PENDING_DELIVERIES);
         if (pendingDeliveries && pendingDeliveries.length > 0) {
@@ -42,7 +42,7 @@ export const router = restate.keyedRouter({
     },
 
     // Called when a new delivery gets scheduled.
-    requestDriverForDelivery: async (ctx: restate.RpcContext, _region: string, request: PendingDelivery) => {
+    requestDriverForDelivery: async (ctx: restate.KeyedContext, _region: string, request: PendingDelivery) => {
         // if a driver is available, assign the delivery right away
         const availableDrivers = (await ctx.get<string[]>(AVAILABLE_DRIVERS));
         if (availableDrivers && availableDrivers.length > 0) {

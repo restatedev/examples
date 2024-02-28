@@ -18,16 +18,16 @@ export const service: restate.ServiceApi<typeof router> = { path: "order-status"
 
 export const router = restate.keyedRouter({
   /** Gets called by the webUI frontend to display the status of an order. */
-  get: async (ctx: restate.RpcContext, _orderId: string) =>
+  get: async (ctx: restate.KeyedContext, _orderId: string) =>
       ctx.get<OrderStatus>(ORDER_STATUS),
 
-  setStatus: async (ctx: restate.RpcContext, orderId: string, status: Status ) => {
+  setStatus: async (ctx: restate.KeyedContext, orderId: string, status: Status ) => {
     console.info(`[${orderId}] Order is ${status}`);
     const currentStatus = await ctx.get<OrderStatus>(ORDER_STATUS);
     ctx.set(ORDER_STATUS, { ...currentStatus, ...{ status } });
   },
 
-  setETA: async (ctx: restate.RpcContext, orderId: string, eta: number) => {
+  setETA: async (ctx: restate.KeyedContext, orderId: string, eta: number) => {
     const currentStatus = await ctx.get<OrderStatus>(ORDER_STATUS);
     ctx.set(ORDER_STATUS, {
       eta: eta,
@@ -35,7 +35,7 @@ export const router = restate.keyedRouter({
     });
   },
 
-  eventHandler: restate.keyedEventHandler(async (ctx: restate.RpcContext, event: restate.Event) => {
+  eventHandler: restate.keyedEventHandler(async (ctx: restate.KeyedContext, event: restate.Event) => {
     const eta = +event.body().toString();
     const currentStatus = await ctx.get<OrderStatus>(ORDER_STATUS);
     ctx.set(ORDER_STATUS, {

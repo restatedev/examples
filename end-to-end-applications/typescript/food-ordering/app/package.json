@@ -17,7 +17,7 @@
   "dependencies": {
     "@types/node": "^20.6.3",
     "@types/uuid": "^9.0.0",
-    "@restatedev/restate-sdk": "^0.7.0",
+    "@restatedev/restate-sdk": "dev",
     "kafkajs": "^2.2.4",
     "axios": "^1.4.0",
     "express": "^4.17.3",

@@ -27,7 +27,7 @@ const DRIVER_LOCATION = "driver-location";
 
 export const router = restate.keyedRouter({
     // Called by driver's mobile app at start of workday or end of delivery
-    setDriverAvailable: async (ctx: restate.RpcContext, driverId: string, region: string) => {
+    setDriverAvailable: async (ctx: restate.KeyedContext, driverId: string, region: string) => {
         await checkIfDriverInExpectedState(DriverStatus.IDLE, ctx);
 
         ctx.set(DRIVER_STATUS, DriverStatus.WAITING_FOR_WORK);
@@ -35,10 +35,10 @@ export const router = restate.keyedRouter({
     },
 
     // Gets polled by the driver's mobile app at regular intervals to check for assignments.
-    getAssignedDelivery: async (ctx: restate.RpcContext) => ctx.get<DeliveryRequest>(ASSIGNED_DELIVERY),
+    getAssignedDelivery: async (ctx: restate.KeyedContext) => ctx.get<DeliveryRequest>(ASSIGNED_DELIVERY),
 
     // Gets called by the delivery manager when this driver was assigned to do the delivery.
-    assignDeliveryJob: async (ctx: restate.RpcContext, _driverId: string, deliveryRequest: DeliveryRequest) => {
+    assignDeliveryJob: async (ctx: restate.KeyedContext, _driverId: string, deliveryRequest: DeliveryRequest) => {
         await checkIfDriverInExpectedState(DriverStatus.WAITING_FOR_WORK, ctx);
 
         ctx.set(DRIVER_STATUS, DriverStatus.DELIVERING);
@@ -51,14 +51,14 @@ export const router = restate.keyedRouter({
     },
 
     // Called by driver's mobile app at pickup from the restaurant.
-    notifyDeliveryPickUp: async (ctx: restate.RpcContext, _driverId: string) => {
+    notifyDeliveryPickUp: async (ctx: restate.KeyedContext, _driverId: string) => {
         await checkIfDriverInExpectedState(DriverStatus.DELIVERING, ctx);
         const assignedDelivery = (await ctx.get<DeliveryRequest>(ASSIGNED_DELIVERY))!;
         ctx.send(deliveryManager.service).notifyDeliveryPickup(assignedDelivery.deliveryId);
     },
 
     // Called by driver's mobile app after delivery success.
-    notifyDeliveryDelivered: async (ctx: restate.RpcContext, _driverId: string) => {
+    notifyDeliveryDelivered: async (ctx: restate.KeyedContext, _driverId: string) => {
         await checkIfDriverInExpectedState(DriverStatus.DELIVERING, ctx);
 
         const assignedDelivery = (await ctx.get<DeliveryRequest>(ASSIGNED_DELIVERY))!;
@@ -68,7 +68,7 @@ export const router = restate.keyedRouter({
     },
 
     // Called by the driver's mobile app when he has moved to a new location.
-    handleDriverLocationUpdateEvent: restate.keyedEventHandler(async (ctx: restate.RpcContext, event: restate.Event) => {
+    handleDriverLocationUpdateEvent: restate.keyedEventHandler(async (ctx: restate.KeyedContext, event: restate.Event) => {
         const location = event.json<Location>();
         ctx.set(DRIVER_LOCATION, location);
         const assignedDelivery = await ctx.get<DeliveryRequest>(ASSIGNED_DELIVERY);
@@ -79,7 +79,7 @@ export const router = restate.keyedRouter({
 })
 
 
-async function checkIfDriverInExpectedState(expectedStatus: DriverStatus, ctx: restate.RpcContext): Promise<void> {
+async function checkIfDriverInExpectedState(expectedStatus: DriverStatus, ctx: restate.KeyedContext): Promise<void> {
   const currentStatus = (await ctx.get<DriverStatus>(DRIVER_STATUS)) ?? DriverStatus.IDLE;
 
   if (currentStatus !== expectedStatus) {

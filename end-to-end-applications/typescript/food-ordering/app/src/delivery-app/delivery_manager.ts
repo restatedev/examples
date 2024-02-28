@@ -26,7 +26,7 @@ const DELIVERY_INFO = "delivery-info";
 
 export const router = restate.keyedRouter({
     // Called by the OrderService when a new order has been prepared and needs to be delivered.
-    start: async (ctx: restate.RpcContext, deliveryId: string, { order, promise }: OrderAndPromise) => {
+    start: async (ctx: restate.KeyedContext, deliveryId: string, { order, promise }: OrderAndPromise) => {
         const [restaurantLocation, customerLocation] = await ctx.sideEffect(async () => [geo.randomLocation(), geo.randomLocation()]);
 
         // Store the delivery information in Restate's state store
@@ -60,7 +60,7 @@ export const router = restate.keyedRouter({
     },
 
     // called by the DriverService.NotifyDeliveryPickup when the driver has arrived at the restaurant.
-    notifyDeliveryPickup: async (ctx: restate.RpcContext, _deliveryId: string) => {
+    notifyDeliveryPickup: async (ctx: restate.KeyedContext, _deliveryId: string) => {
         const delivery = (await ctx.get<DeliveryInformation>(DELIVERY_INFO))!;
         delivery.orderPickedUp = true;
         ctx.set(DELIVERY_INFO, delivery);
@@ -69,7 +69,7 @@ export const router = restate.keyedRouter({
     },
 
     // Called by the DriverService.NotifyDeliveryDelivered when the driver has delivered the order to the customer.
-    notifyDeliveryDelivered: async (ctx: restate.RpcContext, _deliveryId: string) => {
+    notifyDeliveryDelivered: async (ctx: restate.KeyedContext, _deliveryId: string) => {
         const delivery = (await ctx.get<DeliveryInformation>(DELIVERY_INFO))!;
         ctx.clear(DELIVERY_INFO);
 
@@ -78,7 +78,7 @@ export const router = restate.keyedRouter({
     },
 
     // Called by DriverDigitalTwin.HandleDriverLocationUpdateEvent() when the driver moved to new location.
-    handleDriverLocationUpdate: async (ctx: restate.RpcContext, _deliveryId: string, location: Location) => {
+    handleDriverLocationUpdate: async (ctx: restate.KeyedContext, _deliveryId: string, location: Location) => {
         const delivery = (await ctx.get<DeliveryInformation>(DELIVERY_INFO))!;
 
         // Parse the new location, and calculate the ETA of the delivery to the customer
