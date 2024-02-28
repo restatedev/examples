@@ -1,29 +1,21 @@
 # A Tour of Restate with TypeScript
 
-Restate is a system for easily building resilient applications using **distributed durable RPC & async/await**.
+Restate is a system for easily building resilient applications, workflows, asynchronous tasks,
+and event-driven applications.
 
-This example contains the code for the `Tour of Restate` tutorial, for the Typescript Handler API.
+This example contains the code for the `Tour of Restate` tutorial, for the TypeScript API.
 This tutorial takes your through key Restate features by developing an end-to-end ticketing app.
 
 ❓ Learn more about Restate from the [Restate documentation](https://docs.restate.dev).
 
-## Download the example
+## Download the Tutorial
 
-- Via the CLI:
-    ```shell
-    restate example typescript-tour-of-restate && cd typescript-tour-of-restate
-    ```
+You can clone the example repository (`git clone https://github.com/restatedev/examples`) or just download this tutorial via
 
-- Via git clone:
-    ```shell
-    git clone git@github.com:restatedev/examples.git
-    cd examples/tutorials/tour-of-restate-typescript
-    ```
+- **CLI:** `restate example typescript-tour-of-restate`
 
-- Via `wget`:
-    ```shell
-    wget https://github.com/restatedev/examples/releases/latest/download/typescript-tour-of-restate.zip && unzip typescript-tour-of-restatezip -d typescript-tour-of-restate && rm typescript-tour-of-restate.zip
-    ```
+- **Zip archive:** `wget https://github.com/restatedev/examples/releases/latest/download/typescript-tour-of-restate.zip`
+
 ## Running the example
 
 Have a look at the [Tour of Restate tutorial](https://docs.restate.dev/tour) in the documentation to build and run the application in this repository.
@@ -40,4 +32,3 @@ npm run part3
 npm run part4
 ```
 
-An SDK upgrade warrants a new release.
