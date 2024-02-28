@@ -15,7 +15,7 @@ import { checkoutApi } from "./checkout";
 
 export const userSessionRouter = restate.keyedRouter({
   addTicket: async (
-      ctx: restate.RpcContext,
+      ctx: restate.KeyedContext,
       userId: string,
       ticketId: string
   ) => {
@@ -37,7 +37,7 @@ export const userSessionRouter = restate.keyedRouter({
     return reservation_response;
   },
   expireTicket: async (
-      ctx: restate.RpcContext,
+      ctx: restate.KeyedContext,
       userId: string,
       ticketId: string
   ) => {
@@ -54,7 +54,7 @@ export const userSessionRouter = restate.keyedRouter({
       ctx.send(ticketDbApi).unreserve(ticketId);
     }
   },
-  checkout: async (ctx: restate.RpcContext, userId: string) => {
+  checkout: async (ctx: restate.KeyedContext, userId: string) => {
     const tickets = await ctx.get<string[]>("items");
 
     if (tickets && tickets.length > 0) {

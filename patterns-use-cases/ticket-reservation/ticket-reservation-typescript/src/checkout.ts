@@ -16,7 +16,7 @@ import { EmailClient } from "./auxiliary/email_client";
 
 export const checkoutRouter = restate.router({
   checkout: async (
-      ctx: restate.RpcContext,
+      ctx: restate.Context,
       request: { userId: string; tickets: string[] }
   ) => {
     // We are a uniform shop where everything costs 40 USD
