@@ -1,46 +1,38 @@
-# Dynamic Workflow Executor example
+# AI Image Workflow example
 
-This example shows how to implement a dynamic workflow executor with Restate.
+This example implements a workflow that executes various AI image processing steps,
+like image generation and transformations.
 
-Restate is a system for easily building resilient applications using **distributed durable RPC & async/await**.
-
-❓ Learn more about Restate from the [documentation](https://docs.restate.dev).
-
-The workflow executor is a service that can execute workflows with different steps.
-It takes a JSON workflow definition as input and executes the steps in the order in which they are defined and with the specified parameters.
-
-This specific example implements an image processing workflow executor.
+The workflow is specified dynamically in a json-based workflow definition.
 The workflow can contain steps that call different image processing services:
 - to generate images by taking a screenshot with Puppeteer or by using Stable Diffusion (with prompt specification)
 - to transform images based on a prompt with Stable Diffusion
 - to rotate images
 - to blur images
 
-Here is an overview of the services:
-
 ![](dynamic_workflow_executor.png)
 
 
-**Note:** This app stores images locally in the shared locally accessible folder `generated-images`.
-In a real deployment, this would need to be a shared storage, like S3.
+**Note:** For simplicity, this example stores images locally in the shared locally accessible
+folder `generated-images`. In a real deployment, this would need to be a shared storage, like S3.
+
+
+The example deploys each of the possible steps (generation, transformation) as
+a separate service, and then has a workflow service call them as specified in the
+workflow definition. The workflow uses Restate's RPC-style event-based messaging
+to communicate with the implementing services, resulting in some great properties, like
+reliable call, decoupled of availability, independent scalability, and the ability for the
+workflow to suspend while the steps are running.
+
 
 ## Download the example
 
-- Via the CLI:
-    ```shell
-    restate example typescript-dynamic-workflow-executor && cd typescript-dynamic-workflow-executor
-    ```
+You can clone the example repository (`git clone https://github.com/restatedev/examples`) or just download this example via
 
-- Via git clone:
-    ```shell
-    git clone git@github.com:restatedev/examples.git
-    cd examples/typescript/dynamic-workflow-executor
-    ```
+- **CLI:** `restate example typescript-dynamic-workflow-executor`
 
-- Via `wget`:
-    ```shell
-    wget https://github.com/restatedev/examples/releases/latest/download/typescript-dynamic-workflow-executor.zip && unzip typescript-dynamic-workflow-executor.zip -d typescript-dynamic-workflow-executor && rm typescript-dynamic-workflow-executor.zip
-    ```
+- **Zip archive:** https://github.com/restatedev/examples/releases/latest/download/typescript-dynamic-workflow-executor.zip
+
 
 ## Running the example
 
@@ -64,11 +56,6 @@ npm run transformers-service
 Run stable diffusion service:
 ```shell
 npm run stable-diffusion-service
-```
-
-Run external stable diffusion service:
-```shell
-npm run external-stable-diffusion-service
 ```
 
 Run workflow service:

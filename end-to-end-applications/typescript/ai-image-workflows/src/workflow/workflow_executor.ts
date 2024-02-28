@@ -106,7 +106,3 @@ function executeWorkflowStep(ctx: restate.Context, step: WorkflowStep) {
     const servicePath = workflowStepRegistry.get(step.service)!;
     return ctx.rpc(servicePath.api).run(step);
 }
-
-function updateWorkflowStatus() {
-
-}

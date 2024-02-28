@@ -1,7 +1,7 @@
 {
-  "name": "dynamic-workflow-executor",
+  "name": "ai-image-workflow",
   "version": "0.0.1",
-  "description": "An application that executes a workflow based on a workflow definition",
+  "description": "An application that executes AI image workflows with stable diffusion and other tools.",
   "author": "Restate Developers",
   "license": "MIT",
   "email": "code@restate.dev",
@@ -10,7 +10,6 @@
     "build": "tsc --noEmitOnError",
     "puppeteer-service": "ts-node-dev --watch ./src --respawn --transpile-only src/puppeteer/puppeteer.ts",
     "stable-diffusion-service": "ts-node-dev --watch ./src --respawn --transpile-only src/stable-diffusion/stable_diffusion.ts",
-    "external-stable-diffusion-service": "ts-node-dev --watch ./src --respawn --transpile-only src/external/stable_diffusion.ts",
     "transformers-service": "ts-node-dev --watch ./src --respawn --transpile-only src/transformers/transformers.ts",
     "workflow-service": "ts-node-dev --watch ./src --respawn --transpile-only src/workflow/workflow.ts"
   },
