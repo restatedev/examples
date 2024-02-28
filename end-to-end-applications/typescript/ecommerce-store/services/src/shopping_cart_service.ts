@@ -40,7 +40,7 @@ enum CartStatus {
 
 export class ShoppingCartSvc implements ShoppingCartService {
   async createCart(request: CreateCartRequest): Promise<Empty> {
-    const ctx = restate.useContext(this);
+    const ctx = restate.useKeyedContext(this);
 
     await this.requireState(ctx, CartStatus.UNKNOWN);
 
@@ -51,11 +51,11 @@ export class ShoppingCartSvc implements ShoppingCartService {
   }
 
   async addProduct(request: AddProductRequest): Promise<AddProductResponse> {
-    const ctx = restate.useContext(this);
+    const ctx = restate.useKeyedContext(this);
 
     await this.requireState(ctx, CartStatus.ACTIVE);
 
-    const productService = new ProductServiceClientImpl(ctx);
+    const productService = new ProductServiceClientImpl(ctx.grpcChannel());
     const reservation = await productService.reserve(
       ReservationRequest.create({ productId: request.productId })
     );
@@ -73,11 +73,11 @@ export class ShoppingCartSvc implements ShoppingCartService {
   }
 
   async removeProduct(request: RemoveProductRequest): Promise<Empty> {
-    const ctx = restate.useContext(this);
+    const ctx = restate.useKeyedContext(this);
 
     await this.requireState(ctx, CartStatus.ACTIVE);
 
-    const productService = new ProductServiceClientImpl(ctx);
+    const productService = new ProductServiceClientImpl(ctx.grpcChannel());
     await productService.release(
       ReleaseRequest.create({ productId: request.productId })
     );
@@ -95,7 +95,7 @@ export class ShoppingCartSvc implements ShoppingCartService {
   async getAllProducts(
     _request: GetAllProductsRequest
   ): Promise<GetAllProductsResponse> {
-    const ctx = restate.useContext(this);
+    const ctx = restate.useKeyedContext(this);
 
     const shoppingCart = GetAllProductsResponse.create();
 
@@ -118,7 +118,7 @@ export class ShoppingCartSvc implements ShoppingCartService {
   }
 
   async checkout(request: CheckoutRequest): Promise<CheckoutResponse> {
-    const ctx = restate.useContext(this);
+    const ctx = restate.useKeyedContext(this);
 
     const cartStatus =
       (await ctx.get<CartStatus>("status")) || CartStatus.UNKNOWN;
@@ -148,7 +148,7 @@ export class ShoppingCartSvc implements ShoppingCartService {
     if (!userId)
       throw new TerminalError("No user id defined in Restate state.");
 
-    const checkoutClient = new CheckoutFlowServiceClientImpl(ctx);
+    const checkoutClient = new CheckoutFlowServiceClientImpl(ctx.grpcChannel());
     const result = await checkoutClient.start(
       CheckoutFlowRequest.create({
         reservedProducts: products.reservations,

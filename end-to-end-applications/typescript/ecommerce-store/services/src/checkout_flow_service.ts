@@ -37,10 +37,10 @@ export class CheckoutFlowSvc implements CheckoutFlowService {
   async start(request: CheckoutFlowRequest): Promise<CheckoutResponse> {
     const ctx = restate.useContext(this);
 
-    const userProfileClient = new UserProfileServiceClientImpl(ctx);
-    const paymentClient = new PaymentGatewayClientImpl(ctx);
-    const shipmentClient = new ShipmentServiceClientImpl(ctx);
-    const emailClient = new EmailSenderClientImpl(ctx);
+    const userProfileClient = new UserProfileServiceClientImpl(ctx.grpcChannel());
+    const paymentClient = new PaymentGatewayClientImpl(ctx.grpcChannel());
+    const shipmentClient = new ShipmentServiceClientImpl(ctx.grpcChannel());
+    const emailClient = new EmailSenderClientImpl(ctx.grpcChannel());
 
     const products = new Products(request.reservedProducts, ctx);
 
@@ -133,9 +133,9 @@ class Products {
   private products: Reservation[];
   private productServiceClient;
 
-  constructor(products: Reservation[], ctx: restate.RestateContext) {
+  constructor(products: Reservation[], ctx: restate.Context) {
     this.products = products;
-    this.productServiceClient = new ProductServiceClientImpl(ctx);
+    this.productServiceClient = new ProductServiceClientImpl(ctx.grpcChannel());
   }
 
   getProductIds(): string[] {

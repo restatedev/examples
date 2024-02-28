@@ -44,7 +44,7 @@ export class PgProductSvc implements ProductService {
   }
 
   async reserve(request: ReservationRequest): Promise<Reservation> {
-    const ctx = restate.useContext(this);
+    const ctx = restate.useKeyedContext(this);
 
     // Get the product data from the database
     const [product] = await sequelize.query(
@@ -87,7 +87,7 @@ export class PgProductSvc implements ProductService {
   }
 
   async release(request: ReleaseRequest): Promise<Empty> {
-    const ctx = restate.useContext(this);
+    const ctx = restate.useKeyedContext(this);
 
     // Get the product data from the database
     const [product] = await sequelize.query(
@@ -115,7 +115,7 @@ export class PgProductSvc implements ProductService {
   }
 
   async notifyProductSold(request: NotifyProductSoldEvent): Promise<Empty> {
-    const ctx = restate.useContext(this);
+    const ctx = restate.useKeyedContext(this);
 
     // Get the product from the database
     const [product] = await sequelize.query(
@@ -125,8 +125,8 @@ export class PgProductSvc implements ProductService {
 
     // If the product exists and the quantity is 0, then restock
     if (product && product.quantity === 0) {
-      const inventoryRestockClient = new InventoryRestockServiceClientImpl(ctx);
-      await ctx.oneWayCall(() =>
+      const inventoryRestockClient = new InventoryRestockServiceClientImpl(ctx.grpcChannel());
+      await ctx.grpcChannel().oneWayCall(() =>
         inventoryRestockClient.orderProduct(
           ProductOrderRequest.create({ productId: request.productId })
         )
@@ -136,7 +136,7 @@ export class PgProductSvc implements ProductService {
   }
 
   async notifyNewQuantityInStock(request: NewQuantityInStock): Promise<Empty> {
-    const ctx = restate.useContext(this);
+    const ctx = restate.useKeyedContext(this);
 
     // Get the product data from the database
     const [product] = await sequelize.query(

@@ -29,7 +29,7 @@ export class ProductSvc implements ProductService {
   async getProductInformation(
     request: GetProductInformationRequest
   ): Promise<GetProductInformationResponse> {
-    const ctx = restate.useContext(this);
+    const ctx = restate.useKeyedContext(this);
 
     const quantity = (await ctx.get<number>("quantity")) || 0;
     const price = (await ctx.get<number>("price")) || 0.0;
@@ -42,7 +42,7 @@ export class ProductSvc implements ProductService {
   }
 
   async reserve(request: ReservationRequest): Promise<Reservation> {
-    const ctx = restate.useContext(this);
+    const ctx = restate.useKeyedContext(this);
 
     const quantity = (await ctx.get<number>("quantity")) || 0;
     if (quantity === 0) {
@@ -67,7 +67,7 @@ export class ProductSvc implements ProductService {
   }
 
   async release(_request: ReleaseRequest): Promise<Empty> {
-    const ctx = restate.useContext(this);
+    const ctx = restate.useKeyedContext(this);
     const quantity = (await ctx.get<number>("quantity")) || 0;
     ctx.set("quantity", quantity + 1);
 
@@ -75,12 +75,12 @@ export class ProductSvc implements ProductService {
   }
 
   async notifyProductSold(request: NotifyProductSoldEvent): Promise<Empty> {
-    const ctx = restate.useContext(this);
+    const ctx = restate.useKeyedContext(this);
     const quantity = (await ctx.get<number>("quantity")) || 0;
 
     if (quantity === 0) {
-      const inventoryRestockClient = new InventoryRestockServiceClientImpl(ctx);
-      await ctx.oneWayCall(() =>
+      const inventoryRestockClient = new InventoryRestockServiceClientImpl(ctx.grpcChannel());
+      await ctx.grpcChannel().oneWayCall(() =>
         inventoryRestockClient.orderProduct(
           ProductOrderRequest.create({ productId: request.productId })
         )
@@ -90,7 +90,7 @@ export class ProductSvc implements ProductService {
   }
 
   async notifyNewQuantityInStock(request: NewQuantityInStock): Promise<Empty> {
-    const ctx = restate.useContext(this);
+    const ctx = restate.useKeyedContext(this);
 
     const quantity = (await ctx.get<number>("quantity")) || 0;
     ctx.set("quantity", quantity + request.amount);

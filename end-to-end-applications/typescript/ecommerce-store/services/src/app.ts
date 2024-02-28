@@ -23,7 +23,7 @@ import { PgProductSvc } from "./pg_product_service";
 import { ProductListingSvc } from "./product_listing_service";
 
 let restateServer = restate
-  .createServer()
+  .endpoint()
   .bindService({
     descriptor: protoMetadata,
     service: "CheckoutFlowService",

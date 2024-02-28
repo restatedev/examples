@@ -22,8 +22,8 @@ export class InventoryRestockSvc implements InventoryRestockService {
   async orderProduct(request: ProductOrderRequest): Promise<Empty> {
     const ctx = restate.useContext(this);
 
-    const productServiceClient = new ProductServiceClientImpl(ctx);
-    await ctx.delayedCall(
+    const productServiceClient = new ProductServiceClientImpl(ctx.grpcChannel());
+    await ctx.grpcChannel().delayedCall(
       () =>
         productServiceClient.notifyNewQuantityInStock(
           NewQuantityInStock.create({ productId: request.productId, amount: 1 })

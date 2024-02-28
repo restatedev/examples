@@ -22,7 +22,7 @@ import { TerminalError } from "@restatedev/restate-sdk";
 
 export class UserProfileSvc implements UserProfileService {
   async createUserProfile(request: CreateUserProfileRequest): Promise<Empty> {
-    const ctx = restate.useContext(this);
+    const ctx = restate.useKeyedContext(this);
 
     ctx.set("profile", request.userProfile);
 
@@ -30,7 +30,7 @@ export class UserProfileSvc implements UserProfileService {
   }
 
   async getUserProfile(_request: GetUserProfileRequest): Promise<UserProfile> {
-    const ctx = restate.useContext(this);
+    const ctx = restate.useKeyedContext(this);
 
     const profile = await ctx.get<UserProfile>("profile");
 
@@ -44,7 +44,7 @@ export class UserProfileSvc implements UserProfileService {
   async appendPurchaseHistory(
     request: AppendPurchaseHistoryRequest
   ): Promise<Empty> {
-    const ctx = restate.useContext(this);
+    const ctx = restate.useKeyedContext(this);
 
     const profile =
       (await ctx.get<UserProfile>("profile")) || UserProfile.create({});
