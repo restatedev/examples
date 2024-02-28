@@ -13,12 +13,14 @@
     "verify": "npm run format -- --check && npm run lint && npm run build",
     "build": "tsc --noEmitOnError",
     "app": "node ./dist/payment_service.js",
-    "app-dev": "ts-node-dev --watch ./src --respawn --transpile-only ./src/payment_service.ts"
+    "app-dev": "ts-node-dev --watch ./src --transpile-only ./src/payment_service.ts"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^0.7.0"
+    "@restatedev/restate-sdk": "dev"
   },
   "devDependencies": {
+    "@restatedev/restate": "0.7.1",
+    "@restatedev/restate-server": "0.7.1",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
     "@typescript-eslint/parser": "^6.4.0",
     "eslint": "^8.47.0",

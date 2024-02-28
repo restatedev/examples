@@ -1,68 +1,48 @@
-# Simple Stripe-style Payment API with Restate
+# Simple Payment State Machine 
 
-This example shows how to build a reliable and consistent Stripe-style payment API with [Restate](https://restate.dev/).
+This example shows how to build a reliable payment state machine.
 
-The payment API ensures that payments are reliably processed, not duplicated, can be revoked,
-and that concurrent payment requests and cancellations sort out consistently.
+The state machine ensures that payments are processed once, not duplicated,
+can be revoked, and that concurrent payment requests and cancellations sort
+out consistently.
 
 The example illustrates the following aspects:
 
-- Payment requests use an idempotency-token to identify payments (stripe-style)
-- Restate tracks the status of each payment request by idempotency-token in internal state.
-- Updates to the status of each payment request and processing of accounts are kept consistent with
-  each other through the combination of durable RPC and durable execution.
-- A payment request can be cancelled, which prevents it from succeeding later, or rolles it back, if
+- Payment requests use a token to identify payments (stripe-style)
+- Restate tracks the status of each payment request by token in internal state.
+- A payment can be cancelled, which prevents it from succeeding later, or rolles it back, if
   it was already processed.
-- Keyed-concurrency ensures that requests and cancellations don't produce tricky race conditions
-- Expiry of idempotency-tokens is handled through Restate's internal timers.
+- Virtual Object concurrency ensures that requests and cancellations don't produce
+  tricky race conditions.
+- Expiry of tokens is handled through Restate's internal timers.
 
 Despite the relatively few lines of code (no careful synchronization, retries, or other recovery logic),
 this application maintaines a high level of consistency in the presence of concurrent external requests
 and failures.
 
-## Download the example
-
-- Via the CLI:
-  ```shell
-  restate example typescript-payment-api && cd typescript-payment-api
-  ```
-
-- Via git clone:
-  ```shell
-  git clone git@github.com:restatedev/examples.git
-  cd examples/typescript/payment-api
-  ```
-
-- Via `wget`:
-  ```shell
-  wget https://github.com/restatedev/examples/releases/latest/download/typescript-payment-api.zip && unzip typescript-payment-api.zip -d typescript-payment-api && rm typescript-payment-api.zip
-  ```
 
 ## Running this example
 
-### Prerequisites
+Optionally, start a Restate Server: `npx restate-server`
 
-- Latest stable version of [NodeJS](https://nodejs.org/en/) >= v18.17.1 and [npm CLI](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) >= 9.6.7 installed.
-- [Docker Engine](https://docs.docker.com/engine/install/) to launch the Restate runtime (not needed for the app implementation itself).
-
-Build and start the example services
-
+Build and start the example
 ```shell
 npm install
 npm run build
 npm run app
 ```
 
-Now [launch the Restate Server](../../README.md#launching-the-restate-server) and [register the services](../../README.md#register-the-deployment-in-restate).
+Register the services: `npx restate dep reg "localhost:9080"`
 
-Make a sample payment. The 'key' parameter is the idempotency token.
+Make some requests:
 
-```shell
-curl -X POST localhost:8080/payments/makePayment -H 'content-type: application/json' -d '{"key": "some-string-id", "request": { "accountId": "abc", "amount": 100 } }'
-```
+- Make a payment
+  ```shell
+  curl -X POST localhost:8080/payments/makePayment -H 'content-type: application/json' -d '{"key": "some-string-id", "request": { "accountId": "abc", "amount": 100 } }'
+  ```
 
-Cancel a payment. The 'key' parameter is the idempotency token, there is no further request data.
+- Cancel a payment. The 'key' parameter is the idempotency token, there is no further request data.
 
-```shell
-curl -X POST localhost:8080/payments/cancelPayment -H 'content-type: application/json' -d '{"key": "some-string-id"}'
-```
+  ```shell
+  curl -X POST localhost:8080/payments/cancelPayment -H 'content-type: application/json' -d '{"key": "some-string-id"}'
+  ```
