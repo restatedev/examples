@@ -12,14 +12,14 @@
 import * as restate from "@restatedev/restate-sdk";
 
 export const paymentsService = restate.router({
-    process: async (ctx: restate.Context, request: { tripID: string }) => {
-        // make the payment
-        return "paymend_id";
-    },
+  process: async (ctx: restate.Context, request: { tripID: string }) => {
+    // make the payment
+    return "paymend_id";
+  },
 
-    refund: async (ctx: restate.Context, request: { tripID: string, paymentId: string }) => {
-        // refund the payment
-    }
+  refund: async (ctx: restate.Context, request: { tripID: string; paymentId: string }) => {
+    // refund the payment
+  },
 });
 
 export const paymentsServiceApi: restate.ServiceApi<typeof paymentsService> = { path: "payments" };

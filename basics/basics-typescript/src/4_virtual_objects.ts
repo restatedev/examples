@@ -14,16 +14,15 @@ import * as restate from "@restatedev/restate-sdk";
 //
 // Virtual Objects hold state and have methods to interact with the object.
 // An object is identified by a unique id - only one object exists per id.
-// 
+//
 // Virtual Objects have their state locally accessible without requiring any database
 // connection or lookup. State is exclusive, and atomically committed with the
 // method execution.
 //
 // Virtual Objects are _Stateful Serverless_ constructs.
-// 
+//
 
 const greeterObject = restate.keyedRouter({
-
   greet: async (ctx: restate.KeyedContext, name: string, request: { greeting?: string }) => {
     const greeting = request?.greeting ?? "Hello";
 
@@ -41,22 +40,19 @@ const greeterObject = restate.keyedRouter({
       count--;
     }
     ctx.set("count", count);
-    return `Dear ${name}, taking one greeting back: ${count}.`
+    return `Dear ${name}, taking one greeting back: ${count}.`;
   },
 });
 
 // you can call this now through http directly the following way
 
-example1: `curl localhost:8080/greeter/greet   -H 'content-type: application/json' -d '{ "key": "Mary" }'`
-example2: `curl localhost:8080/greeter/greet   -H 'content-type: application/json' -d '{ "key": "Barack" }'`
-example3: `curl localhost:8080/greeter/ungreet -H 'content-type: application/json' -d '{ "key": "Mary" }'`
-
+example1: `curl localhost:8080/greeter/greet   -H 'content-type: application/json' -d '{ "key": "Mary" }'`;
+example2: `curl localhost:8080/greeter/greet   -H 'content-type: application/json' -d '{ "key": "Barack" }'`;
+example3: `curl localhost:8080/greeter/ungreet -H 'content-type: application/json' -d '{ "key": "Mary" }'`;
 
 // --------------------------------- deploying --------------------------------
 
-const serve = restate
-  .endpoint()
-  .bindKeyedRouter("greeter", greeterObject);
+const serve = restate.endpoint().bindKeyedRouter("greeter", greeterObject);
 
 serve.listen(9080);
 // or serve.lambdaHandler();

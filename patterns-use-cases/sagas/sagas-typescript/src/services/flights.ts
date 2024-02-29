@@ -12,19 +12,18 @@
 import * as restate from "@restatedev/restate-sdk";
 
 export const flightsService = restate.keyedRouter({
-    
-    reserve: async (ctx: restate.Context, tripID: string) => {
-        // reserve flight
-        return "flight_id";
-    },
+  reserve: async (ctx: restate.Context, tripID: string) => {
+    // reserve flight
+    return "flight_id";
+  },
 
-    confirm: async (ctx: restate.Context, tripID: string, bookingId: string) => {
-        // confirm flight
-    },
+  confirm: async (ctx: restate.Context, tripID: string, bookingId: string) => {
+    // confirm flight
+  },
 
-    cancel: async (ctx: restate.Context, tripID: string, bookingId: string) => {
-        // cancel booking event
-    }
+  cancel: async (ctx: restate.Context, tripID: string, bookingId: string) => {
+    // cancel booking event
+  },
 });
 
 export const flightsServiceApi: restate.ServiceApi<typeof flightsService> = { path: "flights" };

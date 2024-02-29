@@ -9,9 +9,9 @@
  * https://github.com/restatedev/sdk-typescript/blob/main/LICENSE
  */
 
-import * as dp from "./dp/durable_promises"
+import * as dp from "./dp/durable_promises";
 
-// 
+//
 // An illustration of durable promises across processes.
 //
 // This example instantiates a promise and randomly either awaits it
@@ -28,29 +28,28 @@ const restateUri = process.argv.length > 3 ? process.argv[3] : "http://localhost
 const pid = process.pid;
 
 async function run() {
-    // get a reference to a durable promise
-    const durablePromise = dp.durablePromise<string>(restateUri, promiseId);
+  // get a reference to a durable promise
+  const durablePromise = dp.durablePromise<string>(restateUri, promiseId);
 
-    // determine whether we'll be a reader or writer to the promise
-    const resolve = Math.random() < 0.3;
-    console.log(`${pid} will ${resolve ? "RESOLVE" : "AWAIT"} the promise`);
+  // determine whether we'll be a reader or writer to the promise
+  const resolve = Math.random() < 0.3;
+  console.log(`${pid} will ${resolve ? "RESOLVE" : "AWAIT"} the promise`);
 
-    // check the promise without blocking
-    const peeked = await durablePromise.peek()
-    console.log(`${pid} : Peek '${promiseId}' = '${peeked}'`);
+  // check the promise without blocking
+  const peeked = await durablePromise.peek();
+  console.log(`${pid} : Peek '${promiseId}' = '${peeked}'`);
 
-    // resolve or listen, depending on our role
-    if (resolve) {
-        const resolveValue = `Completed by ${pid}`;
-        console.log(`${pid} : Resolving '${promiseId}' to '${resolveValue}'`);
-        const result = await durablePromise.resolve(resolveValue);
-        console.log(`${pid} : '${promiseId}' actually resolved to '${result}'`);
-    } else {
-        console.log(`${pid} : Awaiting '${promiseId}'...`);
-        const result = await durablePromise.get()
-        console.log(`${pid} : Got result for '${promiseId}' = '${result}'`);
-    }
+  // resolve or listen, depending on our role
+  if (resolve) {
+    const resolveValue = `Completed by ${pid}`;
+    console.log(`${pid} : Resolving '${promiseId}' to '${resolveValue}'`);
+    const result = await durablePromise.resolve(resolveValue);
+    console.log(`${pid} : '${promiseId}' actually resolved to '${result}'`);
+  } else {
+    console.log(`${pid} : Awaiting '${promiseId}'...`);
+    const result = await durablePromise.get();
+    console.log(`${pid} : Got result for '${promiseId}' = '${result}'`);
+  }
 }
 
-run()
-  .catch((err) => console.error(err?.message));
+run().catch((err) => console.error(err?.message));

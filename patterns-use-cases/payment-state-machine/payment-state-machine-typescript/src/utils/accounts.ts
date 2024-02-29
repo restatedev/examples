@@ -20,17 +20,12 @@ import * as restate from "@restatedev/restate-sdk";
 type Result = { success: boolean; reason?: string };
 
 export const userAccountObjects = restate.keyedRouter({
-  deposit: async (
-    ctx: restate.KeyedContext,
-    accountId: string,
-    amountCents: number
-  ) => {
+  deposit: async (ctx: restate.KeyedContext, accountId: string, amountCents: number) => {
     if (amountCents < 0) {
       throw new restate.TerminalError("Amount must not be negative");
     }
 
-    const balanceCents: number =
-      (await ctx.get<number>("balance")) ?? initializeRandomAmount();
+    const balanceCents: number = (await ctx.get<number>("balance")) ?? initializeRandomAmount();
     ctx.set("balance", balanceCents + amountCents);
   },
 
@@ -43,8 +38,7 @@ export const userAccountObjects = restate.keyedRouter({
       throw new restate.TerminalError("Amount must not be negative");
     }
 
-    const balanceCents =
-      (await ctx.get<number>("balance")) ?? initializeRandomAmount();
+    const balanceCents = (await ctx.get<number>("balance")) ?? initializeRandomAmount();
 
     if (balanceCents < amountCents) {
       return {

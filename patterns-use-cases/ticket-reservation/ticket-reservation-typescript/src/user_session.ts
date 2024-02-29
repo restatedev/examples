@@ -14,11 +14,7 @@ import { ticketDbApi } from "./ticket_db";
 import { checkoutApi } from "./checkout";
 
 export const userSessionRouter = restate.keyedRouter({
-  addTicket: async (
-      ctx: restate.KeyedContext,
-      userId: string,
-      ticketId: string
-  ) => {
+  addTicket: async (ctx: restate.KeyedContext, userId: string, ticketId: string) => {
     // try to reserve ticket
     const reservation_response = await ctx.rpc(ticketDbApi).reserve(ticketId);
 
@@ -29,18 +25,12 @@ export const userSessionRouter = restate.keyedRouter({
       ctx.set("items", tickets);
 
       // Schedule expiry timer
-      ctx
-          .sendDelayed(userSessionApi, 15 * 60 * 1000)
-          .expireTicket(userId, ticketId);
+      ctx.sendDelayed(userSessionApi, 15 * 60 * 1000).expireTicket(userId, ticketId);
     }
 
     return reservation_response;
   },
-  expireTicket: async (
-      ctx: restate.KeyedContext,
-      userId: string,
-      ticketId: string
-  ) => {
+  expireTicket: async (ctx: restate.KeyedContext, userId: string, ticketId: string) => {
     ctx.send(ticketDbApi).unreserve(ticketId);
     const tickets = (await ctx.get<string[]>("items")) ?? [];
 
@@ -59,8 +49,8 @@ export const userSessionRouter = restate.keyedRouter({
 
     if (tickets && tickets.length > 0) {
       const checkout_success = await ctx
-          .rpc(checkoutApi)
-          .checkout({ userId: userId, tickets: tickets! });
+        .rpc(checkoutApi)
+        .checkout({ userId: userId, tickets: tickets! });
 
       if (checkout_success) {
         // mark items as sold if checkout was successful

@@ -15,10 +15,7 @@ import { StripeClient } from "./auxiliary/stripe_client";
 import { EmailClient } from "./auxiliary/email_client";
 
 export const checkoutRouter = restate.router({
-  checkout: async (
-      ctx: restate.Context,
-      request: { userId: string; tickets: string[] }
-  ) => {
+  checkout: async (ctx: restate.Context, request: { userId: string; tickets: string[] }) => {
     // We are a uniform shop where everything costs 40 USD
     const totalPrice = request.tickets.length * 40;
 
@@ -33,18 +30,14 @@ export const checkoutRouter = restate.router({
 
     if (success) {
       console.info("Payment successful. Notifying user about shipment.");
-      await ctx.sideEffect(async () =>
-          email.notifyUserOfPaymentSuccess(request.userId)
-      );
+      await ctx.sideEffect(async () => email.notifyUserOfPaymentSuccess(request.userId));
     } else {
       console.info("Payment failure. Notifying user about it.");
-      await ctx.sideEffect(async () =>
-          email.notifyUserOfPaymentFailure(request.userId)
-      );
+      await ctx.sideEffect(async () => email.notifyUserOfPaymentFailure(request.userId));
     }
 
     return success;
-  }
+  },
 });
 
 export const checkoutApi: restate.ServiceApi<typeof checkoutRouter> = {

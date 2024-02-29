@@ -13,7 +13,6 @@ import * as restate from "@restatedev/restate-sdk";
 
 const killProcess: boolean = Boolean(process.env.CRASH_PROCESS);
 
-
 export function maybeCrash(probability: number = 0.5): void {
   if (Math.random() < probability) {
     console.error("A failure happened!");
@@ -29,7 +28,7 @@ export function maybeCrash(probability: number = 0.5): void {
 
 export function applicationError(probability: number, message: string): void {
   if (Math.random() < probability) {
-    console.error("Action failed: " + message)
+    console.error("Action failed: " + message);
     throw new restate.TerminalError(message);
   }
 }

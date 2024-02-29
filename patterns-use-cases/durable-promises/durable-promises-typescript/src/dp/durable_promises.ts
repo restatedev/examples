@@ -10,35 +10,35 @@
  */
 
 // ----------------------------------------------------------------------------
-//               Interfaces and Types for the Durable Promises 
+//               Interfaces and Types for the Durable Promises
 // ----------------------------------------------------------------------------
 
 /**
  * The core durable promise type.
  */
 export type DurablePromise<T> = {
-    /** The ID of the durable promise. */
-    id(): string,
+  /** The ID of the durable promise. */
+  id(): string;
 
-    /** A JS promises that represents the durable promise.
-     * Will complete when the durable promise completes */
-    get(): Promise<T>,
+  /** A JS promises that represents the durable promise.
+   * Will complete when the durable promise completes */
+  get(): Promise<T>;
 
-    /** A JS promises that represents the current value, and return 'null'
-     * if the durable promise is not yet complete. */
-    peek(): Promise<T | null>,
+  /** A JS promises that represents the current value, and return 'null'
+   * if the durable promise is not yet complete. */
+  peek(): Promise<T | null>;
 
-    /** Resolves the durable promise. The returned promise resolves to the
-     * actual value of the promise, which can be different if the promise was
-     * completed before by some other request. */
-    resolve(value?: T): Promise<T>,
+  /** Resolves the durable promise. The returned promise resolves to the
+   * actual value of the promise, which can be different if the promise was
+   * completed before by some other request. */
+  resolve(value?: T): Promise<T>;
 
-    /** Rejects the durable promise with an error message (not an actual Error, due
-     * to the footguns in serializing Errors across processes).
-     * The returned promise resolves to the actual value of the promise, which can
-     * be different if the promise was completed before by some other request. */
-    reject(errorMsg: string): Promise<T>,
-}
+  /** Rejects the durable promise with an error message (not an actual Error, due
+   * to the footguns in serializing Errors across processes).
+   * The returned promise resolves to the actual value of the promise, which can
+   * be different if the promise was completed before by some other request. */
+  reject(errorMsg: string): Promise<T>;
+};
 
 /**
  * Creates a durable promise with the given name. The promise is stored/tracked by
@@ -52,18 +52,27 @@ export function durablePromise<T>(restateUri: string, promiseId: string): Durabl
       return resultToPromise(result);
     },
     peek: async () => {
-      const result: undefined | null | ValueOrError<T> = await makeRestateCall(restateUri, "peek", promiseId, {});
-      return result ? resultToPromise(result): null;
+      const result: undefined | null | ValueOrError<T> = await makeRestateCall(
+        restateUri,
+        "peek",
+        promiseId,
+        {}
+      );
+      return result ? resultToPromise(result) : null;
     },
     resolve: async (value: T) => {
-      const result: ValueOrError<T> = await makeRestateCall(restateUri, "resolve", promiseId, { value });
+      const result: ValueOrError<T> = await makeRestateCall(restateUri, "resolve", promiseId, {
+        value,
+      });
       return resultToPromise(result);
     },
     reject: async (errorMessage: string) => {
-      const result: ValueOrError<T> = await makeRestateCall(restateUri, "reject", promiseId, { errorMessage });
+      const result: ValueOrError<T> = await makeRestateCall(restateUri, "reject", promiseId, {
+        errorMessage,
+      });
       return resultToPromise(result);
-    }
-  } satisfies DurablePromise<T>
+    },
+  } satisfies DurablePromise<T>;
 }
 
 /**
@@ -101,7 +110,7 @@ async function makeRestateCall<R, T>(
     request: {
       promiseName,
       ...params,
-    }
+    },
   };
 
   let body: string;
@@ -113,7 +122,7 @@ async function makeRestateCall<R, T>(
 
   let httpResponse;
   try {
-      httpResponse = await fetch(url, {
+    httpResponse = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -121,9 +130,9 @@ async function makeRestateCall<R, T>(
       body,
     });
   } catch (err: any) {
-    throw new Error(
-      `Could not contact Restate server at ${restateUri}: ${err.message}`,
-      { cause: err })
+    throw new Error(`Could not contact Restate server at ${restateUri}: ${err.message}`, {
+      cause: err,
+    });
   }
 
   const responseText = await httpResponse.text();

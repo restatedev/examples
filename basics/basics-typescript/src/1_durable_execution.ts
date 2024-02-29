@@ -10,7 +10,7 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import {UpdateRequest, applyUserRole, applyPermission} from "./utils/example_stubs";
+import { UpdateRequest, applyUserRole, applyPermission } from "./utils/example_stubs";
 
 // Durable execution ensures code runs to the end, even in the presence of
 // failures. Use this for code that updates different systems and needs to
@@ -28,7 +28,7 @@ import {UpdateRequest, applyUserRole, applyPermission} from "./utils/example_stu
 async function applyRoleUpdate(ctx: restate.Context, update: UpdateRequest) {
   // parameters are durable across retries
   const { userId, role, permissons } = update;
-  
+
   // apply a change to one system (e.g., DB upsert, API call, ...)
   // the side effect persists the result with a consensus method so any
   // any later code relies on a deterministic result
@@ -41,16 +41,13 @@ async function applyRoleUpdate(ctx: restate.Context, update: UpdateRequest) {
   // each operation through the Restate context is journaled and recovery restores
   // results of previous operations from the journal without re-executing them
   for (const permission of permissons) {
-     await ctx.sideEffect(() => applyPermission(userId, permission));
+    await ctx.sideEffect(() => applyPermission(userId, permission));
   }
 }
 
-
 // ---------------------------- deploying / running ---------------------------
 
-const serve = restate
-  .endpoint()
-  .bindRouter("roleUpdate", restate.router({ applyRoleUpdate }))
+const serve = restate.endpoint().bindRouter("roleUpdate", restate.router({ applyRoleUpdate }));
 
 serve.listen(9080);
 // or serve.lambdaHandler();

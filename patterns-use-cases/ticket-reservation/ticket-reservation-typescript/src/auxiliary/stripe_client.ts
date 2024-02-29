@@ -15,9 +15,7 @@ export class StripeClient {
   }
 
   public call(idempotencyKey: string, amount: number): boolean {
-    console.log(
-      `Executing stripe call for idempotency key ${idempotencyKey} and amount ${amount}`
-    );
+    console.log(`Executing stripe call for idempotency key ${idempotencyKey} and amount ${amount}`);
     // do the call
     return true;
   }

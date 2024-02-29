@@ -10,8 +10,8 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import { UpdateRequest, UserRole, Permission} from "./utils/example_stubs";
-import { getCurrentRole, tryApplyUserRole, tryApplyPermission} from "./utils/example_stubs";
+import { UpdateRequest, UserRole, Permission } from "./utils/example_stubs";
+import { getCurrentRole, tryApplyUserRole, tryApplyPermission } from "./utils/example_stubs";
 
 // Durable execution ensures code runs to the end, even in the presence of
 // failures. That allows developers to implement error handling with common
@@ -34,7 +34,7 @@ async function applyRoleUpdate(ctx: restate.Context, update: UpdateRequest) {
 
   // apply all permissions in order
   // we collect the previous permission settings to reset if the process fails
-  const previousPermissions: Permission[] = []
+  const previousPermissions: Permission[] = [];
   for (const permission of permissons) {
     try {
       const previous = await ctx.sideEffect(() => tryApplyPermission(userId, permission));
@@ -48,7 +48,12 @@ async function applyRoleUpdate(ctx: restate.Context, update: UpdateRequest) {
   }
 }
 
-async function rollback(ctx: restate.Context, userId: string, role: UserRole, permissions: Permission[]) {
+async function rollback(
+  ctx: restate.Context,
+  userId: string,
+  role: UserRole,
+  permissions: Permission[]
+) {
   console.log(">>> !!! ROLLING BACK CHANGES !!! <<<");
   for (const prev of permissions.reverse()) {
     await ctx.sideEffect(() => tryApplyPermission(userId, prev));
@@ -56,18 +61,14 @@ async function rollback(ctx: restate.Context, userId: string, role: UserRole, pe
   await ctx.sideEffect(() => tryApplyUserRole(userId, role));
 }
 
-
 // ---------------------------- deploying / running ---------------------------
 
-const serve = restate
-  .endpoint()
-  .bindRouter("roleUpdate", restate.router({ applyRoleUpdate }))
+const serve = restate.endpoint().bindRouter("roleUpdate", restate.router({ applyRoleUpdate }));
 
 serve.listen(9080);
 // or serve.lambdaHandler();
 // or serve.http2Handler();
 // or ...
-
 
 //
 // See README for details on how to start and connect Restate.

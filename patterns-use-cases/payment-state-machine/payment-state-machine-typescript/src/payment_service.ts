@@ -44,8 +44,7 @@ const paymentsService = restate.keyedRouter({
     payment: Payment
   ): Promise<Result> => {
     // de-duplication to make calls idempotent
-    const status: PaymentStatus =
-      (await ctx.get("status")) ?? PaymentStatus.NEW;
+    const status: PaymentStatus = (await ctx.get("status")) ?? PaymentStatus.NEW;
     if (status === PaymentStatus.CANCELLED) {
       return {
         success: false,
@@ -59,38 +58,28 @@ const paymentsService = restate.keyedRouter({
     const { accountId, amount } = checkTypes(payment);
 
     // charge the target account
-    const paymentResult = await ctx
-      .rpc(accounts.api)
-      .withdraw(accountId, amount);
+    const paymentResult = await ctx.rpc(accounts.api).withdraw(accountId, amount);
 
     // remember only on success, so that on failure (when we didn't charge) the external
     // caller may retry this (with the same token), for the sake of this example
     if (paymentResult.success) {
       ctx.set("status", PaymentStatus.COMPLETED_SUCCESSFULLY);
       ctx.set("payment", payment); // remember this in case we need to roll-back later
-      ctx
-        .sendDelayed(paymentsApi, EXPIRY_TIMEOUT)
-        .expireToken(idempotencyToken);
+      ctx.sendDelayed(paymentsApi, EXPIRY_TIMEOUT).expireToken(idempotencyToken);
     }
 
     return paymentResult;
   },
 
-  cancelPayment: async (
-    ctx: restate.KeyedContext,
-    idempotencyToken: string
-  ) => {
-    const status: PaymentStatus =
-      (await ctx.get("status")) ?? PaymentStatus.NEW;
+  cancelPayment: async (ctx: restate.KeyedContext, idempotencyToken: string) => {
+    const status: PaymentStatus = (await ctx.get("status")) ?? PaymentStatus.NEW;
 
     switch (status) {
       case PaymentStatus.NEW:
         // not seen this token before, mark as canceled, in case the cancellation
         // overtook the actual payment request (on the externall caller's side)
         ctx.set("status", PaymentStatus.CANCELLED);
-        ctx
-          .sendDelayed(paymentsApi, EXPIRY_TIMEOUT)
-          .expireToken(idempotencyToken);
+        ctx.sendDelayed(paymentsApi, EXPIRY_TIMEOUT).expireToken(idempotencyToken);
         break;
 
       case PaymentStatus.CANCELLED:
@@ -131,9 +120,7 @@ restate
 
 function checkTypes(payment: Payment): Payment {
   if (typeof payment.accountId !== "string") {
-    throw new restate.TerminalError(
-      "Wrong type for accountId " + typeof payment.accountId
-    );
+    throw new restate.TerminalError("Wrong type for accountId " + typeof payment.accountId);
   }
   if (typeof payment.amount === "number") {
     return payment;

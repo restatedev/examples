@@ -28,38 +28,38 @@ import { paymentsServiceApi } from "./services/payments";
 //  operations, like `ctx.sideEffect()` or `ctx.rpc()`.
 
 const reserveTrip = async (ctx: restate.Context, tripID: string) => {
+  // set up RPC clients
+  const flights = ctx.rpc(flightsServiceApi);
+  const carRentals = ctx.rpc(carRentalServiceApi);
+  const payments = ctx.rpc(paymentsServiceApi);
 
-    // set up RPC clients
-    const flights = ctx.rpc(flightsServiceApi);
-    const carRentals = ctx.rpc(carRentalServiceApi);
-    const payments = ctx.rpc(paymentsServiceApi);
+  // create an compensation stack
+  const compensations = [];
+  try {
+    // call the flight API to reserve, keeping track of how to cancel
+    const flightBooking = await flights.reserve(tripID);
+    compensations.push(() => flights.cancel(tripID, flightBooking));
 
-    // create an compensation stack
-    const compensations = [];
-    try {
-        // call the flight API to reserve, keeping track of how to cancel
-        const flightBooking = await flights.reserve(tripID);
-        compensations.push(() => flights.cancel(tripID, flightBooking));
+    // call the car rental service API to reserve, keeping track of how to cancel
+    const carBooking = await carRentals.reserve(tripID);
+    compensations.push(() => carRentals.cancel(tripID, carBooking));
 
-        // call the car rental service API to reserve, keeping track of how to cancel
-        const carBooking = await carRentals.reserve(tripID);
-        compensations.push(() => carRentals.cancel(tripID, carBooking));
+    // call the payments API, keeping track of how to refund
+    const paymentId = await payments.process({ tripID });
+    compensations.push(() => payments.refund({ tripID, paymentId }));
 
-        // call the payments API, keeping track of how to refund
-        const paymentId = await payments.process({ tripID });
-        compensations.push(() => payments.refund({ tripID, paymentId }));
-
-        // confirm the flight and car reservations
-        await flights.confirm(tripID, flightBooking);
-        await carRentals.confirm(tripID, carBooking);
+    // confirm the flight and car reservations
+    await flights.confirm(tripID, flightBooking);
+    await carRentals.confirm(tripID, carBooking);
+  } catch (e: any) {
+    // undo all the steps up to this point by running the compensations
+    for (const compensation of compensations.reverse()) {
+      await compensation();
     }
-    catch (e: any) {
-        // undo all the steps up to this point by running the compensations
-        for (const compensation of compensations.reverse()) {
-            await compensation();
-        }
 
-        // exit with an error
-        throw new restate.TerminalError(`Travel reservation failed with an error: ${e.message}`, { cause: e });
-    }
-}
+    // exit with an error
+    throw new restate.TerminalError(`Travel reservation failed with an error: ${e.message}`, {
+      cause: e,
+    });
+  }
+};

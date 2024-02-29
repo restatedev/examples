@@ -32,29 +32,29 @@ const numProcesses = process.argv.length > 4 ? Number(process.argv[4]) : 10;
 
 // Function to execute an external script with the same stdout and stderr as the parent
 function executeScript() {
-    const args = ["run", "example2", promiseId, restateUri];
-    const child = spawn("npm", args, { stdio: "inherit" });
+  const args = ["run", "example2", promiseId, restateUri];
+  const child = spawn("npm", args, { stdio: "inherit" });
 
-    return new Promise<void>((resolve, reject) => {
-        child.on("close", (code) => {
-            if (code !== 0) {
-                console.error(`Script exited with code ${code}`);
-                return reject(new Error(`Script exited with code ${code}`));
-            }
-            resolve();
-        });
+  return new Promise<void>((resolve, reject) => {
+    child.on("close", (code) => {
+      if (code !== 0) {
+        console.error(`Script exited with code ${code}`);
+        return reject(new Error(`Script exited with code ${code}`));
+      }
+      resolve();
     });
+  });
 }
 
 // Main function to execute the script 10 times in parallel
 async function main() {
-    console.log(`Running ${numProcesses} forks of the promise example process...`);
-    const promises = [];
-    for (let i = 0; i < numProcesses; i++) {
-        promises.push(executeScript());
-    }
-    await Promise.all(promises);
-    console.log("Done.");
+  console.log(`Running ${numProcesses} forks of the promise example process...`);
+  const promises = [];
+  for (let i = 0; i < numProcesses; i++) {
+    promises.push(executeScript());
+  }
+  await Promise.all(promises);
+  console.log("Done.");
 }
 
 main().catch(console.error);
