@@ -27,9 +27,6 @@ challenges.
 
 ## Examples by Language
 
-The majority of the examples currently exist as TypeScript versions, Java versions are catching up.
-Here is a (incomplete) list of examples per language.
-
 ### TypeScript
 
 | Type       | Name / Link                                                                                   |
@@ -82,17 +79,15 @@ Examples that run individually typically need a running Restate Server instance.
 Some examples can be run with Docker Compose. Those already bring their own Restate server instance.
 
 You can launch Restate in a number of ways, including using the [Restate Cloud](https://restate.dev/get-restate-cloud/)
-service. See [Get Restate](https://restate.dev/get-restate/) for all options to run Restate.
+service. See [Get Restate](https://restate.dev/get-restate/) for all options to run Restate. Here is a short-list
+of options to run Restate Server locally.
 
-The simplest way for the examples is to start the Restate Server binary directly or in a Docker container.
+Install and run the `restate-server` binary:
+  - Download from https://github.com/restatedev/restate/releases
+  - Install with Homebrew: `brew install restatedev/tap/restate-server`
+  - Install with _npm_: `npm install --global @restatedev/restate-server@latest`
 
-The `restate-server` binary can be obtained from various sources:
-  - Download the binary from https://github.com/restatedev/restate/releases and run `restate-server`.
-  - Or install and run Restate with Homebrew: `brew install restatedev/tap/restate-server` and run `restate-server`.
-  - Or install with _npm_: `npm install --global @restatedev/restate-server@latest`
-    (Or install only locally in a single example: `npm install --save-dev @restatedev/restate-server@latest`)
-
-To run Restate Server in a Docker container, use
+Or run Restate Server in Docker:
   - `docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:latest`
 
 
@@ -101,10 +96,9 @@ To run Restate Server in a Docker container, use
 Many examples need to be registered at Restate, so that Restate will proxy their function calls and
 do its magic. Once both server and example are running, register the example
 
-* Via the [CLI](https://docs.restate.dev/restate/cli): `restate dp reg localhost:9080` (possibly adjust
-  host/port per the concrete example).
-* Via `curl`: `curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'`
-  
+* Via the [CLI](https://docs.restate.dev/restate/cli): `restate dp reg localhost:9080`
+* Via `curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'`
+
 **Important** When running Restate with Docker, use `host.docker.internal` instead of `localhost` in the URIs above.
 
 ----

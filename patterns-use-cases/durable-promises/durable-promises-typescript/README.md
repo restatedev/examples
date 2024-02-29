@@ -60,18 +60,8 @@ const actualResult2 = await durablePromise.reject("Oh dear, rejected");
 ### Implementation
 
 The Durable Promises are a simple application implemented on top of Restate, making
-use of Restate's Virtual Objects to consistently manage state, and of the Durable
-Execution to allow awaiters (and their HTTP calls) to efficiently wait (and suspend
-while waiting).
-
-* The [durable_promises_service.ts](src/dp/durable_promises_service.ts) file implements
-  the service that backs the durable promise logic. It is primarily one state-backing
-  Restate Virtual Object.
-* [durable_promises.ts](src/dp/durable_promises.ts) has the interfaces for the typed
-  TypeScript promise API that uses the Durable Service.
-
-You can even use this simple implementation and add it to your application or infra,
-if you want.
+use of Restate's Virtual Objects. You can use this simple implementation and add it
+to your application or infra as a self-contained piece.
 
 ### Running
 
@@ -84,7 +74,7 @@ _Note: the '--force' flag here is to circumvent all checks relating to graceful 
 because this here is only an example/playground, not a production setup._
 
 You can now await and resolve promises from different processes at different times.
-With via simple HTTP calls or a TypeScript API.
+With via simple HTTP calls (see above) or the TypeScript API.
 
-You can run the examples via `npm run example1`, `npm run example2`, `npm run example3`,
+You can start the bundled examples via `npm run example1`, `npm run example2`, `npm run example3`,
 optionally passing `[promise-id] [restateUri]` as parameters.
