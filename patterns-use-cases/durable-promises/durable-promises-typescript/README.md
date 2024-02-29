@@ -3,6 +3,9 @@
 The Durable Promises implemented in this example work like regular futures/promises,
 but are durable cross processes and failures.
 
+Can be used to build simple and reliable **callbacks**,
+**signal** and **communicate between systems**, or to decouple sender/receiver.
+
 * A promise is uniquely identified by an _id_
 * An arbitrary number of _awaiters_ (listeners) across different
   processes can await the promise. 
