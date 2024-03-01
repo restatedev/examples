@@ -25,48 +25,34 @@ jobs:
           java-version: ${{ matrix.jvm-version }}
 
       # When adding a new example make sure it's listed here
-      - name: Test java/hello-world-http
+      - name: Test Java Gradle Template
         uses: gradle/gradle-build-action@v2
         with:
           arguments: check
-          build-root-directory: java/hello-world-http
-      - name: Test java/hello-world-lambda
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: check
-          build-root-directory: java/hello-world-lambda
+          build-root-directory: templates/java-gradle
       - name: Test java/food-ordering
         uses: gradle/gradle-build-action@v2
         with:
           arguments: check
-          build-root-directory: java/food-ordering/app
-      - name: Test java/patterns
+          build-root-directory: end-to-end-applications/java/food-ordering/app
+      - name: Test java/patterns/sagas
         uses: gradle/gradle-build-action@v2
         with:
           arguments: check
-          build-root-directory: java/patterns
+          build-root-directory: patterns-use-cases/sagas/sagas-java
       - name: Test java/tour-of-restate
         uses: gradle/gradle-build-action@v2
         with:
           arguments: check
-          build-root-directory: java/tour-of-restate
-      - name: Test kotlin/hello-world-http
+          build-root-directory: tutorials/tour-of-restate-java
+      - name: Test Kotlin Template
         uses: gradle/gradle-build-action@v2
         with:
           arguments: check
-          build-root-directory: kotlin/hello-world-http
-      - name: Test kotlin/hello-world-lambda
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: check
-          build-root-directory: kotlin/hello-world-lambda
-      - name: Test kotlin/hello-world-lambda-cdk
-        run: |
-          npm --prefix kotlin/hello-world-lambda-cdk clean-install
-          npm --prefix kotlin/hello-world-lambda-cdk run verify
-      - name: Build Scala HTTP template
+          build-root-directory: templates/kotlin-gradle
+      - name: Build Scala Template
         run: sbt -v +package
-        working-directory: scala/hello-world-http
+        working-directory: templates/scala-sbt
 
   build-ts:
     # prevent from running on forks
@@ -79,16 +65,27 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: bufbuild/buf-setup-action@v1
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://registry.npmjs.org'
 
-      - run: npm ci --prefix typescript
-      - run: npm run --prefix typescript -ws verify
-
-      - name: "Test typescript-end-to-end-testing example"
-        working-directory: ./typescript/end-to-end-testing
-        run: npm ci && npm run proto && npm run test
+      # to avoid the root-directly workspaces, the examples are listed here individually
+      # basics
+      - run: npm i --prefix basics/basics-typescript && npm --prefix basics/basics-typescript run build
+      # templates
+      - run: npm i --prefix templates/typescript && npm --prefix templates/typescript run build
+      # tutorials
+      - run: npm i --prefix tutorials/tour-of-restate-typescript && npm --prefix tutorials/tour-of-restate-typescript run build
+      # patterns
+      - run: npm i --prefix patterns-use-cases/async-signals-payment && npm --prefix patterns-use-cases/async-signals-payment run build
+      - run: npm i --prefix patterns-use-cases/durable-promises && npm --prefix patterns-use-cases/durable-promises run build
+      - run: npm i --prefix patterns-use-cases/payment-state-machine/payment-state-machine-typescript && npm --prefix patterns-use-cases/payment-state-machine/payment-state-machine-typescript run build
+      - run: npm i --prefix patterns-use-cases/sagas/sagas-typescript && npm --prefix patterns-use-cases/sagas/sagas-typescript run build
+      - run: npm i --prefix patterns-use-cases/state-machines && npm --prefix patterns-use-cases/state-machines run build
+      - run: npm i --prefix patterns-use-cases/ticket-reservation && npm --prefix patterns-use-cases/ticket-reservation run build
+      # e2e apps
+      - run: npm i --prefix end-to-end-applications/typescript/ai-image-workflows && npm --prefix end-to-end-applications/typescript/ai-image-workflows run build
+      - run: npm i --prefix end-to-end-applications/typescript/ecommerce-store && npm --prefix end-to-end-applications/typescript/ecommerce-store run build
+      - run: npm i --prefix end-to-end-applications/typescript/food-ordering && npm --prefix end-to-end-applications/typescript/food-ordering run build
