@@ -71,5 +71,23 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://registry.npmjs.org'
 
-      - run: npm install
-      - run: npm run -ws build
+      # to avoid using workspaces, which couples the examples together and makes them harder
+      # to use independently, we list them here individually
+
+      # basics
+      - run: npm i --prefix basics/basics-typescript && npm --prefix basics/basics-typescript run build
+      # templates
+      - run: npm i --prefix templates/typescript && npm --prefix templates/typescript run build
+      # tutorials
+      - run: npm i --prefix tutorials/tour-of-restate-typescript && npm --prefix tutorials/tour-of-restate-typescript run build
+      # patterns
+      - run: npm i --prefix patterns-use-cases/async-signals-payment/async-signals-payment-typescript && npm --prefix patterns-use-cases/async-signals-payment/async-signals-payment-typescript run build
+      - run: npm i --prefix patterns-use-cases/durable-promises/durable-promises-typescript && npm --prefix patterns-use-cases/durable-promises/durable-promises-typescript run build
+      - run: npm i --prefix patterns-use-cases/payment-state-machine/payment-state-machine-typescript && npm --prefix patterns-use-cases/payment-state-machine/payment-state-machine-typescript run build
+      - run: npm i --prefix patterns-use-cases/sagas/sagas-typescript && npm --prefix patterns-use-cases/sagas/sagas-typescript run build
+      - run: npm i --prefix patterns-use-cases/state-machines/state-machines-typescript && npm --prefix patterns-use-cases/state-machines/state-machines-typescript run build
+      - run: npm i --prefix patterns-use-cases/ticket-reservation/ticket-reservation-typescript && npm --prefix patterns-use-cases/ticket-reservation/ticket-reservation-typescript run build
+      # e2e apps
+      - run: npm i --prefix end-to-end-applications/typescript/ai-image-workflows && npm --prefix end-to-end-applications/typescript/ai-image-workflows run build
+      - run: npm i --prefix end-to-end-applications/typescript/ecommerce-store/services && npm --prefix end-to-end-applications/typescript/ecommerce-store/services run build
+      - run: npm i --prefix end-to-end-applications/typescript/food-ordering/app && npm --prefix end-to-end-applications/typescript/food-ordering/app run proto && npm --prefix end-to-end-applications/typescript/food-ordering/app run build
