@@ -1,6 +1,6 @@
 {
-  "name": "@restatedev/example-ticket-reservation",
-  "version": "0.0.1",
+  "name": "@restatedev/examples-patterns-ticket-reservation",
+  "version": "0.8.0",
   "description": "An example to illustrate how Restate's keyed-sharding and concurrency guarantees simplify microservice architectures",
   "main": "app.js",
   "type": "commonjs",
@@ -16,11 +16,11 @@
     "dev": "ts-node-dev --respawn --transpile-only ./src/app.ts"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "dev",
+    "@restatedev/restate-sdk": "0.8.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@restatedev/restate": "0.7.1",
+    "@restatedev/restate": "0.8.0",
     "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",

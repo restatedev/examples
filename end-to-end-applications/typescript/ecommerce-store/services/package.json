@@ -1,7 +1,7 @@
 {
-  "name": "@restatedev/example-ecommerce-store",
-  "version": "0.0.1",
-  "description": "A sophisticated example on how to build an ecommerce store based on Restate using the grpc-based Typescript SDK.",
+  "name": "@restatedev/examples-e2e-ecommerce-store",
+  "version": "0.8.0",
+  "description": "A full example on how to build an ecommerce store based on Restate using the grpc-based Typescript SDK.",
   "main": "dist/app.js",
   "type": "commonjs",
   "types": "dist/app.d.ts",
@@ -22,7 +22,7 @@
     "dist"
   ],
   "dependencies": {
-    "@restatedev/restate-sdk": "dev",
+    "@restatedev/restate-sdk": "0.8.0",
     "long": "^5.2.1",
     "pg": "^8.10.0",
     "pg-hstore": "^2.3.4",

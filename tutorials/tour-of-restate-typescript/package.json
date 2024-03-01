@@ -1,6 +1,6 @@
 {
-  "name": "@restatedev/tour-of-restate",
-  "version": "0.0.1",
+  "name": "@restatedev/examples-tutorials-tour-of-restate",
+  "version": "0.8.0",
   "description": "Tour of Restate's key features with the Typescript handler API",
   "type": "commonjs",
   "license": "MIT",
@@ -19,7 +19,7 @@
   "author": "Restate Developers",
   "email": "code@restate.dev",
   "dependencies": {
-    "@restatedev/restate-sdk": "0.7.0",
+    "@restatedev/restate-sdk": "0.8.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

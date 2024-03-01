@@ -1,6 +1,6 @@
 {
-  "name": "@restatedev/examples-basics",
-  "version": "0.7.0",
+  "name": "@restatedev/example-pattern-durable-promises",
+  "version": "0.8.0",
   "description": "An examples of the using Restate for Durable Promises",
   "type": "commonjs",
   "license": "MIT",
@@ -17,8 +17,8 @@
     "@restatedev/restate-sdk": "dev"
   },
   "devDependencies": {
-    "@restatedev/restate": "^0.7.1",
-    "@restatedev/restate-server": "^0.7.1",
+    "@restatedev/restate": "0.8.0",
+    "@restatedev/restate-server": "0.8.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.0.2"
   }

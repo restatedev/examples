@@ -1,7 +1,7 @@
 {
-  "name": "restate-ts-template",
-  "version": "0.0.1",
-  "description": "Template for JavaScript/TypeScript services running with Restate (https://github.com/restatedev/) ",
+  "name": "@restatedev/examples-e2e-food-ordering",
+  "version": "0.8.0",
+  "description": "A food ordering app, implented in Restate",
   "main": "app.js",
   "type": "commonjs",
   "scripts": {
@@ -17,7 +17,7 @@
   "dependencies": {
     "@types/node": "^20.6.3",
     "@types/uuid": "^9.0.0",
-    "@restatedev/restate-sdk": "dev",
+    "@restatedev/restate-sdk": "0.8.0",
     "kafkajs": "^2.2.4",
     "axios": "^1.4.0",
     "express": "^4.17.3",

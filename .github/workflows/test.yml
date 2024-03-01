@@ -71,21 +71,5 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://registry.npmjs.org'
 
-      # to avoid the root-directly workspaces, the examples are listed here individually
-      # basics
-      - run: npm i --prefix basics/basics-typescript && npm --prefix basics/basics-typescript run build
-      # templates
-      - run: npm i --prefix templates/typescript && npm --prefix templates/typescript run build
-      # tutorials
-      - run: npm i --prefix tutorials/tour-of-restate-typescript && npm --prefix tutorials/tour-of-restate-typescript run build
-      # patterns
-      - run: npm i --prefix patterns-use-cases/async-signals-payment && npm --prefix patterns-use-cases/async-signals-payment run build
-      - run: npm i --prefix patterns-use-cases/durable-promises && npm --prefix patterns-use-cases/durable-promises run build
-      - run: npm i --prefix patterns-use-cases/payment-state-machine/payment-state-machine-typescript && npm --prefix patterns-use-cases/payment-state-machine/payment-state-machine-typescript run build
-      - run: npm i --prefix patterns-use-cases/sagas/sagas-typescript && npm --prefix patterns-use-cases/sagas/sagas-typescript run build
-      - run: npm i --prefix patterns-use-cases/state-machines && npm --prefix patterns-use-cases/state-machines run build
-      - run: npm i --prefix patterns-use-cases/ticket-reservation && npm --prefix patterns-use-cases/ticket-reservation run build
-      # e2e apps
-      - run: npm i --prefix end-to-end-applications/typescript/ai-image-workflows && npm --prefix end-to-end-applications/typescript/ai-image-workflows run build
-      - run: npm i --prefix end-to-end-applications/typescript/ecommerce-store && npm --prefix end-to-end-applications/typescript/ecommerce-store run build
-      - run: npm i --prefix end-to-end-applications/typescript/food-ordering && npm --prefix end-to-end-applications/typescript/food-ordering run build
+      - run: npm install
+      - run: npm run -ws build
