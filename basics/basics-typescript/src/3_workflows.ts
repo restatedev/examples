@@ -25,61 +25,59 @@ import { WorkflowStartResult } from "@restatedev/restate-sdk/dist/workflows/work
 // Each workflow instance (ID) can run only once (to success or failure).
 //
 const myWorkflow = wf.workflow("usersignup", {
+  // --- The workflow logic is in the run() function ---
 
-    // --- The workflow logic is in the run() function ---
+  run: async (ctx: wf.WfContext, params: { name: string; email: string }) => {
+    const { name, email } = params;
+    const userId = ctx.workflowId();
 
-    run: async (ctx: wf.WfContext, params: { name: string, email: string} ) => {
-        const { name, email } = params;
-        const userId = ctx.workflowId();
+    // publish state, for the world to see our progress
+    ctx.set("stage", "Creating User");
 
-        // publish state, for the world to see our progress
-        ctx.set("stage", "Creating User");
+    // use all the standard durable execution features here
+    await ctx.sideEffect(() => createUserEntry({ userId, name }));
 
-        // use all the standard durable execution features here
-        await ctx.sideEffect(() => createUserEntry({ userId, name }));
-    
-        ctx.set("stage", "Email Verification");
+    ctx.set("stage", "Email Verification");
 
-        // send the email with the verification secret
-        const secret = await ctx.sideEffect(async () => crypto.randomUUID());        
-        ctx.sideEffect(() => sendEmailWithLink({ email, secret }));
-        
-        try {
-            // the promise here is resolved or rejected by the additional workflow methods below
-            const clickSecret = await ctx.promise<string>("email-link");
-            if (clickSecret !== secret) {
-                throw new restate.TerminalError("Wrong secret from email link");
-            }
-        } catch (err: any) {
-            ctx.set("stage", "Verification failed: " + err.message);
-            return;
-        }
+    // send the email with the verification secret
+    const secret = await ctx.sideEffect(async () => crypto.randomUUID());
+    ctx.sideEffect(() => sendEmailWithLink({ email, secret }));
 
-        ctx.set("stage", "User verified");
-    },
+    try {
+      // the promise here is resolved or rejected by the additional workflow methods below
+      const clickSecret = await ctx.promise<string>("email-link");
+      if (clickSecret !== secret) {
+        throw new restate.TerminalError("Wrong secret from email link");
+      }
+    } catch (err: any) {
+      ctx.set("stage", "Verification failed: " + err.message);
+      return;
+    }
 
-    // --- various interactions for queries and signals ---
+    ctx.set("stage", "User verified");
+  },
 
-    getStage: (ctx: wf.SharedWfContext) => {
-        // read the state to get the stage where the workflow is
-        return ctx.get("stage");
-    },
+  // --- various interactions for queries and signals ---
 
-    verifyEmail: async (ctx: wf.SharedWfContext, request: { secret: string }) => {
-        // resolve the durable promise to let the awaiter know
-        ctx.promise<string>("email-link").resolve(request.secret);
-    },
+  getStage: (ctx: wf.SharedWfContext) => {
+    // read the state to get the stage where the workflow is
+    return ctx.get("stage");
+  },
 
-    abortVerification: async (ctx: wf.SharedWfContext) => {
-        // failing the durable promise will throw an Error for the awaiting thread
-        ctx.promise<string>("email-link").fail("User aborted verification");
-    },
-})
+  verifyEmail: async (ctx: wf.SharedWfContext, request: { secret: string }) => {
+    // resolve the durable promise to let the awaiter know
+    ctx.promise<string>("email-link").resolve(request.secret);
+  },
+
+  abortVerification: async (ctx: wf.SharedWfContext) => {
+    // failing the durable promise will throw an Error for the awaiting thread
+    ctx.promise<string>("email-link").fail("User aborted verification");
+  },
+});
 
 export const workflowApi = myWorkflow.api;
 
 // ---------- ⬆️⬆️ deploy this as a container, lambda, etc. ⬆️⬆️ ----------
-
 
 // start it via an HTTP call.
 // `curl restate:8080/usersignup/submit --json '{ "request": {
@@ -90,20 +88,23 @@ export const workflowApi = myWorkflow.api;
 
 // or programatically
 async function signupUser(userId: string, name: string, email: string) {
-    const rs = restate.clients.connect("http://restate:8080");
-    const { client, status } = await rs.submitWorkflow(workflowApi, "signup-" + userId, { name, email });
+  const rs = restate.clients.connect("http://restate:8080");
+  const { client, status } = await rs.submitWorkflow(workflowApi, "signup-" + userId, {
+    name,
+    email,
+  });
 
-    if (status != WorkflowStartResult.STARTED) {
-        throw new Error("User ID already taken");
-    }
-    
-    await client.result();
+  if (status != WorkflowStartResult.STARTED) {
+    throw new Error("User ID already taken");
+  }
+
+  await client.result();
 }
 
 // interact with the workflow  from any other code
 async function verifyEmail(userId: string, emailSecret: string) {
-    const rs = restate.clients.connect("http://restate:8080");
-    const { client, status } = await rs.connectToWorkflow(workflowApi, "signup-" + userId);
+  const rs = restate.clients.connect("http://restate:8080");
+  const { client, status } = await rs.connectToWorkflow(workflowApi, "signup-" + userId);
 
-    client.workflowInterface().verifyEmail({ secret: emailSecret });
+  client.workflowInterface().verifyEmail({ secret: emailSecret });
 }
