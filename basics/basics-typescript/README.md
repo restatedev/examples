@@ -27,6 +27,12 @@ about how they work and how they can be run.
 * **[Virtual Objects](src/4_virtual_objects.ts):** Stateful serverless objects
   to manage durable consistent state and state-manipulating logic.
 
+* **[Kafka Event-processing](src/5_events_processing.ts):** Processing events to
+  update various downstream systems with durable event handlers, event-delaying,
+  in a strict-per-key order.
+
+* **[Stateful Event-processing](src/6_events_state.ts):** Populating state from
+  events and making is queryable via RPC handlers.
 
 
 ### Running the examples
