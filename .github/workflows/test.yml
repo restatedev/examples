@@ -89,5 +89,5 @@ jobs:
       - run: npm i --prefix patterns-use-cases/ticket-reservation/ticket-reservation-typescript && npm --prefix patterns-use-cases/ticket-reservation/ticket-reservation-typescript run build
       # e2e apps
       - run: npm i --prefix end-to-end-applications/typescript/ai-image-workflows && npm --prefix end-to-end-applications/typescript/ai-image-workflows run build
-      - run: npm i --prefix end-to-end-applications/typescript/ecommerce-store/services && npm --prefix end-to-end-applications/typescript/ecommerce-store/services run build
-      - run: npm i --prefix end-to-end-applications/typescript/food-ordering/app && npm --prefix end-to-end-applications/typescript/food-ordering/app run proto && npm --prefix end-to-end-applications/typescript/food-ordering/app run build
+      - run: npm i --prefix end-to-end-applications/typescript/ecommerce-store/services && npm --prefix end-to-end-applications/typescript/ecommerce-store/services run proto && npm --prefix end-to-end-applications/typescript/ecommerce-store/services run build
+      - run: npm i --prefix end-to-end-applications/typescript/food-ordering/app && npm --prefix end-to-end-applications/typescript/food-ordering/app run build
