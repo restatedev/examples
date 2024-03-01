@@ -14,7 +14,7 @@
     "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
     "verify": "npm run format -- --check && npm run lint && npm run proto && npm run build",
     "proto": "cd proto && npx --prefix=. buf mod update && npx --prefix=. buf generate .",
-    "build": "tsc --noEmitOnError",
+    "build": "npm run proto && tsc --noEmitOnError",
     "app": "RESTATE_DEBUG_LOGGING=JOURNAL node ./dist/app.js",
     "dev": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only ./src/app.ts"
   },
