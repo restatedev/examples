@@ -15,7 +15,7 @@ import { ticketServiceApi, ticketDbRouter } from "./ticket_service";
 import { checkoutApi, checkoutRouter } from "./checkout";
 
 restate
-  .createServer()
+  .endpoint()
   .bindKeyedRouter(userSessionApi.path, userSessionRouter)
   .bindKeyedRouter(ticketServiceApi.path, ticketDbRouter)
   .bindRouter(checkoutApi.path, checkoutRouter)

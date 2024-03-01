@@ -13,62 +13,64 @@ import * as restate from "@restatedev/restate-sdk";
 import { ticketServiceApi } from "./ticket_service";
 import { checkoutApi } from "./checkout";
 
-const addTicket = async (
-  ctx: restate.RpcContext,
-  userId: string,
-  ticketId: string,
-) => {
-  const reservationSuccess = await ctx.rpc(ticketServiceApi).reserve(ticketId);
+export const userSessionRouter = restate.keyedRouter({
+  addTicket: async (
+    ctx: restate.KeyedContext,
+    userId: string,
+    ticketId: string,
+  ) => {
+    const reservationSuccess = await ctx
+      .rpc(ticketServiceApi)
+      .reserve(ticketId);
 
-  if (reservationSuccess) {
+    if (reservationSuccess) {
+      const tickets = (await ctx.get<string[]>("tickets")) ?? [];
+      tickets.push(ticketId);
+      ctx.set("tickets", tickets);
+
+      ctx
+        .sendDelayed(userSessionApi, 15 * 60 * 1000)
+        .expireTicket(userId, ticketId);
+    }
+
+    return reservationSuccess;
+  },
+
+  expireTicket: async (
+    ctx: restate.KeyedContext,
+    userId: string,
+    ticketId: string,
+  ) => {
     const tickets = (await ctx.get<string[]>("tickets")) ?? [];
-    tickets.push(ticketId);
-    ctx.set("tickets", tickets);
 
-    ctx
-      .sendDelayed(userSessionApi, 15 * 60 * 1000)
-      .expireTicket(userId, ticketId);
-  }
+    const ticketIndex = tickets.findIndex((ticket) => ticket === ticketId);
 
-  return reservationSuccess;
-};
+    if (ticketIndex != -1) {
+      tickets.splice(ticketIndex, 1);
+      ctx.set("tickets", tickets);
 
-const expireTicket = async (
-  ctx: restate.RpcContext,
-  userId: string,
-  ticketId: string,
-) => {
-  const tickets = (await ctx.get<string[]>("tickets")) ?? [];
+      ctx.send(ticketServiceApi).unreserve(ticketId);
+    }
+  },
 
-  const ticketIndex = tickets.findIndex((ticket) => ticket === ticketId);
+  checkout: async (ctx: restate.KeyedContext, userId: string) => {
+    const tickets = (await ctx.get<string[]>("tickets")) ?? [];
 
-  if (ticketIndex != -1) {
-    tickets.splice(ticketIndex, 1);
-    ctx.set("tickets", tickets);
+    if (tickets.length === 0) {
+      return false;
+    }
 
-    ctx.send(ticketServiceApi).unreserve(ticketId);
-  }
-};
+    const checkoutSuccess = await ctx
+      .rpc(checkoutApi)
+      .checkout({ userId: userId, tickets: tickets });
 
-const checkout = async (ctx: restate.RpcContext, userId: string) => {
-  const tickets = (await ctx.get<string[]>("tickets")) ?? [];
+    if (checkoutSuccess) {
+      ctx.clear("tickets");
+    }
 
-  if (tickets.length === 0) {
-    return false;
-  }
-
-  const checkoutSuccess = await ctx
-    .rpc(checkoutApi)
-    .checkout({ userId: userId, tickets: tickets });
-
-  if (checkoutSuccess) {
-    ctx.clear("tickets");
-  }
-
-  return checkoutSuccess;
-};
-
-export const userSessionRouter = restate.keyedRouter({ addTicket, expireTicket, checkout});
+    return checkoutSuccess;
+  },
+});
 
 export const userSessionApi: restate.ServiceApi<typeof userSessionRouter> = {
   path: "UserSession",

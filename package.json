@@ -16,8 +16,8 @@
         "patterns-use-cases/ticket-reservation/ticket-reservation-typescript",
 
         "end-to-end-applications/typescript/ai-image-workflows",
-        "end-to-end-applications/typescript/ecommerce-store",
-        "end-to-end-applications/typescript/food-ordering",
+        "end-to-end-applications/typescript/ecommerce-store/services",
+        "end-to-end-applications/typescript/food-ordering/app",
 
         "tutorials/tour-of-restate-typescript"
     ]

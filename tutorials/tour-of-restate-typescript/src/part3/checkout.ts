@@ -14,32 +14,38 @@ import { v4 as uuid } from "uuid";
 import { PaymentClient } from "../auxiliary/payment_client";
 import { EmailClient } from "../auxiliary/email_client";
 
-const checkout = async (
-  ctx: restate.RpcContext,
-  request: { userId: string; tickets: string[] },
-) => {
-  // Generate idempotency key for the stripe client
-  const idempotencyKey = await ctx.sideEffect(async () => uuid());
+export const checkoutRouter = restate.router({
+  checkout: async (
+    ctx: restate.Context,
+    request: { userId: string; tickets: string[] },
+  ) => {
+    // Generate idempotency key for the stripe client
+    const idempotencyKey = await ctx.sideEffect(async () => uuid());
 
-  // We are a uniform shop where everything costs 40 USD
-  const totalPrice = request.tickets.length * 40;
+    // We are a uniform shop where everything costs 40 USD
+    const totalPrice = request.tickets.length * 40;
 
-  const paymentClient = PaymentClient.get();
+    const paymentClient = PaymentClient.get();
 
-  const success = await ctx.sideEffect(() => paymentClient.call(idempotencyKey, totalPrice));
+    const success = await ctx.sideEffect(() =>
+      paymentClient.call(idempotencyKey, totalPrice),
+    );
 
-  const email = EmailClient.get();
+    const email = EmailClient.get();
 
-  if (success) {
-    await ctx.sideEffect(() => email.notifyUserOfPaymentSuccess(request.userId));
-  } else {
-    await ctx.sideEffect( () => email.notifyUserOfPaymentFailure(request.userId));
-  }
+    if (success) {
+      await ctx.sideEffect(() =>
+        email.notifyUserOfPaymentSuccess(request.userId),
+      );
+    } else {
+      await ctx.sideEffect(() =>
+        email.notifyUserOfPaymentFailure(request.userId),
+      );
+    }
 
-  return success;
-};
-
-export const checkoutRouter = restate.router({ checkout });
+    return success;
+  },
+});
 
 export const checkoutApi: restate.ServiceApi<typeof checkoutRouter> = {
   path: "Checkout",
