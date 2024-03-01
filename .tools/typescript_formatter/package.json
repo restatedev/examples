@@ -1,0 +1,14 @@
+{
+  "name": "typescript-examples-formatter",
+  "version": "1.0.0",
+  "description": "Formatter for typescript projects",
+  "private": true,
+  "scripts": {
+    "format-basics": "prettier --ignore-path .prettierignore --print-width 100 --write \"./../../basics/**/*.ts\"",
+    "format-patterns": "prettier --ignore-path .prettierignore --print-width 100 --write \"./../../**/patterns-use-cases/**/*.ts\"",
+    "format-all": "npm run format-basics && npm run format-patterns"
+  },
+  "devDependencies": {
+    "prettier": "^2.8.4"
+  }
+}

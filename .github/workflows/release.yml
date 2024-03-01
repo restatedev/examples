@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Prepare zip files
-        run: ./scripts/prepare_release_zip.sh
+        run: ./.tools/prepare_release_zip.sh
 
       - name: Create release
         uses: softprops/action-gh-release@v1

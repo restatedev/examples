@@ -1,7 +1,0 @@
-# Config file used by 'buf' when managing proto files
-# 'buf' is used by default when calling 'npm run proto'
-# If you use protoc instead, you can ignore (or delete) this file
-version: v1
-deps:
-  - buf.build/restatedev/proto
-
