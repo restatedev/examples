@@ -9,13 +9,13 @@
  * https://github.com/restatedev/sdk-typescript/blob/main/LICENSE
  */
 
-import { TerminalError } from "@restatedev/restate-sdk"
+import { TerminalError } from "@restatedev/restate-sdk";
 
 export function verifyPaymentRequest(request: any): void {
-    if (!request?.amount) {
-        throw new TerminalError("'amout' missing or zero in request")
-    }
-    if (!request?.paymentMethodId) {
-        throw new TerminalError("'paymentMethodId' missing in request")
-    }
+  if (!request?.amount) {
+    throw new TerminalError("'amout' missing or zero in request");
+  }
+  if (!request?.paymentMethodId) {
+    throw new TerminalError("'paymentMethodId' missing in request");
+  }
 }
