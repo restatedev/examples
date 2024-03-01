@@ -12,13 +12,13 @@ import * as restate from "@restatedev/restate-sdk";
 //
 // Have a look at the TS docs on the context, or at https://docs.restate.dev/
 //
-const sayHello = async (ctx: restate.RpcContext, name: string) => {
+const sayHello = async (ctx: restate.Context, name: string) => {
   return `Hello ${name}!`;
 };
 
 // Create the Restate server to accept requests
 restate
-  .createServer()
+  .endpoint()
   .bindRouter(
     "myservice", // the name of the service that serves the handlers
     restate.router({ hello: sayHello }) // the routes and handlers in the service

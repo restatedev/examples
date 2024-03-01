@@ -12,7 +12,6 @@
 import * as restate from "@restatedev/restate-sdk";
 import { workflow as wf } from "@restatedev/restate-sdk";
 import { createUserEntry, sendEmailWithLink } from "./utils/workflow_stubs";
-import { WorkflowStartResult } from "@restatedev/restate-sdk/dist/workflows/workflow";
 
 //
 // A simple workflow for a user signup and email verification.
@@ -71,7 +70,7 @@ const myWorkflow = wf.workflow("usersignup", {
 
   abortVerification: async (ctx: wf.SharedWfContext) => {
     // failing the durable promise will throw an Error for the awaiting thread
-    ctx.promise<string>("email-link").fail("User aborted verification");
+    ctx.promise<string>("email-link").reject("User aborted verification");
   },
 });
 
@@ -94,7 +93,7 @@ async function signupUser(userId: string, name: string, email: string) {
     email,
   });
 
-  if (status != WorkflowStartResult.STARTED) {
+  if (status != wf.WorkflowStartResult.STARTED) {
     throw new Error("User ID already taken");
   }
 
