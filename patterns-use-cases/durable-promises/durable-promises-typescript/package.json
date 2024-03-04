@@ -14,7 +14,7 @@
     "example3": "ts-node --transpile-only ./src/3_example_parallel_processes.ts"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "dev"
+    "@restatedev/restate-sdk": "0.8.0"
   },
   "devDependencies": {
     "@restatedev/restate": "0.8.0",
