@@ -11,7 +11,7 @@
 
 package dev.restate.sdk.examples
 
-import dev.restate.sdk.RestateComponent
+import dev.restate.sdk.Component
 import dev.restate.sdk.ObjectContext
 import dev.restate.sdk.common.{CoreSerdes, StateKey}
 import greeter.GreeterGrpc.GreeterImplBase
@@ -23,7 +23,7 @@ object Greeter{
   private val COUNT = StateKey.of[Integer]("count", CoreSerdes.JSON_INT)
 }
 
-class Greeter extends GreeterImplBase with RestateComponent {
+class Greeter extends GreeterImplBase with Component {
   override def greet(request: GreetRequest, responseObserver: StreamObserver[GreetResponse]): Unit = {
     val ctx = ObjectContext.current()
 
