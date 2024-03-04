@@ -22,14 +22,14 @@
     "dist"
   ],
   "dependencies": {
-    "@restatedev/restate-sdk": "0.8.0",
+    "@restatedev/restate-sdk": "^0.8.1",
     "long": "^5.2.1",
     "pg": "^8.10.0",
     "pg-hstore": "^2.3.4",
-    "sequelize": "^6.30.0",
-    "uuid": "^9.0.0",
     "protobufjs": "^7.2.2",
-    "ts-proto": "^1.140.0"
+    "sequelize": "^6.30.0",
+    "ts-proto": "^1.140.0",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@aws-sdk/client-rds-data": "^3.289.0",

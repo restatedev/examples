@@ -10,7 +10,7 @@
     "webhooks": "ts-node-dev --watch ./src --transpile-only ./src/webhook_proxy.ts"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "0.8.0",
+    "@restatedev/restate-sdk": "^0.8.1",
     "express": "^4.18.2",
     "stripe": "^14.15.0"
   },

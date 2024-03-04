@@ -12,7 +12,7 @@
     "example-crash": "CRASH_PROCESS=true ./utils/restart-process.sh 'RESTATE_DEBUG_LOGGING=OFF ts-node-dev --transpile-only src/state_machine.ts'"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "0.8.0"
+    "@restatedev/restate-sdk": "^0.8.1"
   },
   "devDependencies": {
     "@restatedev/restate": "^0.8.0",
