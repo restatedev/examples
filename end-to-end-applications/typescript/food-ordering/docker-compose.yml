@@ -76,7 +76,7 @@ services:
       - RESTATE_RUNTIME_ENDPOINT=http://runtime:8080
 
   runtime:
-    image: docker.io/restatedev/restate:0.7
+    image: docker.io/restatedev/restate:0.8
     depends_on:
       - order_app
       - delivery_app

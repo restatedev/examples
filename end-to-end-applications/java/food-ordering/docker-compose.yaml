@@ -79,7 +79,7 @@ services:
       - KAFKA_BOOTSTRAP_SERVERS=broker:29092
 
   runtime:
-    image: docker.io/restatedev/restate:0.7
+    image: docker.io/restatedev/restate:0.8
     depends_on:
       - restate_app
       - restaurantpos

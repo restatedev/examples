@@ -16,7 +16,7 @@ services:
       - COLLECTOR_OTLP_ENABLED=true
 
   runtime:
-    image: docker.io/restatedev/restate:latest
+    image: docker.io/restatedev/restate:0.8
     depends_on:
       - services
       - jaeger
