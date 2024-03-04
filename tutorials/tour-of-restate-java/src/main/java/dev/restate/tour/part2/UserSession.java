@@ -13,7 +13,7 @@ package dev.restate.tour.part2;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.protobuf.BoolValue;
-import dev.restate.sdk.RestateContext;
+import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
@@ -30,7 +30,7 @@ public class UserSession extends UserSessionRestate.UserSessionRestateImplBase {
     public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", JacksonSerdes.of(new TypeReference<>() {}));
 
     @Override
-    public BoolValue addTicket(RestateContext ctx, ReserveTicket request) throws TerminalException {
+    public BoolValue addTicket(ObjectContext ctx, ReserveTicket request) throws TerminalException {
         var ticketClnt = TicketServiceRestate.newClient(ctx);
         var reservationSuccess = ticketClnt
                 .reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build())
@@ -51,7 +51,7 @@ public class UserSession extends UserSessionRestate.UserSessionRestateImplBase {
     }
 
     @Override
-    public void expireTicket(RestateContext ctx, ExpireTicketRequest request) throws TerminalException {
+    public void expireTicket(ObjectContext ctx, ExpireTicketRequest request) throws TerminalException {
         var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
 
         var removed = tickets.removeIf(s -> s.equals(request.getTicketId()));
@@ -64,7 +64,7 @@ public class UserSession extends UserSessionRestate.UserSessionRestateImplBase {
     }
 
     @Override
-    public BoolValue checkout(RestateContext ctx, CheckoutRequest request) throws TerminalException {
+    public BoolValue checkout(ObjectContext ctx, CheckoutRequest request) throws TerminalException {
         var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
 
         if (tickets.isEmpty()) {

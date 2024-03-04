@@ -18,7 +18,7 @@ import dev.restate.patterns.compensations.generated.CarRentalRestate.CarRentalRe
 import dev.restate.patterns.compensations.generated.FlightsRestate.FlightsRestateClient;
 import dev.restate.patterns.compensations.generated.PaymentRestate.PaymentRestateClient;
 import dev.restate.sdk.Awaitable;
-import dev.restate.sdk.RestateContext;
+import dev.restate.sdk.Context;
 import dev.restate.sdk.common.TerminalException;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -55,7 +55,7 @@ public class Compensations {
    */
   public static class TravelService extends TravelRestate.TravelRestateImplBase {
     @Override
-    public void reserve(RestateContext ctx, TravelBookingRequest request) throws TerminalException {
+    public void reserve(Context ctx, TravelBookingRequest request) throws TerminalException {
       final FlightsRestateClient flightsService = FlightsRestate.newClient(ctx);
       final CarRentalRestateClient carRentalService = CarRentalRestate.newClient(ctx);
       final PaymentRestateClient paymentService = PaymentRestate.newClient(ctx);

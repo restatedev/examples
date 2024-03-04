@@ -12,7 +12,7 @@
 package dev.restate.tour.part4;
 
 import com.google.protobuf.BoolValue;
-import dev.restate.sdk.RestateContext;
+import dev.restate.sdk.Context;
 import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.tour.auxiliary.EmailClient;
@@ -28,19 +28,19 @@ public class Checkout extends CheckoutRestate.CheckoutRestateImplBase {
     EmailClient emailClient = EmailClient.get();
 
     @Override
-    public BoolValue checkout(RestateContext ctx, CheckoutFlowRequest request) throws TerminalException {
+    public BoolValue checkout(Context ctx, CheckoutFlowRequest request) throws TerminalException {
         // Generate idempotency key for the stripe client
-        var idempotencyKey = ctx.sideEffect(CoreSerdes.STRING_UTF8, () -> UUID.randomUUID().toString());
+        var idempotencyKey = ctx.sideEffect(CoreSerdes.JSON_STRING, () -> UUID.randomUUID().toString());
 
         // We are a uniform shop where everything costs 40 USD
         var totalPrice = request.getTicketsList().size() * 40.0;
 
-        boolean success = ctx.sideEffect(CoreSerdes.BOOLEAN, () -> paymentClient.failingCall(idempotencyKey, totalPrice));
+        boolean success = ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () -> paymentClient.failingCall(idempotencyKey, totalPrice));
 
         if (success) {
-            ctx.sideEffect(CoreSerdes.BOOLEAN, ()-> emailClient.notifyUserOfPaymentSuccess(request.getUserId()));
+            ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, ()-> emailClient.notifyUserOfPaymentSuccess(request.getUserId()));
         } else {
-            ctx.sideEffect(CoreSerdes.BOOLEAN, () -> emailClient.notifyUserOfPaymentFailure(request.getUserId()));
+            ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () -> emailClient.notifyUserOfPaymentFailure(request.getUserId()));
         }
 
         return BoolValue.of(success);

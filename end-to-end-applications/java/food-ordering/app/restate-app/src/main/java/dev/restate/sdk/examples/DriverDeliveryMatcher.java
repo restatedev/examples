@@ -14,7 +14,7 @@ package dev.restate.sdk.examples;
 import static dev.restate.sdk.examples.generated.OrderProto.*;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import dev.restate.sdk.RestateContext;
+import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
@@ -44,7 +44,7 @@ public class DriverDeliveryMatcher
    * in line. If no pending deliveries, driver is added to the available driver pool
    */
   @Override
-  public void setDriverAvailable(RestateContext ctx, DriverPoolAvailableNotification request)
+  public void setDriverAvailable(ObjectContext ctx, DriverPoolAvailableNotification request)
       throws TerminalException {
     var pendingDeliveries = ctx.get(PENDING_DELIVERIES).orElse(new LinkedList<>());
 
@@ -54,7 +54,7 @@ public class DriverDeliveryMatcher
       // Update the queue in state. Delivery was removed.
       ctx.set(PENDING_DELIVERIES, pendingDeliveries);
       // Notify that delivery is ongoing
-      ctx.awakeableHandle(nextDelivery).resolve(CoreSerdes.STRING_UTF8, request.getDriverId());
+      ctx.awakeableHandle(nextDelivery).resolve(CoreSerdes.JSON_STRING, request.getDriverId());
       return;
     }
 
@@ -69,7 +69,7 @@ public class DriverDeliveryMatcher
    * available. If no available drivers, the delivery is added to the pending deliveries queue
    */
   @Override
-  public void requestDriverForDelivery(RestateContext ctx, DeliveryCallback request)
+  public void requestDriverForDelivery(ObjectContext ctx, DeliveryCallback request)
       throws TerminalException {
     var availableDrivers = ctx.get(AVAILABLE_DRIVERS).orElse(new LinkedList<>());
 
@@ -80,7 +80,7 @@ public class DriverDeliveryMatcher
       ctx.set(AVAILABLE_DRIVERS, availableDrivers);
       // Notify that delivery is ongoing
       ctx.awakeableHandle(request.getDeliveryCallbackId())
-          .resolve(CoreSerdes.STRING_UTF8, nextAvailableDriver);
+          .resolve(CoreSerdes.JSON_STRING, nextAvailableDriver);
       return;
     }
 

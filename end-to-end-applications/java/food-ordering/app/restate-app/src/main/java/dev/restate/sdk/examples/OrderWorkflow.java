@@ -15,7 +15,7 @@ import static dev.restate.sdk.examples.utils.TypeUtils.statusToProto;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.restate.sdk.RestateContext;
+import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.examples.clients.PaymentClient;
@@ -39,7 +39,7 @@ public class OrderWorkflow extends OrderWorkflowRestate.OrderWorkflowRestateImpl
   private final PaymentClient paymentClnt = PaymentClient.get();
 
   @Override
-  public void handleOrderCreationEvent(RestateContext ctx, KafkaOrderEvent event)
+  public void handleOrderCreationEvent(ObjectContext ctx, KafkaOrderEvent event)
       throws TerminalException {
     var orderStatusSend = OrderStatusServiceRestate.newClient(ctx);
 
@@ -56,10 +56,10 @@ public class OrderWorkflow extends OrderWorkflowRestate.OrderWorkflowRestateImpl
     orderStatusSend.oneWay().setStatus(statusToProto(id, StatusEnum.CREATED));
 
     // 2. Handle payment
-    String token = ctx.sideEffect(CoreSerdes.STRING_UTF8, () -> UUID.randomUUID().toString());
+    String token = ctx.sideEffect(CoreSerdes.JSON_STRING, () -> UUID.randomUUID().toString());
     boolean paid =
         ctx.sideEffect(
-            CoreSerdes.BOOLEAN, () -> paymentClnt.charge(id, token, order.getTotalCost()));
+            CoreSerdes.JSON_BOOLEAN, () -> paymentClnt.charge(id, token, order.getTotalCost()));
 
     if (!paid) {
       orderStatusSend.oneWay().setStatus(statusToProto(id, StatusEnum.REJECTED));

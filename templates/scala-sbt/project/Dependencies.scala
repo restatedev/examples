@@ -7,7 +7,7 @@ object Versions {
   lazy val log4j = "2.20.0"
   lazy val log4jApiScala = "13.0.0"
   lazy val protobufJava = "3.24.3"
-  lazy val restate = "0.7.0"
+  lazy val restate = "0.8.0"
   lazy val scalaTests = "3.2.17"
   lazy val tomcat = "6.0.53"
 }

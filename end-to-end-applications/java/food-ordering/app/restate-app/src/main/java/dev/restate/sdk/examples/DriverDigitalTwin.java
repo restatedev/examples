@@ -15,7 +15,7 @@ import static dev.restate.sdk.examples.generated.OrderProto.*;
 import static dev.restate.sdk.examples.utils.TypeUtils.toOrderIdProto;
 
 import com.google.protobuf.Empty;
-import dev.restate.sdk.RestateContext;
+import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.examples.generated.DeliveryManagerRestate;
@@ -50,7 +50,7 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
    * (DriverMobileAppSimulator) calls this method.
    */
   @Override
-  public void setDriverAvailable(RestateContext ctx, DriverAvailableNotification request)
+  public void setDriverAvailable(ObjectContext ctx, DriverAvailableNotification request)
       throws TerminalException {
     expectStatus(ctx, DriverStatus.IDLE);
 
@@ -70,7 +70,7 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
    * location.
    */
   @Override
-  public void assignDeliveryJob(RestateContext ctx, AssignDeliveryRequest request)
+  public void assignDeliveryJob(ObjectContext ctx, AssignDeliveryRequest request)
       throws TerminalException {
     expectStatus(ctx, DriverStatus.WAITING_FOR_WORK);
 
@@ -102,7 +102,7 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
    * Gets called by the driver's mobile app when he has picked up the delivery from the restaurant.
    */
   @Override
-  public void notifyDeliveryPickup(RestateContext ctx, DriverId request) throws TerminalException {
+  public void notifyDeliveryPickup(ObjectContext ctx, DriverId request) throws TerminalException {
     expectStatus(ctx, DriverStatus.DELIVERING);
 
     // Retrieve the ongoing delivery and update its status
@@ -123,7 +123,7 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
 
   /** Gets called by the driver's mobile app when he has delivered the order to the customer. */
   @Override
-  public void notifyDeliveryDelivered(RestateContext ctx, DriverId request)
+  public void notifyDeliveryDelivered(ObjectContext ctx, DriverId request)
       throws TerminalException {
     expectStatus(ctx, DriverStatus.DELIVERING);
 
@@ -148,7 +148,7 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
 
   /** Gets called by the driver's mobile app when he has moved to a new location. */
   @Override
-  public void handleDriverLocationUpdateEvent(RestateContext ctx, KafkaDriverLocationEvent request)
+  public void handleDriverLocationUpdateEvent(ObjectContext ctx, KafkaDriverLocationEvent request)
       throws TerminalException {
     // Update the location of the driver
     Location location = JacksonSerdes.of(Location.class).deserialize(request.getLocation());
@@ -173,7 +173,7 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
    * got assigned to him.
    */
   @Override
-  public AssignedDeliveryResponse getAssignedDelivery(RestateContext ctx, DriverId request)
+  public AssignedDeliveryResponse getAssignedDelivery(ObjectContext ctx, DriverId request)
       throws TerminalException {
     var assignedDelivery = ctx.get(ASSIGNED_DELIVERY);
 
@@ -197,7 +197,7 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
   // If the driver is in a different state, a terminal exception is thrown that stops any retries
   // from taking place.
   // Is only called from inside the driver service.
-  private void expectStatus(RestateContext ctx, DriverStatus expectedStatus) {
+  private void expectStatus(ObjectContext ctx, DriverStatus expectedStatus) {
     var currentStatus = ctx.get(DRIVER_STATUS).orElse(DriverStatus.IDLE);
 
     if (currentStatus != expectedStatus) {

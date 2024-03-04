@@ -111,7 +111,7 @@ When adding a new example:
 * Make sure it has a README
 * Add it to this README
 * Check it's tested both in [`test.yaml`](./.github/workflows/test.yml) and [`pre-release.yaml`](./.github/workflows/pre-release.yml)
-* Optionally, add it to the [zips script](./scripts/prepare_release_zip.sh) and [`release.yaml`](./.github/workflows/release.yml)
+* Optionally, add it to the [zips script](./.tools/prepare_release_zip.sh) and [`release.yaml`](./.github/workflows/release.yml)
 
 **Creating a Release**
 

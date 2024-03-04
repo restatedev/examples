@@ -11,7 +11,7 @@
 
  package dev.restate.sdk.examples;
 
-import dev.restate.sdk.RestateContext;
+import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.examples.generated.*;
@@ -26,10 +26,10 @@ public class Greeter extends GreeterRestate.GreeterRestateImplBase {
 
   // Count state. The count is per Person name.
   // See https://docs.restate.dev/services/sdk/state for more details.
-  private static final StateKey<Integer> COUNT = StateKey.of("count", CoreSerdes.INT);
+  private static final StateKey<Integer> COUNT = StateKey.of("count", CoreSerdes.JSON_INT);
 
   @Override
-  public GreetResponse greet(RestateContext context, GreetRequest request) {
+  public GreetResponse greet(ObjectContext context, GreetRequest request) {
     // Get the count and increment it
     int count = context.get(COUNT).orElse(1);
     context.set(COUNT, count + 1);

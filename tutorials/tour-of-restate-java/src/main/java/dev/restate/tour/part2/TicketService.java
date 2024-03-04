@@ -13,7 +13,7 @@ package dev.restate.tour.part2;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.protobuf.BoolValue;
-import dev.restate.sdk.RestateContext;
+import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
@@ -28,7 +28,7 @@ public class TicketService extends TicketServiceRestate.TicketServiceRestateImpl
     public static final StateKey<TicketStatus> STATE_KEY = StateKey.of("status", JacksonSerdes.of(TicketStatus.class));
 
     @Override
-    public BoolValue reserve(RestateContext ctx, Ticket request) throws TerminalException {
+    public BoolValue reserve(ObjectContext ctx, Ticket request) throws TerminalException {
         var status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
 
         if (status.equals(TicketStatus.Available)) {
@@ -40,7 +40,7 @@ public class TicketService extends TicketServiceRestate.TicketServiceRestateImpl
     }
 
     @Override
-    public void unreserve(RestateContext ctx, Ticket request) throws TerminalException {
+    public void unreserve(ObjectContext ctx, Ticket request) throws TerminalException {
         var status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
 
         if (!status.equals(TicketStatus.Sold)) {
@@ -49,7 +49,7 @@ public class TicketService extends TicketServiceRestate.TicketServiceRestateImpl
     }
 
     @Override
-    public void markAsSold(RestateContext ctx, Ticket request) throws TerminalException {
+    public void markAsSold(ObjectContext ctx, Ticket request) throws TerminalException {
         var status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
 
         if (status.equals(TicketStatus.Reserved)) {

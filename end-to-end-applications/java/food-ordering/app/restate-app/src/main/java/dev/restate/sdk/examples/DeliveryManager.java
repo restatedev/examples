@@ -14,7 +14,7 @@ package dev.restate.sdk.examples;
 import static dev.restate.sdk.examples.generated.OrderProto.*;
 import static dev.restate.sdk.examples.utils.TypeUtils.statusToProto;
 
-import dev.restate.sdk.RestateContext;
+import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.Serde;
 import dev.restate.sdk.common.StateKey;
@@ -46,7 +46,7 @@ public class DeliveryManager extends DeliveryManagerRestate.DeliveryManagerResta
    * Gets called by the OrderService when a new order has been prepared and needs to be delivered.
    */
   @Override
-  public void start(RestateContext ctx, DeliveryRequest request) throws TerminalException {
+  public void start(ObjectContext ctx, DeliveryRequest request) throws TerminalException {
 
     // Temporary placeholder: random location
     var restaurantLocation = ctx.sideEffect(locationSerde, () -> GeoUtils.randomLocation());
@@ -64,7 +64,7 @@ public class DeliveryManager extends DeliveryManagerRestate.DeliveryManagerResta
     ctx.set(DELIVERY_INFO, deliveryInfo);
 
     // Acquire a driver
-    var driverAwakeable = ctx.awakeable(CoreSerdes.STRING_UTF8);
+    var driverAwakeable = ctx.awakeable(CoreSerdes.JSON_STRING);
     DriverDeliveryMatcherRestate.newClient(ctx)
         .oneWay()
         .requestDriverForDelivery(
@@ -100,7 +100,7 @@ public class DeliveryManager extends DeliveryManagerRestate.DeliveryManagerResta
    * when the driver has arrived at the restaurant.
    */
   @Override
-  public void notifyDeliveryPickup(RestateContext ctx, OrderId request) throws TerminalException {
+  public void notifyDeliveryPickup(ObjectContext ctx, OrderId request) throws TerminalException {
     // Retrieve the delivery information for this delivery
     var delivery =
         ctx.get(DELIVERY_INFO)
@@ -123,7 +123,7 @@ public class DeliveryManager extends DeliveryManagerRestate.DeliveryManagerResta
    * when the driver has delivered the order to the customer.
    */
   @Override
-  public void notifyDeliveryDelivered(RestateContext ctx, OrderId request)
+  public void notifyDeliveryDelivered(ObjectContext ctx, OrderId request)
       throws TerminalException {
     // Retrieve the delivery information for this delivery
     var delivery =
@@ -145,7 +145,7 @@ public class DeliveryManager extends DeliveryManagerRestate.DeliveryManagerResta
    * has moved to a new location.
    */
   @Override
-  public void handleDriverLocationUpdate(RestateContext ctx, DeliveryLocationUpdate request)
+  public void handleDriverLocationUpdate(ObjectContext ctx, DeliveryLocationUpdate request)
       throws TerminalException {
     // Retrieve the delivery information for this delivery
     var delivery =
