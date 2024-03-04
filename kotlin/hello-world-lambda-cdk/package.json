@@ -12,7 +12,8 @@
     "watch": "tsc -w",
     "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
     "verify": "npm run format -- --check && npm run lint && npm run build",
-    "deploy": "npm run build && cdk deploy"
+    "deploy": "npm run build && cdk deploy",
+    "destroy": "npx cdk destroy"
   },
   "devDependencies": {
     "@restatedev/restate-cdk": "^0.7.0",
