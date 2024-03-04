@@ -1,0 +1,3 @@
+restate dp reg --yes localhost:9081
+curl localhost:9070/subscriptions -H 'content-type: application/json' -d '{"source":"kafka://my-cluster/driver-updates", "sink":"service://driver-digital-twin/handleDriverLocationUpdateEvent" }'
+curl localhost:8080/driver-mobile-app/startDriver -H 'content-type: application/json' -d '{"key": "driver-01", "request": {} }'

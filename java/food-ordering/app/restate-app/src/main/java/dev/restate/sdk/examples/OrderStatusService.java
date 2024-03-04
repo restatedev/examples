@@ -32,12 +32,14 @@ public class OrderStatusService
     var orderStatusState = ctx.get(ORDER_STATUS).orElse("NEW");
     var status = StatusEnum.valueOf(orderStatusState);
     var eta = ctx.get(ORDER_ETA).orElse(-1L);
+
     return OrderStatus.newBuilder()
         .setOrderId(request.getOrderId())
         .setStatus(Status.forNumber(status.getValue()))
         .setEta(eta)
         .build();
   }
+
 
   @Override
   public void setStatus(RestateContext ctx, OrderStatus request) throws TerminalException {

@@ -12,7 +12,21 @@ option java_outer_classname = "OrderProto";
 service OrderWorkflow {
   option (dev.restate.ext.service_type) = KEYED;
 
-  rpc HandleOrderCreationEvent(KafkaOrderEvent) returns (google.protobuf.Empty);
+  rpc Handle(OrderRequest) returns (google.protobuf.Empty);
+}
+
+message OrderRequest {
+  string order_id = 1 [(dev.restate.ext.field) = KEY];
+  string restaurant_id = 2;
+  repeated Product products = 3;
+  double total_cost = 4;
+  int64 delivery_delay = 5;
+}
+
+message Product {
+  string product_id = 1;
+  string description = 2;
+  int64 quantity = 3;
 }
 
 message KafkaOrderEvent {

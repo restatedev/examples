@@ -8,3 +8,8 @@ worker:
   invoker:
     retry_policy:
       max_interval: 2s
+    inactivity_timeout: 1000m
+    abort_timeout: 1000m
+    http2_keep_alive:
+      interval: 1000m
+      timeout: 1000m

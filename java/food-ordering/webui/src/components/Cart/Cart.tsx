@@ -8,8 +8,6 @@ import { useOrderStatusContext } from '../../contexts/status-context/OrderStatus
 import { useState } from 'react';
 import Dropdown from '../Dropdown';
 
-const isKafkaEnabled = process.env.REACT_APP_ENABLE_KAFKA !== 'false';
-
 const Cart = () => {
   const {
     products,
@@ -79,11 +77,6 @@ const Cart = () => {
         deliveryDelay: details.delivery_delay,
       };
     };
-
-    const kafkaRecord = JSON.stringify({
-      key: user!.user_id,
-      value: generateJsonReq(),
-    });
     const request = JSON.stringify(generateJsonReq());
 
     const flow = async () => {
@@ -91,14 +84,8 @@ const Cart = () => {
       const checkedOutStatus = { checked_out: true };
       updateCartDetails({ ...details, ...checkedOutStatus });
 
-      if (isKafkaEnabled) {
-        console.info('Generating Kafka record');
-        console.info(kafkaRecord);
-        await publishToKafka(kafkaRecord);
-      } else {
-        console.info(request);
-        sendRequestToRestate('order.OrderService', 'Create', request);
-      }
+      console.info(request);
+      sendRequestToRestate('order.OrderWorkflow', 'Handle', request);
 
       let done = false;
       while (!done) {

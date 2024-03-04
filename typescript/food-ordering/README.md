@@ -117,25 +117,25 @@ npm run app-dev
 
 Run with `npx` or have a look at other options to [launch the Restate Server](../../README.md#launching-the-restate-server).
 ```shell
-npx @restatedev/restate-server@latest --config-file restate-local.yaml --wipe all 
+npx @restatedev/restate-server@0.7.0 --config-file restate-local.yaml --wipe all 
 ```
 
 Assuming you have the CLI installed, register the services:
 ```shell
-restate dp reg order_app:9080
-restate dp reg delivery_app:9081
+restate dp reg localhost:9080
+restate dp reg localhost:9081
 ```
 
 Subscribe Restate to the Kafka `driver-updates` topic:
 
 ```shell
-curl localhost:9070/subscriptions -H 'content-type: application/json' -d '{"source":"kafka://my-cluster/driver-updates", "sink":"service://driver-digital-twin/handleDriverLocationUpdateEvent" }'
+./scripts/kafka_subscription
 ```
 
 Start a driver:
 
 ```shell
-curl localhost:8080/driver-mobile-app/startDriver -H 'content-type: application/json' -d '{"key": "driver-01", "request": {} }' 
+./scripts/create_driver
 ```
 
 ## Attribution

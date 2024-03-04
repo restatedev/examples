@@ -15,12 +15,12 @@ export const router = restate.keyedRouter({
   create: async ( ctx: restate.RpcContext, orderId: string, order: Order) => {
     const { id, totalCost, deliveryDelay } = order;
 
-    // 1. Set status
+    // 1. COMMUNICATION
     ctx.send(orderstatus.service).setStatus(id, Status.CREATED);
 
-    // 2. Handle payment
+    // 2. LOG ANY RESULT
     const token = ctx.rand.uuidv4();
-    // console.info(token);
+    console.info(token);
     const paid = await ctx.sideEffect(async () => paymentClnt.charge(id, token, totalCost));
 
     if (!paid) {
@@ -28,23 +28,23 @@ export const router = restate.keyedRouter({
       return;
     }
 
-    // 3. Wait for desired preparation time
+    // 3. TIMERS
     ctx.send(orderstatus.service).setStatus(id, Status.SCHEDULED);
     await ctx.sleep(deliveryDelay);
 
-    // 4. Trigger preparation
+    //ctx.sendDelayed(orderstatus.service, deliveryDelay).setStatus(id, Status.IN_PREPARATION);
+
+    // 4. CALLBACKS
     const preparationPromise = ctx.awakeable();
     await ctx.sideEffect(() => restaurant.prepare(id, preparationPromise.id));
     ctx.send(orderstatus.service).setStatus(id, Status.IN_PREPARATION);
-
     await preparationPromise.promise;
-    ctx.send(orderstatus.service).setStatus(id, Status.SCHEDULING_DELIVERY);
 
-    // fail(orderId, "Failed");
+
     // 5. Find a driver and start delivery
+    ctx.send(orderstatus.service).setStatus(id, Status.SCHEDULING_DELIVERY);
     await deliver(ctx, order);
     ctx.send(orderstatus.service).setStatus(id, Status.DELIVERED);
-    //
   }
 });
 
