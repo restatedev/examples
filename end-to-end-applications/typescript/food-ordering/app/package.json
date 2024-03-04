@@ -1,0 +1,33 @@
+{
+  "name": "@restatedev/examples-e2e-food-ordering",
+  "version": "0.8.0",
+  "description": "A food ordering app, implented in Restate",
+  "main": "app.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc --noEmitOnError",
+    "prebundle": "rm -rf dist",
+    "bundle": "esbuild src/delivery-app/app.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
+    "postbundle": "cd dist && zip -r index.zip index.js*",
+    "order-app": "node ./dist/app/order-app.js",
+    "delivery-app": "node ./dist/app/delivery-app.js",
+    "restaurant-app": "node ./dist/restaurant/server.js",
+    "app-dev": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --watch src --respawn --transpile-only src/order-app/app.ts"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "^0.8.1",
+    "@types/node": "^20.6.3",
+    "@types/uuid": "^9.0.0",
+    "axios": "^1.4.0",
+    "express": "^4.17.3",
+    "kafkajs": "^2.2.4",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.3",
+    "esbuild": "^0.18.12",
+    "prettier": "^2.8.4",
+    "ts-node-dev": "^1.1.1",
+    "typescript": "^5.0.2"
+  }
+}

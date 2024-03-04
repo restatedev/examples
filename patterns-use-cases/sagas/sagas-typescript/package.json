@@ -1,0 +1,15 @@
+{
+  "name": "@restatedev/example-pattern-sagas",
+  "version": "0.8.0",
+  "description": "A Restate example showing the SAGAs pattern for workflows",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc --noEmitOnError"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "^0.8.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.2"
+  }
+}

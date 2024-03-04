@@ -1,0 +1,24 @@
+{
+  "name": "@restatedev/examples-patterns-payment-state-machine",
+  "version": "0.8.0",
+  "description": "Example API for payments, inspired by the Stripe API",
+  "author": "Restate developers",
+  "email": "code@restate.dev",
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "build": "tsc --noEmitOnError",
+    "app": "node ./dist/payment_service.js",
+    "app-dev": "ts-node-dev --watch ./src --transpile-only ./src/payment_service.ts"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "^0.8.1"
+  },
+  "devDependencies": {
+    "@restatedev/restate": "0.8.0",
+    "@restatedev/restate-server": "0.8.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.1.6"
+  }
+}

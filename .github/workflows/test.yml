@@ -19,54 +19,16 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Use JVM ${{ matrix.jvm-version }}
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.jvm-version }}
 
-      # When adding a new example make sure it's listed here
-      - name: Test java/hello-world-http
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: check
-          build-root-directory: java/hello-world-http
-      - name: Test java/hello-world-lambda
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: check
-          build-root-directory: java/hello-world-lambda
-      - name: Test java/food-ordering
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: check
-          build-root-directory: java/food-ordering/app
-      - name: Test java/patterns
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: check
-          build-root-directory: java/patterns
-      - name: Test java/tour-of-restate
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: check
-          build-root-directory: java/tour-of-restate
-      - name: Test kotlin/hello-world-http
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: check
-          build-root-directory: kotlin/hello-world-http
-      - name: Test kotlin/hello-world-lambda
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: check
-          build-root-directory: kotlin/hello-world-lambda
-      - name: Test kotlin/hello-world-lambda-cdk
-        run: |
-          npm --prefix kotlin/hello-world-lambda-cdk clean-install
-          npm --prefix kotlin/hello-world-lambda-cdk run verify
-      - name: Build Scala HTTP template
-        run: sbt -v +package
-        working-directory: scala/hello-world-http
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Run tests
+        run: ./.tools/run_jvm_tests.sh
 
   build-ts:
     # prevent from running on forks
@@ -79,16 +41,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: bufbuild/buf-setup-action@v1
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://registry.npmjs.org'
 
-      - run: npm ci --prefix typescript
-      - run: npm run --prefix typescript -ws verify
-
-      - name: "Test typescript-end-to-end-testing example"
-        working-directory: ./typescript/end-to-end-testing
-        run: npm ci && npm run proto && npm run test
+      - name: Run tests
+        run: ./.tools/run_node_tests.sh

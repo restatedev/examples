@@ -1,0 +1,71 @@
+version: "3.3"
+services:
+  services:
+    build:
+      context: ../../services
+    environment:
+      - DATABASE_ENABLED=true
+      - RESTATE_DEBUG_LOGGING=JOURNAL_VERBOSE
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.47
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+
+  runtime:
+    image: docker.io/restatedev/restate:0.8
+    depends_on:
+      - services
+      - jaeger
+    ports:
+      - "8080:8080"
+      - "9070:9070"
+      - "9071:9071"
+    environment:
+      - RUST_LOG=info,restate=debug
+      - RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://jaeger:4317
+
+  runtimesetup:
+    image: curlimages/curl:8.00.1
+    depends_on:
+      - runtime
+      - services
+    restart: "no"
+    entrypoint: ["sh", "-c", "sleep 5 && curl -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://services:9080\"}' || exit 1"]
+
+  db:
+    image: 'postgres:15.0-alpine'
+    container_name: productsdb
+    restart: always
+    environment:
+      - POSTGRES_USER=restatedb
+      - POSTGRES_PASSWORD=restatedb
+      - POSTGRES_DB=productsdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - ../postgresql/:/docker-entrypoint-initdb.d/
+
+  pgadmin:
+    image: 'dpage/pgadmin4:6.15'
+    container_name: pgadmin4_container
+    restart: always
+    ports:
+      - "5050:5050"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@restate.dev
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 5050
+
+  react_app:
+    build:
+      context: ../../react-shopping-cart
+    depends_on:
+      - runtimesetup
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_DATABASE_ENABLED=true

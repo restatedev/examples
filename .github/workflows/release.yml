@@ -16,7 +16,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Prepare zip files
-        run: ./scripts/prepare_release_zip.sh
+        run: ./.tools/prepare_release_zip.sh
 
       - name: Create release
         uses: softprops/action-gh-release@v1
@@ -24,20 +24,10 @@ jobs:
           # create a draft release which needs manual approval
           draft: true
           files: |
-            typescript-ecommerce-store.zip
-            typescript-food-ordering.zip
-            typescript-payment-api.zip
-            typescript-ticket-reservation.zip
-            typescript-hello-world-lambda.zip
-            typescript-hello-world-lambda-cdk.zip
-            typescript-dynamic-workflow-executor.zip
-            typescript-end-to-end-testing.zip
-            scala-hello-world-http.zip
-            typescript-tour-of-restate.zip
-            java-hello-world-http.zip
-            java-hello-world-lambda.zip
-            java-food-ordering.zip
+            java-hello-world-gradle.zip
+            kotlin-hello-world-gradle.zip
+            scala-hello-world-sbt.zip
+            typescript-hello-world.zip
+            typescript-basics.zip
             java-tour-of-restate.zip
-            kotlin-hello-world-http.zip
-            kotlin-hello-world-lambda.zip
-            kotlin-hello-world-lambda-cdk.zip
+            typescript-tour-of-restate.zip

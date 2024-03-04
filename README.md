@@ -4,46 +4,64 @@
 
 # Restate examples
 
-Browse this repository to see how easy distributed applications development becomes with Restate.
+A collection of examples that illustrate how to use Restate to solve common application
+challenges.
 
-## Starters
-| Language   | Name / Link                                                          |
-|------------|----------------------------------------------------------------------|
-| TypeScript | [Hello world on AWS Lambda](typescript/hello-world-lambda)           |
-| TypeScript | [Hello world on AWS Lambda + CDK](typescript/hello-world-lambda-cdk) |
-| Java       | [Hello World HTTP](java/hello-world-http)                            |
-| Java       | [Hello world on AWS Lambda](java/hello-world-lambda)                 |
-| Kotlin     | [Hello World HTTP](kotlin/hello-world-http)                          |
-| Kotlin     | [Hello world on AWS Lambda](kotlin/hello-world-lambda)               |
-| Kotlin     | [Hello world on AWS Lambda + CDK](kotlin/hello-world-lambda-cdk)     |
-| Scala      | [Hello world HTTP](scala/hello-world-http)                           |
+* **[Use Cases and Patterns](patterns-use-cases):** Small specific use cases, like webhooks,
+  workflows, asynchronous task queuing.
 
-## Tutorials
-| Language    | Name / Link                                                                                   |
-|-------------|-----------------------------------------------------------------------------------------------|
-| TypeScript  | [Tour of Restate](typescript/tour-of-restate): A tour of the essentials of the Typescript SDK |
-| Java     | [Tour of Restate](java/tour-of-restate): A tour of the essentials of the Java SDK |
+* **[Basics](basics):** Small examples highlighting the basic building blocks, like
+  durable execution or virtual objects.
 
-## Patterns
+* **[End-to-End Applications](end-to-end-applications):** Runnable demo applications that consist
+  of many components, e.g., a fodo ordering app, or an e-commerce site.
+  Typically packaged as a docker compose setup.
 
-| Language   | Name / Link                                                                                                             |
-|------------|-------------------------------------------------------------------------------------------------------------------------|
-| TypeScript | [Payment API](typescript/payment-api): Example API for payments, inspired by the Stripe API                             |
-| TypeScript (gRPC API) | [End-to-end testing](typescript/end-to-end-testing): Example of how to test Restate services end-to-end                 |
-| TypeScript | [Common patterns](typescript/patterns) Set of common patterns you encounter when developing distributed TS applications |
-| Java       | [Common patterns](java/patterns) Set of common patterns you encounter when developing distributed Java applications     |
+* **[Tutorials](tutorials):** A step-by-step guide that builds an application and introduces
+  the Restate concepts on the way.
+
+* **[Templates](templates):** Project templates for various languages and build systems.
+  Simple 'Hello World!' examples in a proper build setup that you can use if you want to start
+  a brand new project for a service or lambda that will be invoked through Restate.
 
 
-## Applications
+## Examples by Language
 
-| Language              | Name / Link                                                                                                                                                     |
-|-----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| TypeScript            | [Food ordering - TypeScript](typescript/food-ordering): Integrate Restate with external services                                                                |
-| TypeScript            | [Ticket reservation](typescript/ticket-reservation): Example showing Restate's keyed-sharding and concurrency guarantees                                        |
-| TypeScript (gRPC API) | [Ecommerce store](typescript/ecommerce-store): An ecommerce store completely built on top of Restate                                                 |
-| TypeScript            | [Dynamic workflow executor](typescript/dynamic-workflow-executor): A workflow executor that dynamically executes a list of steps as specified in the JSON input |
-| Java                  | [Food ordering - Java](java/food-ordering): Java food order processing app and driver-to-delivery matching services                                             |
+### TypeScript
 
+| Type       | Name / Link                                                                                   |
+|------------|-----------------------------------------------------------------------------------------------|
+| Basics     | [Workflows, Durable Execution, Event-processing, Virtual Objects](basics/basics-typescript)   |
+| Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-typescript)                                            |
+| Use Cases  | [Durable Promises](patterns-use-cases/durable-promises/durable-promises-typescript)           |
+| Use Cases  | [State Machines](patterns-use-cases/state-machines/state-machines-typescript/)                |
+| Use Cases  | [Payment Service](patterns-use-cases/payment-state-machine/payment-state-machine-typescript/) |
+| End-to-End | [Food Ordering App](end-to-end-applications/typescript/food-ordering)                         |
+| End-to-End | [AI Image Processing Workflow](end-to-end-applications/typescript/ai-image-workflows)         |
+| End-to-End | [Online Shop](end-to-end-applications/typescript/ecommerce-store/)                            |
+| Tutorial   | [Tour of Restate](tutorials/tour-of-restate-typescript)                                       |
+| Templates  | [Restate Node/TS Template](templates/typescript)                                              |
+
+### Java
+
+| Type       | Name / Link                                                                                   |
+|------------|-----------------------------------------------------------------------------------------------|
+| Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-java/)                                                 |
+| End-to-End | [Food Ordering App](end-to-end-applications/java/food-ordering)                               |
+| Tutorial   | [Tour of Restate](tutorials/tour-of-restate-java/)                                            |
+| Templates  | [Restate Node/TS Template](templates/java-gradle/)                                            |
+
+### Kotlin
+
+| Type       | Name / Link                                                                                   |
+|------------|-----------------------------------------------------------------------------------------------|
+| Templates  | [Restate Node/TS Template](templates/kotlin-gradle/)                                          |
+
+### Scala
+
+| Type       | Name / Link                                                                                   |
+|------------|-----------------------------------------------------------------------------------------------|
+| Templates  | [Restate Node/TS Template](templates/scala-sbt/)                                              |
 
 ## Joining the community
 
@@ -52,74 +70,50 @@ The Discord server is also the perfect place for sharing your feedback with us, 
 
 ## Running the examples
 
-The readme for each example will explain how to get it running. Once the services of the example are running, the deployment needs to be registered in Restate.
+Some examples are just illustrations of code, but many are runnable. Their READMEs generally explain
+how to get them running. Here are the general steps:
 
-### Launching the Restate Server
+### (1) Starting the Restate Server
 
-**NOTE:** Some examples can be run with Docker Compose. For those, you can ignore this section.
+Examples that run individually typically need a running Restate Server instance.
+Some examples can be run with Docker Compose. Those already bring their own Restate server instance.
 
-For running Restate locally and downloading the binaries, have a look at the options on the [`Get Restate` page](https://restate.dev/get-restate/).
+You can launch Restate in a number of ways, including using the [Restate Cloud](https://restate.dev/get-restate-cloud/)
+service. See [Get Restate](https://restate.dev/get-restate/) for all options to run Restate. Here is a short-list
+of options to run Restate Server locally.
 
-- To run Restate in a Docker container:
-    ```shell
-    docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:latest
-    ```
-- To run Restate with `npx`:
-    ```shell
-    npx @restatedev/restate-server@latest
-    ```
-- To run Restate with Homebrew:
-    ```
-    brew install restatedev/tap/restate-server
-    restate-server 
-    ```
+Install and run the `restate-server` binary:
+  - Download from https://github.com/restatedev/restate/releases
+  - Install with Homebrew: `brew install restatedev/tap/restate-server`
+  - Install with _npm_: `npm install --global @restatedev/restate-server@latest`
 
-### Register the deployment in Restate
+Or run Restate Server in Docker:
+  - `docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:latest`
 
-Once Restate is up, register the deployment in Restate by executing:
 
-- Via the [CLI](https://docs.restate.dev/restate/cli):
-    ```shell
-    restate dp register localhost:9080
-    ```
-- Via `curl`:
-    ```shell
-    curl localhost:9070/deployments  -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'
-    ```
-  
-When running Restate with Docker, use `host.docker.internal` instead of `localhost` for the service deployment URI.
+### (2) Register the examples at Restate Server
 
-This should give you the following output in case of the ticket reservation example:
-```json
-{
-  "id": "bG9jYWxob3N0OjgwODAv",
-  "services": [
-    {
-      "name": "UserSession",
-      "revision": 1
-    },
-    {
-      "name": "TicketDb",
-      "revision": 1
-    },
-    {
-      "name": "CheckoutProcess",
-      "revision": 1
-    }
-  ]
-}
-```
+Many examples need to be registered at Restate, so that Restate will proxy their function calls and
+do its magic. Once both server and example are running, register the example
 
-## Adding examples (for Restate developers)
+* Via the [CLI](https://docs.restate.dev/restate/cli): `restate dp reg localhost:9080`
+* Via `curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'`
+
+**Important** When running Restate with Docker, use `host.docker.internal` instead of `localhost` in the URIs above.
+
+----
+----
+
+## Adding Examples and Releasing (for Restate developers/contributors)
 
 When adding a new example:
 
-* Make sure it has a `.gitignore` file and a README
+* Make sure it has a README
 * Add it to this README
-* Check it's tested both in [`test.yaml`](./.github/workflows/test.yml) and [`pre-release.yaml`](./.github/workflows/pre-release.yml)
-* Add it to the [zips script](./scripts/prepare_release_zip.sh) and [`release.yaml`](./.github/workflows/release.yml)
+* Check it's listed in run tests/update examples scripts in [`.tools`](./.tools)
+* Optionally, add it to the [zips script](./.tools/prepare_release_zip.sh) and [`release.yaml`](./.github/workflows/release.yml)
 
-## Releasing (for Restate developers)
+**Creating a Release**
 
 Before releasing, trigger the "pre-release" workflow to update sdk versions. This automatically creates a pull request, which must be manually merged.
 
