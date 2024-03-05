@@ -18,7 +18,7 @@ Sample project configuration of a Restate service using the Kotlin coroutines in
 - Via git clone:
     ```shell
     git clone git@github.com:restatedev/examples.git
-    cd examples/kotlin/hello-world-http
+    cd examples/templates/kotlin-gradle
     ```
 
 - Via `wget`:
