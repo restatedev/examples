@@ -21,7 +21,7 @@ create_release_zip templates/kotlin-gradle kotlin-hello-world-gradle
 create_release_zip templates/scala-sbt scala-hello-world-sbt
 create_release_zip templates/typescript typescript-hello-world
 create_release_zip templates/typescript-lambda-cdk typescript-hello-world-lambda-cdk
-create_release_zip templates/kotlin-lambda-cdk kotlin-hello-world-lambda-cdk
+create_release_zip templates/kotlin-gradle-lambda-cdk kotlin-hello-world-lambda-cdk
 
 create_release_zip tutorials/tour-of-restate-java java-tour-of-restate
 create_release_zip tutorials/tour-of-restate-typescript typescript-tour-of-restate
