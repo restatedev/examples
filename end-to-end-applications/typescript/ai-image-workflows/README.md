@@ -29,9 +29,9 @@ workflow to suspend while the steps are running.
 
 You can clone the example repository (`git clone https://github.com/restatedev/examples`) or just download this example via
 
-- **CLI:** `restate example typescript-dynamic-workflow-executor`
+- **CLI:** `restate example typescript-ai-image-workflows`
 
-- **Zip archive:** https://github.com/restatedev/examples/releases/latest/download/typescript-dynamic-workflow-executor.zip
+- **Zip archive:** https://github.com/restatedev/examples/releases/latest/download/typescript-ai-image-workflows.zip
 
 
 ## Running the example
