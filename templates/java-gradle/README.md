@@ -12,7 +12,7 @@ Sample project configuration of a Restate service using the Java interface and H
 
 - Via the CLI:
     ```shell
-    restate example java-hello-world-http && cd java-hello-world-http
+    restate example java-hello-world-gradle && cd java-hello-world-gradle
     ```
 
 - Via git clone:
@@ -23,7 +23,7 @@ Sample project configuration of a Restate service using the Java interface and H
 
 - Via `wget`:
     ```shell
-    wget https://github.com/restatedev/examples/releases/latest/download/java-hello-world-http.zip && unzip java-hello-world-http.zip -d java-hello-world-http && rm java-hello-world-http.zip
+    wget https://github.com/restatedev/examples/releases/latest/download/java-hello-world-gradle.zip && unzip java-hello-world-gradle.zip -d java-hello-world-gradle && rm java-hello-world-gradle.zip
     ```
 
 ## Running the example

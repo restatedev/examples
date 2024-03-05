@@ -12,7 +12,7 @@ Sample project configuration of a Restate service using the Kotlin coroutines in
 
 - Via the CLI:
     ```shell
-    restate example kotlin-hello-world-http && cd kotlin-hello-world-http
+    restate example kotlin-hello-world-gradle && cd kotlin-hello-world-gradle
     ```
 
 - Via git clone:
@@ -23,7 +23,7 @@ Sample project configuration of a Restate service using the Kotlin coroutines in
 
 - Via `wget`:
     ```shell
-    wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hello-world-http.zip && unzip kotlin-hello-world-http.zip -d kotlin-hello-world-http && rm kotlin-hello-world-http.zip
+    wget https://github.com/restatedev/examples/releases/latest/download/kotlin-hello-world-gradle.zip && unzip kotlin-hello-world-gradle.zip -d kotlin-hello-world-gradle && rm kotlin-hello-world-gradle.zip
     ```
 
 ## Running the example
