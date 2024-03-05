@@ -28,6 +28,13 @@ jobs:
             kotlin-hello-world-gradle.zip
             scala-hello-world-sbt.zip
             typescript-hello-world.zip
-            typescript-basics.zip
+            typescript-hello-world-lambda-cdk.zip
+            kotlin-hello-world-lambda-cdk.zip
             java-tour-of-restate.zip
             typescript-tour-of-restate.zip
+            typescript-ticket-reservation.zip
+            typescript-payment-state-machine.zip
+            java-food-ordering.zip
+            typescript-food-ordering.zip
+            typescript-ecommerce-store.zip
+            typescript-ai-image-workflows.zip
