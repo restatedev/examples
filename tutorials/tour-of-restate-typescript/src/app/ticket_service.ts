@@ -18,15 +18,15 @@ enum TicketStatus {
 }
 
 export const ticketDbRouter = restate.keyedRouter({
-  reserve: async (ctx: restate.KeyedContext) => {
+  async reserve(ctx: restate.KeyedContext){
     return true;
   },
 
-  unreserve: async (ctx: restate.KeyedContext) => {
+  async unreserve(ctx: restate.KeyedContext){
     return true;
   },
 
-  markAsSold: async (ctx: restate.KeyedContext) => {
+  async markAsSold(ctx: restate.KeyedContext){
     return true;
   },
 });

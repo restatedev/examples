@@ -14,11 +14,7 @@ import { ticketServiceApi } from "./ticket_service";
 import { checkoutApi } from "./checkout";
 
 export const userSessionRouter = restate.keyedRouter({
-  addTicket: async (
-    ctx: restate.KeyedContext,
-    userId: string,
-    ticketId: string,
-  ) => {
+  async addTicket(ctx: restate.KeyedContext, userId: string, ticketId: string){
     const reservationSuccess = await ctx
       .rpc(ticketServiceApi)
       .reserve(ticketId);
@@ -36,11 +32,7 @@ export const userSessionRouter = restate.keyedRouter({
     return reservationSuccess;
   },
 
-  expireTicket: async (
-    ctx: restate.KeyedContext,
-    userId: string,
-    ticketId: string,
-  ) => {
+  async expireTicket(ctx: restate.KeyedContext, userId: string, ticketId: string){
     const tickets = (await ctx.get<string[]>("tickets")) ?? [];
 
     const ticketIndex = tickets.findIndex((ticket) => ticket === ticketId);
@@ -53,7 +45,7 @@ export const userSessionRouter = restate.keyedRouter({
     }
   },
 
-  checkout: async (ctx: restate.KeyedContext, userId: string) => {
+  async checkout(ctx: restate.KeyedContext, userId: string){
     const tickets = (await ctx.get<string[]>("tickets")) ?? [];
 
     if (tickets.length === 0) {

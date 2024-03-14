@@ -15,10 +15,7 @@ import { EmailClient } from "../auxiliary/email_client";
 import { PaymentClient } from "../auxiliary/payment_client";
 
 export const checkoutRouter = restate.router({
-  checkout: async (
-    ctx: restate.Context,
-    request: { userId: string; tickets: string[] },
-  ) => {
+  async checkout(ctx: restate.Context, request: { userId: string; tickets: string[] }){
     // Generate idempotency key for the stripe client
     const idempotencyKey = await ctx.sideEffect(async () => uuid());
 

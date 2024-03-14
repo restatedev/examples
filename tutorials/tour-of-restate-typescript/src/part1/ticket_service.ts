@@ -19,18 +19,24 @@ enum TicketStatus {
 }
 
 export const ticketDbRouter = restate.keyedRouter({
-  reserve: async (ctx: restate.KeyedContext) => {
+  // <start_reserve>
+  async reserve(ctx: restate.KeyedContext){
     await setTimeout(35000);
     return true;
   },
+  // <end_reserve>
 
-  unreserve: async (ctx: restate.KeyedContext) => {
+  // <start_unreserve>
+  async unreserve(ctx: restate.KeyedContext){
     return true;
   },
+  // <end_unreserve>
 
-  markAsSold: async (ctx: restate.KeyedContext) => {
+  // <start_mark_as_sold>
+  async markAsSold(ctx: restate.KeyedContext){
     return true;
   },
+  // <end_mark_as_sold>
 });
 
 export const ticketServiceApi: restate.ServiceApi<typeof ticketDbRouter> = {
