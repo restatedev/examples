@@ -54,7 +54,7 @@ export const userSessionRouter = restate.keyedRouter({
 
     const checkoutSuccess = await ctx
       .rpc(checkoutApi)
-      .checkout({ userId: userId, tickets: tickets! });
+      .handle({ userId: userId, tickets: tickets! });
 
     if (checkoutSuccess) {
       // mark tickets as sold if checkout was successful

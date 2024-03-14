@@ -30,17 +30,13 @@ export const ticketDbRouter = restate.keyedRouter({
   },
   // <end_reserve>
 
-  // <start_unreserve>
   async unreserve(ctx: restate.KeyedContext){
     return true;
   },
-  // <end_unreserve>
 
-  // <start_mark_as_sold>
   async markAsSold(ctx: restate.KeyedContext){
     return true;
   },
-  // <end_mark_as_sold>
 });
 
 export const ticketServiceApi: restate.ServiceApi<typeof ticketDbRouter> = {

@@ -14,23 +14,23 @@ import { ticketServiceApi } from "./ticket_service";
 import { checkoutApi } from "./checkout";
 
 export const userSessionRouter = restate.keyedRouter({
+  // <start_add_ticket>
   async addTicket(ctx: restate.KeyedContext, userId: string, ticketId: string){
-    const reservationSuccess = await ctx
-      .rpc(ticketServiceApi)
-      .reserve(ticketId);
+    const reservationSuccess = await ctx.rpc(ticketServiceApi).reserve(ticketId);
 
     if (reservationSuccess) {
+      //highlight-next-line
       const tickets = (await ctx.get<string[]>("tickets")) ?? [];
       tickets.push(ticketId);
+      //highlight-next-line
       ctx.set("tickets", tickets);
 
-      ctx
-        .sendDelayed(userSessionApi, 15 * 60 * 1000)
-        .expireTicket(userId, ticketId);
+      ctx.sendDelayed(userSessionApi, 15 * 60 * 1000).expireTicket(userId, ticketId);
     }
 
     return reservationSuccess;
   },
+  // <end_add_ticket>
 
   async expireTicket(ctx: restate.KeyedContext, userId: string, ticketId: string){
     const tickets = (await ctx.get<string[]>("tickets")) ?? [];
@@ -45,16 +45,19 @@ export const userSessionRouter = restate.keyedRouter({
     }
   },
 
+  // <start_checkout>
   async checkout(ctx: restate.KeyedContext, userId: string){
+    //highlight-next-line
     const tickets = (await ctx.get<string[]>("tickets")) ?? [];
 
+    //highlight-start
     if (tickets.length === 0) {
       return false;
     }
+    //highlight-end
 
-    const checkoutSuccess = await ctx
-      .rpc(checkoutApi)
-      .checkout({ userId: userId, tickets: tickets });
+    const checkoutSuccess = await ctx.rpc(checkoutApi)
+        .handle({ userId: userId, tickets: tickets });
 
     if (checkoutSuccess) {
       ctx.clear("tickets");
@@ -62,6 +65,7 @@ export const userSessionRouter = restate.keyedRouter({
 
     return checkoutSuccess;
   },
+  // <end_checkout>
 });
 
 export const userSessionApi: restate.ServiceApi<typeof userSessionRouter> = {
