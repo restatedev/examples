@@ -45,8 +45,6 @@ export const userSessionRouter = restate.keyedRouter({
   // <end_expire_ticket>
 });
 
-// <start_user_session_api>
 export const userSessionApi: restate.ServiceApi<typeof userSessionRouter> = {
   path: "UserSession",
 };
-// <end_user_session_api>
