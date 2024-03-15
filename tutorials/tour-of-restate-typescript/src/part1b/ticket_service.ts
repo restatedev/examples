@@ -23,9 +23,9 @@ enum TicketStatus {
 export const ticketDbRouter = restate.keyedRouter({
   // <start_reserve>
   async reserve(ctx: restate.KeyedContext){
-    //bad-code-start
-    await setTimeout(35000);
-    //bad-code-end
+    //good-code-start
+    await ctx.sleep(35000);
+    //good-code-end
     return true;
   },
   // <end_reserve>
