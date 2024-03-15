@@ -15,9 +15,7 @@ import { checkoutApi } from "./checkout";
 
 export const userSessionRouter = restate.keyedRouter({
   async addTicket(ctx: restate.KeyedContext, userId: string, ticketId: string){
-    const reservationSuccess = await ctx
-      .rpc(ticketServiceApi)
-      .reserve(ticketId);
+    const reservationSuccess = await ctx.rpc(ticketServiceApi).reserve(ticketId);
 
     if (reservationSuccess) {
       const tickets = (await ctx.get<string[]>("tickets")) ?? [];

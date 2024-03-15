@@ -19,7 +19,7 @@ export const userSessionRouter = restate.keyedRouter({
   // <start_add_ticket>
   async addTicket(ctx: restate.KeyedContext, userId: string, ticketId: string){
     // highlight-start
-    ctx.send(ticketServiceApi).reserve(ticketId);
+    const reservationSuccess = await ctx.rpc(ticketServiceApi).reserve(ticketId);
     // highlight-end
     return true;
   },

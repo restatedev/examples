@@ -16,9 +16,7 @@ import { checkoutApi } from "./checkout";
 export const userSessionRouter = restate.keyedRouter({
   async addTicket(ctx: restate.KeyedContext, userId: string, ticketId: string){
     // try to reserve ticket
-    const reservation_success = await ctx
-      .rpc(ticketServiceApi)
-      .reserve(ticketId);
+    const reservation_success = await ctx.rpc(ticketServiceApi).reserve(ticketId);
 
     if (reservation_success) {
       // add ticket to user session tickets
