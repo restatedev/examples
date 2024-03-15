@@ -45,6 +45,7 @@ export const userSessionRouter = restate.keyedRouter({
     }
   },
 
+  // <start_checkout>
   async checkout(ctx: restate.KeyedContext, userId: string){
     const tickets = (await ctx.get<string[]>("tickets")) ?? [];
 
@@ -52,20 +53,22 @@ export const userSessionRouter = restate.keyedRouter({
       return false;
     }
 
-    const checkoutSuccess = await ctx
-      .rpc(checkoutApi)
+    const checkoutSuccess = await ctx.rpc(checkoutApi)
       .handle({ userId: userId, tickets: tickets! });
 
     if (checkoutSuccess) {
       // mark tickets as sold if checkout was successful
+      //highlight-start
       for (const ticketId of tickets) {
         ctx.send(ticketServiceApi).markAsSold(ticketId);
       }
+      //highlight-end
       ctx.clear("tickets");
     }
 
     return checkoutSuccess;
   },
+  // <end_checkout>
 });
 
 export const userSessionApi: restate.ServiceApi<typeof userSessionRouter> = {

@@ -22,11 +22,14 @@ export const checkoutRouter = restate.router({
     // We are a uniform shop where everything costs 40 USD
     const totalPrice = request.tickets.length * 40;
 
+    // <start_failing_client>
     const paymentClient = PaymentClient.get();
-
+    //highlight-start
     const doPayment = () =>
       paymentClient.failingCall(idempotencyKey, totalPrice);
     const success = await ctx.sideEffect(doPayment);
+    //highlight-end
+    // <end_failing_client>
 
     const email = EmailClient.get();
 

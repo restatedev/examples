@@ -32,6 +32,7 @@ export const userSessionRouter = restate.keyedRouter({
   },
   // <end_add_ticket>
 
+  // <start_expire_ticket>
   async expireTicket(ctx: restate.KeyedContext, userId: string, ticketId: string){
     const tickets = (await ctx.get<string[]>("tickets")) ?? [];
 
@@ -44,6 +45,7 @@ export const userSessionRouter = restate.keyedRouter({
       ctx.send(ticketServiceApi).unreserve(ticketId);
     }
   },
+  // <end_expire_ticket>
 
   // <start_checkout>
   async checkout(ctx: restate.KeyedContext, userId: string){
