@@ -18,10 +18,14 @@ import { checkoutApi } from "./checkout";
 export const userSessionRouter = restate.keyedRouter({
   // <start_add_ticket>
   async addTicket(ctx: restate.KeyedContext, userId: string, ticketId: string){
-    // highlight-start
     const reservationSuccess = await ctx.rpc(ticketServiceApi).reserve(ticketId);
-    // highlight-end
-    return true;
+
+    if (reservationSuccess) {
+      // highlight-next-line
+      ctx.sendDelayed(userSessionApi, 15 * 60 * 1000).expireTicket(userId, ticketId);
+    }
+
+    return reservationSuccess;
   },
   // <end_add_ticket>
 
