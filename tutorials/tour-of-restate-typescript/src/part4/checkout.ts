@@ -17,22 +17,18 @@ import { EmailClient } from "../auxiliary/email_client";
 export const checkoutRouter = restate.router({
   async handle(ctx: restate.Context, request: { userId: string; tickets: string[] }){
     // <start_side_effects>
-    // We are a uniform shop where everything costs 40 USD
     const totalPrice = request.tickets.length * 40;
-    const paymentClient = PaymentClient.get();
 
     // highlight-start
     const idempotencyKey = ctx.rand.uuidv4();
-    const success = await ctx.sideEffect(() => paymentClient.call(idempotencyKey, totalPrice));
+    const success = await ctx.sideEffect(() => PaymentClient.get().call(idempotencyKey, totalPrice));
     // highlight-end
     // <end_side_effects>
 
-    const email = EmailClient.get();
-
     if (success) {
-      await ctx.sideEffect(() => email.notifyUserOfPaymentSuccess(request.userId));
+      await ctx.sideEffect(() => EmailClient.get().notifyUserOfPaymentSuccess(request.userId));
     } else {
-      await ctx.sideEffect(() => email.notifyUserOfPaymentFailure(request.userId));
+      await ctx.sideEffect(() => EmailClient.get().notifyUserOfPaymentFailure(request.userId));
     }
 
     return success;

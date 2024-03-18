@@ -24,23 +24,19 @@ import java.util.UUID;
 
 public class Checkout extends CheckoutRestate.CheckoutRestateImplBase {
 
-    PaymentClient paymentClient = PaymentClient.get();
-    EmailClient emailClient = EmailClient.get();
-
     @Override
     public BoolValue checkout(Context ctx, CheckoutFlowRequest request) throws TerminalException {
-        // Generate idempotency key for the stripe client
-        var idempotencyKey = ctx.sideEffect(CoreSerdes.JSON_STRING, () -> UUID.randomUUID().toString());
+        double totalPrice = request.getTicketsList().size() * 40.0;
 
-        // We are a uniform shop where everything costs 40 USD
-        var totalPrice = request.getTicketsList().size() * 40.0;
-
-        boolean success = ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () -> paymentClient.failingCall(idempotencyKey, totalPrice));
+        String idempotencyKey = ctx.random().nextUUID().toString();
+        // <start_failing_client>
+        boolean success = ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () -> PaymentClient.get().failingCall(idempotencyKey, totalPrice));
+        // <end_failing_client>
 
         if (success) {
-            ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, ()-> emailClient.notifyUserOfPaymentSuccess(request.getUserId()));
+            ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, ()-> EmailClient.get().notifyUserOfPaymentSuccess(request.getUserId()));
         } else {
-            ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () -> emailClient.notifyUserOfPaymentFailure(request.getUserId()));
+            ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () -> EmailClient.get().notifyUserOfPaymentFailure(request.getUserId()));
         }
 
         return BoolValue.of(success);

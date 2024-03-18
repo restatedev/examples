@@ -55,7 +55,6 @@ export const userSessionRouter = restate.keyedRouter({
       .handle({ userId: userId, tickets: tickets! });
 
     if (checkoutSuccess) {
-      // mark tickets as sold if checkout was successful
       //highlight-start
       for (const ticketId of tickets) {
         ctx.send(ticketServiceApi).markAsSold(ticketId);

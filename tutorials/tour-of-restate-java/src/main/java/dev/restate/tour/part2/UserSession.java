@@ -18,8 +18,12 @@ import dev.restate.tour.generated.CheckoutRestate;
 import dev.restate.tour.generated.TicketServiceRestate;
 import dev.restate.tour.generated.UserSessionRestate;
 
+import java.time.Duration;
+
 import static dev.restate.tour.generated.CheckoutRestate.CheckoutRestateClient;
 import static dev.restate.tour.generated.TicketServiceRestate.TicketServiceRestateClient;
+import static dev.restate.tour.generated.UserSessionRestate.UserSessionRestateClient;
+
 import static dev.restate.tour.generated.Tour.*;
 
 public class UserSession extends UserSessionRestate.UserSessionRestateImplBase {
@@ -27,27 +31,29 @@ public class UserSession extends UserSessionRestate.UserSessionRestateImplBase {
     @Override
     public BoolValue addTicket(ObjectContext ctx, ReserveTicket request) throws TerminalException {
         Ticket ticket = Ticket.newBuilder().setTicketId(request.getTicketId()).build();
-
-        //highlight-start
         TicketServiceRestateClient ticketClnt = TicketServiceRestate.newClient(ctx);
-        ticketClnt.oneWay().reserve(ticket);
-        //highlight-end
+        BoolValue reservationSuccess = ticketClnt.reserve(ticket).await() ;
 
-        return BoolValue.of(true);
+        if (reservationSuccess.getValue()) {
+            ExpireTicketRequest expirationRequest =
+                    ExpireTicketRequest.newBuilder().setTicketId(request.getTicketId()).setUserId(request.getUserId()).build();
+            UserSessionRestateClient userSessionClnt = UserSessionRestate.newClient(ctx);
+            // highlight-start
+            userSessionClnt.delayed(Duration.ofMinutes(15)).expireTicket(expirationRequest);
+            // highlight-end
+        }
+
+        return reservationSuccess;
     }
     // <end_add_ticket>
 
-    // <start_expire_ticket>
     @Override
     public void expireTicket(ObjectContext ctx, ExpireTicketRequest request) throws TerminalException {
         Ticket ticket = Ticket.newBuilder().setTicketId(request.getTicketId()).build();
 
-        //highlight-start
         TicketServiceRestateClient ticketClnt = TicketServiceRestate.newClient(ctx);
         ticketClnt.oneWay().unreserve(ticket);
-        //highlight-end
     }
-    // <end_expire_ticket>
 
     @Override
     public BoolValue checkout(ObjectContext ctx, CheckoutRequest request) throws TerminalException {

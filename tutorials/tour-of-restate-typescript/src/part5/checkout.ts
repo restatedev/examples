@@ -16,30 +16,24 @@ import { PaymentClient } from "../auxiliary/payment_client";
 
 export const checkoutRouter = restate.router({
   async handle(ctx: restate.Context, request: { userId: string; tickets: string[] }){
-    // Generate idempotency key for the stripe client
-    const idempotencyKey = await ctx.sideEffect(async () => uuid());
-
-    // We are a uniform shop where everything costs 40 USD
     const totalPrice = request.tickets.length * 40;
 
+    const idempotencyKey = await ctx.sideEffect(async () => uuid());
+
     // <start_failing_client>
-    const paymentClient = PaymentClient.get();
     //highlight-start
-    const doPayment = () =>
-      paymentClient.failingCall(idempotencyKey, totalPrice);
+    const doPayment = () => PaymentClient.get().failingCall(idempotencyKey, totalPrice);
     const success = await ctx.sideEffect(doPayment);
     //highlight-end
     // <end_failing_client>
 
-    const email = EmailClient.get();
-
     if (success) {
       await ctx.sideEffect(() =>
-        email.notifyUserOfPaymentSuccess(request.userId),
+        EmailClient.get().notifyUserOfPaymentSuccess(request.userId),
       );
     } else {
       await ctx.sideEffect(() =>
-        email.notifyUserOfPaymentFailure(request.userId),
+        EmailClient.get().notifyUserOfPaymentFailure(request.userId),
       );
     }
 

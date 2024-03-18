@@ -21,11 +21,12 @@ import dev.restate.tour.generated.TicketServiceRestate;
 import dev.restate.tour.generated.Tour.Ticket;
 
 public class TicketService extends TicketServiceRestate.TicketServiceRestateImplBase {
+    // <start_reserve>
     public static final StateKey<TicketStatus> STATE_KEY = StateKey.of("status", JacksonSerdes.of(TicketStatus.class));
 
     @Override
     public BoolValue reserve(ObjectContext ctx, Ticket request) throws TerminalException {
-        var status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
+        TicketStatus status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
 
         if (status.equals(TicketStatus.Available)) {
             ctx.set(STATE_KEY, TicketStatus.Reserved);
@@ -34,22 +35,28 @@ public class TicketService extends TicketServiceRestate.TicketServiceRestateImpl
             return BoolValue.of(false);
         }
     }
+    // <end_reserve>
 
+    // <start_unreserve>
     @Override
     public void unreserve(ObjectContext ctx, Ticket request) throws TerminalException {
-        var status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
+        TicketStatus status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
 
         if (!status.equals(TicketStatus.Sold)) {
             ctx.clear(STATE_KEY);
         }
     }
+    // <end_unreserve>
 
+    // <start_mark_as_sold>
     @Override
     public void markAsSold(ObjectContext ctx, Ticket request) throws TerminalException {
-        var status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
+        TicketStatus status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
 
         if (status.equals(TicketStatus.Reserved)) {
             ctx.set(STATE_KEY, TicketStatus.Sold);
         }
     }
+    // <end_mark_as_sold>
+
 }

@@ -31,6 +31,7 @@ public class TicketService extends TicketServiceRestate.TicketServiceRestateImpl
             throw new RuntimeException(e);
         }
         //bad-code-end
+
         return BoolValue.of(true);
     }
     // <end_reserve>

@@ -24,7 +24,10 @@ public class TicketService extends TicketServiceRestate.TicketServiceRestateImpl
     // <start_reserve>
     @Override
     public BoolValue reserve(ObjectContext ctx, Ticket request) throws TerminalException {
-        ctx.sleep(Duration.ofSeconds(35));
+        //good-code-start
+        ctx.sleep(Duration.ofSeconds(65));
+        //good-code-end
+
         return BoolValue.of(true);
     }
     // <end_reserve>

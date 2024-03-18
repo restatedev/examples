@@ -26,7 +26,7 @@ public class TicketService extends TicketServiceRestate.TicketServiceRestateImpl
 
     @Override
     public BoolValue reserve(ObjectContext ctx, Ticket request) throws TerminalException {
-        var status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
+        TicketStatus status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
 
         if (status.equals(TicketStatus.Available)) {
             ctx.set(STATE_KEY, TicketStatus.Reserved);
@@ -38,7 +38,7 @@ public class TicketService extends TicketServiceRestate.TicketServiceRestateImpl
 
     @Override
     public void unreserve(ObjectContext ctx, Ticket request) throws TerminalException {
-        var status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
+        TicketStatus status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
 
         if (!status.equals(TicketStatus.Sold)) {
             ctx.clear(STATE_KEY);
@@ -47,7 +47,7 @@ public class TicketService extends TicketServiceRestate.TicketServiceRestateImpl
 
     @Override
     public void markAsSold(ObjectContext ctx, Ticket request) throws TerminalException {
-        var status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
+        TicketStatus status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
 
         if (status.equals(TicketStatus.Reserved)) {
             ctx.set(STATE_KEY, TicketStatus.Sold);

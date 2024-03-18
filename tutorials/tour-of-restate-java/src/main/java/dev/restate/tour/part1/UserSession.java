@@ -30,7 +30,7 @@ public class UserSession extends UserSessionRestate.UserSessionRestateImplBase {
 
         //highlight-start
         TicketServiceRestateClient ticketClnt = TicketServiceRestate.newClient(ctx);
-        ticketClnt.oneWay().reserve(ticket);
+        BoolValue reservationSuccess = ticketClnt.reserve(ticket).await() ;
         //highlight-end
 
         return BoolValue.of(true);

@@ -20,66 +20,83 @@ import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import dev.restate.tour.generated.*;
 import dev.restate.tour.generated.Tour.*;
 
+import static dev.restate.tour.generated.CheckoutRestate.CheckoutRestateClient;
+import static dev.restate.tour.generated.TicketServiceRestate.TicketServiceRestateClient;
+
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 
 public class UserSession extends UserSessionRestate.UserSessionRestateImplBase {
 
-
+    // <start_add_ticket>
+    // At the top of the class, define the state key: supply a name and (de)serializer
+    //highlight-start
     public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", JacksonSerdes.of(new TypeReference<>() {}));
+    //highlight-end
+
 
     @Override
     public BoolValue addTicket(ObjectContext ctx, ReserveTicket request) throws TerminalException {
-        var ticketClnt = TicketServiceRestate.newClient(ctx);
-        var reservationSuccess = ticketClnt
-                .reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build())
-                .await();
+        Ticket ticket = Ticket.newBuilder().setTicketId(request.getTicketId()).build();
+        TicketServiceRestateClient ticketClnt = TicketServiceRestate.newClient(ctx);
+        BoolValue reservationSuccess = ticketClnt.reserve(ticket).await() ;
 
         if (reservationSuccess.getValue()) {
-            var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
+            //highlight-next-line
+            Set<String> tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
             tickets.add(request.getTicketId());
+            //highlight-next-line
             ctx.set(STATE_KEY, tickets);
 
-            var userSessionClnt = UserSessionRestate.newClient(ctx);
-            userSessionClnt.delayed(Duration.ofMinutes(15)).expireTicket(
-                    ExpireTicketRequest.newBuilder().setTicketId(request.getTicketId()).setUserId(request.getUserId()).build()
-            );
+            ExpireTicketRequest expirationRequest =
+                    ExpireTicketRequest.newBuilder().setTicketId(request.getTicketId()).setUserId(request.getUserId()).build();
+            UserSessionRestate.UserSessionRestateClient userSessionClnt = UserSessionRestate.newClient(ctx);
+            userSessionClnt.delayed(Duration.ofMinutes(15)).expireTicket(expirationRequest);
         }
 
         return reservationSuccess;
     }
+    // <end_add_ticket>
 
+    // <start_expire_ticket>
     @Override
     public void expireTicket(ObjectContext ctx, ExpireTicketRequest request) throws TerminalException {
-        var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
+        Set<String> tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
 
-        var removed = tickets.removeIf(s -> s.equals(request.getTicketId()));
+        boolean removed = tickets.removeIf(s -> s.equals(request.getTicketId()));
 
         if (removed) {
             ctx.set(STATE_KEY, tickets);
-            var ticketClnt = TicketServiceRestate.newClient(ctx);
+            TicketServiceRestateClient ticketClnt = TicketServiceRestate.newClient(ctx);
             ticketClnt.oneWay().unreserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build());
         }
     }
+    // <end_expire_ticket>
 
+    // <start_checkout>
     @Override
     public BoolValue checkout(ObjectContext ctx, CheckoutRequest request) throws TerminalException {
-        var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
+        //highlight-next-line
+        Set<String> tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
 
+        //highlight-start
         if (tickets.isEmpty()) {
             return BoolValue.of(false);
         }
+        //highlight-end
 
-        var checkoutClnt = CheckoutRestate.newClient(ctx);
-        var checkoutSuccess = checkoutClnt.checkout(
-                CheckoutFlowRequest.newBuilder().setUserId(request.getUserId()).addAllTickets(tickets).build()
-        ).await();
+        CheckoutFlowRequest checkoutFlowRequest = CheckoutFlowRequest.newBuilder().setUserId(request.getUserId()).addTickets("456").build();
+        CheckoutRestateClient checkoutClnt = CheckoutRestate.newClient(ctx);
+        BoolValue checkoutSuccess = checkoutClnt.checkout(checkoutFlowRequest).await();
 
         if (checkoutSuccess.getValue()) {
+            //highlight-next-line
             ctx.clear(STATE_KEY);
         }
 
         return checkoutSuccess;
     }
+    // <end_checkout>
+
 }
