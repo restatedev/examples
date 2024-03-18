@@ -9,7 +9,7 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.tour.part4;
+package dev.restate.tour.part5;
 
 import com.google.protobuf.BoolValue;
 import dev.restate.sdk.Context;
@@ -35,12 +35,12 @@ public class Checkout extends CheckoutRestate.CheckoutRestateImplBase {
         // We are a uniform shop where everything costs 40 USD
         var totalPrice = request.getTicketsList().size() * 40.0;
 
-        boolean success = ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () -> paymentClient.call(idempotencyKey, totalPrice));
+        boolean success = ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () -> paymentClient.failingCall(idempotencyKey, totalPrice));
 
         if (success) {
-            ctx.sideEffect(()-> emailClient.notifyUserOfPaymentSuccess(request.getUserId()));
+            ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, ()-> emailClient.notifyUserOfPaymentSuccess(request.getUserId()));
         } else {
-            ctx.sideEffect(() -> emailClient.notifyUserOfPaymentFailure(request.getUserId()));
+            ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () -> emailClient.notifyUserOfPaymentFailure(request.getUserId()));
         }
 
         return BoolValue.of(success);

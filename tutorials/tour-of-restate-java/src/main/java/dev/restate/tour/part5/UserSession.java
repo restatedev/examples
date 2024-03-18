@@ -9,7 +9,7 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.tour.part4;
+package dev.restate.tour.part5;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.protobuf.BoolValue;
@@ -17,15 +17,16 @@ import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
-import dev.restate.tour.generated.*;
+import dev.restate.tour.generated.CheckoutRestate;
+import dev.restate.tour.generated.TicketServiceRestate;
 import dev.restate.tour.generated.Tour.*;
+import dev.restate.tour.generated.UserSessionRestate;
 
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 
 public class UserSession extends UserSessionRestate.UserSessionRestateImplBase {
-
 
     public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", JacksonSerdes.of(new TypeReference<>() {}));
 
@@ -34,20 +35,20 @@ public class UserSession extends UserSessionRestate.UserSessionRestateImplBase {
         var ticketClnt = TicketServiceRestate.newClient(ctx);
         var reservationSuccess = ticketClnt
                 .reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build())
-                .await().getValue();
+                .await();
 
-        if (reservationSuccess) {
+        if (reservationSuccess.getValue()) {
             var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
             tickets.add(request.getTicketId());
             ctx.set(STATE_KEY, tickets);
 
             var userSessionClnt = UserSessionRestate.newClient(ctx);
             userSessionClnt.delayed(Duration.ofMinutes(15)).expireTicket(
-                    ExpireTicketRequest.newBuilder().setTicketId(request.getTicketId()).setUserId(request.getUserId()).build()
+                ExpireTicketRequest.newBuilder().setTicketId(request.getTicketId()).setUserId(request.getUserId()).build()
             );
         }
 
-        return BoolValue.of(reservationSuccess);
+        return reservationSuccess;
     }
 
     @Override
@@ -65,22 +66,17 @@ public class UserSession extends UserSessionRestate.UserSessionRestateImplBase {
 
     @Override
     public BoolValue checkout(ObjectContext ctx, CheckoutRequest request) throws TerminalException {
-        // 1. Retrieve the tickets from state
         var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
 
-        // 2. If there are no tickets, return `false`
         if (tickets.isEmpty()) {
             return BoolValue.of(false);
         }
 
-        // 3. Call the `checkout` function of the checkout service with the tickets
         var checkoutClnt = CheckoutRestate.newClient(ctx);
         var checkoutSuccess = checkoutClnt.checkout(
-                CheckoutFlowRequest.newBuilder().setUserId(request.getUserId()).addAllTickets(tickets).build()
+            CheckoutFlowRequest.newBuilder().setUserId(request.getUserId()).addAllTickets(tickets).build()
         ).await();
 
-        // 4. If this was successful, empty the tickets.
-        // Otherwise, let the user try again.
         if (checkoutSuccess.getValue()) {
             var ticketClnt = TicketServiceRestate.newClient(ctx);
             tickets.forEach(t -> ticketClnt.oneWay().markAsSold(Ticket.newBuilder().setTicketId(t).build()));

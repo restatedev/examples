@@ -21,11 +21,19 @@ import java.time.Duration;
 
 public class TicketService extends TicketServiceRestate.TicketServiceRestateImplBase {
 
+    // <start_reserve>
     @Override
     public BoolValue reserve(ObjectContext ctx, Ticket request) throws TerminalException {
-        ctx.sleep(Duration.ofSeconds(35));
+        //bad-code-start
+        try {
+            Thread.sleep(65000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        //bad-code-end
         return BoolValue.of(true);
     }
+    // <end_reserve>
 
     @Override
     public void unreserve(ObjectContext ctx, Ticket request) throws TerminalException {

@@ -21,7 +21,6 @@ import dev.restate.tour.generated.TicketServiceRestate;
 import dev.restate.tour.generated.Tour.Ticket;
 
 public class TicketService extends TicketServiceRestate.TicketServiceRestateImplBase {
-
     public static final StateKey<TicketStatus> STATE_KEY = StateKey.of("status", JacksonSerdes.of(TicketStatus.class));
 
     @Override

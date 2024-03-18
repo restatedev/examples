@@ -34,9 +34,9 @@ public class UserSession extends UserSessionRestate.UserSessionRestateImplBase {
         var ticketClnt = TicketServiceRestate.newClient(ctx);
         var reservationSuccess = ticketClnt
                 .reserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build())
-                .await().getValue();
+                .await();
 
-        if (reservationSuccess) {
+        if (reservationSuccess.getValue()) {
             var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
             tickets.add(request.getTicketId());
             ctx.set(STATE_KEY, tickets);
@@ -47,7 +47,7 @@ public class UserSession extends UserSessionRestate.UserSessionRestateImplBase {
             );
         }
 
-        return BoolValue.of(reservationSuccess);
+        return reservationSuccess;
     }
 
     @Override
@@ -65,25 +65,18 @@ public class UserSession extends UserSessionRestate.UserSessionRestateImplBase {
 
     @Override
     public BoolValue checkout(ObjectContext ctx, CheckoutRequest request) throws TerminalException {
-        // 1. Retrieve the tickets from state
         var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
 
-        // 2. If there are no tickets, return `false`
         if (tickets.isEmpty()) {
             return BoolValue.of(false);
         }
 
-        // 3. Call the `checkout` function of the checkout service with the tickets
         var checkoutClnt = CheckoutRestate.newClient(ctx);
         var checkoutSuccess = checkoutClnt.checkout(
                 CheckoutFlowRequest.newBuilder().setUserId(request.getUserId()).addAllTickets(tickets).build()
         ).await();
 
-        // 4. If this was successful, empty the tickets.
-        // Otherwise, let the user try again.
         if (checkoutSuccess.getValue()) {
-            var ticketClnt = TicketServiceRestate.newClient(ctx);
-            tickets.forEach(t -> ticketClnt.oneWay().markAsSold(Ticket.newBuilder().setTicketId(t).build()));
             ctx.clear(STATE_KEY);
         }
 
