@@ -14,7 +14,8 @@
     "part1": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only src/part1/app.ts",
     "part2": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only src/part2/app.ts",
     "part3": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only src/part3/app.ts",
-    "part4": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only src/part4/app.ts"
+    "part4": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only src/part4/app.ts",
+    "part5": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only src/part5/app.ts"
   },
   "author": "Restate Developers",
   "email": "code@restate.dev",

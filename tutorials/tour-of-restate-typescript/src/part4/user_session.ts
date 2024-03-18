@@ -15,38 +15,35 @@ import { checkoutApi } from "./checkout";
 
 export const userSessionRouter = restate.keyedRouter({
   async addTicket(ctx: restate.KeyedContext, userId: string, ticketId: string){
-    // try to reserve ticket
-    const reservation_success = await ctx.rpc(ticketServiceApi).reserve(ticketId);
+    const reservationSuccess = await ctx.rpc(ticketServiceApi).reserve(ticketId);
 
-    if (reservation_success) {
-      // add ticket to user session tickets
+    if (reservationSuccess) {
       const tickets = (await ctx.get<string[]>("tickets")) ?? [];
       tickets.push(ticketId);
       ctx.set("tickets", tickets);
 
-      // Schedule expiry timer
       ctx
         .sendDelayed(userSessionApi, 15 * 60 * 1000)
         .expireTicket(userId, ticketId);
     }
 
-    return reservation_success;
+    return reservationSuccess;
   },
 
   async expireTicket(ctx: restate.KeyedContext, userId: string, ticketId: string){
     const tickets = (await ctx.get<string[]>("tickets")) ?? [];
 
-    const index = tickets.findIndex((id) => id === ticketId);
+    const ticketIndex = tickets.findIndex((ticket) => ticket === ticketId);
 
-    // try removing ticket
-    if (index != -1) {
-      tickets.splice(index, 1);
+    if (ticketIndex != -1) {
+      tickets.splice(ticketIndex, 1);
       ctx.set("tickets", tickets);
-      // unreserve if ticket was reserved before
+
       ctx.send(ticketServiceApi).unreserve(ticketId);
     }
   },
 
+  // <start_checkout>
   async checkout(ctx: restate.KeyedContext, userId: string){
     const tickets = (await ctx.get<string[]>("tickets")) ?? [];
 
@@ -54,20 +51,22 @@ export const userSessionRouter = restate.keyedRouter({
       return false;
     }
 
-    const checkoutSuccess = await ctx
-      .rpc(checkoutApi)
+    const checkoutSuccess = await ctx.rpc(checkoutApi)
       .handle({ userId: userId, tickets: tickets! });
 
     if (checkoutSuccess) {
       // mark tickets as sold if checkout was successful
+      //highlight-start
       for (const ticketId of tickets) {
         ctx.send(ticketServiceApi).markAsSold(ticketId);
       }
+      //highlight-end
       ctx.clear("tickets");
     }
 
     return checkoutSuccess;
   },
+  // <end_checkout>
 });
 
 export const userSessionApi: restate.ServiceApi<typeof userSessionRouter> = {
