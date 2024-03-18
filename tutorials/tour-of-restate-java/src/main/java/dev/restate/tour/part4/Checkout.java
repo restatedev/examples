@@ -26,7 +26,7 @@ public class Checkout extends CheckoutRestate.CheckoutRestateImplBase {
 
     // <start_checkout>
     @Override
-    public BoolValue checkout(Context ctx, CheckoutFlowRequest request) throws TerminalException {
+    public BoolValue handle(Context ctx, CheckoutFlowRequest request) throws TerminalException {
         // <start_side_effects>
         double totalPrice = request.getTicketsList().size() * 40.0;
 

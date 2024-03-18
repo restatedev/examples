@@ -59,7 +59,7 @@ public class UserSession extends UserSessionRestate.UserSessionRestateImplBase {
     public BoolValue checkout(ObjectContext ctx, CheckoutRequest request) throws TerminalException {
         CheckoutFlowRequest checkoutFlowRequest = CheckoutFlowRequest.newBuilder().setUserId(request.getUserId()).addTickets("456").build();
         CheckoutRestateClient checkoutClnt = CheckoutRestate.newClient(ctx);
-        BoolValue checkoutSuccess = checkoutClnt.checkout(checkoutFlowRequest).await();
+        BoolValue checkoutSuccess = checkoutClnt.handle(checkoutFlowRequest).await();
 
         return checkoutSuccess;
     }

@@ -25,7 +25,7 @@ import java.util.UUID;
 public class Checkout extends CheckoutRestate.CheckoutRestateImplBase {
 
     @Override
-    public BoolValue checkout(Context ctx, CheckoutFlowRequest request) throws TerminalException {
+    public BoolValue handle(Context ctx, CheckoutFlowRequest request) throws TerminalException {
         double totalPrice = request.getTicketsList().size() * 40.0;
 
         String idempotencyKey = ctx.random().nextUUID().toString();

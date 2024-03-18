@@ -75,7 +75,7 @@ public class UserSession extends UserSessionRestate.UserSessionRestateImplBase {
 
         CheckoutFlowRequest checkoutFlowRequest = CheckoutFlowRequest.newBuilder().setUserId(request.getUserId()).addTickets("456").build();
         CheckoutRestateClient checkoutClnt = CheckoutRestate.newClient(ctx);
-        BoolValue checkoutSuccess = checkoutClnt.checkout(checkoutFlowRequest).await();
+        BoolValue checkoutSuccess = checkoutClnt.handle(checkoutFlowRequest).await();
 
         if (checkoutSuccess.getValue()) {
             TicketServiceRestateOneWayClient ticketClnt = TicketServiceRestate.newClient(ctx).oneWay();

@@ -19,7 +19,7 @@ import dev.restate.tour.generated.Tour.CheckoutFlowRequest;
 
 public class Checkout extends CheckoutRestate.CheckoutRestateImplBase {
     @Override
-    public BoolValue checkout(Context ctx, CheckoutFlowRequest request) throws TerminalException {
+    public BoolValue handle(Context ctx, CheckoutFlowRequest request) throws TerminalException {
         return BoolValue.of(true);
     }
 }
