@@ -36,11 +36,6 @@ dependencies {
 
   // Logging (optional)
   implementation("org.apache.logging.log4j:log4j-core:2.20.0")
-
-  // Testing (optional)
-  testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
-  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-  testImplementation("dev.restate:sdk-testing:$restateVersion")
 }
 
 // Setup Java/Kotlin compiler target
@@ -72,11 +67,6 @@ protobuf {
       }
     }
   }
-}
-
-// Configure test platform
-tasks.withType<Test> {
-  useJUnitPlatform()
 }
 
 // Configure main class
