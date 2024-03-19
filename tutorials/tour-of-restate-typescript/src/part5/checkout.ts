@@ -21,10 +21,8 @@ export const checkoutRouter = restate.router({
     const idempotencyKey = await ctx.sideEffect(async () => uuid());
 
     // <start_failing_client>
-    //highlight-start
-    const doPayment = () => PaymentClient.get().failingCall(idempotencyKey, totalPrice);
-    const success = await ctx.sideEffect(doPayment);
-    //highlight-end
+    //highlight-next-line
+    const success = await ctx.sideEffect(() => PaymentClient.get().failingCall(idempotencyKey, totalPrice));
     // <end_failing_client>
 
     if (success) {

@@ -13,8 +13,8 @@ import * as restate from "@restatedev/restate-sdk";
 import { PaymentClient } from "../auxiliary/payment_client";
 import { EmailClient } from "../auxiliary/email_client";
 
-// <start_checkout>
 export const checkoutRouter = restate.router({
+  // <start_checkout>
   async handle(ctx: restate.Context, request: { userId: string; tickets: string[] }){
     // <start_side_effects>
     const totalPrice = request.tickets.length * 40;
@@ -33,8 +33,8 @@ export const checkoutRouter = restate.router({
 
     return success;
   },
+  // <end_checkout>
 });
-// <end_checkout>
 
 export const checkoutApi: restate.ServiceApi<typeof checkoutRouter> = {
   path: "Checkout",

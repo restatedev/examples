@@ -41,7 +41,7 @@ export const userSessionRouter = restate.keyedRouter({
     // highlight-start
     ctx.send(ticketServiceApi).unreserve(ticketId);
     // highlight-end
-  }
+  },
   // <end_expire_ticket>
 });
 
