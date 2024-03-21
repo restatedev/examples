@@ -96,7 +96,7 @@ Or run Restate Server in Docker:
 Many examples need to be registered at Restate, so that Restate will proxy their function calls and
 do its magic. Once both server and example are running, register the example
 
-* Via the [CLI](https://docs.restate.dev/restate/cli): `restate dp reg localhost:9080`
+* Via the [CLI](https://docs.restate.dev/operate/cli): `restate dp reg localhost:9080`
 * Via `curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'`
 
 **Important** When running Restate with Docker, use `host.docker.internal` instead of `localhost` in the URIs above.

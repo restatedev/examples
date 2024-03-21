@@ -9,7 +9,7 @@ option java_multiple_files = true;
  * This service greets the users.
  */
 service Greeter {
-  // See https://docs.restate.dev/services/service_type for more details.
+  // See https://docs.restate.dev/develop/service_type for more details.
   option (dev.restate.ext.service_type) = KEYED;
 
   rpc Greet (GreetRequest) returns (GreetResponse);
