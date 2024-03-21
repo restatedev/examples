@@ -12,10 +12,7 @@
 import * as restate from "@restatedev/restate-sdk";
 
 export const checkoutRouter = restate.router({
-  checkout: async (
-    ctx: restate.Context,
-    request: { userId: string; tickets: string[] },
-  ) => {
+  async handle(ctx: restate.Context, request: { userId: string; tickets: string[] }){
     return true;
   },
 });

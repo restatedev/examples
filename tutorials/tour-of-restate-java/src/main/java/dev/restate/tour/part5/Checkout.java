@@ -9,7 +9,7 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.tour.part4;
+package dev.restate.tour.part5;
 
 import com.google.protobuf.BoolValue;
 import dev.restate.sdk.Context;
@@ -24,23 +24,21 @@ import java.util.UUID;
 
 public class Checkout extends CheckoutRestate.CheckoutRestateImplBase {
 
-    // <start_checkout>
     @Override
     public BoolValue handle(Context ctx, CheckoutFlowRequest request) throws TerminalException {
-        // <start_side_effects>
         double totalPrice = request.getTicketsList().size() * 40.0;
 
         String idempotencyKey = ctx.random().nextUUID().toString();
-        boolean success = ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () -> PaymentClient.get().call(idempotencyKey, totalPrice));
-        // <end_side_effects>
+        // <start_failing_client>
+        boolean success = ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () -> PaymentClient.get().failingCall(idempotencyKey, totalPrice));
+        // <end_failing_client>
 
         if (success) {
-            ctx.sideEffect(()-> EmailClient.get().notifyUserOfPaymentSuccess(request.getUserId()));
+            ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, ()-> EmailClient.get().notifyUserOfPaymentSuccess(request.getUserId()));
         } else {
-            ctx.sideEffect(() -> EmailClient.get().notifyUserOfPaymentFailure(request.getUserId()));
+            ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () -> EmailClient.get().notifyUserOfPaymentFailure(request.getUserId()));
         }
 
         return BoolValue.of(success);
     }
-    // <end_checkout>
 }

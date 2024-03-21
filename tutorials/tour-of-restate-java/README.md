@@ -30,4 +30,5 @@ In short, you can run the different parts of the code via:
 ./gradlew -PmainClass=dev.restate.tour.part2.AppMain run
 ./gradlew -PmainClass=dev.restate.tour.part3.AppMain run
 ./gradlew -PmainClass=dev.restate.tour.part4.AppMain run
+./gradlew -PmainClass=dev.restate.tour.part5.AppMain run
 ```

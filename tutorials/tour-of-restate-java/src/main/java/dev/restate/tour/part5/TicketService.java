@@ -9,38 +9,48 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.tour.part1;
+package dev.restate.tour.part5;
 
 import com.google.protobuf.BoolValue;
 import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
+import dev.restate.sdk.serde.jackson.JacksonSerdes;
+import dev.restate.tour.auxiliary.TicketStatus;
 import dev.restate.tour.generated.TicketServiceRestate;
 import dev.restate.tour.generated.Tour.Ticket;
 
-import java.time.Duration;
-
 public class TicketService extends TicketServiceRestate.TicketServiceRestateImplBase {
 
-    // <start_reserve>
+    public static final StateKey<TicketStatus> STATE_KEY = StateKey.of("status", JacksonSerdes.of(TicketStatus.class));
+
     @Override
     public BoolValue reserve(ObjectContext ctx, Ticket request) throws TerminalException {
-        //bad-code-start
-        try {
-            Thread.sleep(65000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        //bad-code-end
+        TicketStatus status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
 
-        return BoolValue.of(true);
+        if (status.equals(TicketStatus.Available)) {
+            ctx.set(STATE_KEY, TicketStatus.Reserved);
+            return BoolValue.of(true);
+        } else {
+            return BoolValue.of(false);
+        }
     }
-    // <end_reserve>
 
     @Override
     public void unreserve(ObjectContext ctx, Ticket request) throws TerminalException {
+        TicketStatus status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
+
+        if (!status.equals(TicketStatus.Sold)) {
+            ctx.clear(STATE_KEY);
+        }
     }
 
     @Override
     public void markAsSold(ObjectContext ctx, Ticket request) throws TerminalException {
+        TicketStatus status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
+
+        if (status.equals(TicketStatus.Reserved)) {
+            ctx.set(STATE_KEY, TicketStatus.Sold);
+        }
     }
 }

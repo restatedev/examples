@@ -10,40 +10,10 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import { v4 as uuid } from "uuid";
-import { PaymentClient } from "../auxiliary/payment_client";
-import { EmailClient } from "../auxiliary/email_client";
 
 export const checkoutRouter = restate.router({
-  checkout: async (
-    ctx: restate.Context,
-    request: { userId: string; tickets: string[] },
-  ) => {
-    // Generate idempotency key for the stripe client
-    const idempotencyKey = await ctx.sideEffect(async () => uuid());
-
-    // We are a uniform shop where everything costs 40 USD
-    const totalPrice = request.tickets.length * 40;
-
-    const paymentClient = PaymentClient.get();
-
-    const success = await ctx.sideEffect(() =>
-      paymentClient.call(idempotencyKey, totalPrice),
-    );
-
-    const email = EmailClient.get();
-
-    if (success) {
-      await ctx.sideEffect(() =>
-        email.notifyUserOfPaymentSuccess(request.userId),
-      );
-    } else {
-      await ctx.sideEffect(() =>
-        email.notifyUserOfPaymentFailure(request.userId),
-      );
-    }
-
-    return success;
+  async handle(ctx: restate.Context, request: { userId: string; tickets: string[] }){
+    return true;
   },
 });
 

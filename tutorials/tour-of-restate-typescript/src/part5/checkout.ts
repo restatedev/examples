@@ -10,30 +10,33 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import { PaymentClient } from "../auxiliary/payment_client";
+import { v4 as uuid } from "uuid";
 import { EmailClient } from "../auxiliary/email_client";
+import { PaymentClient } from "../auxiliary/payment_client";
 
 export const checkoutRouter = restate.router({
-  // <start_checkout>
   async handle(ctx: restate.Context, request: { userId: string; tickets: string[] }){
-    // <start_side_effects>
     const totalPrice = request.tickets.length * 40;
 
-    // highlight-start
-    const idempotencyKey = ctx.rand.uuidv4();
-    const success = await ctx.sideEffect(() => PaymentClient.get().call(idempotencyKey, totalPrice));
-    // highlight-end
-    // <end_side_effects>
+    const idempotencyKey = await ctx.sideEffect(async () => uuid());
+
+    // <start_failing_client>
+    //highlight-next-line
+    const success = await ctx.sideEffect(() => PaymentClient.get().failingCall(idempotencyKey, totalPrice));
+    // <end_failing_client>
 
     if (success) {
-      await ctx.sideEffect(() => EmailClient.get().notifyUserOfPaymentSuccess(request.userId));
+      await ctx.sideEffect(() =>
+        EmailClient.get().notifyUserOfPaymentSuccess(request.userId),
+      );
     } else {
-      await ctx.sideEffect(() => EmailClient.get().notifyUserOfPaymentFailure(request.userId));
+      await ctx.sideEffect(() =>
+        EmailClient.get().notifyUserOfPaymentFailure(request.userId),
+      );
     }
 
     return success;
   },
-  // <end_checkout>
 });
 
 export const checkoutApi: restate.ServiceApi<typeof checkoutRouter> = {

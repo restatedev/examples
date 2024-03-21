@@ -54,7 +54,7 @@ message ResultValue {
 service Checkout {
   option (dev.restate.ext.service_type) = UNKEYED;
 
-  rpc Checkout (CheckoutFlowRequest) returns (google.protobuf.BoolValue);
+  rpc Handle (CheckoutFlowRequest) returns (google.protobuf.BoolValue);
 }
 
 message CheckoutFlowRequest {

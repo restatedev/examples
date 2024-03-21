@@ -11,34 +11,42 @@
 
 import * as restate from "@restatedev/restate-sdk";
 import { ticketServiceApi } from "./ticket_service";
+// <start_checkout_api_import>
 import { checkoutApi } from "./checkout";
+// <end_checkout_api_import>
 
 export const userSessionRouter = restate.keyedRouter({
-  addTicket: async (
-    ctx: restate.KeyedContext,
-    userId: string,
-    ticketId: string,
-  ) => {
-    ctx.send(ticketServiceApi).reserve(ticketId);
+  // <start_add_ticket>
+  async addTicket(ctx: restate.KeyedContext, userId: string, ticketId: string){
+    // highlight-start
+    const reservationSuccess = await ctx.rpc(ticketServiceApi).reserve(ticketId);
+    // highlight-end
     return true;
   },
+  // <end_add_ticket>
 
-  expireTicket: async (
-    ctx: restate.KeyedContext,
-    userId: string,
-    ticketId: string,
-  ) => {
-    ctx.send(ticketServiceApi).unreserve(ticketId);
-  },
-
-  checkout: async (ctx: restate.KeyedContext, userId: string) => {
+  // <start_checkout>
+  async checkout(ctx: restate.KeyedContext, userId: string) {
+    //highlight-start
     const checkoutRequest = { userId: userId, tickets: ["456"] };
-    const success = await ctx.rpc(checkoutApi).checkout(checkoutRequest);
+    const success = await ctx.rpc(checkoutApi).handle(checkoutRequest);
+    //highlight-end
 
     return success;
   },
+  // <end_checkout>
+
+  // <start_expire_ticket>
+  async expireTicket(ctx: restate.KeyedContext, userId: string, ticketId: string){
+    // highlight-start
+    ctx.send(ticketServiceApi).unreserve(ticketId);
+    // highlight-end
+  },
+  // <end_expire_ticket>
 });
 
+// <start_user_session_api>
 export const userSessionApi: restate.ServiceApi<typeof userSessionRouter> = {
   path: "UserSession",
 };
+// <end_user_session_api>

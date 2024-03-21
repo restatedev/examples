@@ -11,14 +11,13 @@
 
 import * as restate from "@restatedev/restate-sdk";
 
+// <start_checkout>
 export const checkoutRouter = restate.router({
-  checkout: async (
-    ctx: restate.Context,
-    request: { userId: string; tickets: string[] },
-  ) => {
+  async handle(ctx: restate.Context, request: { userId: string; tickets: string[] }){
     return true;
   },
 });
+// <end_checkout>
 
 export const checkoutApi: restate.ServiceApi<typeof checkoutRouter> = {
   path: "Checkout",

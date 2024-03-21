@@ -18,7 +18,8 @@ enum TicketStatus {
 }
 
 export const ticketDbRouter = restate.keyedRouter({
-  reserve: async (ctx: restate.KeyedContext) => {
+  // <start_reserve>
+  async reserve(ctx: restate.KeyedContext){
     const status =
       (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
 
@@ -29,8 +30,10 @@ export const ticketDbRouter = restate.keyedRouter({
       return false;
     }
   },
+  // <end_reserve>
 
-  unreserve: async (ctx: restate.KeyedContext) => {
+  // <start_unreserve>
+  async unreserve(ctx: restate.KeyedContext) {
     const status =
       (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
 
@@ -38,8 +41,10 @@ export const ticketDbRouter = restate.keyedRouter({
       ctx.clear("status");
     }
   },
+  // <end_unreserve>
 
-  markAsSold: async (ctx: restate.KeyedContext) => {
+  // <start_mark_as_sold>
+  async markAsSold(ctx: restate.KeyedContext){
     const status =
       (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
 
@@ -47,6 +52,7 @@ export const ticketDbRouter = restate.keyedRouter({
       ctx.set("status", TicketStatus.Sold);
     }
   },
+  // <end_mark_as_sold>
 });
 
 export const ticketServiceApi: restate.ServiceApi<typeof ticketDbRouter> = {

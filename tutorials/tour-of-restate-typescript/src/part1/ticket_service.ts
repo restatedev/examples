@@ -10,7 +10,9 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
+// <start_import_sleep>
 import { setTimeout } from "timers/promises";
+// <end_import_sleep>
 
 enum TicketStatus {
   Available,
@@ -19,16 +21,20 @@ enum TicketStatus {
 }
 
 export const ticketDbRouter = restate.keyedRouter({
-  reserve: async (ctx: restate.KeyedContext) => {
+  // <start_reserve>
+  async reserve(ctx: restate.KeyedContext){
+    //bad-code-start
     await setTimeout(35000);
+    //bad-code-end
+    return true;
+  },
+  // <end_reserve>
+
+  async unreserve(ctx: restate.KeyedContext){
     return true;
   },
 
-  unreserve: async (ctx: restate.KeyedContext) => {
-    return true;
-  },
-
-  markAsSold: async (ctx: restate.KeyedContext) => {
+  async markAsSold(ctx: restate.KeyedContext){
     return true;
   },
 });
