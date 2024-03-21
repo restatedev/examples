@@ -25,7 +25,7 @@ import static dev.restate.sdk.examples.generated.GreeterProto.*;
 public class Greeter extends GreeterRestate.GreeterRestateImplBase {
 
   // Count state. The count is per Person name.
-  // See https://docs.restate.dev/services/sdk/state for more details.
+  // See https://docs.restate.dev/develop/java/state for more details.
   private static final StateKey<Integer> COUNT = StateKey.of("count", CoreSerdes.JSON_INT);
 
   @Override
