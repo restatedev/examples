@@ -13,7 +13,7 @@ option java_outer_classname = "Proto";
  * Travel service.
  */
 service Travel {
-  // See https://docs.restate.dev/services/service_type for more details.
+  // See https://docs.restate.dev/develop/service_type for more details.
   option (dev.restate.ext.service_type) = UNKEYED;
 
   rpc Reserve (TravelBookingRequest) returns (google.protobuf.Empty);
@@ -24,7 +24,7 @@ message TravelBookingRequest {
 }
 
 service Flights {
-  // See https://docs.restate.dev/services/service_type for more details.
+  // See https://docs.restate.dev/develop/service_typee for more details.
   option (dev.restate.ext.service_type) = KEYED;
 
   rpc Reserve(FlightBookingRequest) returns (FlightBookingId);
@@ -42,7 +42,7 @@ message FlightBookingId {
 }
 
 service CarRental {
-  // See https://docs.restate.dev/services/service_type for more details.
+  // See https://docs.restate.dev/develop/service_type for more details.
   option (dev.restate.ext.service_type) = KEYED;
 
   rpc Reserve(CarRentalRequest) returns (CarRentalId);
@@ -60,7 +60,7 @@ message CarRentalId {
 }
 
 service Payment {
-  // See https://docs.restate.dev/services/service_type for more details.
+  // See https://docs.restate.dev/develop/service_type for more details.
   option (dev.restate.ext.service_type) = KEYED;
 
   rpc Process(PaymentRequest) returns (PaymentId);

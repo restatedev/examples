@@ -20,7 +20,7 @@ You can clone the example repository (`git clone https://github.com/restatedev/e
 
 ## Running the example
 
-Have a look at the [Tour of Restate tutorial](https://docs.restate.dev/tour) in the documentation to build and run the application in this repository.
+Have a look at the [Tour of Restate tutorial](https://docs.restate.dev/get_started/tour) in the documentation to build and run the application in this repository.
 
 In short, you can run the different parts of the code via: 
 
