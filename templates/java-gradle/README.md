@@ -3,9 +3,7 @@
 Sample project configuration of a Restate service using the Java interface and HTTP server. It contains:
 
 * [`build.gradle.kts`](build.gradle.kts)
-* [Service interface definition `greeter.proto`](src/main/proto/greeter.proto)
-* [Service class implementation `Greeter`](src/main/java/dev/restate/sdk/examples/Greeter.java)
-* [Test `GreeterTest`](src/test/java/dev/restate/sdk/examples/GreeterTest.java)
+* [Virtual object `Greeter`](src/main/java/my/example/Greeter.java)
 * [Logging configuration](src/main/resources/log4j2.properties)
 
 ## Download the example
