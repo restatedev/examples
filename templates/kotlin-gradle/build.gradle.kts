@@ -1,41 +1,36 @@
-import com.google.protobuf.gradle.id
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.net.URI
 
 plugins {
-  kotlin("jvm") version "1.9.10"
   application
+  kotlin("jvm") version "1.9.22"
+  // Kotlinx serialization (optional)
+  kotlin("plugin.serialization") version "1.9.22"
 
-  id("com.google.protobuf") version "0.9.1"
+  id("com.google.devtools.ksp") version "1.9.22-1.0.18"
 }
 
 repositories {
+  maven {
+    url = URI.create("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+  }
   mavenCentral()
 }
 
-val restateVersion = "0.8.0"
+val restateVersion = "0.9.0-SNAPSHOT"
 
 dependencies {
+  // Annotation processor
+  ksp("dev.restate:sdk-api-kotlin-gen:$restateVersion")
+
   // Restate SDK
   implementation("dev.restate:sdk-api-kotlin:$restateVersion")
   implementation("dev.restate:sdk-http-vertx:$restateVersion")
-  // To use Jackson to read/write state entries (optional)
-  implementation("dev.restate:sdk-serde-jackson:$restateVersion")
-
-  // Protobuf and grpc dependencies (we need the Java dependencies as well because the Kotlin dependencies rely on Java)
-  implementation("com.google.protobuf:protobuf-java:3.24.3")
-  implementation("com.google.protobuf:protobuf-kotlin:3.24.3")
-  implementation("io.grpc:grpc-stub:1.58.0")
-  implementation("io.grpc:grpc-protobuf:1.58.0")
-  implementation("io.grpc:grpc-kotlin-stub:1.4.0") { exclude("javax.annotation", "javax.annotation-api") }
-  // This is needed to compile the @Generated annotation forced by the grpc compiler
-  // See https://github.com/grpc/grpc-java/issues/9153
-  compileOnly("org.apache.tomcat:annotations-api:6.0.53")
-
-  // To specify the coroutines dispatcher
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 
   // Logging (optional)
   implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+
+  // Kotlinx serialization (optional)
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 }
 
 // Setup Java/Kotlin compiler target
@@ -45,31 +40,7 @@ java {
   }
 }
 
-// Configure protoc plugin
-protobuf {
-  protoc { artifact = "com.google.protobuf:protoc:3.24.3" }
-
-  plugins {
-    id("grpc") { artifact = "io.grpc:protoc-gen-grpc-java:1.58.0" }
-    id("grpckt") { artifact = "io.grpc:protoc-gen-grpc-kotlin:1.4.0:jdk8@jar" }
-  }
-
-  generateProtoTasks {
-    all().forEach {
-      // We need both java and kotlin codegen(s) because the kotlin protobuf/grpc codegen depends on the java ones
-      it.plugins {
-        id("grpc")
-        id("grpckt")
-      }
-      it.builtins {
-        java {}
-        id("kotlin")
-      }
-    }
-  }
-}
-
 // Configure main class
 application {
-  mainClass.set("dev.restate.sdk.examples.GreeterKt")
+  mainClass.set("my.example.GreeterKt")
 }
