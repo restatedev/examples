@@ -59,9 +59,10 @@ challenges.
 
 ### Scala
 
-| Type       | Name / Link                                                                                   |
-|------------|-----------------------------------------------------------------------------------------------|
-| Templates  | [Restate Node/TS Template](templates/scala-sbt/)                                              |
+| Type       | Name / Link                                      |
+|------------|--------------------------------------------------|
+| Templates  | [Restate Node/TS Template](templates/scala-sbt/) |
+| Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-kotlin/)  |
 
 ## Joining the community
 
