@@ -3,9 +3,7 @@
 Sample project configuration of a Restate service using the Kotlin coroutines interface and HTTP server. It contains:
 
 * [`build.gradle.kts`](build.gradle.kts)
-* [Service interface definition `greeter.proto`](src/main/proto/greeter.proto)
-* [Service class implementation `Greeter`](src/main/kotlin/dev/restate/sdk/examples/Greeter.kt)
-* [Test `GreeterTest`](src/test/kotlin/dev/restate/sdk/examples/GreeterTest.kt)
+* [Service class implementation `Greeter`](src/main/kotlin/my/example/Greeter.kt)
 * [Logging configuration](src/main/resources/log4j2.properties)
 
 ## Download the example
