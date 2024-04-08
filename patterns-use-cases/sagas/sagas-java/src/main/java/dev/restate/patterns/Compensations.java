@@ -11,14 +11,12 @@
 
 package dev.restate.patterns;
 
-import static dev.restate.patterns.compensations.generated.Proto.*;
-
-import dev.restate.patterns.compensations.generated.*;
-import dev.restate.patterns.compensations.generated.CarRentalRestate.CarRentalRestateClient;
-import dev.restate.patterns.compensations.generated.FlightsRestate.FlightsRestateClient;
-import dev.restate.patterns.compensations.generated.PaymentRestate.PaymentRestateClient;
 import dev.restate.sdk.Awaitable;
 import dev.restate.sdk.Context;
+import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.Service;
+import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.TerminalException;
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -37,7 +35,7 @@ import java.util.Iterator;
 // in the case of an error, those operations are run.
 //
 // The main requirement is that steps are implemented as journalled
-// operations, like `ctx.sideEffect()` or RPC calls/messages executed
+// operations, like `ctx.run()` or RPC calls/messages executed
 // through the Restate Context.
 //
 
@@ -53,34 +51,38 @@ public class Compensations {
    * until it completes. Moreover, an invocation failure and an invocation cancellation are handled
    * in the exact same way by the caller.
    */
-  public static class TravelService extends TravelRestate.TravelRestateImplBase {
-    @Override
-    public void reserve(Context ctx, TravelBookingRequest request) throws TerminalException {
-      final FlightsRestateClient flightsService = FlightsRestate.newClient(ctx);
-      final CarRentalRestateClient carRentalService = CarRentalRestate.newClient(ctx);
-      final PaymentRestateClient paymentService = PaymentRestate.newClient(ctx);
+  @VirtualObject
+  public static class Travels {
+
+    public static class TravelBookingRequest { }
+
+    @Handler
+    public void reserve(ObjectContext context, TravelBookingRequest request) throws TerminalException {
+      final FlightsClient.ContextClient flightsService = FlightsClient.fromContext(context);
+      final CarRentalsClient.ContextClient carRentalService = CarRentalsClient.fromContext(context);
+      final PaymentClient.ContextClient paymentService = PaymentClient.fromContext(context);
 
       // Create a list of compensations to run in case of a failure or cancellation.
       final Deque<Runnable> compensations = new ArrayDeque<>();
 
       try {
-        final FlightBookingId flightBookingId =
+        final String flightBookingId =
             flightsService
-                .reserve(FlightBookingRequest.newBuilder().setTripId(request.getTripID()).build())
+                .reserve(new Flights.FlightBookingRequest())
                 .await();
         // Register the compensation to undo the flight reservation.
         compensations.add(() -> flightsService.cancel(flightBookingId).await());
 
-        final CarRentalId carRentalId =
+        final String carRentalId =
             carRentalService
-                .reserve(CarRentalRequest.newBuilder().setTripId(request.getTripID()).build())
+                .reserve(new CarRentals.CarRentalBookingRequest())
                 .await();
         // Register the compensation to undo the car rental reservation.
         compensations.add(() -> carRentalService.cancel(carRentalId).await());
 
-        final PaymentId paymentId =
+        final String paymentId =
             paymentService
-                .process(PaymentRequest.newBuilder().setTripId(request.getTripID()).build())
+                .process(new Payment.PaymentRequest())
                 .await();
         // Register the compensation to undo the payment.
         compensations.add(() -> paymentService.refund(paymentId).await());
@@ -103,5 +105,33 @@ public class Compensations {
                 e.getMessage(), compensations.size()));
       }
     }
+  }
+
+  // --- Interfaces for Flights, CarRental and Payment components
+
+  @Service(name = "Flights")
+  interface Flights {
+    class FlightBookingRequest { }
+
+    @Handler String reserve(Context context, FlightBookingRequest request);
+    @Handler void confirm(Context context, String flightBookingId);
+    @Handler void cancel(Context context, String flightBookingId);
+  }
+
+  @Service(name = "CarRentals")
+  interface CarRentals {
+    class CarRentalBookingRequest { }
+
+    @Handler String reserve(Context context, CarRentalBookingRequest request);
+    @Handler void confirm(Context context, String carRentalBookingId);
+    @Handler void cancel(Context context, String carRentalBookingId);
+  }
+
+  @Service(name = "Payment")
+  interface Payment {
+    class PaymentRequest { }
+
+    @Handler String process(Context context, PaymentRequest request);
+    @Handler void refund(Context context, String paymentId);
   }
 }
