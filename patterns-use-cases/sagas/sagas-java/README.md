@@ -12,4 +12,4 @@ Every step pushes a compensation action (an undo operation) to a stack.
 in the case of an error, those operations are run.
 
 The main requirement is that steps are implemented as journalled
-operations, like `ctx.sideEffect()` or `ctx.rpc()`.
+operations, like `ctx.run()` or `ctx.rpc()`.
