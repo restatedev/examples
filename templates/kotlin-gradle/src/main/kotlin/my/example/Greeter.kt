@@ -2,16 +2,15 @@ package my.example
 
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.VirtualObject
-import dev.restate.sdk.common.StateKey
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
-import dev.restate.sdk.kotlin.KtSerdes
+import dev.restate.sdk.kotlin.KtStateKey
 import dev.restate.sdk.kotlin.ObjectContext
 
 @VirtualObject
 class Greeter {
 
   companion object {
-    private val COUNT = StateKey.of<Int>("count", KtSerdes.json())
+    private val COUNT = KtStateKey.json<Int>("count")
   }
 
   @Handler
