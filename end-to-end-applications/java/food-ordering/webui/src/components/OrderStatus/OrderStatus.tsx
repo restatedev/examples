@@ -44,8 +44,6 @@ const TBD = ({ text }: { text: string }) => {
   );
 };
 
-
-
 enum OrderState {
   NEW = 0,
   CREATED = 1,
@@ -59,15 +57,15 @@ enum OrderState {
 
 // Define the possible statuses and their corresponding progress values
 const STATUS_PROGRESS = new Map<string, number>([
-    ['NEW', OrderState.NEW],
-    ['CREATED', OrderState.CREATED],
-    ['SCHEDULED', OrderState.SCHEDULED],
-    ['IN_PREPARATION', OrderState.IN_PREPARATION],
-    ['SCHEDULING_DELIVERY', OrderState.SCHEDULED_DELIVERY],
-    ['WAITING_FOR_DRIVER', OrderState.WAITING_FOR_DRIVER],
-    ['IN_DELIVERY', OrderState.IN_DELIVERY],
-    ['DELIVERED', OrderState.DELIVERED],
-  ]);
+  ['NEW', OrderState.NEW],
+  ['CREATED', OrderState.CREATED],
+  ['SCHEDULED', OrderState.SCHEDULED],
+  ['IN_PREPARATION', OrderState.IN_PREPARATION],
+  ['SCHEDULING_DELIVERY', OrderState.SCHEDULED_DELIVERY],
+  ['WAITING_FOR_DRIVER', OrderState.WAITING_FOR_DRIVER],
+  ['IN_DELIVERY', OrderState.IN_DELIVERY],
+  ['DELIVERED', OrderState.DELIVERED],
+]);
 
 const OrderStateContext = React.createContext(OrderState.NEW);
 
@@ -83,7 +81,7 @@ const OrderItem2 = ({
   after: JSX.Element;
 }) => {
   const status = React.useContext(OrderStateContext);
-  
+
   if (status < me) {
     return before;
   }
@@ -106,7 +104,11 @@ const OrderItem = ({
   if (status < me) {
     return <TBD text={txt} />;
   }
-  return <Done>{done} {txt}</Done>;
+  return (
+    <Done>
+      {done} {txt}
+    </Done>
+  );
 };
 
 export const OrderStatus = () => {
@@ -121,7 +123,6 @@ export const OrderStatus = () => {
   } = useCart();
   const { user, fetchUser, isLoadingUser } = useUser();
 
-  
   const status = orderStatus?.status || 'NEW';
 
   const currentProgress: OrderState =
@@ -159,59 +160,57 @@ export const OrderStatus = () => {
       </div>
       <div>
         <OrderStateContext.Provider value={currentProgress}>
-        <ul className="list-inline items d-flex">
-          <li>
-            <OrderItem
-              me={OrderState.CREATED}
-              txt={'Created'}
-              done='📝'
-            />
-          </li>
-          <li>
-            <OrderItem
-              me={OrderState.SCHEDULED}
-              txt={'Scheduled'}
-              done='🕧'
-            />
-          </li>
-          <li>
-            <OrderItem
-              me={OrderState.IN_PREPARATION}
-              txt={'Preparing'}
-              done='🧑‍🍳'
-            />
-          </li>
-          <li>
-            <OrderItem
-              me={OrderState.SCHEDULED_DELIVERY}
-              txt={'Scheduling delivery'}
-              done='🎙️'
-            />
-          </li>
-          <li>
-            <OrderItem2
-              me={OrderState.WAITING_FOR_DRIVER}
-              before={<TBD text="Waiting for a driver" />}
-              after={<Done>🪪 Waiting for driver </Done>}
-              during={<Done>🔜 Waiting for a driver. ETA {etaSeconds} seconds</Done>}
-            />
-          </li>
-          <li>
-            <OrderItem2
-              me={OrderState.IN_DELIVERY}
-              before={<TBD text="In delivery" />}
-              after={<Done>✅ In delivery </Done>}
-              during={<Done>🚴 Delivery. ETA {etaSeconds} seconds</Done>}
-            />
-          </li>
-          <li>
-            <OrderItem
-              me={OrderState.DELIVERED}
-              txt={'Delivered'}
-              done='😋'
-            />
-          </li>
-        </ul>
+          <ul className="list-inline items d-flex">
+            <li>
+              <OrderItem me={OrderState.CREATED} txt={'Created'} done="📝" />
+            </li>
+            <li>
+              <OrderItem
+                me={OrderState.SCHEDULED}
+                txt={'Scheduled'}
+                done="🕧"
+              />
+            </li>
+            <li>
+              <OrderItem
+                me={OrderState.IN_PREPARATION}
+                txt={'Preparing'}
+                done="🧑‍🍳"
+              />
+            </li>
+            <li>
+              <OrderItem
+                me={OrderState.SCHEDULED_DELIVERY}
+                txt={'Scheduling delivery'}
+                done="🎙️"
+              />
+            </li>
+            <li>
+              <OrderItem2
+                me={OrderState.WAITING_FOR_DRIVER}
+                before={<TBD text="Waiting for a driver" />}
+                after={<Done>🪪 Waiting for driver </Done>}
+                during={
+                  <Done>🔜 Waiting for a driver. ETA {etaSeconds} seconds</Done>
+                }
+              />
+            </li>
+            <li>
+              <OrderItem2
+                me={OrderState.IN_DELIVERY}
+                before={<TBD text="In delivery" />}
+                after={<Done>✅ In delivery </Done>}
+                during={<Done>🚴 Delivery. ETA {etaSeconds} seconds</Done>}
+              />
+            </li>
+            <li>
+              <OrderItem
+                me={OrderState.DELIVERED}
+                txt={'Delivered'}
+                done="😋"
+              />
+            </li>
+          </ul>
         </OrderStateContext.Provider>
       </div>
       <div>{currentProgress >= OrderState.DELIVERED && <Tweet />}</div>

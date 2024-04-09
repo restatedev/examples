@@ -1,3 +1,5 @@
+import java.net.URI
+
 plugins {
     java
     application
@@ -5,25 +7,27 @@ plugins {
 }
 
 repositories {
+    maven {
+        url = URI.create("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+    }
     mavenCentral()
 }
 
-val restateVersion = "0.7.0"
+val restateVersion = "0.9.0-SNAPSHOT"
 
 dependencies {
-    //Kafka
-    implementation("org.apache.kafka:kafka-clients:3.0.0")
+    // Kafka
+    implementation("org.apache.kafka:kafka-clients:3.6.1")
 
-    //Jackson
+    // SDK common (contains the restate http client)
+    implementation("dev.restate:sdk-common:$restateVersion")
+
+    // Jackson
     implementation("com.fasterxml.jackson.core:jackson-core:2.15.2")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
 
     // Logging (optional)
     implementation("org.apache.logging.log4j:log4j-core:2.20.0")
-
-    // Testing (optional)
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
-    testImplementation("dev.restate:sdk-testing:$restateVersion")
 }
 
 

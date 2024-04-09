@@ -11,20 +11,27 @@
 
 package dev.restate.sdk.examples.types;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class Product {
 
   private final String productId;
   private final String description;
   private final int quantity;
 
-  public Product(
-      @JsonProperty("productId") String productId,
-      @JsonProperty("description") String description,
-      @JsonProperty("quantity") int quantity) {
+  public Product(String productId, String description, int quantity) {
     this.productId = productId;
     this.description = description;
     this.quantity = quantity;
+  }
+
+  public String getProductId() {
+    return productId;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public int getQuantity() {
+    return quantity;
   }
 }

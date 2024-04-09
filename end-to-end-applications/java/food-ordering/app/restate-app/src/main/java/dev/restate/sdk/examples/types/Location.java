@@ -11,16 +11,17 @@
 
 package dev.restate.sdk.examples.types;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import dev.restate.sdk.examples.generated.OrderProto;
+import dev.restate.sdk.common.Serde;
+import dev.restate.sdk.serde.jackson.JacksonSerdes;
 
 public class Location {
+
+  public static final Serde<Location> SERDE = JacksonSerdes.of(Location.class);
+
   private final double lon;
   private final double lat;
 
-  @JsonCreator
-  public Location(@JsonProperty("lon") double lon, @JsonProperty("lat") double lat) {
+  public Location(double lon, double lat) {
     this.lon = lon;
     this.lat = lat;
   }
@@ -33,15 +34,24 @@ public class Location {
     return lat;
   }
 
-  public static Location fromProto(OrderProto.Location proto) {
-    return new Location(proto.getLon(), proto.getLat());
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Location location = (Location) o;
+    return Double.compare(lon, location.lon) == 0 && Double.compare(lat, location.lat) == 0;
   }
 
-  public OrderProto.Location toProto() {
-    return OrderProto.Location.newBuilder().setLon(lon).setLat(lat).build();
+  @Override
+  public int hashCode() {
+    int result = Double.hashCode(lon);
+    result = 31 * result + Double.hashCode(lat);
+    return result;
   }
 
-  public boolean equals(Location other) {
-    return lon == other.lon && lat == other.lat;
+  @Override
+  public String toString() {
+    return "Location{" + "lon=" + lon + ", lat=" + lat + '}';
   }
 }

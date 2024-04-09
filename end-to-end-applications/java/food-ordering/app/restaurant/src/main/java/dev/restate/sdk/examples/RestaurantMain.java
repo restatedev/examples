@@ -7,11 +7,9 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
+
+import dev.restate.sdk.client.IngressClient;
+import dev.restate.sdk.common.CoreSerdes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,35 +35,19 @@ public class RestaurantMain {
 
   /** Preparation request handler. */
   static class PrepareHandler implements HttpHandler {
+    private final IngressClient ingressClient = IngressClient.defaultClient(RESTATE_RUNTIME_ENDPOINT);
+
     @Override
     public void handle(HttpExchange t) throws IOException {
       ObjectMapper mapper = new ObjectMapper();
       JsonNode node = mapper.readTree(t.getRequestBody());
 
-      logger.info("Order " + node.get("orderId").asText() + " prepared and ready for shipping");
-      try {
-        resolveCb(node.get("cb").asText(), "{}");
-        t.sendResponseHeaders(200, -1);
-      } catch (InterruptedException e) {
-        t.sendResponseHeaders(500, -1);
-        throw new RuntimeException(e);
-      }
-    }
-  }
+      ingressClient.awakeableHandle(node.get("cb").asText())
+              // Resolve empty
+              .resolve(CoreSerdes.VOID, null);
+        logger.info("Order {} prepared and ready for shipping", node.get("orderId").asText());
 
-  /** Notifies OrderService of the successful preparation */
-  private static void resolveCb(String callbackId, String payload)
-      throws IOException, InterruptedException {
-    HttpClient httpClient = HttpClient.newHttpClient();
-    URI uri = URI.create(RESTATE_RUNTIME_ENDPOINT + "/dev.restate.Awakeables/Resolve");
-    String requestBody =
-        String.format("{\"id\":\"%s\", \"json_result\":\"%s\"}", callbackId, payload);
-    HttpRequest request =
-        HttpRequest.newBuilder()
-            .uri(uri)
-            .header("Content-Type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString(requestBody, StandardCharsets.UTF_8))
-            .build();
-    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+      t.sendResponseHeaders(200, -1);
+    }
   }
 }
