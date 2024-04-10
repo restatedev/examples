@@ -20,6 +20,7 @@ import java.time.Duration;
 @VirtualObject
 public class TicketService {
 
+    // <start_reserve>
     @Handler
     public boolean reserve(ObjectContext ctx) {
         //good-code-start
