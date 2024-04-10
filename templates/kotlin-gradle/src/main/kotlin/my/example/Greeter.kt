@@ -14,11 +14,11 @@ class Greeter {
   }
 
   @Handler
-  suspend fun greet(ctx: ObjectContext, name: String): String {
+  suspend fun greet(ctx: ObjectContext, greeting: String): String {
     val count = ctx.get(COUNT) ?: 1
     ctx.set(COUNT, count + 1)
 
-    return "Hello $name for the $count time!"
+    return "$greeting ${ctx.key()} for the $count time!"
   }
 }
 
