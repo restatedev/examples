@@ -44,7 +44,7 @@ public class OrderWorkflow {
     orderStatusSend.send().setStatus(StatusEnum.CREATED);
 
     // 2. Handle payment
-    String token = ctx.run(CoreSerdes.JSON_STRING, () -> UUID.randomUUID().toString());
+    String token = ctx.random().nextUUID().toString();
     boolean paid =
         ctx.run(CoreSerdes.JSON_BOOLEAN, () -> paymentClnt.charge(id, token, order.getTotalCost()));
 
