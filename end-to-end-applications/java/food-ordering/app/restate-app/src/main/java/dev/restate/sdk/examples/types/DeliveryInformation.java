@@ -11,9 +11,6 @@
 
 package dev.restate.sdk.examples.types;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class DeliveryInformation {
   private final String orderId;
   private final String callbackId;
@@ -22,14 +19,13 @@ public class DeliveryInformation {
   private final Location customerLocation;
   private boolean orderPickedUp;
 
-  @JsonCreator
   public DeliveryInformation(
-      @JsonProperty("orderId") String orderId,
-      @JsonProperty("callbackId") String callbackId,
-      @JsonProperty("restaurantId") String restaurantId,
-      @JsonProperty("restaurantLocation") Location restaurantLocation,
-      @JsonProperty("customerLocation") Location customerLocation,
-      @JsonProperty("orderPickedUp") boolean orderPickedUp) {
+      String orderId,
+      String callbackId,
+      String restaurantId,
+      Location restaurantLocation,
+      Location customerLocation,
+      boolean orderPickedUp) {
     this.orderId = orderId;
     this.callbackId = callbackId;
     this.restaurantId = restaurantId;

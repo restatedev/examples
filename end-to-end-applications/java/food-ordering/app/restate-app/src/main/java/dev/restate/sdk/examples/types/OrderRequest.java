@@ -11,9 +11,6 @@
 
 package dev.restate.sdk.examples.types;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class OrderRequest {
 
   private final String orderId;
@@ -22,13 +19,12 @@ public class OrderRequest {
   private final double totalCost;
   private final int deliveryDelay;
 
-  @JsonCreator
   public OrderRequest(
-      @JsonProperty("orderId") String orderId,
-      @JsonProperty("restaurantId") String restaurantId,
-      @JsonProperty("products") Product[] products,
-      @JsonProperty("totalCost") double totalCost,
-      @JsonProperty("deliveryDelay") int deliveryDelay) {
+      String orderId,
+      String restaurantId,
+      Product[] products,
+      double totalCost,
+      int deliveryDelay) {
     this.orderId = orderId;
     this.restaurantId = restaurantId;
     this.products = products;
@@ -42,6 +38,10 @@ public class OrderRequest {
 
   public String getRestaurantId() {
     return restaurantId;
+  }
+
+  public Product[] getProducts() {
+    return products;
   }
 
   public double getTotalCost() {

@@ -2,7 +2,7 @@ import formatPrice from 'utils/formatPrice';
 import CartProducts from './CartProducts';
 import { useCart } from 'contexts/cart-context';
 import * as S from './style';
-import { publishToKafka, sendRequestToRestate } from 'services/sendToRestate';
+import { createOrder, getStatus, publishToKafka } from 'services/sendToRestate';
 import { useUser } from 'contexts/user-context';
 import { useOrderStatusContext } from '../../contexts/status-context/OrderStatusProvider';
 import { useState } from 'react';
@@ -63,28 +63,20 @@ const Cart = () => {
       return;
     }
 
-    const generateJsonReq = () => {
-      const productsToSend = products.map((prod) => {
-        return {
-          productId: prod.id.toString(),
-          description: prod.description,
-          quantity: prod.quantity,
-        };
-      });
+    const productsToSend = products.map((prod) => {
       return {
-        orderId: user!.user_id,
-        restaurantId: details.restaurant_id,
-        products: productsToSend,
-        totalCost: total.totalPrice,
-        deliveryDelay: details.delivery_delay,
+        productId: prod.id.toString(),
+        description: prod.description,
+        quantity: prod.quantity,
       };
-    };
-
-    const kafkaRecord = JSON.stringify({
-      key: user!.user_id,
-      value: generateJsonReq(),
     });
-    const request = JSON.stringify(generateJsonReq());
+    const order = {
+      orderId: user!.user_id,
+      restaurantId: details.restaurant_id,
+      products: productsToSend,
+      totalCost: total.totalPrice,
+      deliveryDelay: details.delivery_delay,
+    };
 
     const flow = async () => {
       closeCart();
@@ -92,19 +84,21 @@ const Cart = () => {
       updateCartDetails({ ...details, ...checkedOutStatus });
 
       if (isKafkaEnabled) {
+        const kafkaRecord = JSON.stringify({
+          key: user!.user_id,
+          value: order,
+        });
         console.info('Generating Kafka record');
         console.info(kafkaRecord);
         await publishToKafka(kafkaRecord);
       } else {
-        console.info(request);
-        sendRequestToRestate('order.OrderService', 'Create', request);
+        console.info(order);
+        await createOrder(user!.user_id, order);
       }
 
       let done = false;
       while (!done) {
-        const newOrderStatus = await sendRequestToRestate('order.OrderStatusService', 'Get', {
-          order_id: user!.user_id,
-        });
+        const newOrderStatus = await getStatus(order.orderId);
         console.info(newOrderStatus);
 
         if (newOrderStatus) {

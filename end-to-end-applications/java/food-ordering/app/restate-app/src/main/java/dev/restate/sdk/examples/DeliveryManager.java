@@ -11,21 +11,14 @@
 
 package dev.restate.sdk.examples;
 
-import static dev.restate.sdk.examples.generated.OrderProto.*;
-import static dev.restate.sdk.examples.utils.TypeUtils.statusToProto;
-
 import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.Serde;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
-import dev.restate.sdk.examples.generated.DeliveryManagerRestate;
-import dev.restate.sdk.examples.generated.DriverDeliveryMatcherRestate;
-import dev.restate.sdk.examples.generated.DriverDigitalTwinRestate;
-import dev.restate.sdk.examples.generated.OrderStatusServiceRestate;
-import dev.restate.sdk.examples.types.DeliveryInformation;
-import dev.restate.sdk.examples.types.Location;
-import dev.restate.sdk.examples.types.StatusEnum;
+import dev.restate.sdk.examples.types.*;
 import dev.restate.sdk.examples.utils.GeoUtils;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
 
@@ -33,7 +26,8 @@ import dev.restate.sdk.serde.jackson.JacksonSerdes;
  * Manages the delivery of the order to the customer. Keyed by the order ID (similar to the
  * OrderService and OrderStatusService).
  */
-public class DeliveryManager extends DeliveryManagerRestate.DeliveryManagerRestateImplBase {
+@VirtualObject
+public class DeliveryManager {
 
   // State key to store all relevant information about the delivery.
   private static final StateKey<DeliveryInformation> DELIVERY_INFO =
@@ -45,17 +39,18 @@ public class DeliveryManager extends DeliveryManagerRestate.DeliveryManagerResta
    * Finds a driver, assigns the delivery job to the driver, and updates the status of the order.
    * Gets called by the OrderService when a new order has been prepared and needs to be delivered.
    */
-  @Override
+  @Handler
   public void start(ObjectContext ctx, DeliveryRequest request) throws TerminalException {
+    String orderId = ctx.key();
 
     // Temporary placeholder: random location
-    var restaurantLocation = ctx.sideEffect(locationSerde, () -> GeoUtils.randomLocation());
-    var customerLocation = ctx.sideEffect(locationSerde, () -> GeoUtils.randomLocation());
+    var restaurantLocation = ctx.run(locationSerde, GeoUtils::randomLocation);
+    var customerLocation = ctx.run(locationSerde, GeoUtils::randomLocation);
 
     // Store the delivery information in Restate's state store
     DeliveryInformation deliveryInfo =
         new DeliveryInformation(
-            request.getOrderId(),
+            orderId,
             request.getCallback(),
             request.getRestaurantId(),
             restaurantLocation,
@@ -65,42 +60,33 @@ public class DeliveryManager extends DeliveryManagerRestate.DeliveryManagerResta
 
     // Acquire a driver
     var driverAwakeable = ctx.awakeable(CoreSerdes.JSON_STRING);
-    DriverDeliveryMatcherRestate.newClient(ctx)
-        .oneWay()
-        .requestDriverForDelivery(
-            DeliveryCallback.newBuilder()
-                .setRegion(GeoUtils.DEMO_REGION)
-                .setDeliveryCallbackId(driverAwakeable.id())
-                .build());
+    DriverDeliveryMatcherClient.fromContext(ctx, GeoUtils.DEMO_REGION)
+        .send()
+        .requestDriverForDelivery(driverAwakeable.id());
     // Wait until the driver pool service has located a driver
     // This awakeable gets resolved either immediately when there is a pending delivery
     // or later, when a new delivery comes in.
     var driverId = driverAwakeable.await();
 
     // Assign the driver to the job
-    DriverDigitalTwinRestate.newClient(ctx)
+    DriverDigitalTwinClient.fromContext(ctx, driverId)
         .assignDeliveryJob(
-            AssignDeliveryRequest.newBuilder()
-                .setDriverId(driverId)
-                .setOrderId(request.getOrderId())
-                .setRestaurantId(request.getRestaurantId())
-                .setRestaurantLocation(restaurantLocation.toProto())
-                .setCustomerLocation(customerLocation.toProto())
-                .build())
+            new AssignDeliveryRequest(
+                orderId, request.getRestaurantId(), restaurantLocation, customerLocation))
         .await();
 
     // Update the status of the order to "waiting for the driver"
-    OrderStatusServiceRestate.newClient(ctx)
-        .oneWay()
-        .setStatus(statusToProto(request.getOrderId(), StatusEnum.WAITING_FOR_DRIVER));
+    OrderStatusServiceClient.fromContext(ctx, orderId)
+        .send()
+        .setStatus(StatusEnum.WAITING_FOR_DRIVER);
   }
 
   /**
    * Notifies that the delivery was picked up. Gets called by the DriverService.NotifyDeliveryPickup
    * when the driver has arrived at the restaurant.
    */
-  @Override
-  public void notifyDeliveryPickup(ObjectContext ctx, OrderId request) throws TerminalException {
+  @Handler
+  public void notifyDeliveryPickup(ObjectContext ctx) throws TerminalException {
     // Retrieve the delivery information for this delivery
     var delivery =
         ctx.get(DELIVERY_INFO)
@@ -113,18 +99,15 @@ public class DeliveryManager extends DeliveryManagerRestate.DeliveryManagerResta
     ctx.set(DELIVERY_INFO, delivery);
 
     // Update the status of the order to "in delivery"
-    OrderStatusServiceRestate.newClient(ctx)
-        .oneWay()
-        .setStatus(statusToProto(delivery.getOrderId(), StatusEnum.IN_DELIVERY));
+    OrderStatusServiceClient.fromContext(ctx, ctx.key()).send().setStatus(StatusEnum.IN_DELIVERY);
   }
 
   /**
    * Notifies that the order was delivered. Gets called by the DriverService.NotifyDeliveryDelivered
    * when the driver has delivered the order to the customer.
    */
-  @Override
-  public void notifyDeliveryDelivered(ObjectContext ctx, OrderId request)
-      throws TerminalException {
+  @Handler
+  public void notifyDeliveryDelivered(ObjectContext ctx) throws TerminalException {
     // Retrieve the delivery information for this delivery
     var delivery =
         ctx.get(DELIVERY_INFO)
@@ -144,8 +127,8 @@ public class DeliveryManager extends DeliveryManagerRestate.DeliveryManagerResta
    * DriverService.HandleDriverLocationUpdateEvent() (digital twin of the driver) when the driver
    * has moved to a new location.
    */
-  @Override
-  public void handleDriverLocationUpdate(ObjectContext ctx, DeliveryLocationUpdate request)
+  @Handler
+  public void handleDriverLocationUpdate(ObjectContext ctx, Location newLocation)
       throws TerminalException {
     // Retrieve the delivery information for this delivery
     var delivery =
@@ -156,17 +139,14 @@ public class DeliveryManager extends DeliveryManagerRestate.DeliveryManagerResta
                         "Driver is doing a delivery but there is no ongoing delivery."));
 
     // Parse the new location, and calculate the ETA of the delivery to the customer
-    var location = Location.fromProto(request.getLocation());
     var eta =
         delivery.isOrderPickedUp()
-            ? GeoUtils.calculateEtaMillis(location, delivery.getCustomerLocation())
-            : GeoUtils.calculateEtaMillis(location, delivery.getRestaurantLocation())
+            ? GeoUtils.calculateEtaMillis(newLocation, delivery.getCustomerLocation())
+            : GeoUtils.calculateEtaMillis(newLocation, delivery.getRestaurantLocation())
                 + GeoUtils.calculateEtaMillis(
                     delivery.getRestaurantLocation(), delivery.getCustomerLocation());
 
     // Update the ETA of the order
-    OrderStatusServiceRestate.newClient(ctx)
-        .oneWay()
-        .setETA(OrderStatus.newBuilder().setOrderId(delivery.getOrderId()).setEta(eta).build());
+    OrderStatusServiceClient.fromContext(ctx, ctx.key()).send().setETA(eta);
   }
 }

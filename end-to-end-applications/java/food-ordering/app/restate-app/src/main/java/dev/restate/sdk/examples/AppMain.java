@@ -17,12 +17,12 @@ import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 public class AppMain {
   public static void main(String[] args) {
     RestateHttpEndpointBuilder.builder()
-        .withService(new OrderWorkflow())
-        .withService(new OrderStatusService())
-        .withService(new DeliveryManager())
-        .withService(new DriverDeliveryMatcher())
-        .withService(new DriverDigitalTwin())
-        .withService(new DriverMobileAppSimulator()) // external mobile app on driver's phone
+        .bind(new OrderWorkflow())
+        .bind(new OrderStatusService())
+        .bind(new DeliveryManager())
+        .bind(new DriverDeliveryMatcher())
+        .bind(new DriverDigitalTwin())
+        .bind(new DriverMobileAppSimulator()) // external mobile app on driver's phone
         .buildAndListen();
   }
 }
