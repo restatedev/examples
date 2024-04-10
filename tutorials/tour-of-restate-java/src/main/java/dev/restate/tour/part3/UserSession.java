@@ -12,22 +12,22 @@
 package dev.restate.tour.part3;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.protobuf.BoolValue;
 import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
-import dev.restate.tour.generated.*;
-import dev.restate.tour.generated.Tour.*;
-
-import static dev.restate.tour.generated.CheckoutRestate.CheckoutRestateClient;
-import static dev.restate.tour.generated.TicketServiceRestate.TicketServiceRestateClient;
+import dev.restate.tour.app.CheckoutClient;
+import dev.restate.tour.app.UserSessionClient;
+import dev.restate.tour.auxiliary.CheckoutRequest;
+import dev.restate.tour.part5.TicketServiceClient;
 
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 
-public class UserSession extends UserSessionRestate.UserSessionRestateImplBase {
+@VirtualObject
+public class UserSession {
 
     // <start_add_ticket>
     // At the top of the class, define the state key: supply a name and (de)serializer
@@ -36,23 +36,20 @@ public class UserSession extends UserSessionRestate.UserSessionRestateImplBase {
     //highlight-end
 
 
-    @Override
-    public BoolValue addTicket(ObjectContext ctx, ReserveTicket request) throws TerminalException {
-        Ticket ticket = Ticket.newBuilder().setTicketId(request.getTicketId()).build();
-        TicketServiceRestateClient ticketClnt = TicketServiceRestate.newClient(ctx);
-        BoolValue reservationSuccess = ticketClnt.reserve(ticket).await() ;
+    @Handler
+    public boolean addTicket(ObjectContext ctx, String ticketId) {
+        boolean reservationSuccess = TicketServiceClient.fromContext(ctx, ticketId).reserve().await();
 
-        if (reservationSuccess.getValue()) {
+        if (reservationSuccess) {
             //highlight-next-line
             Set<String> tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
-            tickets.add(request.getTicketId());
+            tickets.add(ticketId);
             //highlight-next-line
             ctx.set(STATE_KEY, tickets);
 
-            ExpireTicketRequest expirationRequest =
-                    ExpireTicketRequest.newBuilder().setTicketId(request.getTicketId()).setUserId(request.getUserId()).build();
-            UserSessionRestate.UserSessionRestateClient userSessionClnt = UserSessionRestate.newClient(ctx);
-            userSessionClnt.delayed(Duration.ofMinutes(15)).expireTicket(expirationRequest);
+            UserSessionClient.fromContext(ctx, ctx.key())
+                    .send(Duration.ofMinutes(15))
+                    .expireTicket(ticketId);
         }
 
         return reservationSuccess;
@@ -60,37 +57,36 @@ public class UserSession extends UserSessionRestate.UserSessionRestateImplBase {
     // <end_add_ticket>
 
     // <start_expire_ticket>
-    @Override
-    public void expireTicket(ObjectContext ctx, ExpireTicketRequest request) throws TerminalException {
+    @Handler
+    public void expireTicket(ObjectContext ctx, String ticketId) {
         Set<String> tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
 
-        boolean removed = tickets.removeIf(s -> s.equals(request.getTicketId()));
+        boolean removed = tickets.removeIf(s -> s.equals(ticketId));
 
         if (removed) {
             ctx.set(STATE_KEY, tickets);
-            TicketServiceRestateClient ticketClnt = TicketServiceRestate.newClient(ctx);
-            ticketClnt.oneWay().unreserve(Ticket.newBuilder().setTicketId(request.getTicketId()).build());
+            TicketServiceClient.fromContext(ctx, ticketId).send().unreserve();
         }
     }
     // <end_expire_ticket>
 
     // <start_checkout>
-    @Override
-    public BoolValue checkout(ObjectContext ctx, CheckoutRequest request) throws TerminalException {
+    @Handler
+    public boolean checkout(ObjectContext ctx) {
         //highlight-next-line
         Set<String> tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
 
         //highlight-start
         if (tickets.isEmpty()) {
-            return BoolValue.of(false);
+            return false;
         }
         //highlight-end
 
-        CheckoutFlowRequest checkoutFlowRequest = CheckoutFlowRequest.newBuilder().setUserId(request.getUserId()).addTickets("456").build();
-        CheckoutRestateClient checkoutClnt = CheckoutRestate.newClient(ctx);
-        BoolValue checkoutSuccess = checkoutClnt.handle(checkoutFlowRequest).await();
+        boolean checkoutSuccess = CheckoutClient.fromContext(ctx)
+                .handle(new CheckoutRequest(ctx.key(), tickets))
+                .await();
 
-        if (checkoutSuccess.getValue()) {
+        if (checkoutSuccess) {
             //highlight-next-line
             ctx.clear(STATE_KEY);
         }

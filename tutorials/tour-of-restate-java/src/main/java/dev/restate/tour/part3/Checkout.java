@@ -11,15 +11,16 @@
 
 package dev.restate.tour.part3;
 
-import com.google.protobuf.BoolValue;
 import dev.restate.sdk.Context;
-import dev.restate.sdk.common.TerminalException;
-import dev.restate.tour.generated.CheckoutRestate;
-import dev.restate.tour.generated.Tour.CheckoutFlowRequest;
+import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.Service;
+import dev.restate.tour.auxiliary.CheckoutRequest;
 
-public class Checkout extends CheckoutRestate.CheckoutRestateImplBase {
-    @Override
-    public BoolValue handle(Context ctx, CheckoutFlowRequest request) throws TerminalException {
-        return BoolValue.of(true);
+@Service
+public class Checkout {
+
+    @Handler
+    public boolean handle(Context ctx, CheckoutRequest request) {
+        return true;
     }
 }

@@ -11,33 +11,32 @@
 
 package dev.restate.tour.part5;
 
-import com.google.protobuf.BoolValue;
 import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import dev.restate.tour.auxiliary.TicketStatus;
-import dev.restate.tour.generated.TicketServiceRestate;
-import dev.restate.tour.generated.Tour.Ticket;
 
-public class TicketService extends TicketServiceRestate.TicketServiceRestateImplBase {
+@VirtualObject
+public class TicketService {
 
     public static final StateKey<TicketStatus> STATE_KEY = StateKey.of("status", JacksonSerdes.of(TicketStatus.class));
 
-    @Override
-    public BoolValue reserve(ObjectContext ctx, Ticket request) throws TerminalException {
+    @Handler
+    public boolean reserve(ObjectContext ctx) {
         TicketStatus status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
 
         if (status.equals(TicketStatus.Available)) {
             ctx.set(STATE_KEY, TicketStatus.Reserved);
-            return BoolValue.of(true);
+            return true;
         } else {
-            return BoolValue.of(false);
+            return false;
         }
     }
 
-    @Override
-    public void unreserve(ObjectContext ctx, Ticket request) throws TerminalException {
+    @Handler
+    public void unreserve(ObjectContext ctx) {
         TicketStatus status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
 
         if (!status.equals(TicketStatus.Sold)) {
@@ -45,8 +44,8 @@ public class TicketService extends TicketServiceRestate.TicketServiceRestateImpl
         }
     }
 
-    @Override
-    public void markAsSold(ObjectContext ctx, Ticket request) throws TerminalException {
+    @Handler
+    public void markAsSold(ObjectContext ctx) {
         TicketStatus status = ctx.get(STATE_KEY).orElse(TicketStatus.Available);
 
         if (status.equals(TicketStatus.Reserved)) {

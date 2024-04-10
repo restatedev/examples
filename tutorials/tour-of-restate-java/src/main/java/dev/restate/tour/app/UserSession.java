@@ -11,26 +11,23 @@
 
 package dev.restate.tour.app;
 
-import com.google.protobuf.BoolValue;
 import dev.restate.sdk.ObjectContext;
-import dev.restate.sdk.common.TerminalException;
-import dev.restate.tour.generated.Tour.CheckoutRequest;
-import dev.restate.tour.generated.Tour.ExpireTicketRequest;
-import dev.restate.tour.generated.Tour.ReserveTicket;
-import dev.restate.tour.generated.UserSessionRestate;
+import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.VirtualObject;
 
-public class UserSession extends UserSessionRestate.UserSessionRestateImplBase {
-    @Override
-    public BoolValue addTicket(ObjectContext ctx, ReserveTicket request) throws TerminalException {
-        return BoolValue.of(true);
+@VirtualObject
+public class UserSession {
+    @Handler
+    public boolean addTicket(ObjectContext ctx, String ticketId) {
+        return true;
     }
 
-    @Override
-    public void expireTicket(ObjectContext ctx, ExpireTicketRequest request) throws TerminalException {
+    @Handler
+    public void expireTicket(ObjectContext ctx, String ticketId) {
     }
 
-    @Override
-    public BoolValue checkout(ObjectContext ctx, CheckoutRequest request) throws TerminalException {
-        return BoolValue.of(true);
+    @Handler
+    public boolean checkout(ObjectContext ctx) {
+        return true;
     }
 }

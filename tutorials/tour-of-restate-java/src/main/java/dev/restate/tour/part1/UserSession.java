@@ -11,51 +11,46 @@
 
 package dev.restate.tour.part1;
 
-import com.google.protobuf.BoolValue;
 import dev.restate.sdk.ObjectContext;
-import dev.restate.sdk.common.TerminalException;
-import dev.restate.tour.generated.CheckoutRestate;
-import dev.restate.tour.generated.TicketServiceRestate;
-import dev.restate.tour.generated.UserSessionRestate;
+import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.VirtualObject;
+import dev.restate.tour.app.CheckoutClient;
+import dev.restate.tour.auxiliary.CheckoutRequest;
+import dev.restate.tour.part5.TicketServiceClient;
 
-import static dev.restate.tour.generated.Tour.*;
-import static dev.restate.tour.generated.TicketServiceRestate.*;
-import static dev.restate.tour.generated.CheckoutRestate.*;
+import java.util.HashSet;
+import java.util.List;
 
-public class UserSession extends UserSessionRestate.UserSessionRestateImplBase {
+@VirtualObject
+public class UserSession {
     // <start_add_ticket>
-    @Override
-    public BoolValue addTicket(ObjectContext ctx, ReserveTicket request) throws TerminalException {
-        Ticket ticket = Ticket.newBuilder().setTicketId(request.getTicketId()).build();
+    @Handler
+    public boolean addTicket(ObjectContext ctx, String ticketId) {
 
         //highlight-start
-        TicketServiceRestateClient ticketClnt = TicketServiceRestate.newClient(ctx);
-        BoolValue reservationSuccess = ticketClnt.reserve(ticket).await() ;
+        boolean reservationSuccess = TicketServiceClient.fromContext(ctx, ticketId).reserve().await();
         //highlight-end
 
-        return BoolValue.of(true);
+        return true;
     }
     // <end_add_ticket>
 
     // <start_expire_ticket>
-    @Override
-    public void expireTicket(ObjectContext ctx, ExpireTicketRequest request) throws TerminalException {
-        Ticket ticket = Ticket.newBuilder().setTicketId(request.getTicketId()).build();
-
+    @Handler
+    public void expireTicket(ObjectContext ctx, String ticketId) {
         //highlight-start
-        TicketServiceRestateClient ticketClnt = TicketServiceRestate.newClient(ctx);
-        ticketClnt.oneWay().unreserve(ticket);
+        TicketServiceClient.fromContext(ctx, ticketId).send().unreserve();
         //highlight-end
     }
     // <end_expire_ticket>
 
     // <start_checkout>
-    @Override
-    public BoolValue checkout(ObjectContext ctx, CheckoutRequest request) throws TerminalException {
-        CheckoutFlowRequest checkoutFlowRequest = CheckoutFlowRequest.newBuilder().setUserId(request.getUserId()).addTickets("456").build();
+    @Handler
+    public boolean checkout(ObjectContext ctx) {
         //highlight-start
-        CheckoutRestateClient checkoutClnt = CheckoutRestate.newClient(ctx);
-        BoolValue checkoutSuccess = checkoutClnt.handle(checkoutFlowRequest).await();
+        boolean checkoutSuccess = CheckoutClient.fromContext(ctx)
+                .handle(new CheckoutRequest(ctx.key(), new HashSet<>(List.of("456"))))
+                .await();
         //highlight-end
 
         return checkoutSuccess;

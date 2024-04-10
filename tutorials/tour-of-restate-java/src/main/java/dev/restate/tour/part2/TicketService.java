@@ -11,32 +11,30 @@
 
 package dev.restate.tour.part2;
 
-import com.google.protobuf.BoolValue;
 import dev.restate.sdk.ObjectContext;
-import dev.restate.sdk.common.TerminalException;
-import dev.restate.tour.generated.TicketServiceRestate;
-import dev.restate.tour.generated.Tour.Ticket;
+import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.VirtualObject;
 
 import java.time.Duration;
 
-public class TicketService extends TicketServiceRestate.TicketServiceRestateImplBase {
+@VirtualObject
+public class TicketService {
 
-    // <start_reserve>
-    @Override
-    public BoolValue reserve(ObjectContext ctx, Ticket request) throws TerminalException {
+    @Handler
+    public boolean reserve(ObjectContext ctx) {
         //good-code-start
         ctx.sleep(Duration.ofSeconds(65));
         //good-code-end
 
-        return BoolValue.of(true);
+        return true;
     }
     // <end_reserve>
 
-    @Override
-    public void unreserve(ObjectContext ctx, Ticket request) throws TerminalException {
+    @Handler
+    public void unreserve(ObjectContext ctx) {
     }
 
-    @Override
-    public void markAsSold(ObjectContext ctx, Ticket request) throws TerminalException {
+    @Handler
+    public void markAsSold(ObjectContext ctx) {
     }
 }

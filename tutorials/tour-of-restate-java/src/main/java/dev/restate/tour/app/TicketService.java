@@ -11,23 +11,22 @@
 
 package dev.restate.tour.app;
 
-import com.google.protobuf.BoolValue;
 import dev.restate.sdk.ObjectContext;
-import dev.restate.sdk.common.TerminalException;
-import dev.restate.tour.generated.TicketServiceRestate;
-import dev.restate.tour.generated.Tour.Ticket;
+import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.VirtualObject;
 
-public class TicketService extends TicketServiceRestate.TicketServiceRestateImplBase {
-    @Override
-    public BoolValue reserve(ObjectContext ctx, Ticket request) throws TerminalException {
-        return BoolValue.of(true);
+@VirtualObject
+public class TicketService {
+    @Handler
+    public boolean reserve(ObjectContext ctx) {
+        return true;
     }
 
-    @Override
-    public void unreserve(ObjectContext ctx, Ticket request) throws TerminalException {
+    @Handler
+    public void unreserve(ObjectContext ctx) {
     }
 
-    @Override
-    public void markAsSold(ObjectContext ctx, Ticket request) throws TerminalException {
+    @Handler
+    public void markAsSold(ObjectContext ctx) {
     }
 }

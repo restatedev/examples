@@ -11,34 +11,32 @@
 
 package dev.restate.tour.part5;
 
-import com.google.protobuf.BoolValue;
 import dev.restate.sdk.Context;
+import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.common.CoreSerdes;
-import dev.restate.sdk.common.TerminalException;
+import dev.restate.tour.auxiliary.CheckoutRequest;
 import dev.restate.tour.auxiliary.EmailClient;
 import dev.restate.tour.auxiliary.PaymentClient;
-import dev.restate.tour.generated.CheckoutRestate;
-import dev.restate.tour.generated.Tour.CheckoutFlowRequest;
 
-import java.util.UUID;
+@Service
+public class Checkout {
 
-public class Checkout extends CheckoutRestate.CheckoutRestateImplBase {
-
-    @Override
-    public BoolValue handle(Context ctx, CheckoutFlowRequest request) throws TerminalException {
-        double totalPrice = request.getTicketsList().size() * 40.0;
+    @Handler
+    public boolean handle(Context ctx, CheckoutRequest request) {
+        double totalPrice = request.getTickets().size() * 40.0;
 
         String idempotencyKey = ctx.random().nextUUID().toString();
         // <start_failing_client>
-        boolean success = ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () -> PaymentClient.get().failingCall(idempotencyKey, totalPrice));
+        boolean success = ctx.run(CoreSerdes.JSON_BOOLEAN, () -> PaymentClient.get().failingCall(idempotencyKey, totalPrice));
         // <end_failing_client>
 
         if (success) {
-            ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, ()-> EmailClient.get().notifyUserOfPaymentSuccess(request.getUserId()));
+            ctx.run(CoreSerdes.JSON_BOOLEAN, ()-> EmailClient.get().notifyUserOfPaymentSuccess(request.getUserId()));
         } else {
-            ctx.sideEffect(CoreSerdes.JSON_BOOLEAN, () -> EmailClient.get().notifyUserOfPaymentFailure(request.getUserId()));
+            ctx.run(CoreSerdes.JSON_BOOLEAN, () -> EmailClient.get().notifyUserOfPaymentFailure(request.getUserId()));
         }
 
-        return BoolValue.of(success);
+        return success;
     }
 }
