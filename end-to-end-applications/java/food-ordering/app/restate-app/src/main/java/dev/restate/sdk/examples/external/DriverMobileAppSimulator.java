@@ -11,14 +11,13 @@
 
 package dev.restate.sdk.examples.external;
 
-import static dev.restate.sdk.examples.generated.OrderProto.*;
-
 import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
+import dev.restate.sdk.examples.DriverDigitalTwinClient;
 import dev.restate.sdk.examples.clients.KafkaPublisher;
-import dev.restate.sdk.examples.generated.DriverDigitalTwinRestate;
-import dev.restate.sdk.examples.generated.DriverMobileAppSimulatorRestate;
 import dev.restate.sdk.examples.types.AssignedDelivery;
 import dev.restate.sdk.examples.types.Location;
 import dev.restate.sdk.examples.utils.GeoUtils;
@@ -35,8 +34,8 @@ import org.apache.logging.log4j.Logger;
  *
  * <p>For simplicity, we implemented this with Restate.
  */
-public class DriverMobileAppSimulator
-    extends DriverMobileAppSimulatorRestate.DriverMobileAppSimulatorRestateImplBase {
+@VirtualObject
+public class DriverMobileAppSimulator {
   private static final Logger logger = LogManager.getLogger(DriverMobileAppSimulator.class);
 
   private final KafkaPublisher producer = new KafkaPublisher();
@@ -46,75 +45,70 @@ public class DriverMobileAppSimulator
   private static final long PAUSE_BETWEEN_DELIVERIES = 2000;
 
   private final StateKey<Location> CURRENT_LOCATION =
-      StateKey.of("current-location", JacksonSerdes.of(Location.class));
+      StateKey.of("current-location", Location.SERDE);
 
   private final StateKey<AssignedDelivery> ASSIGNED_DELIVERY =
       StateKey.of("assigned-delivery", JacksonSerdes.of(AssignedDelivery.class));
 
   /** Mimics the driver setting himself to available in the app */
-  @Override
-  public void startDriver(ObjectContext ctx, DriverId request) throws TerminalException {
+  @Handler
+  public void startDriver(ObjectContext ctx) throws TerminalException {
     // If this driver was already created, do nothing
     if (ctx.get(CURRENT_LOCATION).isPresent()) {
       return;
     }
 
-    logger.info("Starting driver " + request.getDriverId());
-    var location = ctx.sideEffect(JacksonSerdes.of(Location.class), GeoUtils::randomLocation);
+    logger.info("Starting driver " + ctx.key());
+    var location = ctx.run(Location.SERDE, GeoUtils::randomLocation);
     ctx.set(CURRENT_LOCATION, location);
-    producer.sendDriverUpdate(
-        request.getDriverId(), JacksonSerdes.of(Location.class).serialize(location));
+    producer.sendDriverUpdate(ctx.key(), Location.SERDE.serialize(location));
 
     // Tell the digital twin of the driver in the food ordering app, that he is available
-    DriverDigitalTwinRestate.newClient(ctx)
-        .setDriverAvailable(
-            DriverAvailableNotification.newBuilder()
-                .setDriverId(request.getDriverId())
-                .setRegion(GeoUtils.DEMO_REGION)
-                .build())
+    DriverDigitalTwinClient.fromContext(ctx, ctx.key())
+        .setDriverAvailable(GeoUtils.DEMO_REGION)
         .await();
 
     // Start polling for work
-    DriverMobileAppSimulatorRestate.newClient(ctx).oneWay().pollForWork(request);
+    DriverMobileAppSimulatorClient.fromContext(ctx, ctx.key()).send().pollForWork();
   }
 
   /**
    * Asks the food ordering app to get a new delivery job. If there is no job, the driver will ask
    * again after a short delay.
    */
-  @Override
-  public void pollForWork(ObjectContext ctx, DriverId request) throws TerminalException {
-    var thisDriverSim = DriverMobileAppSimulatorRestate.newClient(ctx);
+  @Handler
+  public void pollForWork(ObjectContext ctx) throws TerminalException {
+    var thisDriverSim = DriverMobileAppSimulatorClient.fromContext(ctx, ctx.key());
 
     // Ask the digital twin of the driver in the food ordering app, if he already got a job assigned
     var optionalAssignedDelivery =
-        DriverDigitalTwinRestate.newClient(ctx).getAssignedDelivery(request).await();
+        DriverDigitalTwinClient.fromContext(ctx, ctx.key()).getAssignedDelivery().await();
 
     // If there is no job, ask again after a short delay
-    if (optionalAssignedDelivery.hasEmpty()) {
-      thisDriverSim.delayed(Duration.ofMillis(POLL_INTERVAL)).pollForWork(request);
+    if (optionalAssignedDelivery.isEmpty()) {
+      thisDriverSim.send(Duration.ofMillis(POLL_INTERVAL)).pollForWork();
       return;
     }
 
     // If there is a job, start the delivery
-    var delivery = optionalAssignedDelivery.getDelivery();
+    var delivery = optionalAssignedDelivery.get();
     var newAssignedDelivery =
         new AssignedDelivery(
             delivery.getDriverId(),
             delivery.getOrderId(),
             delivery.getRestaurantId(),
-            Location.fromProto(delivery.getRestaurantLocation()),
-            Location.fromProto(delivery.getCustomerLocation()));
+            delivery.getRestaurantLocation(),
+            delivery.getCustomerLocation());
     ctx.set(ASSIGNED_DELIVERY, newAssignedDelivery);
 
     // Start moving to the delivery pickup location
-    thisDriverSim.delayed(Duration.ofMillis(MOVE_INTERVAL)).move(request);
+    thisDriverSim.send(Duration.ofMillis(MOVE_INTERVAL)).move();
   }
 
   /** Periodically lets the food ordering app know the new location */
-  @Override
-  public void move(ObjectContext ctx, DriverId request) throws TerminalException {
-    var thisDriverSim = DriverMobileAppSimulatorRestate.newClient(ctx);
+  @Handler
+  public void move(ObjectContext ctx) throws TerminalException {
+    var thisDriverSim = DriverMobileAppSimulatorClient.fromContext(ctx, ctx.key());
     var assignedDelivery =
         ctx.get(ASSIGNED_DELIVERY)
             .orElseThrow(() -> new TerminalException("Driver has no delivery assigned"));
@@ -131,8 +125,7 @@ public class DriverMobileAppSimulator
     // Move to the next location
     var newLocation = GeoUtils.moveToDestination(currentLocation, nextDestination);
     ctx.set(CURRENT_LOCATION, newLocation);
-    producer.sendDriverUpdate(
-        request.getDriverId(), JacksonSerdes.of(Location.class).serialize(newLocation));
+    producer.sendDriverUpdate(ctx.key(), Location.SERDE.serialize(newLocation));
 
     // If we reached the destination, notify the food ordering app
     if (newLocation.equals(nextDestination)) {
@@ -142,22 +135,18 @@ public class DriverMobileAppSimulator
         ctx.clear(ASSIGNED_DELIVERY);
 
         // Notify the driver's digital twin in the food ordering app of the delivery success
-        DriverDigitalTwinRestate.newClient(ctx).notifyDeliveryDelivered(request).await();
+        DriverDigitalTwinClient.fromContext(ctx, ctx.key()).notifyDeliveryDelivered().await();
 
         // Take a small break before starting the next delivery
         ctx.sleep(Duration.ofMillis(PAUSE_BETWEEN_DELIVERIES));
 
         // Tell the driver's digital twin in the food ordering app, that he is available
-        DriverDigitalTwinRestate.newClient(ctx)
-            .oneWay()
-            .setDriverAvailable(
-                DriverAvailableNotification.newBuilder()
-                    .setDriverId(request.getDriverId())
-                    .setRegion(GeoUtils.DEMO_REGION)
-                    .build());
+        DriverDigitalTwinClient.fromContext(ctx, ctx.key())
+            .send()
+            .setDriverAvailable(GeoUtils.DEMO_REGION);
 
         // Start polling for work
-        DriverMobileAppSimulatorRestate.newClient(ctx).oneWay().pollForWork(request);
+        DriverMobileAppSimulatorClient.fromContext(ctx, ctx.key()).send().pollForWork();
         return;
       }
 
@@ -166,10 +155,10 @@ public class DriverMobileAppSimulator
       // and will start the delivery
       assignedDelivery.notifyPickup();
       ctx.set(ASSIGNED_DELIVERY, assignedDelivery);
-      DriverDigitalTwinRestate.newClient(ctx).notifyDeliveryPickup(request).await();
+      DriverDigitalTwinClient.fromContext(ctx, ctx.key()).notifyDeliveryPickup().await();
     }
 
     // Call this method again after a short delay
-    thisDriverSim.delayed(Duration.ofMillis(MOVE_INTERVAL)).move(request);
+    thisDriverSim.send(Duration.ofMillis(MOVE_INTERVAL)).move();
   }
 }

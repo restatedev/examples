@@ -79,9 +79,8 @@ services:
       - KAFKA_BOOTSTRAP_SERVERS=broker:29092
 
   runtime:
-    image: docker.io/restatedev/restate:0.8
+    image: ghcr.io/restatedev/restate:main
     depends_on:
-      - restate_app
       - restaurantpos
       - broker
       - rest-proxy
@@ -91,10 +90,9 @@ services:
       - "9071:9071"
       - "8080:8080"
     volumes:
-      - ./restate-docker.yaml:/restate.yaml
+      - ./restate-docker.toml:/restate.toml:Z,ro
     environment:
-      - RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://jaeger:4317
-      - RESTATE_CONFIG=/restate.yaml
+      - RESTATE_CONFIG=/restate.toml
 
   runtimesetup:
     image: alpine
@@ -106,11 +104,11 @@ services:
     apk add --no-cache bash jq curl &&
     curl -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://restate_app:9080\"}' &&
     sleep 3 && 
-    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/orders\", \"sink\":\"service://order.OrderWorkflow/HandleOrderCreationEvent\" }' &&
-    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/driver-updates\", \"sink\":\"service://order.DriverDigitalTwin/HandleDriverLocationUpdateEvent\" }' &&
+    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/orders\", \"sink\":\"component://OrderWorkflow/create\" }' &&
+    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/driver-updates\", \"sink\":\"component://DriverDigitalTwin/handleDriverLocationUpdateEvent\" }' &&
     sleep 3 && 
-    curl -X POST -H 'content-type: application/json' 'runtime:8080/order.DriverMobileAppSimulator/StartDriver' -d '{\"driver_id\": \"driver-A\"}' && 
-    curl -X POST -H 'content-type: application/json' 'runtime:8080/order.DriverMobileAppSimulator/StartDriver' -d '{\"driver_id\": \"driver-B\"}' && 
+    curl -X POST 'runtime:8080/DriverMobileAppSimulator/driver-A/startDriver' && 
+    curl -X POST 'runtime:8080/DriverMobileAppSimulator/driver-B/startDriver' && 
     exit 1"]
 
   foodorderingwebui:

@@ -20,7 +20,6 @@ const useUser = () => {
     setLoadingUser(true);
 
     (async () => {
-  
       const newShoppingCartId = uuidv4().replaceAll('-', '');
 
       setLoadingUser(false);

@@ -1,0 +1,5 @@
+tracing-endpoint = "http://jaeger:4317"
+
+[[ingress.kafka-clusters]]
+name = "my-cluster"
+brokers = ["PLAINTEXT://broker:29092"]

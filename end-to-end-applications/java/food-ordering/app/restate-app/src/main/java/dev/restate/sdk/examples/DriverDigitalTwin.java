@@ -11,27 +11,25 @@
 
 package dev.restate.sdk.examples;
 
-import static dev.restate.sdk.examples.generated.OrderProto.*;
-import static dev.restate.sdk.examples.utils.TypeUtils.toOrderIdProto;
-
-import com.google.protobuf.Empty;
 import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
-import dev.restate.sdk.examples.generated.DeliveryManagerRestate;
-import dev.restate.sdk.examples.generated.DriverDeliveryMatcherRestate;
-import dev.restate.sdk.examples.generated.DriverDigitalTwinRestate;
+import dev.restate.sdk.examples.types.AssignDeliveryRequest;
 import dev.restate.sdk.examples.types.AssignedDelivery;
 import dev.restate.sdk.examples.types.DriverStatus;
 import dev.restate.sdk.examples.types.Location;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
+import java.util.Optional;
 
 /**
  * Digital twin for the driver. Represents a driver and his status, assigned delivery, and location.
  * Keyed by driver ID. The actual driver would have an application (mocked by
  * DriverMobileAppSimulator ) that calls this service.
  */
-public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwinRestateImplBase {
+@VirtualObject
+public class DriverDigitalTwin {
 
   // Current status of the driver: idle, waiting for work, or delivering
   private static final StateKey<DriverStatus> DRIVER_STATUS =
@@ -49,19 +47,12 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
    * When the driver starts his work day or finishes a delivery, his application
    * (DriverMobileAppSimulator) calls this method.
    */
-  @Override
-  public void setDriverAvailable(ObjectContext ctx, DriverAvailableNotification request)
-      throws TerminalException {
+  @Handler
+  public void setDriverAvailable(ObjectContext ctx, String region) throws TerminalException {
     expectStatus(ctx, DriverStatus.IDLE);
 
     ctx.set(DRIVER_STATUS, DriverStatus.WAITING_FOR_WORK);
-    DriverDeliveryMatcherRestate.newClient(ctx)
-        .oneWay()
-        .setDriverAvailable(
-            DriverPoolAvailableNotification.newBuilder()
-                .setRegion(request.getRegion())
-                .setDriverId(request.getDriverId())
-                .build());
+    DriverDeliveryMatcherClient.fromContext(ctx, region).send().setDriverAvailable(ctx.key());
   }
 
   /**
@@ -69,7 +60,7 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
    * the status of the digital driver twin, and notifies the delivery service of its current
    * location.
    */
-  @Override
+  @Handler
   public void assignDeliveryJob(ObjectContext ctx, AssignDeliveryRequest request)
       throws TerminalException {
     expectStatus(ctx, DriverStatus.WAITING_FOR_WORK);
@@ -79,30 +70,26 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
     ctx.set(
         ASSIGNED_DELIVERY,
         new AssignedDelivery(
-            request.getDriverId(),
+            ctx.key(),
             request.getOrderId(),
             request.getRestaurantId(),
-            Location.fromProto(request.getRestaurantLocation()),
-            Location.fromProto(request.getCustomerLocation())));
+            request.getRestaurantLocation(),
+            request.getCustomerLocation()));
 
     // Notify current location to the delivery service
     ctx.get(DRIVER_LOCATION)
         .ifPresent(
             loc ->
-                DeliveryManagerRestate.newClient(ctx)
-                    .oneWay()
-                    .handleDriverLocationUpdate(
-                        DeliveryLocationUpdate.newBuilder()
-                            .setOrderId(request.getOrderId())
-                            .setLocation(loc.toProto())
-                            .build()));
+                DeliveryManagerClient.fromContext(ctx, request.getOrderId())
+                    .send()
+                    .handleDriverLocationUpdate(loc));
   }
 
   /**
    * Gets called by the driver's mobile app when he has picked up the delivery from the restaurant.
    */
-  @Override
-  public void notifyDeliveryPickup(ObjectContext ctx, DriverId request) throws TerminalException {
+  @Handler
+  public void notifyDeliveryPickup(ObjectContext ctx) throws TerminalException {
     expectStatus(ctx, DriverStatus.DELIVERING);
 
     // Retrieve the ongoing delivery and update its status
@@ -116,15 +103,14 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
     ctx.set(ASSIGNED_DELIVERY, currentDelivery);
 
     // Update the status of the delivery in the delivery manager
-    DeliveryManagerRestate.newClient(ctx)
-        .oneWay()
-        .notifyDeliveryPickup(toOrderIdProto(currentDelivery.getOrderId()));
+    DeliveryManagerClient.fromContext(ctx, currentDelivery.getOrderId())
+        .send()
+        .notifyDeliveryPickup();
   }
 
   /** Gets called by the driver's mobile app when he has delivered the order to the customer. */
-  @Override
-  public void notifyDeliveryDelivered(ObjectContext ctx, DriverId request)
-      throws TerminalException {
+  @Handler
+  public void notifyDeliveryDelivered(ObjectContext ctx) throws TerminalException {
     expectStatus(ctx, DriverStatus.DELIVERING);
 
     // Retrieve the ongoing delivery
@@ -138,33 +124,28 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
     ctx.clear(ASSIGNED_DELIVERY);
 
     // Notify the delivery service that the delivery was delivered
-    DeliveryManagerRestate.newClient(ctx)
-        .oneWay()
-        .notifyDeliveryDelivered(toOrderIdProto(assignedDelivery.getOrderId()));
+    DeliveryManagerClient.fromContext(ctx, assignedDelivery.getOrderId())
+        .send()
+        .notifyDeliveryDelivered();
 
     // Update the status of the driver to idle
     ctx.set(DRIVER_STATUS, DriverStatus.IDLE);
   }
 
   /** Gets called by the driver's mobile app when he has moved to a new location. */
-  @Override
-  public void handleDriverLocationUpdateEvent(ObjectContext ctx, KafkaDriverLocationEvent request)
+  @Handler
+  public void handleDriverLocationUpdateEvent(ObjectContext ctx, Location location)
       throws TerminalException {
     // Update the location of the driver
-    Location location = JacksonSerdes.of(Location.class).deserialize(request.getLocation());
     ctx.set(DRIVER_LOCATION, location);
 
     // Update the location of the delivery, if there is one
     ctx.get(ASSIGNED_DELIVERY)
         .ifPresent(
             delivery ->
-                DeliveryManagerRestate.newClient(ctx)
-                    .oneWay()
-                    .handleDriverLocationUpdate(
-                        DeliveryLocationUpdate.newBuilder()
-                            .setOrderId(delivery.getOrderId())
-                            .setLocation(location.toProto())
-                            .build()));
+                DeliveryManagerClient.fromContext(ctx, delivery.getOrderId())
+                    .send()
+                    .handleDriverLocationUpdate(location));
   }
 
   /**
@@ -172,25 +153,10 @@ public class DriverDigitalTwin extends DriverDigitalTwinRestate.DriverDigitalTwi
    * assigned. Gets polled by the driver's mobile app at regular intervals to check if a delivery
    * got assigned to him.
    */
-  @Override
-  public AssignedDeliveryResponse getAssignedDelivery(ObjectContext ctx, DriverId request)
+  @Handler
+  public Optional<AssignedDelivery> getAssignedDelivery(ObjectContext ctx)
       throws TerminalException {
-    var assignedDelivery = ctx.get(ASSIGNED_DELIVERY);
-
-    return assignedDelivery
-        .map(
-            delivery ->
-                AssignedDeliveryResponse.newBuilder()
-                    .setDelivery(
-                        Delivery.newBuilder()
-                            .setDriverId(delivery.getDriverId())
-                            .setOrderId(delivery.getOrderId())
-                            .setRestaurantId(delivery.getRestaurantId())
-                            .setCustomerLocation(delivery.getCustomerLocation().toProto())
-                            .setRestaurantLocation(delivery.getRestaurantLocation().toProto())
-                            .build())
-                    .build())
-        .orElse(AssignedDeliveryResponse.newBuilder().setEmpty(Empty.getDefaultInstance()).build());
+    return ctx.get(ASSIGNED_DELIVERY);
   }
 
   // Utility function to check if the driver is in the expected state
