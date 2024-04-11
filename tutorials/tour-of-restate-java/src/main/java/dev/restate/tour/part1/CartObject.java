@@ -27,9 +27,8 @@ public class CartObject {
     @Handler
     public boolean addTicket(ObjectContext ctx, String ticketId) {
 
-        //highlight-start
+        // focus
         boolean reservationSuccess = TicketServiceClient.fromContext(ctx, ticketId).reserve().await();
-        //highlight-end
 
         return true;
     }
@@ -38,20 +37,20 @@ public class CartObject {
     // <start_expire_ticket>
     @Handler
     public void expireTicket(ObjectContext ctx, String ticketId) {
-        //highlight-start
+        // focus
         TicketServiceClient.fromContext(ctx, ticketId).send().unreserve();
-        //highlight-end
     }
     // <end_expire_ticket>
 
     // <start_checkout>
     @Handler
     public boolean checkout(ObjectContext ctx) {
-        //highlight-start
+        // withClass highlight-line
         boolean checkoutSuccess = CheckoutClient.fromContext(ctx)
+                // withClass highlight-line
                 .handle(new CheckoutRequest(ctx.key(), new HashSet<>(List.of("456"))))
+                // withClass highlight-line
                 .await();
-        //highlight-end
 
         return checkoutSuccess;
     }
