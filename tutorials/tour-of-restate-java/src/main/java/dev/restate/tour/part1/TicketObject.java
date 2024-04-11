@@ -21,13 +21,16 @@ public class TicketObject {
     // <start_reserve>
     @Handler
     public boolean reserve(ObjectContext ctx) {
-        //bad-code-start
+        // withClass highlight-bad-code
         try {
+            // withClass highlight-bad-code
             Thread.sleep(65000);
+            // withClass highlight-bad-code
         } catch (InterruptedException e) {
+            // withClass highlight-bad-code
             throw new RuntimeException(e);
+            // withClass highlight-bad-code
         }
-        //bad-code-end
 
         return true;
     }

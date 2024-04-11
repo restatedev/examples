@@ -17,10 +17,7 @@ import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
-import dev.restate.tour.app.CheckoutClient;
-import dev.restate.tour.app.UserSessionClient;
 import dev.restate.tour.auxiliary.CheckoutRequest;
-import dev.restate.tour.part5.TicketServiceClient;
 
 import java.time.Duration;
 import java.util.HashSet;
@@ -37,7 +34,7 @@ public class CartObject {
 
     @Handler
     public boolean addTicket(ObjectContext ctx, String ticketId) {
-        boolean reservationSuccess = TicketServiceClient.fromContext(ctx, ticketId).reserve().await();
+        boolean reservationSuccess = TicketObjectClient.fromContext(ctx, ticketId).reserve().await();
 
         if (reservationSuccess) {
             // withClass highlight-line
@@ -46,7 +43,7 @@ public class CartObject {
             // withClass highlight-line
             ctx.set(STATE_KEY, tickets);
 
-            UserSessionClient.fromContext(ctx, ctx.key())
+            CartObjectClient.fromContext(ctx, ctx.key())
                     .send(Duration.ofMinutes(15))
                     .expireTicket(ticketId);
         }
@@ -64,7 +61,7 @@ public class CartObject {
 
         if (removed) {
             ctx.set(STATE_KEY, tickets);
-            TicketServiceClient.fromContext(ctx, ticketId).send().unreserve();
+            TicketObjectClient.fromContext(ctx, ticketId).send().unreserve();
         }
     }
     // <end_expire_ticket>
@@ -82,7 +79,7 @@ public class CartObject {
         // withClass highlight-line
         }
 
-        boolean checkoutSuccess = CheckoutClient.fromContext(ctx)
+        boolean checkoutSuccess = CheckoutServiceClient.fromContext(ctx)
                 .handle(new CheckoutRequest(ctx.key(), tickets))
                 .await();
 

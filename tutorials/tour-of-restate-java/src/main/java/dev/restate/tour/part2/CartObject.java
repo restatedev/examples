@@ -14,10 +14,7 @@ package dev.restate.tour.part2;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.tour.app.CheckoutClient;
-import dev.restate.tour.app.UserSessionClient;
 import dev.restate.tour.auxiliary.CheckoutRequest;
-import dev.restate.tour.part5.TicketServiceClient;
 
 import java.time.Duration;
 import java.util.HashSet;
@@ -29,11 +26,11 @@ public class CartObject {
     @Handler
     public boolean addTicket(ObjectContext ctx, String ticketId) {
 
-        boolean reservationSuccess = TicketServiceClient.fromContext(ctx, ticketId).reserve().await();
+        boolean reservationSuccess = TicketObjectClient.fromContext(ctx, ticketId).reserve().await();
 
         if (reservationSuccess) {
             // withClass highlight-line
-            UserSessionClient.fromContext(ctx, ctx.key())
+            CartObjectClient.fromContext(ctx, ctx.key())
                     // withClass highlight-line
                     .send(Duration.ofMinutes(15))
                     // withClass highlight-line
@@ -46,12 +43,12 @@ public class CartObject {
 
     @Handler
     public void expireTicket(ObjectContext ctx, String ticketId) {
-        TicketServiceClient.fromContext(ctx, ticketId).send().unreserve();
+        TicketObjectClient.fromContext(ctx, ticketId).send().unreserve();
     }
 
     @Handler
     public boolean checkout(ObjectContext ctx) {
-        boolean checkoutSuccess = CheckoutClient.fromContext(ctx)
+        boolean checkoutSuccess = CheckoutServiceClient.fromContext(ctx)
                 .handle(new CheckoutRequest(ctx.key(), new HashSet<>(List.of("456"))))
                 .await();
 

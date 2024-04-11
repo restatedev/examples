@@ -23,9 +23,8 @@ public class TicketObject {
     // <start_reserve>
     @Handler
     public boolean reserve(ObjectContext ctx) {
-        //good-code-start
+        // withClass highlight-good-code
         ctx.sleep(Duration.ofSeconds(65));
-        //good-code-end
 
         return true;
     }
