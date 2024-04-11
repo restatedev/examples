@@ -21,7 +21,7 @@ import dev.restate.tour.auxiliary.PaymentClient;
 
 @Service
 public class Checkout {
-
+    // <start_checkout>
     @Handler
     public boolean handle(Context ctx, CheckoutRequest request) {
         // <start_side_effects>
