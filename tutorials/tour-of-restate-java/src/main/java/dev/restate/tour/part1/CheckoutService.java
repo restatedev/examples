@@ -24,4 +24,4 @@ public class CheckoutService {
         return true;
     }
 }
-// <start_service>
+// <end_service>
