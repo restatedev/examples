@@ -16,6 +16,7 @@ import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import dev.restate.tour.auxiliary.CheckoutRequest;
 
+// <start_service>
 @Service
 public class CheckoutService {
     @Handler
@@ -23,3 +24,4 @@ public class CheckoutService {
         return true;
     }
 }
+// <start_service>
