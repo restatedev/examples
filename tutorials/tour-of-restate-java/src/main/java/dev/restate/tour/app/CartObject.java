@@ -11,15 +11,23 @@
 
 package dev.restate.tour.app;
 
-import dev.restate.sdk.Context;
+import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
-import dev.restate.sdk.annotation.Service;
-import dev.restate.tour.auxiliary.CheckoutRequest;
+import dev.restate.sdk.annotation.VirtualObject;
 
-@Service
-public class Checkout {
+@VirtualObject
+public class CartObject {
     @Handler
-    public boolean handle(Context ctx, CheckoutRequest request) {
+    public boolean addTicket(ObjectContext ctx, String ticketId) {
+        return true;
+    }
+
+    @Handler
+    public void expireTicket(ObjectContext ctx, String ticketId) {
+    }
+
+    @Handler
+    public boolean checkout(ObjectContext ctx) {
         return true;
     }
 }

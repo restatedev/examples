@@ -17,7 +17,7 @@ import dev.restate.sdk.annotation.Service;
 import dev.restate.tour.auxiliary.CheckoutRequest;
 
 @Service
-public class Checkout {
+public class CheckoutService {
 
     @Handler
     public boolean handle(Context ctx, CheckoutRequest request) {

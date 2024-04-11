@@ -9,7 +9,7 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.tour.part5;
+package dev.restate.tour.part3;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import dev.restate.sdk.ObjectContext;
@@ -20,34 +20,43 @@ import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import dev.restate.tour.app.CheckoutClient;
 import dev.restate.tour.app.UserSessionClient;
 import dev.restate.tour.auxiliary.CheckoutRequest;
+import dev.restate.tour.part5.TicketServiceClient;
 
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 
 @VirtualObject
-public class UserSession {
+public class CartObject {
 
+    // <start_add_ticket>
+    // At the top of the class, define the state key: supply a name and (de)serializer
+    //highlight-start
     public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", JacksonSerdes.of(new TypeReference<>() {}));
+    //highlight-end
+
 
     @Handler
     public boolean addTicket(ObjectContext ctx, String ticketId) {
-
         boolean reservationSuccess = TicketServiceClient.fromContext(ctx, ticketId).reserve().await();
 
         if (reservationSuccess) {
+            //highlight-next-line
             Set<String> tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
             tickets.add(ticketId);
+            //highlight-next-line
             ctx.set(STATE_KEY, tickets);
 
             UserSessionClient.fromContext(ctx, ctx.key())
-                .send(Duration.ofMinutes(15))
-                .expireTicket(ticketId);
+                    .send(Duration.ofMinutes(15))
+                    .expireTicket(ticketId);
         }
 
         return reservationSuccess;
     }
+    // <end_add_ticket>
 
+    // <start_expire_ticket>
     @Handler
     public void expireTicket(ObjectContext ctx, String ticketId) {
         Set<String> tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
@@ -59,26 +68,31 @@ public class UserSession {
             TicketServiceClient.fromContext(ctx, ticketId).send().unreserve();
         }
     }
+    // <end_expire_ticket>
 
+    // <start_checkout>
     @Handler
     public boolean checkout(ObjectContext ctx) {
+        //highlight-next-line
         Set<String> tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
 
+        //highlight-start
         if (tickets.isEmpty()) {
             return false;
         }
+        //highlight-end
 
         boolean checkoutSuccess = CheckoutClient.fromContext(ctx)
                 .handle(new CheckoutRequest(ctx.key(), tickets))
                 .await();
 
         if (checkoutSuccess) {
-            tickets.forEach(t ->
-                TicketServiceClient.fromContext(ctx, t).send().markAsSold()
-            );
+            //highlight-next-line
             ctx.clear(STATE_KEY);
         }
 
         return checkoutSuccess;
     }
+    // <end_checkout>
+
 }

@@ -9,7 +9,7 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.tour.part4;
+package dev.restate.tour.part5;
 
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
@@ -19,7 +19,7 @@ import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import dev.restate.tour.auxiliary.TicketStatus;
 
 @VirtualObject
-public class TicketService {
+public class TicketObject {
 
     public static final StateKey<TicketStatus> STATE_KEY = StateKey.of("status", JacksonSerdes.of(TicketStatus.class));
 

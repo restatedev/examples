@@ -9,7 +9,7 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.tour.part3;
+package dev.restate.tour.part4;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import dev.restate.sdk.ObjectContext;
@@ -27,24 +27,18 @@ import java.util.HashSet;
 import java.util.Set;
 
 @VirtualObject
-public class UserSession {
+public class CartObject {
 
-    // <start_add_ticket>
-    // At the top of the class, define the state key: supply a name and (de)serializer
-    //highlight-start
     public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", JacksonSerdes.of(new TypeReference<>() {}));
-    //highlight-end
-
 
     @Handler
     public boolean addTicket(ObjectContext ctx, String ticketId) {
+
         boolean reservationSuccess = TicketServiceClient.fromContext(ctx, ticketId).reserve().await();
 
         if (reservationSuccess) {
-            //highlight-next-line
-            Set<String> tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
+            var tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
             tickets.add(ticketId);
-            //highlight-next-line
             ctx.set(STATE_KEY, tickets);
 
             UserSessionClient.fromContext(ctx, ctx.key())
@@ -54,9 +48,7 @@ public class UserSession {
 
         return reservationSuccess;
     }
-    // <end_add_ticket>
 
-    // <start_expire_ticket>
     @Handler
     public void expireTicket(ObjectContext ctx, String ticketId) {
         Set<String> tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
@@ -68,26 +60,26 @@ public class UserSession {
             TicketServiceClient.fromContext(ctx, ticketId).send().unreserve();
         }
     }
-    // <end_expire_ticket>
 
     // <start_checkout>
     @Handler
     public boolean checkout(ObjectContext ctx) {
-        //highlight-next-line
         Set<String> tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
 
-        //highlight-start
         if (tickets.isEmpty()) {
             return false;
         }
-        //highlight-end
 
         boolean checkoutSuccess = CheckoutClient.fromContext(ctx)
                 .handle(new CheckoutRequest(ctx.key(), tickets))
                 .await();
 
         if (checkoutSuccess) {
-            //highlight-next-line
+            //highlight-start
+            tickets.forEach(t ->
+                    TicketServiceClient.fromContext(ctx, t).send().markAsSold()
+            );
+            //highlight-end
             ctx.clear(STATE_KEY);
         }
 

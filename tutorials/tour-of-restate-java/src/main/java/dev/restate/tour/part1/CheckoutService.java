@@ -9,7 +9,7 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.tour.part2;
+package dev.restate.tour.part1;
 
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
@@ -17,7 +17,7 @@ import dev.restate.sdk.annotation.Service;
 import dev.restate.tour.auxiliary.CheckoutRequest;
 
 @Service
-public class Checkout {
+public class CheckoutService {
     @Handler
     public boolean handle(Context ctx, CheckoutRequest request) {
         return true;

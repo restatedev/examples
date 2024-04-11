@@ -19,7 +19,7 @@ import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import dev.restate.tour.auxiliary.TicketStatus;
 
 @VirtualObject
-public class TicketService {
+public class TicketObject {
     // <start_reserve>
     public static final StateKey<TicketStatus> STATE_KEY = StateKey.of("status", JacksonSerdes.of(TicketStatus.class));
 

@@ -9,7 +9,7 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.tour.part5;
+package dev.restate.tour.part4;
 
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
@@ -20,23 +20,24 @@ import dev.restate.tour.auxiliary.EmailClient;
 import dev.restate.tour.auxiliary.PaymentClient;
 
 @Service
-public class Checkout {
-
+public class CheckoutService {
+    // <start_checkout>
     @Handler
     public boolean handle(Context ctx, CheckoutRequest request) {
+        // <start_side_effects>
         double totalPrice = request.getTickets().size() * 40.0;
 
         String idempotencyKey = ctx.random().nextUUID().toString();
-        // <start_failing_client>
-        boolean success = ctx.run(CoreSerdes.JSON_BOOLEAN, () -> PaymentClient.get().failingCall(idempotencyKey, totalPrice));
-        // <end_failing_client>
+        boolean success = ctx.run(CoreSerdes.JSON_BOOLEAN, () -> PaymentClient.get().call(idempotencyKey, totalPrice));
+        // <end_side_effects>
 
         if (success) {
-            ctx.run(CoreSerdes.JSON_BOOLEAN, ()-> EmailClient.get().notifyUserOfPaymentSuccess(request.getUserId()));
+            ctx.run(()-> EmailClient.get().notifyUserOfPaymentSuccess(request.getUserId()));
         } else {
-            ctx.run(CoreSerdes.JSON_BOOLEAN, () -> EmailClient.get().notifyUserOfPaymentFailure(request.getUserId()));
+            ctx.run(() -> EmailClient.get().notifyUserOfPaymentFailure(request.getUserId()));
         }
 
         return success;
     }
+    // <end_checkout>
 }

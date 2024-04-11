@@ -16,9 +16,9 @@ import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 public class AppMain {
     public static void main(String[] args) {
         RestateHttpEndpointBuilder.builder()
-                .bind(new Checkout())
-                .bind(new TicketService())
-                .bind(new UserSession())
+                .bind(new CheckoutService())
+                .bind(new TicketObject())
+                .bind(new CartObject())
                 .buildAndListen();
     }
 }

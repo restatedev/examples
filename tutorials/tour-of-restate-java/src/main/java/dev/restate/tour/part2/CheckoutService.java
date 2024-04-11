@@ -9,25 +9,17 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.tour.app;
+package dev.restate.tour.part2;
 
-import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
-import dev.restate.sdk.annotation.VirtualObject;
+import dev.restate.sdk.annotation.Service;
+import dev.restate.tour.auxiliary.CheckoutRequest;
 
-@VirtualObject
-public class UserSession {
+@Service
+public class CheckoutService {
     @Handler
-    public boolean addTicket(ObjectContext ctx, String ticketId) {
-        return true;
-    }
-
-    @Handler
-    public void expireTicket(ObjectContext ctx, String ticketId) {
-    }
-
-    @Handler
-    public boolean checkout(ObjectContext ctx) {
+    public boolean handle(Context ctx, CheckoutRequest request) {
         return true;
     }
 }

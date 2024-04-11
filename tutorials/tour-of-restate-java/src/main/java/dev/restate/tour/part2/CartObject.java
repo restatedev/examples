@@ -24,7 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 
 @VirtualObject
-public class UserSession {
+public class CartObject {
     // <start_add_ticket>
     @Handler
     public boolean addTicket(ObjectContext ctx, String ticketId) {

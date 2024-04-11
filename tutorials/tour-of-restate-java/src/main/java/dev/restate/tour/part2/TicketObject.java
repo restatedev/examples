@@ -9,18 +9,27 @@
  * https://github.com/restatedev/examples/
  */
 
-package dev.restate.tour.app;
+package dev.restate.tour.part2;
 
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
 
+import java.time.Duration;
+
 @VirtualObject
-public class TicketService {
+public class TicketObject {
+
+    // <start_reserve>
     @Handler
     public boolean reserve(ObjectContext ctx) {
+        //good-code-start
+        ctx.sleep(Duration.ofSeconds(65));
+        //good-code-end
+
         return true;
     }
+    // <end_reserve>
 
     @Handler
     public void unreserve(ObjectContext ctx) {
