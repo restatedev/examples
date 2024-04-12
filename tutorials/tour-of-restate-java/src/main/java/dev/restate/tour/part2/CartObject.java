@@ -13,24 +13,24 @@ package dev.restate.tour.part2;
 
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
-import dev.restate.sdk.annotation.VirtualObject;
+import dev.restate.sdk.annotation.Service;
 import dev.restate.tour.auxiliary.CheckoutRequest;
 
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
 
-@VirtualObject
+@Service
 public class CartObject {
     // <start_add_ticket>
     @Handler
     public boolean addTicket(ObjectContext ctx, String ticketId) {
 
-        boolean reservationSuccess = TicketObjectClient.fromContext(ctx, ticketId).reserve().await();
+        boolean reservationSuccess = TicketObjectClient.fromContext(ctx).reserve().await();
 
         if (reservationSuccess) {
             // withClass highlight-line
-            CartObjectClient.fromContext(ctx, ctx.key())
+            CartObjectClient.fromContext(ctx)
                     // withClass highlight-line
                     .send(Duration.ofMinutes(15))
                     // withClass highlight-line
@@ -43,7 +43,7 @@ public class CartObject {
 
     @Handler
     public void expireTicket(ObjectContext ctx, String ticketId) {
-        TicketObjectClient.fromContext(ctx, ticketId).send().unreserve();
+        TicketObjectClient.fromContext(ctx).send().unreserve();
     }
 
     @Handler

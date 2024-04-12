@@ -13,11 +13,11 @@ package dev.restate.tour.part2;
 
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
-import dev.restate.sdk.annotation.VirtualObject;
+import dev.restate.sdk.annotation.Service;
 
 import java.time.Duration;
 
-@VirtualObject
+@Service
 public class TicketObject {
 
     // <start_reserve>
