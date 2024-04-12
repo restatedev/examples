@@ -11,7 +11,7 @@
 
 package dev.restate.tour.part2;
 
-import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 
@@ -22,7 +22,7 @@ public class TicketObject {
 
     // <start_reserve>
     @Handler
-    public boolean reserve(ObjectContext ctx) {
+    public boolean reserve(Context ctx) {
         // withClass highlight-good-code
         ctx.sleep(Duration.ofSeconds(65));
 
@@ -31,10 +31,10 @@ public class TicketObject {
     // <end_reserve>
 
     @Handler
-    public void unreserve(ObjectContext ctx) {
+    public void unreserve(Context ctx) {
     }
 
     @Handler
-    public void markAsSold(ObjectContext ctx) {
+    public void markAsSold(Context ctx) {
     }
 }
