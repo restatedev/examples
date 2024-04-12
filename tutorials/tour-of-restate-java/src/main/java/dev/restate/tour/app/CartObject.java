@@ -11,23 +11,23 @@
 
 package dev.restate.tour.app;
 
-import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 
 @Service
 public class CartObject {
     @Handler
-    public boolean addTicket(ObjectContext ctx, String ticketId) {
+    public boolean addTicket(Context ctx, String ticketId) {
         return true;
     }
 
     @Handler
-    public void expireTicket(ObjectContext ctx, String ticketId) {
+    public void expireTicket(Context ctx, String ticketId) {
     }
 
     @Handler
-    public boolean checkout(ObjectContext ctx) {
+    public boolean checkout(Context ctx) {
         return true;
     }
 }
