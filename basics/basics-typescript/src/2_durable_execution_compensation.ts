@@ -25,19 +25,19 @@ import { getCurrentRole, tryApplyUserRole, tryApplyPermission } from "./utils/ex
 
 async function applyRoleUpdate(ctx: restate.Context, update: UpdateRequest) {
   // parameters are durable across retries
-  const { userId, role, permissons } = update;
+  const { userId, role, permissions: permissions } = update;
 
   // regular failures are re-tries, TerminalErrors are propagated
   // nothing applied so far, so we propagate the error directly
-  const previousRole = await ctx.sideEffect(() => getCurrentRole(userId));
-  await ctx.sideEffect(() => tryApplyUserRole(userId, role));
+  const previousRole = await ctx.run(() => getCurrentRole(userId));
+  await ctx.run(() => tryApplyUserRole(userId, role));
 
   // apply all permissions in order
   // we collect the previous permission settings to reset if the process fails
   const previousPermissions: Permission[] = [];
-  for (const permission of permissons) {
+  for (const permission of permissions) {
     try {
-      const previous = await ctx.sideEffect(() => tryApplyPermission(userId, permission));
+      const previous = await ctx.run(() => tryApplyPermission(userId, permission));
       previousPermissions.push(previous); // remember the previous setting
     } catch (err) {
       if (err instanceof restate.TerminalError) {
@@ -56,14 +56,20 @@ async function rollback(
 ) {
   console.log(">>> !!! ROLLING BACK CHANGES !!! <<<");
   for (const prev of permissions.reverse()) {
-    await ctx.sideEffect(() => tryApplyPermission(userId, prev));
+    await ctx.run(() => tryApplyPermission(userId, prev));
   }
-  await ctx.sideEffect(() => tryApplyUserRole(userId, role));
+  await ctx.run(() => tryApplyUserRole(userId, role));
 }
 
 // ---------------------------- deploying / running ---------------------------
+import {service} from "@restatedev/restate-sdk";
 
-const serve = restate.endpoint().bindRouter("roleUpdate", restate.router({ applyRoleUpdate }));
+const serve = restate.endpoint().bind(
+  service({
+    name: "roleUpdate",
+    handlers: { applyRoleUpdate },
+  })
+);
 
 serve.listen(9080);
 // or serve.lambdaHandler();
@@ -86,14 +92,12 @@ serve.listen(9080);
 /* 
 curl localhost:8080/roleUpdate/applyRoleUpdate -H 'content-type: application/json' -d \
 '{
-  "request": {
     "userId": "Sam Beckett",
     "role": { "roleKey": "content-manager", "roleDescription": "Add/remove documents" },
-    "permissons" : [
+    "permissions" : [
       { "permissionKey": "add", "setting": "allow" },
       { "permissionKey": "remove", "setting": "allow" },
       { "permissionKey": "share", "setting": "block" }
     ]
-  }
 }'
 */
