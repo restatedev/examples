@@ -19,7 +19,7 @@ import { UpdateRequest, applyUserRole, applyPermission } from "./utils/example_s
 //  - Failures are automatically retried, unless they are explicitly labeled
 //    as terminal errors
 //  - Restate journals execution progress. Re-tries use that journal to replay
-//    previous alread completed results, avoiding a repetition of that work and
+//    previous already completed results, avoiding a repetition of that work and
 //    ensuring stable deterministic values are used during execution.
 //  - Durable executed functions use the regular code and control flow,
 //    no custom DSLs
@@ -27,12 +27,12 @@ import { UpdateRequest, applyUserRole, applyPermission } from "./utils/example_s
 
 async function applyRoleUpdate(ctx: restate.Context, update: UpdateRequest) {
   // parameters are durable across retries
-  const { userId, role, permissons } = update;
+  const { userId, role, permissions } = update;
 
   // apply a change to one system (e.g., DB upsert, API call, ...)
   // the side effect persists the result with a consensus method so any
   // any later code relies on a deterministic result
-  const success = await ctx.sideEffect(() => applyUserRole(userId, role));
+  const success = await ctx.run(() => applyUserRole(userId, role));
   if (!success) {
     return;
   }
@@ -40,14 +40,20 @@ async function applyRoleUpdate(ctx: restate.Context, update: UpdateRequest) {
   // simply loop over the array or permission settings.
   // each operation through the Restate context is journaled and recovery restores
   // results of previous operations from the journal without re-executing them
-  for (const permission of permissons) {
-    await ctx.sideEffect(() => applyPermission(userId, permission));
+  for (const permission of permissions) {
+    await ctx.run(() => applyPermission(userId, permission));
   }
 }
 
 // ---------------------------- deploying / running ---------------------------
+import {service} from "@restatedev/restate-sdk";
 
-const serve = restate.endpoint().bindRouter("roleUpdate", restate.router({ applyRoleUpdate }));
+const serve = restate.endpoint().bind(
+  service({
+    name: "roleUpdate",
+    handlers: { applyRoleUpdate },
+  })
+);
 
 serve.listen(9080);
 // or serve.lambdaHandler();
@@ -65,14 +71,12 @@ serve.listen(9080);
 /* 
 curl localhost:8080/roleUpdate/applyRoleUpdate -H 'content-type: application/json' -d \
 '{
-  "request": {
     "userId": "Sam Beckett",
     "role": { "roleKey": "content-manager", "roleDescription": "Add/remove documents" },
-    "permissons" : [
+    "permissions" : [
       { "permissionKey": "add", "setting": "allow" },
       { "permissionKey": "remove", "setting": "allow" },
       { "permissionKey": "share", "setting": "block" }
     ]
-  }
 }'
 */

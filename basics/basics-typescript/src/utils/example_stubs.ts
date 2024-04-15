@@ -24,7 +24,7 @@ export type Permission = {
 export type UpdateRequest = {
   userId: string;
   role: UserRole;
-  permissons: Permission[];
+  permissions: Permission[];
 };
 
 export async function getCurrentRole(userId: string): Promise<UserRole> {

@@ -16,27 +16,29 @@ import * as restate from "@restatedev/restate-sdk";
 // Query the state via simple RPC/HTTP calls.
 //
 
-const profileService = restate.keyedRouter({
-  registration: restate.keyedEventHandler(
-    async (ctx: restate.KeyedContext, event: restate.Event) => {
-      // store in state the user's information as coming from the registeration event
-      const { name } = event.json<{ name: string }>();
-      ctx.set("name", name);
-    }
-  ),
+const profileService = restate.object({
+  name: "profile",
+  handlers: {
+    registration: async (
+      ctx: restate.ObjectContext,
+      event: { name: string }
+    ) => {
+      // store in state the user's information as coming from the registration event
+      ctx.set("name", event.name);
+    },
 
-  email: restate.keyedEventHandler(async (ctx: restate.KeyedContext, event: restate.Event) => {
-    // store in state the user's information as coming from the email event
-    const { email } = event.json<{ email: string }>();
-    ctx.set("email", email);
-  }),
+    email: async (ctx: restate.ObjectContext, event: { email: string }) => {
+      // store in state the user's information as coming from the email event
+      ctx.set("email", event.email);
+    },
 
-  get: async (ctx: restate.KeyedContext, id: string): Promise<UserProfile> => {
-    return {
-      id,
-      name: (await ctx.get<string>("name")) ?? "",
-      email: (await ctx.get<string>("email")) ?? "",
-    };
+    get: async (ctx: restate.ObjectContext): Promise<UserProfile> => {
+      return {
+        id: ctx.key,
+        name: (await ctx.get<string>("name")) ?? "",
+        email: (await ctx.get<string>("email")) ?? "",
+      };
+    },
   },
 });
 

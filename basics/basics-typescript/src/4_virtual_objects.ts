@@ -22,37 +22,45 @@ import * as restate from "@restatedev/restate-sdk";
 // Virtual Objects are _Stateful Serverless_ constructs.
 //
 
-const greeterObject = restate.keyedRouter({
-  greet: async (ctx: restate.KeyedContext, name: string, request: { greeting?: string }) => {
-    const greeting = request?.greeting ?? "Hello";
+const greeterObject = restate.object({
+  name: "greeter",
+  handlers: {
 
-    // access the state attached to this object (this 'name')
-    // state access and updates are exclusive and consistent with the invocations
-    let count = (await ctx.get<number>("count")) ?? 0;
-    count++;
-    ctx.set("count", count);
-    return `${greeting} ${name} for the ${count}-th time.`;
-  },
+    greet: async (
+      ctx: restate.ObjectContext,
+      request: { greeting?: string }
+    ) => {
+      const greeting = request?.greeting ?? "Hello";
 
-  ungreet: async (ctx: restate.KeyedContext, name: string, request: {}) => {
-    let count = (await ctx.get<number>("count")) ?? 0;
-    if (count > 0) {
-      count--;
-    }
-    ctx.set("count", count);
-    return `Dear ${name}, taking one greeting back: ${count}.`;
+      // access the state attached to this object (this 'name')
+      // state access and updates are exclusive and consistent with the invocations
+      let count = (await ctx.get<number>("count")) ?? 0;
+      count++;
+      ctx.set("count", count);
+      return `${greeting} ${ctx.key} for the ${count}-th time.`;
+    },
+
+    ungreet: async (ctx: restate.ObjectContext) => {
+      let count = (await ctx.get<number>("count")) ?? 0;
+      if (count > 0) {
+        count--;
+      }
+      ctx.set("count", count);
+      return `Dear ${ctx.key}, taking one greeting back: ${count}.`;
+    },
   },
 });
 
 // you can call this now through http directly the following way
 
-example1: `curl localhost:8080/greeter/greet   -H 'content-type: application/json' -d '{ "key": "Mary" }'`;
-example2: `curl localhost:8080/greeter/greet   -H 'content-type: application/json' -d '{ "key": "Barack" }'`;
-example3: `curl localhost:8080/greeter/ungreet -H 'content-type: application/json' -d '{ "key": "Mary" }'`;
+example1: `curl localhost:8080/greeter/mary/greet   -H 'content-type: application/json' -d '{ "greeting" : "Hi" }'`;
+example2: `curl localhost:8080/greeter/barack/greet   -H 'content-type: application/json' -d '{"greeting" : "Hello" }'`;
+example3: `curl localhost:8080/greeter/mary/ungreet -H 'content-type: application/json' -d '{}'`;
 
 // --------------------------------- deploying --------------------------------
 
-const serve = restate.endpoint().bindKeyedRouter("greeter", greeterObject);
+
+const serve = restate.endpoint().bind(greeterObject);
 
 serve.listen(9080);
 // or serve.lambdaHandler();

@@ -29,28 +29,30 @@ import {
 //    entire partitions.
 //
 
-const userUpdates = restate.keyedRouter({
-  /*
-   * This is marked as a 'keyedEventHandler' - it acceps a 'Event' type and
-   * uses the Event's key (populated for example from Kafka's key) to route the events
-   * and ensure that events with the same key are processed one after the other.
-   */
-  updateUserEvent: restate.keyedEventHandler(
-    async (ctx: restate.KeyedContext, event: restate.Event) => {
-      const { profile, permissions, resources } = verifyEvent(event.json());
+const userUpdates = restate.object({
+  name: "userUpdates",
+  handlers: {
+    /*
+     * uses the Event's key (populated for example from Kafka's key) to route the events
+     * and ensure that events with the same key are processed one after the other.
+     */
+    updateUserEvent: async (ctx: restate.ObjectContext, event: UserUpdate) => {
+      const { profile, permissions, resources } = verifyEvent(event);
 
       // event handler is a durably executed function that can use all the features of Restate
-      let userId = await ctx.sideEffect(() => updateUserProfile(profile));
+      let userId = await ctx.run(() => updateUserProfile(profile));
       while (userId === NOT_READY) {
         // delay the event processing. this delays this event, but only queues events for the same
         // key. all other events proceed - no partition blocking.
         // the sleep suspends the function (e.g., when running on FaaS)
         ctx.sleep(5_000);
-        userId = await ctx.sideEffect(() => updateUserProfile(profile));
+        userId = await ctx.run(() => updateUserProfile(profile));
       }
 
-      const roleId = await ctx.sideEffect(() => setupUserPermissions(userId, permissions));
-      await ctx.sideEffect(() => provisionResources(userId, roleId, resources));
-    }
-  ),
+      const roleId = await ctx.run(() =>
+        setupUserPermissions(userId, permissions)
+      );
+      await ctx.run(() => provisionResources(userId, roleId, resources));
+    },
+  },
 });
