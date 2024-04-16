@@ -10,21 +10,13 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-// <start_import_sleep>
-import { setTimeout } from "timers/promises";
-// <end_import_sleep>
 
 export const ticketObject = restate.object({
   name: "TicketObject",
   handlers: {
-    // <start_reserve>
     async reserve(ctx: restate.ObjectContext) {
-      //good-code-start
-      await ctx.sleep(35000);
-      //good-code-end
       return true;
     },
-    // <end_reserve>
 
     async unreserve(ctx: restate.ObjectContext) {
       return true;

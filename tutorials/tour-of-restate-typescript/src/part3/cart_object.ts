@@ -47,6 +47,7 @@ export const cartObject = restate.object({
           .handle({userId: ctx.key, tickets: tickets});
 
       if (success) {
+        // withClass highlight-line
         ctx.clear("tickets");
       }
 

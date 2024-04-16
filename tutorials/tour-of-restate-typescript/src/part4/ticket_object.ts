@@ -10,6 +10,7 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
+import { TicketStatus } from "../auxiliary/ticket_status";
 
 export const ticketObject = restate.object({
   name: "TicketObject",

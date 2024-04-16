@@ -20,6 +20,7 @@ export const cartObject = restate.object({
     async addTicket(ctx: restate.ObjectContext, ticketId: string) {
       // withClass highlight-line
       const reservationSuccess = await ctx.objectClient(TicketObject, ticketId).reserve();
+
       return true;
     },
     // <end_add_ticket>
