@@ -11,37 +11,23 @@
 
 package dev.restate.tour.part1;
 
-import dev.restate.sdk.Context;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
-import dev.restate.sdk.annotation.Service;
+import dev.restate.sdk.annotation.VirtualObject;
 
-@Service
+@VirtualObject
 public class TicketObject {
 
-    // <start_reserve>
     @Handler
-    public boolean reserve(Context ctx) {
-        // withClass highlight-bad-code
-        try {
-            // withClass highlight-bad-code
-            Thread.sleep(65000);
-            // withClass highlight-bad-code
-        } catch (InterruptedException e) {
-            // withClass highlight-bad-code
-            throw new RuntimeException(e);
-            // withClass highlight-bad-code
-        }
-
+    public boolean reserve(ObjectContext ctx) {
         return true;
     }
-    // <end_reserve>
 
     @Handler
-    public void unreserve(Context ctx) {
+    public void unreserve(ObjectContext ctx) {
     }
 
     @Handler
-    public void markAsSold(Context ctx) {
+    public void markAsSold(ObjectContext ctx) {
     }
 }

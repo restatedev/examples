@@ -29,8 +29,8 @@ public class CartObject {
     // <start_add_ticket>
     // At the top of the class, define the state key: supply a name and (de)serializer
     // withClass highlight-line
-    public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", JacksonSerdes.of(new TypeReference<>() {}));
-
+    public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets",
+            JacksonSerdes.of(new TypeReference<>() {}));
 
     @Handler
     public boolean addTicket(ObjectContext ctx, String ticketId) {

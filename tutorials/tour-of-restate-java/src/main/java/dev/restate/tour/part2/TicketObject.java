@@ -11,30 +11,23 @@
 
 package dev.restate.tour.part2;
 
-import dev.restate.sdk.Context;
+import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
-import dev.restate.sdk.annotation.Service;
+import dev.restate.sdk.annotation.VirtualObject;
 
-import java.time.Duration;
-
-@Service
+@VirtualObject
 public class TicketObject {
 
-    // <start_reserve>
     @Handler
-    public boolean reserve(Context ctx) {
-        // withClass highlight-good-code
-        ctx.sleep(Duration.ofSeconds(65));
-
+    public boolean reserve(ObjectContext ctx) {
         return true;
     }
-    // <end_reserve>
 
     @Handler
-    public void unreserve(Context ctx) {
+    public void unreserve(ObjectContext ctx) {
     }
 
     @Handler
-    public void markAsSold(Context ctx) {
+    public void markAsSold(ObjectContext ctx) {
     }
 }

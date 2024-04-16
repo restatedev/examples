@@ -11,43 +11,46 @@
 
 package dev.restate.tour.part1;
 
-import dev.restate.sdk.Context;
+import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
-import dev.restate.sdk.annotation.Service;
+import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.tour.app.CheckoutServiceClient;
 import dev.restate.tour.auxiliary.CheckoutRequest;
+import dev.restate.tour.auxiliary.TourUtils;
 
 import java.util.HashSet;
 import java.util.List;
 
-@Service
+@VirtualObject
 public class CartObject {
     // <start_add_ticket>
     @Handler
-    public boolean addTicket(Context ctx, String ticketId) {
+    public boolean addTicket(ObjectContext ctx, String ticketId) {
         // withClass highlight-line
-        boolean reservationSuccess = TicketObjectClient.fromContext(ctx).reserve().await();
+        boolean reservationSuccess = TicketObjectClient.fromContext(ctx, ticketId).reserve().await();
         return true;
     }
     // <end_add_ticket>
 
     // <start_expire_ticket>
     @Handler
-    public void expireTicket(Context ctx, String ticketId) {
+    public void expireTicket(ObjectContext ctx, String ticketId) {
         // withClass highlight-line
-        TicketObjectClient.fromContext(ctx).send().unreserve();
+        TicketObjectClient.fromContext(ctx, ticketId).send().unreserve();
     }
     // <end_expire_ticket>
 
     // <start_checkout>
     @Handler
-    public boolean checkout(Context ctx) {
+    public boolean checkout(ObjectContext ctx) {
         // withClass highlight-line
         boolean checkoutSuccess = CheckoutServiceClient.fromContext(ctx)
                 // withClass highlight-line
                 .handle(new CheckoutRequest("Mary", new HashSet<>(List.of("456"))))
                 // withClass highlight-line
                 .await();
+
+        TourUtils.fail();
 
         return checkoutSuccess;
     }

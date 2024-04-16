@@ -11,23 +11,22 @@
 
 package dev.restate.tour.app;
 
-import dev.restate.sdk.Context;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
-import dev.restate.sdk.annotation.Service;
+import dev.restate.sdk.annotation.VirtualObject;
 
-@Service
+@VirtualObject
 public class TicketObject {
     @Handler
-    public boolean reserve(Context ctx) {
+    public boolean reserve(ObjectContext ctx) {
         return true;
     }
 
     @Handler
-    public void unreserve(Context ctx) {
+    public void unreserve(ObjectContext ctx) {
     }
 
     @Handler
-    public void markAsSold(Context ctx) {
+    public void markAsSold(ObjectContext ctx) {
     }
 }
