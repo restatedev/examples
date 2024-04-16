@@ -28,7 +28,7 @@ public class CartObject {
 
     // <start_add_ticket>
     // At the top of the class, define the state key: supply a name and (de)serializer
-    // withClass highlight-line
+    // withClass(1,2) highlight-line
     public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets",
             JacksonSerdes.of(new TypeReference<>() {}));
 
@@ -37,10 +37,9 @@ public class CartObject {
         boolean reservationSuccess = TicketObjectClient.fromContext(ctx, ticketId).reserve().await();
 
         if (reservationSuccess) {
-            // withClass highlight-line
+            // withClass(1:3) highlight-line
             Set<String> tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
             tickets.add(ticketId);
-            // withClass highlight-line
             ctx.set(STATE_KEY, tickets);
 
             CartObjectClient.fromContext(ctx, ctx.key())
@@ -69,14 +68,11 @@ public class CartObject {
     // <start_checkout>
     @Handler
     public boolean checkout(ObjectContext ctx) {
-        // withClass highlight-line
+        // withClass(1:5) highlight-line
         Set<String> tickets = ctx.get(STATE_KEY).orElseGet(HashSet::new);
 
-        // withClass highlight-line
         if (tickets.isEmpty()) {
-            // withClass highlight-line
             return false;
-        // withClass highlight-line
         }
 
         boolean checkoutSuccess = CheckoutServiceClient.fromContext(ctx)

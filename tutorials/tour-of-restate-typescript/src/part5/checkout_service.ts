@@ -23,7 +23,7 @@ export const checkoutService = restate.service({
       const idempotencyKey = await ctx.run(async () => uuid());
 
       // <start_failing_client>
-      //highlight-next-line
+      // withClass highlight-line
       const success = await ctx.run(() => PaymentClient.get().failingCall(idempotencyKey, totalPrice));
       // <end_failing_client>
 

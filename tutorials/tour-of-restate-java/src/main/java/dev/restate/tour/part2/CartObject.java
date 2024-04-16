@@ -29,11 +29,9 @@ public class CartObject {
         boolean reservationSuccess = TicketObjectClient.fromContext(ctx, ticketId).reserve().await();
 
         if (reservationSuccess) {
-            // withClass highlight-line
+            // withClass(1:3) highlight-line
             CartObjectClient.fromContext(ctx, ctx.key())
-                    // withClass highlight-line
                     .send(Duration.ofMinutes(15))
-                    // withClass highlight-line
                     .expireTicket(ticketId);
         }
 

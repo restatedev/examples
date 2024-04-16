@@ -44,11 +44,10 @@ export const cartObject = restate.object({
           .handle({userId: ctx.key, tickets: ["seat2B"]});
 
       if (success) {
-        //highlight-start
+        // withClass(1:3) highlight-line
         for (const ticketId of tickets) {
           ctx.objectSendClient(TicketObject, ticketId).markAsSold();
         }
-        //highlight-end
         ctx.clear("tickets");
       }
 

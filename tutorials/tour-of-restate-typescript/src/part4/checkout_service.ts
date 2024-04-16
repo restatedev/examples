@@ -21,10 +21,9 @@ export const checkoutService = restate.service({
       // <start_side_effects>
       const totalPrice = request.tickets.length * 40;
 
-      // highlight-start
+      // withClass(1,2) highlight-line
       const idempotencyKey = ctx.rand.uuidv4();
       const success = await ctx.run(() => PaymentClient.get().call(idempotencyKey, totalPrice));
-      // highlight-end
       // <end_side_effects>
 
       if (success) {

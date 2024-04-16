@@ -72,11 +72,9 @@ public class CartObject {
                 .await();
 
         if (checkoutSuccess) {
-            // withClass highlight-line
+            // withClass(1:3) highlight-line
             tickets.forEach(t ->
-                    // withClass highlight-line
                             TicketObjectClient.fromContext(ctx, t).send().markAsSold()
-            // withClass highlight-line
             );
             ctx.clear(STATE_KEY);
         }
