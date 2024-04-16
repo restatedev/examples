@@ -9,7 +9,7 @@
  * https://github.com/restatedev/sdk-typescript/blob/main/LICENSE
  */
 
-import * as dp from "./dp/durable_promises";
+import * as dp from "./dp/clients";
 
 //
 // An illustration of durable promises across processes.
@@ -29,7 +29,7 @@ const pid = process.pid;
 
 async function run() {
   // get a reference to a durable promise
-  const durablePromise = dp.durablePromise<string>(restateUri, promiseId);
+  const durablePromise = dp.durablePromise<string>(promiseId, restateUri);
 
   // determine whether we'll be a reader or writer to the promise
   const resolve = Math.random() < 0.3;
