@@ -11,11 +11,9 @@
 
 import * as restate from "@restatedev/restate-sdk";
 import {
-  durablePromisePath,
-  durablePromiseHttpServerPath,
   durablePromiseObject,
   durablePromiseServer,
-} from "./durable_promises_service";
+} from "./services";
 
 // launch the server, if this is our main entry point
 if (require.main === module) {
@@ -23,7 +21,7 @@ if (require.main === module) {
 
   restate
     .endpoint()
-    .bindKeyedRouter(durablePromisePath, durablePromiseObject)
-    .bindRouter(durablePromiseHttpServerPath, durablePromiseServer)
+    .bind(durablePromiseObject)
+    .bind(durablePromiseServer)
     .listen(port);
 }

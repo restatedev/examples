@@ -9,7 +9,7 @@
  * https://github.com/restatedev/sdk-typescript/blob/main/LICENSE
  */
 
-import * as dp from "./dp/durable_promises";
+import * as dp from "./dp/clients";
 
 // The Durable Promises work like regular futures/promises, but are
 // durable cross processes and failures.
@@ -36,7 +36,7 @@ const restateUri = "http://localhost:8080";
 
 async function run() {
   // get a reference to a durable promise
-  const durablePromise = dp.durablePromise<string>(restateUri, promiseId);
+  const durablePromise = dp.durablePromise<string>(promiseId, restateUri);
 
   // check the promise without blocking
   const peeked = await durablePromise.peek();
