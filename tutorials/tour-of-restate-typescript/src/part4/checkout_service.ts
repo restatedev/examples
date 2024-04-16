@@ -18,13 +18,10 @@ export const checkoutService = restate.service({
   handlers: {
     // <start_checkout>
     async handle(ctx: restate.Context, request: { userId: string; tickets: string[] }) {
-      // <start_side_effects>
       const totalPrice = request.tickets.length * 40;
 
-      // withClass(1,2) highlight-line
       const idempotencyKey = ctx.rand.uuidv4();
       const success = await ctx.run(() => PaymentClient.get().call(idempotencyKey, totalPrice));
-      // <end_side_effects>
 
       if (success) {
         await ctx.run(() => EmailClient.get().notifyUserOfPaymentSuccess(request.userId));

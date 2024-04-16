@@ -10,6 +10,8 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
+import {TicketObject} from "./ticket_object";
+import {CheckoutService} from "./checkout_service";
 
 // <start_user_session>
 export const cartObject = restate.object({

@@ -38,8 +38,7 @@ export const cartObject = restate.object({
       if (tickets.length === 0) {
         return false;
       }
-
-
+      
       const success = await ctx.serviceClient(CheckoutService)
           .handle({userId: ctx.key, tickets: ["seat2B"]});
 
