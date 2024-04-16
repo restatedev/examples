@@ -10,13 +10,13 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import { userSessionApi, userSessionRouter } from "./user_session";
-import { ticketServiceApi, ticketDbRouter } from "./ticket_service";
-import { checkoutApi, checkoutRouter } from "./checkout";
+import {cartObject} from "./cart_object";
+import {ticketObject} from "./ticket_object";
+import {checkoutService} from "./checkout_service";
 
 restate
   .endpoint()
-  .bindKeyedRouter(userSessionApi.path, userSessionRouter)
-  .bindKeyedRouter(ticketServiceApi.path, ticketDbRouter)
-  .bindRouter(checkoutApi.path, checkoutRouter)
-  .listen(9080);
+  .bind(cartObject)
+  .bind(ticketObject)
+  .bind(checkoutService)
+  .listen();

@@ -12,19 +12,20 @@
 import * as restate from "@restatedev/restate-sdk";
 
 // <start_user_session>
-export const userSessionRouter = restate.keyedRouter({
-  async addTicket(ctx: restate.KeyedContext, userId: string, ticketId: string){
-    return true;
-  },
+export const cartObject = restate.object({
+  name: "CartObject",
+  handlers: {
+    async addTicket(ctx: restate.ObjectContext, ticketId: string){
+      return true;
+    },
 
-  async expireTicket(ctx: restate.KeyedContext, userId: string, ticketId: string){},
+    async checkout(ctx: restate.ObjectContext){
+      return true;
+    },
 
-  async checkout(ctx: restate.KeyedContext, userId: string){
-    return true;
-  },
+    async expireTicket(ctx: restate.ObjectContext, ticketId: string){},
+  }
 });
 // <end_user_session>
 
-export const userSessionApi: restate.ServiceApi<typeof userSessionRouter> = {
-  path: "UserSession",
-};
+export const CartObject: typeof cartObject = { name: "CartObject" };
