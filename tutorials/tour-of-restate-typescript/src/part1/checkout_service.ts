@@ -20,6 +20,6 @@ export const checkoutService = restate.service({
     },
   }
 });
-// <end_checkout>
 
 export const CheckoutService: typeof checkoutService = { name: "CheckoutService"};
+// <end_checkout>

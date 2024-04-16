@@ -44,11 +44,9 @@ public class CartObject {
     // <start_checkout>
     @Handler
     public boolean checkout(ObjectContext ctx) {
-        // withClass highlight-line
+        // withClass(1:3) highlight-line
         boolean checkoutSuccess = CheckoutServiceClient.fromContext(ctx)
-                // withClass highlight-line
                 .handle(new CheckoutRequest("Mary", new HashSet<>(List.of("456"))))
-                // withClass highlight-line
                 .await();
 
         TourUtils.fail();
