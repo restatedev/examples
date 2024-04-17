@@ -30,19 +30,19 @@ webhooks to your local machine.
 
 3. Start Restate locally (`npx restate-server`).
 
-4. Run this application code here: `npm run payments` and `npm run webhooks` (for the webhook proxy).
+4. Run this application code here: `npm run payments`
 
 5. Connect the apps: `npx restate dep reg localhost:9080`
 
 6. Run launch _ngrok_: Get a free account and download the binary, or launch a docker container.
-   Make it forward http calls to local port 5050 (the webbhook proxy)
-   - `NGROK_AUTHTOKEN=<your token> ngrok http 5050`
-   - or `docker run --rm -it -e NGROK_AUTHTOKEN=<your token> --network host ngrok/ngrok http 5050` (on Linux command).
+   Make it forward http calls to local port 8080
+   - `NGROK_AUTHTOKEN=<your token> ngrok http 8080`
+   - or `docker run --rm -it -e NGROK_AUTHTOKEN=<your token> --network host ngrok/ngrok http 8080` (on Linux command).
    Copy the public URL that ngrok shows you: `https://<some random numbers>.ngrok-free.app`
 
 7. Go to the Stripe UI and create a webhook. Select all _"Payment Intent"_ event types. Put the ngrok
-   public URL + `/webhooks` as the webhook URL (you need to update this whenever you stop/start ngrok).
-   Example: `https://<some random numbers>.ngrok-free.app/webhooks`
+   public URL + `/payments/processWebhook` as the webhook URL (you need to update this whenever you stop/start ngrok).
+   Example: `https://<some random numbers>.ngrok-free.app/payments/processWebhooks`
 
 8. Put the webhook secret (`whsec_...`) to the [stripe_utils.ts](./src/utils/stripe_utils.ts) file.
 
@@ -52,11 +52,9 @@ if you add `"delayedStatus": true` to the request.
 
 ```shell
 curl localhost:8080/payments/processPayment -H 'content-type: application/json' -d '{
-    "request": {
         "paymentMethodId": "pm_card_visa",
         "amount": 109,
         "delayedStatus": true
-    }
 }'
 ```
 

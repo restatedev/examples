@@ -13,7 +13,7 @@ import { TerminalError } from "@restatedev/restate-sdk";
 
 export function verifyPaymentRequest(request: any): void {
   if (!request?.amount) {
-    throw new TerminalError("'amout' missing or zero in request");
+    throw new TerminalError("'amount' missing or zero in request");
   }
   if (!request?.paymentMethodId) {
     throw new TerminalError("'paymentMethodId' missing in request");

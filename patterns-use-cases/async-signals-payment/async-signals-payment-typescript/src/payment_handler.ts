@@ -44,7 +44,7 @@ async function processPayment(ctx: restate.Context, request: PaymentRequest) {
   const webhookPromise = ctx.awakeable<Stripe.PaymentIntent>();
 
   // make a synchronous call to the payment service
-  let paymentIntent = await ctx.sideEffect(() =>
+  const paymentIntent = await ctx.run("stripe call", () =>
     stripe_utils.createPaymentIntent({
       paymentMethodId: request.paymentMethodId,
       amount: request.amount,
@@ -54,28 +54,55 @@ async function processPayment(ctx: restate.Context, request: PaymentRequest) {
     })
   );
 
-  // wait for the webhook call if we don't immediately get a response
-  if (paymentIntent.status === "processing") {
-    console.log(
-      `Synchronous response for ${idempotencyKey} yielded 'processing', awaiting webhook call...`
-    );
-
-    paymentIntent = await webhookPromise.promise;
-
-    console.log(`Webhook call for ${idempotencyKey} received!`);
-  } else {
-    console.log(`Request ${idempotencyKey} was processed synchronously!`);
+  if (paymentIntent.status !== "processing") {
+    // the synchros call to stripe had already been completed.
+    // That was fast :)
+    ctx.console.log(`Request ${idempotencyKey} was processed synchronously!`);
+    stripe_utils.ensureSuccess(paymentIntent.status);
+    return;
   }
 
-  switch (paymentIntent.status) {
-    case "succeeded":
-      return;
-    case "requires_payment_method":
-    case "canceled":
-      throw new restate.TerminalError("Payment declined: " + paymentIntent.status);
-    default:
-      throw new Error("Unhandled status: " + paymentIntent.status);
-  }
+  // We did not get the response on the synchros path, talking to stripe.
+  // No worries, stripe will let us know when it is done processing via a webhook.
+  // 
+  //
+  ctx.console.log(
+    `Synchronous response for ${idempotencyKey} yielded 'processing', awaiting webhook call...`
+  );
+
+  //
+  // We will now wait for the webhook call to complete this promise.
+  // Check out the handler below.
+  // 
+  const processedPaymentIntent = await webhookPromise.promise;
+
+  console.log(`Webhook call for ${idempotencyKey} received!`);
+  stripe_utils.ensureSuccess(processedPaymentIntent.status);
 }
 
-restate.endpoint().bindRouter("payments", restate.router({ processPayment })).listen(9080);
+async function processWebhook(ctx: restate.Context) {
+  const req = ctx.request();
+  const sig = req.headers.get("stripe-signature");
+  const event = stripe_utils.parseWebhookCall(req.body, sig);
+
+  if (!stripe_utils.isPaymentIntent(event)) {
+    ctx.console.log(`Unhandled event type ${event.type}`);
+    return { received: true };
+  }
+
+  const paymentIntent = event.data.object as Stripe.PaymentIntent;
+  ctx.console.log(JSON.stringify(paymentIntent));
+
+  const webhookPromise =
+    paymentIntent.metadata[stripe_utils.RESTATE_CALLBACK_ID];
+  if (!webhookPromise) {
+    throw new restate.TerminalError(
+      "Missing callback property: " + stripe_utils.RESTATE_CALLBACK_ID,
+      { errorCode: 404 }
+    );
+  }
+  ctx.resolveAwakeable(webhookPromise, paymentIntent);
+  return { received: true };
+}
+
+restate.endpoint().bind(restate.service({name: "payments", handlers: { processPayment, processWebhook }})).listen(9080);
