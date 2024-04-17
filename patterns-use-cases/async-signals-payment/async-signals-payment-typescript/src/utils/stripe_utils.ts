@@ -19,8 +19,30 @@ const stripe = new Stripe(stripeSecretKey, { apiVersion: "2023-10-16" });
 
 export const RESTATE_CALLBACK_ID = "restate_callback_id";
 
-export function parseWebhookCall(requestBody: any, signature: string | string[]) {
-  return stripe.webhooks.constructEvent(requestBody, signature, webHookSecret);
+export function isPaymentIntent(event: Stripe.Event) {
+  return event.type.startsWith("payment_intent");
+}
+
+export function parseWebhookCall(
+  requestBody: any,
+  signature: string | string[] | undefined
+) {
+  if (!signature) {
+    throw new TerminalError("Missing 'stripe-signature' header.", {
+      errorCode: 400,
+    });
+  }
+  try {
+    return stripe.webhooks.constructEvent(
+      requestBody,
+      signature,
+      webHookSecret
+    );
+  } catch (err) {
+    throw new TerminalError(`Webhook Error: ${err}`, {
+      errorCode: 400,
+    });
+  }
 }
 
 export async function createPaymentIntent(request: {
@@ -70,3 +92,15 @@ export async function createPaymentIntent(request: {
     }
   }
 }
+export function ensureSuccess(status: string) {
+  switch (status) {
+    case "succeeded":
+      return;
+    case "requires_payment_method":
+    case "canceled":
+      throw new TerminalError("Payment declined: " + status);
+    default:
+      throw new Error("Unhandled status: " + status);
+  }
+}
+
