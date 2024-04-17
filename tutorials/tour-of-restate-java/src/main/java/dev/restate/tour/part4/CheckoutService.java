@@ -24,12 +24,10 @@ public class CheckoutService {
     // <start_checkout>
     @Handler
     public boolean handle(Context ctx, CheckoutRequest request) {
-        // <start_side_effects>
         double totalPrice = request.getTickets().size() * 40.0;
 
         String idempotencyKey = ctx.random().nextUUID().toString();
         boolean success = ctx.run(CoreSerdes.JSON_BOOLEAN, () -> PaymentClient.get().call(idempotencyKey, totalPrice));
-        // <end_side_effects>
 
         if (success) {
             ctx.run(()-> EmailClient.get().notifyUserOfPaymentSuccess(request.getUserId()));

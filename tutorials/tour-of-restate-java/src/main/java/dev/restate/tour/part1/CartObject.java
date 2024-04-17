@@ -49,8 +49,6 @@ public class CartObject {
                 .handle(new CheckoutRequest("Mary", new HashSet<>(List.of("456"))))
                 .await();
 
-        TourUtils.fail();
-
         return checkoutSuccess;
     }
     // <end_checkout>
