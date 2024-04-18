@@ -10,7 +10,7 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import * as ingress from "@restatedev/restate-sdk-ingress";
+import * as clients from "@restatedev/restate-sdk-clients";
 
 import type { DurablePromise } from "./api";
 import type {ValueOrError, DurablePromiseObject, DurablePromiseServer} from "./services";
@@ -90,7 +90,7 @@ function durablePromiseFromIngress<T>(
   restateUri: string,
   promiseId: string
 ): DurablePromise<T> {
-  const restate = ingress.connect({ url: restateUri });
+  const restate = clients.connect({ url: restateUri });
   const server = restate.serviceClient(DurablePromiseServer);
   return {
     id: promiseId,
