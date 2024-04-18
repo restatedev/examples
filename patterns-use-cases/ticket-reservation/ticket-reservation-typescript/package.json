@@ -16,12 +16,10 @@
     "dev": "ts-node-dev --respawn --transpile-only ./src/app.ts"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^0.8.1",
-    "uuid": "^9.0.0"
+    "@restatedev/restate-sdk": "dev"
   },
   "devDependencies": {
     "@restatedev/restate": "0.8.0",
-    "@types/uuid": "^9.0.0",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",
     "eslint": "^8.46.0",

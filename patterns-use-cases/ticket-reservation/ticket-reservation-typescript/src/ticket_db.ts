@@ -17,39 +17,43 @@ enum TicketStatus {
   Sold,
 }
 
-export const ticketDbRouter = restate.keyedRouter({
-  reserve: async (ctx: restate.KeyedContext) => {
-    const status = (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
+export default restate.object({
+  name: "TicketDb",
+  handlers: {
+    reserve: async (ctx: restate.ObjectContext) => {
+      const status =
+        (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
 
-    if (status === TicketStatus.Available) {
-      ctx.set("status", TicketStatus.Reserved);
-      return true;
-    } else {
-      return false;
-    }
-  },
-  unreserve: async (ctx: restate.KeyedContext) => {
-    const status = (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
+      if (status === TicketStatus.Available) {
+        ctx.set("status", TicketStatus.Reserved);
+        return true;
+      } else {
+        return false;
+      }
+    },
 
-    if (status === TicketStatus.Sold) {
-      return false;
-    } else {
-      ctx.clear("status");
-      return true;
-    }
-  },
-  markAsSold: async (ctx: restate.KeyedContext) => {
-    const status = (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
+    unreserve: async (ctx: restate.ObjectContext) => {
+      const status =
+        (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
 
-    if (status === TicketStatus.Reserved) {
-      ctx.set("status", TicketStatus.Sold);
-      return true;
-    } else {
-      return false;
-    }
+      if (status === TicketStatus.Sold) {
+        return false;
+      } else {
+        ctx.clear("status");
+        return true;
+      }
+    },
+
+    markAsSold: async (ctx: restate.ObjectContext) => {
+      const status =
+        (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
+
+      if (status === TicketStatus.Reserved) {
+        ctx.set("status", TicketStatus.Sold);
+        return true;
+      } else {
+        return false;
+      }
+    },
   },
 });
-
-export const ticketDbApi: restate.ServiceApi<typeof ticketDbRouter> = {
-  path: "TicketDb",
-};
