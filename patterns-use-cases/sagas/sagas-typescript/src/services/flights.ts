@@ -9,21 +9,17 @@
  * https://github.com/restatedev/examples/
  */
 
-import * as restate from "@restatedev/restate-sdk";
-
-export const flightsService = restate.keyedRouter({
-  reserve: async (ctx: restate.Context, tripID: string) => {
+export const flights = {
+  reserve: async (tripId: string) => {
     // reserve flight
     return "flight_id";
   },
 
-  confirm: async (ctx: restate.Context, tripID: string, bookingId: string) => {
+  confirm: async (tripId: string, bookingId: string) => {
     // confirm flight
   },
 
-  cancel: async (ctx: restate.Context, tripID: string, bookingId: string) => {
+  cancel: async (tripId: string, bookingId: string) => {
     // cancel booking event
   },
-});
-
-export const flightsServiceApi: restate.ServiceApi<typeof flightsService> = { path: "flights" };
+};
