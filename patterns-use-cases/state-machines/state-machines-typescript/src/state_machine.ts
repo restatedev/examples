@@ -28,50 +28,66 @@ enum State {
   DOWN = "DOWN",
 }
 
-const state_machine = restate.keyedRouter({
-  setUp: async (ctx: restate.KeyedContext, stateMachineId: string, request: {}) => {
-    const state = (await ctx.get<State>("state")) ?? State.DOWN;
-    console.log(` >>> Invoking 'setUp()' for ${stateMachineId} in state ${state}`);
+const resource = restate.object({
+  name: "resource",
+  handlers: {
 
-    // the state cannot be incosistent, but someone could call 'setUp' multiple times in a row
-    if (state === State.UP) {
-      console.log(`>>> Resource ${stateMachineId} is already UP, so nothing to do`);
-      return `${stateMachineId} is already UP`;
-    }
+    setUp: async (ctx: restate.ObjectContext) => {
+      const state = (await ctx.get<State>("state")) ?? State.DOWN;
+      const stateMachineId = ctx.key;
 
-    // the work is hard: it frequently crashes and takes a loooong time
-    console.log(` >>> Beginning transition of ${stateMachineId} to UP`);
-    maybeCrash(0.4);
-    await ctx.sleep(5000);
+      ctx.console.log(
+        ` >>> Invoking 'setUp()' for ${stateMachineId} in state ${state}`
+      );
 
-    console.log(` >>> Done transitioning ${stateMachineId} to UP`);
-    ctx.set("state", State.UP);
-    return `${stateMachineId} is now UP`;
-  },
+      // the state cannot be inconsistent, but someone could call 'setUp' multiple times in a row
+      if (state === State.UP) {
+        ctx.console.log(
+          `>>> Resource ${stateMachineId} is already UP, so nothing to do`
+        );
+        return `${stateMachineId} is already UP`;
+      }
 
-  tearDown: async (ctx: restate.KeyedContext, stateMachineId: string, request: {}) => {
-    const state = await ctx.get<State>("state");
-    console.log(` >>> Invoking 'tearDown()' for ${stateMachineId} in state ${state}`);
+      // the work is hard: it frequently crashes and takes a loooong time
+      ctx.console.log(` >>> Beginning transition of ${stateMachineId} to UP`);
+      maybeCrash(0.4);
+      await ctx.sleep(5000);
 
-    if (state !== State.UP) {
-      console.log(`" >>> Resource ${stateMachineId} is not UP, cannot tear down`);
-      return `${stateMachineId} is not yet UP`;
-    }
+      ctx.console.log(` >>> Done transitioning ${stateMachineId} to UP`);
+      ctx.set("state", State.UP);
+      return `${stateMachineId} is now UP`;
+    },
 
-    // the work is hard: it frequently crashes and takes a loooong time
-    console.log(` >>> Beginning transition of ${stateMachineId} to DOWN`);
-    maybeCrash(0.4);
-    await ctx.sleep(5000);
+    tearDown: async (ctx: restate.ObjectContext) => {
+      const state = await ctx.get<State>("state");
+      const stateMachineId = ctx.key;
 
-    console.log(` >>> Done transitioning ${stateMachineId} to DOWN`);
-    ctx.set("state", State.DOWN);
-    return `${stateMachineId} is now DOWN`;
+      ctx.console.log(
+        ` >>> Invoking 'tearDown()' for ${stateMachineId} in state ${state}`
+      );
+
+      if (state !== State.UP) {
+        ctx.console.log(
+          `" >>> Resource ${stateMachineId} is not UP, cannot tear down`
+        );
+        return `${stateMachineId} is not yet UP`;
+      }
+
+      // the work is hard: it frequently crashes and takes a loooong time
+      ctx.console.log(` >>> Beginning transition of ${stateMachineId} to DOWN`);
+      maybeCrash(0.4);
+      await ctx.sleep(5000);
+
+      ctx.console.log(` >>> Done transitioning ${stateMachineId} to DOWN`);
+      ctx.set("state", State.DOWN);
+      return `${stateMachineId} is now DOWN`;
+    },
   },
 });
 
 // ------------------------------- Deploy & Run -------------------------------
 
-const serve = restate.endpoint().bindKeyedRouter("resource", state_machine);
+const serve = restate.endpoint().bind(resource);
 
 serve.listen(9080);
 // or serve.lambdaHandler();
