@@ -10,17 +10,17 @@
     "lint": "eslint --ignore-path .eslintignore --ext .ts .",
     "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
     "verify": "npm run format -- --check && npm run lint && npm run build",
-    "app": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only src/app/app.ts",
-    "part1": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only src/part1/app.ts",
-    "part2": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only src/part2/app.ts",
-    "part3": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only src/part3/app.ts",
-    "part4": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only src/part4/app.ts",
-    "part5": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only src/part5/app.ts"
+    "app-dev": "RESTATE_LOGGING=DEBUG RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only src/app/app.ts",
+    "part1": "RESTATE_LOGGING=DEBUG RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only src/part1/app.ts",
+    "part2": "RESTATE_LOGGING=DEBUG RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only src/part2/app.ts",
+    "part3": "RESTATE_LOGGING=DEBUG RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only src/part3/app.ts",
+    "part4": "RESTATE_LOGGING=DEBUG RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only src/part4/app.ts",
+    "part5": "RESTATE_LOGGING=DEBUG RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --respawn --transpile-only src/part5/app.ts"
   },
   "author": "Restate Developers",
   "email": "code@restate.dev",
   "dependencies": {
-    "@restatedev/restate-sdk": "^0.8.1",
+    "@restatedev/restate-sdk": "dev",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

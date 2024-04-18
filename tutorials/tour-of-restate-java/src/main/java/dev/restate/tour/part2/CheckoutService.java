@@ -11,14 +11,15 @@
 
 package dev.restate.tour.part2;
 
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.Context;
+import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.Service;
+import dev.restate.tour.auxiliary.CheckoutRequest;
 
-public class AppMain {
-    public static void main(String[] args) {
-        RestateHttpEndpointBuilder.builder()
-                .bind(new CheckoutService())
-                .bind(new TicketObject())
-                .bind(new CartObject())
-                .buildAndListen();
+@Service
+public class CheckoutService {
+    @Handler
+    public boolean handle(Context ctx, CheckoutRequest request) {
+        return true;
     }
 }
