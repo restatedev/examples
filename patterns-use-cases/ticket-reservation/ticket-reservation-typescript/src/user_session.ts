@@ -10,64 +10,81 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import { ticketDbApi } from "./ticket_db";
-import { checkoutApi } from "./checkout";
+import tickets from "./ticket_db";
+import checkout from "./checkout";
 
-export const userSessionRouter = restate.keyedRouter({
-  addTicket: async (ctx: restate.KeyedContext, userId: string, ticketId: string) => {
-    // try to reserve ticket
-    const reservation_response = await ctx.rpc(ticketDbApi).reserve(ticketId);
+const userSession = restate.object({
+  name: "UserSession",
+  handlers: {
+    addTicket: async (ctx: restate.ObjectContext, ticketId: string) => {
+      //
+      // try to reserve ticket
+      //
+      const reservation = await ctx.objectClient(TicketDB, ticketId).reserve();
 
-    if (reservation_response) {
-      // add ticket to user session items
-      const tickets = (await ctx.get<string[]>("items")) ?? [];
-      tickets.push(ticketId);
-      ctx.set("items", tickets);
+      if (reservation) {
+        //
+        // add ticket to user session items
+        //
+        const tickets = (await ctx.get<string[]>("items")) ?? [];
+        tickets.push(ticketId);
+        ctx.set("items", tickets);
 
-      // Schedule expiry timer
-      ctx.sendDelayed(userSessionApi, 15 * 60 * 1000).expireTicket(userId, ticketId);
-    }
-
-    return reservation_response;
-  },
-  expireTicket: async (ctx: restate.KeyedContext, userId: string, ticketId: string) => {
-    ctx.send(ticketDbApi).unreserve(ticketId);
-    const tickets = (await ctx.get<string[]>("items")) ?? [];
-
-    const index = tickets.findIndex((id) => id === ticketId);
-
-    // try removing ticket
-    if (index != -1) {
-      tickets.splice(index, 1);
-      ctx.set("items", tickets);
-      // unreserve if ticket was reserved before
-      ctx.send(ticketDbApi).unreserve(ticketId);
-    }
-  },
-  checkout: async (ctx: restate.KeyedContext, userId: string) => {
-    const tickets = await ctx.get<string[]>("items");
-
-    if (tickets && tickets.length > 0) {
-      const checkout_success = await ctx
-        .rpc(checkoutApi)
-        .checkout({ userId: userId, tickets: tickets! });
-
-      if (checkout_success) {
-        // mark items as sold if checkout was successful
-        for (const ticket_id of tickets) {
-          ctx.send(ticketDbApi).markAsSold(ticket_id);
-        }
-        ctx.clear("items");
+        //
+        // Schedule expiry timer
+        //
+        ctx
+          .objectSendClient(UserSession, ctx.key, { delay: 15 * 60 * 1000 })
+          .expireTicket(ticketId);
       }
 
-      return checkout_success;
-    } else {
-      // no tickets reserved
-      return false;
-    }
+      return reservation;
+    },
+
+    expireTicket: async (ctx: restate.ObjectContext, ticketId: string) => {
+      const tickets = (await ctx.get<string[]>("items")) ?? [];
+
+      const index = tickets.findIndex((id) => id === ticketId);
+
+      // try removing ticket
+      if (index != -1) {
+        tickets.splice(index, 1);
+        ctx.set("items", tickets);
+        //
+        // unreserve if ticket was reserved before
+        //
+        ctx.objectSendClient(TicketDB, ticketId).unreserve();
+      }
+    },
+
+    checkout: async (ctx: restate.ObjectContext) => {
+      const tickets = await ctx.get<string[]>("items");
+
+      if (!tickets || tickets.length == 0) {
+        // no tickets reserved
+        return false;
+      }
+
+      const success = await ctx
+        .serviceClient(Checkout)
+        .checkout({ userId: ctx.key, tickets: tickets! });
+
+      if (!success) {
+        return false;
+      }
+      //
+      // mark items as sold if checkout was successful
+      //
+      for (const ticketId of tickets) {
+        ctx.objectSendClient(TicketDB, ticketId).markAsSold();
+      }
+      ctx.clear("items");
+    },
   },
 });
 
-export const userSessionApi: restate.ServiceApi<typeof userSessionRouter> = {
-  path: "UserSession",
-};
+const TicketDB: typeof tickets = { name: "TicketDb" };
+const UserSession: typeof userSession = { name: "UserSession" };
+const Checkout: typeof checkout = { name: "CheckoutProcess" };
+
+export default userSession;

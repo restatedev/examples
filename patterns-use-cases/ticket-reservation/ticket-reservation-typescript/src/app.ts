@@ -9,14 +9,10 @@
  * https://github.com/restatedev/examples/blob/main/LICENSE
  */
 
-import * as restate from "@restatedev/restate-sdk";
-import { userSessionApi, userSessionRouter } from "./user_session";
-import { ticketDbApi, ticketDbRouter } from "./ticket_db";
-import { checkoutApi, checkoutRouter } from "./checkout";
+import {endpoint} from "@restatedev/restate-sdk";
 
-restate
-  .endpoint()
-  .bindKeyedRouter(userSessionApi.path, userSessionRouter)
-  .bindKeyedRouter(ticketDbApi.path, ticketDbRouter)
-  .bindRouter(checkoutApi.path, checkoutRouter)
-  .listen();
+import session from "./user_session";
+import tickets from "./ticket_db";
+import checkout from "./checkout";
+
+endpoint().bind(session).bind(tickets).bind(checkout).listen();

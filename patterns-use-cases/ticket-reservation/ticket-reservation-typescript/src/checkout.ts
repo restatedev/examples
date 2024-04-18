@@ -10,36 +10,38 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import { v4 as uuid } from "uuid";
 import { StripeClient } from "./auxiliary/stripe_client";
 import { EmailClient } from "./auxiliary/email_client";
 
-export const checkoutRouter = restate.router({
-  checkout: async (ctx: restate.Context, request: { userId: string; tickets: string[] }) => {
-    // We are a uniform shop where everything costs 40 USD
-    const totalPrice = request.tickets.length * 40;
+export default restate.service({
+  name: "CheckoutProcess",
+  handlers: {
+    checkout: async (
+      ctx: restate.Context,
+      request: { userId: string; tickets: string[] }
+    ) => {
+      // We are a uniform shop where everything costs 40 USD
+      const totalPrice = request.tickets.length * 40;
 
-    // Generate idempotency key for the stripe client
-    const idempotencyKey = await ctx.sideEffect(async () => uuid());
-    const stripe = StripeClient.get();
+      // Generate idempotency key for the stripe client
+      const idempotencyKey = ctx.rand.uuidv4();
 
-    const doPayment = async () => stripe.call(idempotencyKey, totalPrice);
-    const success = await ctx.sideEffect(doPayment);
+      const { paymentSuccess } = await ctx.run("do payment", () => {
+        const stripe = StripeClient.get();
+        return stripe.call(idempotencyKey, totalPrice);
+      });
 
-    const email = EmailClient.get();
+      const email = EmailClient.get();
 
-    if (success) {
-      console.info("Payment successful. Notifying user about shipment.");
-      await ctx.sideEffect(async () => email.notifyUserOfPaymentSuccess(request.userId));
-    } else {
-      console.info("Payment failure. Notifying user about it.");
-      await ctx.sideEffect(async () => email.notifyUserOfPaymentFailure(request.userId));
-    }
+      if (paymentSuccess) {
+        ctx.console.info("Payment successful. Notifying user about shipment.");
+        await ctx.run(() => email.notifyUserOfPaymentSuccess(request.userId));
+      } else {
+        ctx.console.info("Payment failure. Notifying user about it.");
+        await ctx.run(() => email.notifyUserOfPaymentFailure(request.userId));
+      }
 
-    return success;
+      return paymentSuccess;
+    },
   },
 });
-
-export const checkoutApi: restate.ServiceApi<typeof checkoutRouter> = {
-  path: "CheckoutProcess",
-};
