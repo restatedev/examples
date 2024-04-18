@@ -29,7 +29,7 @@ avoiding accidental state corruption and concurrency issues.
 
 Invoke the state machine transitions like
 ```shell
-curl localhost:8080/resource/setUp -H 'content-type: application/json' -d '{ "key": "my-machine" }'
+curl localhost:8080/resource/my-machine/setUp -H 'content-type: application/json' -d '' 
 ```
 
 To illustrate the concurrency safety here, send multiple requests without waiting on
@@ -40,10 +40,10 @@ the log of the NodeJs process that the requests queue per object key and safely 
 unaffected by crashes and recoveries.
 
 ```shell
-(curl localhost:8080/resource/setUp    -H 'content-type: application/json' -d '{ "key": "A" }' &)
-(curl localhost:8080/resource/tearDown -H 'content-type: application/json' -d '{ "key": "A" }' &)
-(curl localhost:8080/resource/setUp    -H 'content-type: application/json' -d '{ "key": "B" }' &)
-(curl localhost:8080/resource/setUp    -H 'content-type: application/json' -d '{ "key": "B" }' &)
-(curl localhost:8080/resource/tearDown -H 'content-type: application/json' -d '{ "key": "B" }' &)
+(curl localhost:8080/resource/a/setUp    -H 'content-type: application/json' -d '' &)
+(curl localhost:8080/resource/a/tearDown -H 'content-type: application/json' -d '' &)
+(curl localhost:8080/resource/b/setUp    -H 'content-type: application/json' -d '' &)
+(curl localhost:8080/resource/b/setUp    -H 'content-type: application/json' -d '' &)
+(curl localhost:8080/resource/b/tearDown -H 'content-type: application/json' -d '' &)
 echo "executing..."
 ```
