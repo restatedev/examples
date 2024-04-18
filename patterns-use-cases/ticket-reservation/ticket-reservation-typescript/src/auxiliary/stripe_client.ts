@@ -14,9 +14,13 @@ export class StripeClient {
     return new StripeClient();
   }
 
-  public call(idempotencyKey: string, amount: number): boolean {
-    console.log(`Executing stripe call for idempotency key ${idempotencyKey} and amount ${amount}`);
-    // do the call
-    return true;
+  public async call(
+    idempotencyKey: string,
+    amount: number
+  ): Promise<{ paymentSuccess: boolean }> {
+    console.log(
+      `Executing stripe call for idempotency key ${idempotencyKey} and amount ${amount}`
+    );
+    return { paymentSuccess: true };
   }
 }
