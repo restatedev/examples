@@ -9,21 +9,18 @@
  * https://github.com/restatedev/examples/
  */
 
-import * as restate from "@restatedev/restate-sdk";
+export const cars = { 
+    reserve: async (tripId: string) => {
+      // make a car reservation under an ID
+      return "car__booking_id";
+    },
 
-export const carRentalService = restate.keyedRouter({
-  reserve: async (ctx: restate.Context, tripID: string) => {
-    // make a car reservation under an ID
-    return "car__booking_id";
-  },
+    confirm: async (tripId: string, bookingId: string) => {
+      // confirm the previous reservation
+    },
 
-  confirm: async (ctx: restate.Context, tripID: string, bookingId: string) => {
-    // confirm the previous reservation
-  },
+    cancel: async (tripId: string, bookingId: string) => {
+      // cancel previous reservation
+    },
+};
 
-  cancel: async (ctx: restate.Context, tripID: string, bookingId: string) => {
-    // cancel previous reservation
-  },
-});
-
-export const carRentalServiceApi: restate.ServiceApi<typeof carRentalService> = { path: "cars" };
