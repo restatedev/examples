@@ -10,13 +10,14 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import {cartObject} from "./cart_object";
-import {ticketObject} from "./ticket_object";
-import {checkoutService} from "./checkout_service";
 
-restate
-    .endpoint()
-    .bind(cartObject)
-    .bind(ticketObject)
-    .bind(checkoutService)
-    .listen();
+export const checkoutService = restate.service({
+  name: "CheckoutService",
+  handlers: {
+    async handle(ctx: restate.Context, request: { userId: string; tickets: string[] }){
+      return true;
+    },
+  }
+});
+
+export const CheckoutService: typeof checkoutService = { name: "CheckoutService"};
