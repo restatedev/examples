@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@restatedev/restate-sdk": "dev",
-    "@restatedev/restate-sdk-ingress": "dev"
+    "@restatedev/restate-sdk-clients": "dev"
   },
   "devDependencies": {
     "@restatedev/restate": "0.8.0",
