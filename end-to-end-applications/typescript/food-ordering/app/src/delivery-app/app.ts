@@ -9,18 +9,17 @@
  * https://github.com/restatedev/examples/
  */
 
-import * as restate from "@restatedev/restate-sdk";
-import * as driverDigitalTwin from "./driver_digital_twin";
-import * as driverDeliveryMatcher from "./driver_delivery_matcher";
-import * as deliveryManager from "./delivery_manager";
-import * as driverMobileAppSimulator from "./external/driver_mobile_app_sim";
+import {endpoint} from "@restatedev/restate-sdk";
+import driverDigitalTwin from "./twin/impl";
+import driverDeliveryMatcher from "./matcher/impl";
+import deliveryManager from "./delivery_manager/impl";
+import driverMobileAppSimulator from "./external/driver_mobile_app_sim";
 
 if (require.main === module) {
-  restate
-      .endpoint()
-      .bindKeyedRouter(driverDigitalTwin.service.path, driverDigitalTwin.router)
-      .bindKeyedRouter(driverDeliveryMatcher.service.path, driverDeliveryMatcher.router)
-      .bindKeyedRouter(deliveryManager.service.path, deliveryManager.router)
-      .bindKeyedRouter(driverMobileAppSimulator.service.path, driverMobileAppSimulator.router)
-      .listen(9081);
+      endpoint()
+        .bind(driverDigitalTwin)
+        .bind(driverDeliveryMatcher)
+        .bind(deliveryManager)
+        .bind(driverMobileAppSimulator)
+        .listen(9081);
 }
