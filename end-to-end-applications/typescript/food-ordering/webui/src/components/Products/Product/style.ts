@@ -64,7 +64,6 @@ export const Container = styled.div<IContainer>`
   }
 
   &:hover {
-
     ${BuyButton} {
       background-color: ${({ theme }) => theme.colors.secondary};
     }

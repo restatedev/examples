@@ -10,8 +10,11 @@ const useOrderStatus = () => {
   const fetchOrderStatus = useCallback(() => {
     if (user) {
       console.debug(`Found user ${user}`);
-      sendRequestToRestate('order-status', 'get', {
+      sendRequestToRestate({
+        service: 'order-status',
+        method: 'get',
         key: user!.shopping_cart_id,
+        data: {},
       }).then((response) => {
         setOrderStatus(response.response);
       });
