@@ -2,7 +2,7 @@ import formatPrice from 'utils/formatPrice';
 import CartProducts from './CartProducts';
 import { useCart } from 'contexts/cart-context';
 import * as S from './style';
-import { publishToKafka, sendRequestToRestate } from 'services/sendToRestate';
+import { sendRequestToRestate } from 'services/sendToRestate';
 import { useUser } from 'contexts/user-context';
 import { useOrderStatusContext } from '../../contexts/status-context/OrderStatusProvider';
 import { useState } from 'react';
@@ -78,11 +78,8 @@ const Cart = () => {
       };
     };
 
-    const request = JSON.stringify({
-      key: user!.user_id,
-      request: generateJsonReq(),
-    });
-
+    const request = generateJsonReq();
+   
     const flow = async () => {
       closeCart();
       const checkedOutStatus = { checked_out: true };
@@ -92,7 +89,8 @@ const Cart = () => {
       await sendRequestToRestate({
         service: 'order-workflow',
         method: 'create',
-        data: request,
+        key: user!.user_id,
+        data: JSON.stringify(request),
         bg: true,
       });
 
@@ -105,7 +103,7 @@ const Cart = () => {
             key: user!.user_id,
             data: {},
           })
-        ).response;
+        );
         console.info(newOrderStatus);
 
         if (newOrderStatus) {
