@@ -9,12 +9,12 @@
  * https://github.com/restatedev/examples/blob/main/LICENSE
  */
 
-import * as restate from "@restatedev/restate-sdk";
-import * as driverDigitalTwin from "../driver_digital_twin";
+import { object, ObjectContext } from "@restatedev/restate-sdk"; 
 import * as geo from "../utils/geo";
 import {DEMO_REGION, Location, DeliveryState} from "../types/types";
 import { getPublisher } from "../clients/kafka_publisher";
 import {updateLocation} from "./driver_mobile_app_sim_utils";
+import type {DriverDigitalTwin } from "../twin/api";
 
 /**
  * !!!SHOULD BE AN EXTERNAL APP ON THE DRIVER's PHONE!!! Simulated driver with application that
@@ -24,7 +24,6 @@ import {updateLocation} from "./driver_mobile_app_sim_utils";
  *
  * For simplicity, we implemented this with Restate.
  */
-export const service: restate.ServiceApi<typeof router> = { path : "driver-mobile-app" };
 
 const kafkaPublisher = getPublisher();
 
@@ -35,27 +34,33 @@ const POLL_INTERVAL = 1000;
 const MOVE_INTERVAL = 1000;
 const PAUSE_BETWEEN_DELIVERIES = 2000;
 
-export const router = restate.keyedRouter({
-    startDriver: async (ctx: restate.KeyedContext, driverId: string) => {
+
+const TwinObject: DriverDigitalTwin = {name : "driver-digital-twin"};
+
+const mobileAppObject =  object({
+  name : "driver-mobile-app",
+  handlers: {
+
+    startDriver: async (ctx: ObjectContext) => {
     // check if we exist already
     if (await ctx.get<Location>(CURRENT_LOCATION) !== null) {
       return;
     }
 
-    console.log(`Driver ${driverId} starting up`);
+    console.log(`Driver ${ctx.key} starting up`);
 
-    const location = await ctx.sideEffect(async () => geo.randomLocation());
+    const location = await ctx.run(() => geo.randomLocation());
     ctx.set(CURRENT_LOCATION, location);
-    await kafkaPublisher.send(driverId, location);
+    await kafkaPublisher.send(ctx.key, location);
 
-    ctx.send(driverDigitalTwin.service).setDriverAvailable(driverId, DEMO_REGION);
-    ctx.send(service).pollForWork(driverId);
+    ctx.objectSendClient(TwinObject, ctx.key).setDriverAvailable(DEMO_REGION);
+    ctx.objectSendClient(Self, ctx.key).pollForWork();
   },
 
-  pollForWork: async (ctx: restate.KeyedContext, driverId: string) => {
-    const optionalAssignedDelivery = await ctx.rpc(driverDigitalTwin.service).getAssignedDelivery(driverId);
+  pollForWork: async (ctx: ObjectContext) => {
+    const optionalAssignedDelivery = await ctx.objectClient(TwinObject, ctx.key).getAssignedDelivery();
     if (optionalAssignedDelivery === null || optionalAssignedDelivery === undefined) {
-      ctx.sendDelayed(service, POLL_INTERVAL).pollForWork(driverId);
+      ctx.objectSendClient(Self, ctx.key, {delay: POLL_INTERVAL}).pollForWork();
       return;
     }
 
@@ -64,10 +69,11 @@ export const router = restate.keyedRouter({
       orderPickedUp: false
     }
     ctx.set(ASSIGNED_DELIVERY, delivery);
-    ctx.sendDelayed(service, MOVE_INTERVAL).move(driverId);
-},
 
-  move: async (ctx: restate.KeyedContext, driverId: string) => {
+    ctx.objectSendClient(Self, ctx.key, {delay: POLL_INTERVAL}).move();
+  },
+
+  move: async (ctx: ObjectContext) => {
     const currentLocation = (await ctx.get<Location>(CURRENT_LOCATION))!;
     const assignedDelivery = (await ctx.get<DeliveryState>(ASSIGNED_DELIVERY))!;
 
@@ -78,26 +84,31 @@ export const router = restate.keyedRouter({
     const { newLocation, arrived } = updateLocation(currentLocation, nextTarget);
 
     ctx.set(CURRENT_LOCATION, newLocation);
-    await kafkaPublisher.send(driverId, currentLocation);
+    await kafkaPublisher.send(ctx.key, currentLocation);
 
     if (arrived) {
       if (assignedDelivery.orderPickedUp) {
         // fully done
         ctx.clear(ASSIGNED_DELIVERY);
 
-        await ctx.rpc(driverDigitalTwin.service).notifyDeliveryDelivered(driverId);
+        await ctx.objectClient(TwinObject, ctx.key).notifyDeliveryDelivered();
         await ctx.sleep(PAUSE_BETWEEN_DELIVERIES);
-        ctx.send(driverDigitalTwin.service).setDriverAvailable(driverId, DEMO_REGION);
-        ctx.send(service).pollForWork(driverId);
+
+        ctx.objectSendClient(TwinObject, ctx.key).setDriverAvailable(DEMO_REGION);
+        ctx.objectSendClient(Self, ctx.key).pollForWork();
         return;
       }
 
       assignedDelivery.orderPickedUp = true;
       ctx.set(ASSIGNED_DELIVERY, assignedDelivery);
 
-      await ctx.rpc(driverDigitalTwin.service).notifyDeliveryPickUp(driverId);
+      await ctx.objectClient(TwinObject, ctx.key).notifyDeliveryPickUp();
     }
 
-    ctx.sendDelayed(service, MOVE_INTERVAL).move(driverId);
+    ctx.objectSendClient(Self, ctx.key, {delay: MOVE_INTERVAL}).move();
   }
-})
+}})
+
+const Self: typeof mobileAppObject = { name : "driver-mobile-app" };
+
+export default mobileAppObject;

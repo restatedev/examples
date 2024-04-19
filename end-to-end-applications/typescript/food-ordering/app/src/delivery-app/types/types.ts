@@ -8,8 +8,6 @@
  * in the root directory of this repository or package or at
  * https://github.com/restatedev/examples/
  */
-import * as restate from "@restatedev/restate-sdk";
-import {router} from "../../order-app/order_status_service";
 
 export type Product = {
   productId: string;

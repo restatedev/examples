@@ -66,14 +66,14 @@ app.post("/cancel", (req: Request, res: Response) => {
 
 async function resolveCb(cb: string, payload?: boolean) {
     await axios.post(
-        `${RESTATE_RUNTIME_ENDPOINT}/dev.restate.Awakeables/Resolve`,
-        { id: cb, json_result: payload ?? {} },
-        {
-            headers: {
-                "Content-Type": "application/json",
-                ...(RESTATE_TOKEN && { Authorization: `Bearer ${RESTATE_TOKEN}` }),
-            },
-        }
+      `${RESTATE_RUNTIME_ENDPOINT}/restate/a/${cb}/resolve`,
+      payload ?? {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          ...(RESTATE_TOKEN && { Authorization: `Bearer ${RESTATE_TOKEN}` }),
+        },
+      }
     );
 }
 

@@ -9,8 +9,6 @@
  * https://github.com/restatedev/examples/
  */
 
-import * as restate from "@restatedev/restate-sdk";
-
 export type Product = {
     productId: string;
     description: string;
@@ -73,6 +71,3 @@ export enum DriverStatus {
     WAITING_FOR_WORK = "WAITING_FOR_WORK",
     DELIVERING = "DELIVERING"
 }
-
-
-
