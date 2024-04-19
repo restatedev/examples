@@ -9,10 +9,6 @@
  * https://github.com/restatedev/examples/
  */
 
-import { endpoint } from "@restatedev/restate-sdk";
-import orderWorkflow from "./order_workflow";
-import orderStatus from "./status/impl";
+import driverDigitalTwin from "./impl";
 
-if (require.main === module) {
-  endpoint().bind(orderWorkflow).bind(orderStatus).listen();
-}
+export type DriverDigitalTwin = typeof driverDigitalTwin;
