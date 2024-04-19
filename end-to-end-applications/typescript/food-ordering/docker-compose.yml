@@ -76,7 +76,9 @@ services:
       - RESTATE_RUNTIME_ENDPOINT=http://runtime:8080
 
   runtime:
-    image: docker.io/restatedev/restate:0.8
+    # switch once we release
+    # image: docker.io/restatedev/restate:0.9
+    image: ghcr.io/restatedev/restate:main
     depends_on:
       - order_app
       - delivery_app
@@ -88,10 +90,9 @@ services:
       - "9071:9071"
       - "8080:8080"
     volumes:
-      - ./restate-docker.yaml:/restate.yaml
+      - ./restate-docker.toml:/restate.toml:Z,ro
     environment:
-      - RESTATE_OBSERVABILITY__TRACING__ENDPOINT=http://jaeger:4317
-      - RESTATE_CONFIG=/restate.yaml
+      - RESTATE_CONFIG=/restate.toml
 
   runtimesetup:
     image: alpine
@@ -105,9 +106,9 @@ services:
     curl -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://order_app:9080\"}' &&
     curl -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://delivery_app:9081\"}' &&
     sleep 3 && 
-    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/driver-updates\", \"sink\":\"service://driver-digital-twin/handleDriverLocationUpdateEvent\" }' &&
-    curl -X POST -H 'content-type: application/json' runtime:8080/driver-mobile-app/startDriver -d '{\"key\": \"driver-01\", \"request\": {} }' &&
-    curl -X POST -H 'content-type: application/json' runtime:8080/driver-mobile-app/startDriver -d '{\"key\": \"driver-02\", \"request\": {} }' &&
+    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/driver-updates\", \"sink\":\"component://driver-digital-twin/handleDriverLocationUpdateEvent\" }' &&
+    curl -X POST -H 'content-type: application/json' runtime:8080/driver-mobile-app/driver-01/startDriver -d '{}' &&
+    curl -X POST -H 'content-type: application/json' runtime:8080/driver-mobile-app/driver-02/startDriver -d '{}' &&
     exit 1"]
 
   webui:
