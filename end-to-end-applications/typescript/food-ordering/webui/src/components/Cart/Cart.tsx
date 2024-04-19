@@ -89,13 +89,21 @@ const Cart = () => {
       updateCartDetails({ ...details, ...checkedOutStatus });
 
       console.info(request);
-      sendRequestToRestate('order-workflow', 'create', request);
+      await sendRequestToRestate({
+        service: 'order-workflow',
+        method: 'create',
+        data: request,
+        bg: true,
+      });
 
       let done = false;
       while (!done) {
         const newOrderStatus = (
-          await sendRequestToRestate('order-status', 'get', {
+          await sendRequestToRestate({
+            service: 'order-status',
+            method: 'get',
             key: user!.user_id,
+            data: {},
           })
         ).response;
         console.info(newOrderStatus);
@@ -112,7 +120,7 @@ const Cart = () => {
       setNewShoppingCartId();
     };
 
-    flow();
+    flow().catch((err) => console.log(err));
   };
 
   const handleToggleCart = (isOpen: boolean) => () =>
