@@ -1,6 +1,5 @@
 # End-to-End examples in TypeScript build with Restate
 
-
 ### Food Ordering App
 
 The [Food Order App](food-ordering) implements a food delivery service (like DoorDash) that
@@ -18,13 +17,3 @@ relaying the calls to services implementing the steps.
 
 The example shows how to build a dynamic workflow interpreter and use workflows to drive work in
 other services.
-
-
-### e-commerce shop
-
-The [online shop example](ecommerce-store) implements a simple shopping website with cart, products, and checkpoint process. 
-
-The example uses Restate for state management (cart), shows integration with databases (products) and uses
-durable execution for the checkout process,
-
-| TypeScript  | [Ticket reservation](ticket-reservation): Example showing Restate's keyed-sharding and concurrency guarantees |

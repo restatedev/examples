@@ -1,6 +1,0 @@
-node_modules/*
-dist/*
-.idea
-build/*
-proto/buf.lock
-src/generated

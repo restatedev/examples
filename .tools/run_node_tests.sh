@@ -21,5 +21,4 @@ npm_install_check $PROJECT_ROOT/patterns-use-cases/state-machines/state-machines
 npm_install_check $PROJECT_ROOT/patterns-use-cases/ticket-reservation/ticket-reservation-typescript
 
 npm_install_check $PROJECT_ROOT/end-to-end-applications/typescript/ai-image-workflows
-npm_install_check $PROJECT_ROOT/end-to-end-applications/typescript/ecommerce-store/services
 npm_install_check $PROJECT_ROOT/end-to-end-applications/typescript/food-ordering/app

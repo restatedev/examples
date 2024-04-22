@@ -32,5 +32,4 @@ create_release_zip patterns-use-cases/payment-state-machine/payment-state-machin
 
 create_release_zip end-to-end-applications/java/food-ordering java-food-ordering
 create_release_zip end-to-end-applications/typescript/food-ordering typescript-food-ordering
-create_release_zip end-to-end-applications/typescript/ecommerce-store typescript-ecommerce-store
 create_release_zip end-to-end-applications/typescript/ai-image-workflows typescript-ai-image-workflows

@@ -38,7 +38,6 @@ challenges.
 | Use Cases  | [Payment Service](patterns-use-cases/payment-state-machine/payment-state-machine-typescript/) |
 | End-to-End | [Food Ordering App](end-to-end-applications/typescript/food-ordering)                         |
 | End-to-End | [AI Image Processing Workflow](end-to-end-applications/typescript/ai-image-workflows)         |
-| End-to-End | [Online Shop](end-to-end-applications/typescript/ecommerce-store/)                            |
 | Tutorial   | [Tour of Restate](tutorials/tour-of-restate-typescript)                                       |
 | Templates  | [Restate Node/TS Template](templates/typescript)                                              |
 
