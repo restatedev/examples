@@ -16,7 +16,6 @@ import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.tour.app.CheckoutServiceClient;
 import dev.restate.tour.auxiliary.CheckoutRequest;
-import dev.restate.tour.auxiliary.TourUtils;
 
 import java.util.HashSet;
 import java.util.List;
