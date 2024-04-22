@@ -22,7 +22,6 @@ import dev.restate.sdk.examples.types.DeliveryRequest;
 import dev.restate.sdk.examples.types.OrderRequest;
 import dev.restate.sdk.examples.types.StatusEnum;
 import java.time.Duration;
-import java.util.UUID;
 
 /**
  * Order processing workflow Gets called for each Kafka event that is published to the order topic.
