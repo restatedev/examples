@@ -25,6 +25,7 @@ jobs:
           draft: true
           files: |
             java-hello-world-gradle.zip
+            java-hello-world-maven.zip
             kotlin-hello-world-gradle.zip
             scala-hello-world-sbt.zip
             typescript-hello-world.zip
