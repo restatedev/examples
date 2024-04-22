@@ -12,15 +12,14 @@
 import * as restate from "@restatedev/restate-sdk";
 import {WorfklowStatus} from "../types/types";
 
-export const router = restate.keyedRouter({
-    get: async (ctx: restate.KeyedContext, id: string) => {
-        const status = await ctx.get<WorfklowStatus>("status") ?? "{}";
-        return status;
-    },
-
-    update: async (ctx: restate.KeyedContext, id: string, newStatus: WorfklowStatus) => {
-        ctx.set("status", newStatus);
+export const service = restate.object({
+    name: "workflow-status",
+    handlers: {
+        get: async (ctx: restate.ObjectContext) => {
+            return await ctx.get<WorfklowStatus>("status") ?? "{}";
+        },
+        update: async (ctx: restate.ObjectContext, newStatus: WorfklowStatus) => {
+            ctx.set("status", newStatus);
+        }
     }
 })
-
-export const service: restate.ServiceApi<typeof router> = { path: "workflow-status"}

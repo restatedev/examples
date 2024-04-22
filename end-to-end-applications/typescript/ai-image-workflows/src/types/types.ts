@@ -9,7 +9,7 @@
  * https://github.com/restatedev/examples/
  */
 
-import {ServiceApi} from "@restatedev/restate-sdk";
+import {ServiceDefinition} from "@restatedev/restate-sdk";
 
 export type WorkflowStep = {
     imgInputPath?: string;
@@ -40,7 +40,7 @@ export enum ProcessorType {
 
 export type WorkflowStepProcessor = {
     processorType: ProcessorType,
-    api: ServiceApi<router>
+    api: ServiceDefinition<any, { run: (wf: WorkflowStep) => Promise<ProcessorOutput>; }>
 }
 
 export type ProcessorOutput = {

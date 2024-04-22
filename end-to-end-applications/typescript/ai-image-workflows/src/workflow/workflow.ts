@@ -15,6 +15,6 @@ import * as workflowStatus from "./workflow_status";
 
 restate
     .endpoint()
-    .bindRouter(workflowExecutor.service.path, workflowExecutor.router)
-    .bindKeyedRouter(workflowStatus.service.path, workflowStatus.router)
+    .bind(workflowExecutor.service)
+    .bind(workflowStatus.service)
     .listen(9080);

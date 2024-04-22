@@ -15,6 +15,6 @@ import * as stableDiffusionTransformer from "./stable_diffusion_transformer";
 
 restate
     .endpoint()
-    .bindRouter(stableDiffusionGenerator.service.path, stableDiffusionGenerator.router)
-    .bindRouter(stableDiffusionTransformer.service.path, stableDiffusionTransformer.router)
+    .bind(stableDiffusionGenerator.service)
+    .bind(stableDiffusionTransformer.service)
     .listen(9082);
