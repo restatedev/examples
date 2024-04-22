@@ -15,6 +15,6 @@ import * as blurImgService from "./blur_img_service";
 
 restate
     .endpoint()
-    .bindRouter(rotateImgService.service.path, rotateImgService.router)
-    .bindRouter(blurImgService.service.path, blurImgService.router)
+    .bind(rotateImgService.service)
+    .bind(blurImgService.service)
     .listen(9083);

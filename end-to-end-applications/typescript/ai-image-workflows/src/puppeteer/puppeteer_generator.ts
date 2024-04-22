@@ -15,16 +15,19 @@ import { WorkflowStep } from "../types/types";
 
 type PuppeteerParams = { url: string, viewport?: { width?: number, height?: number } }
 
-export const router = restate.router({
-    run: async (ctx: restate.Context, wf: WorkflowStep) => {
-        const puppeteerParams = wf.parameters as PuppeteerParams;
+export const service = restate.service({
+    name: "puppeteer-service",
+    handlers: {
+        run: async (ctx: restate.Context, wf: WorkflowStep) => {
+            const puppeteerParams = wf.parameters as PuppeteerParams;
 
-        console.info("Taking screenshot of website with parameters: " + JSON.stringify(puppeteerParams))
-        await ctx.sideEffect(async () => takeWebsiteScreenshot(ctx, wf.imgOutputPath!, puppeteerParams));
+            console.info("Taking screenshot of website with parameters: " + JSON.stringify(puppeteerParams))
+            await ctx.run(async () => takeWebsiteScreenshot(ctx, wf.imgOutputPath!, puppeteerParams));
 
-        return {
-            msg: "[Took screenshot of website with parameters: " + JSON.stringify(puppeteerParams) + "]",
-        };
+            return {
+                msg: "[Took screenshot of website with parameters: " + JSON.stringify(puppeteerParams) + "]",
+            };
+        }
     }
 })
 
@@ -38,5 +41,3 @@ async function takeWebsiteScreenshot(ctx: restate.Context, imgOutputPath: string
     });
     await browser.close();
 }
-
-export const service: restate.ServiceApi<typeof router> = { path: "puppeteer-service" }

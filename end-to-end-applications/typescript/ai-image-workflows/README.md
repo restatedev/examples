@@ -63,7 +63,7 @@ Run workflow service:
 npm run workflow-service
 ```
 
-Now [launch the Restate Server](../../README.md#launching-the-restate-server) and [register the services](../../README.md#register-the-deployment-in-restate).
+Now [launch the Restate Server](../../../README.md#1-starting-the-restate-server) and [register the services](../../../README.md#2-register-the-examples-at-restate-server).
 
 Make sure you register all four services with the following ports: `9080`, `9081`, `9082` and `9083`.
 
@@ -101,7 +101,7 @@ Here is  list of example workflow execution requests that you can send to the wo
 Puppeteer screenshot -> rotate -> blur:
 
 ```shell
-curl localhost:8080/workflow-executor/execute -H 'idempotency-key: user123-wf1' -H 'content-type: application/json' -d '{"request":"{\"id\":\"user123-wf1\",\"steps\":[{\"service\":\"puppeteer-service\",\"parameters\":{\"url\":\"https://restate.dev\"}},{\"service\":\"rotate-img-service\",\"parameters\":{\"angle\":90}},{\"service\":\"blur-img-service\",\"parameters\":{\"blur\":5}}]}"}'
+curl localhost:8080/workflow-executor/execute -H 'idempotency-key: user123-wf1' -H 'content-type: application/json' -d '{"id":"user123-wf1","steps":[{"service":"puppeteer-service","parameters":{"url":"https://restate.dev"}},{"service":"rotate-img-service","parameters":{"angle":90}},{"service":"blur-img-service","parameters":{"blur":5}}]}'
 ```
 
 **NOTE: ** We use the [idempotent invoke feature](https://docs.restate.dev/operate/invocation#invoke-a-service-idempotently) (`-H 'idempotency-key: user123-wf1'`).
@@ -111,44 +111,44 @@ The setup also contains a workflow status service which tracks the status of all
 You can retrieve the workflow status for id `user123-wf1` by doing:
 
 ```shell
-curl localhost:8080/workflow-status/get -H 'content-type: application/json' -d '{"key":"user123-wf1"}'
+curl localhost:8080/workflow-status/user123-wf1/get
 ```
 
 Puppeteer screenshot -> stable diffusion -> rotate -> blur:
 
 ```shell
-curl localhost:8080/workflow-executor/execute -H 'idempotency-key: user123-wf2' -H 'content-type: application/json' -d '{"request":"{\"id\":\"user123-wf2\",\"steps\":[{\"service\":\"puppeteer-service\",\"parameters\":{\"url\":\"https://restate.dev\"}},{\"service\":\"stable-diffusion-transformer\",\"parameters\":{\"prompt\":\"Change the colors to black background and pink font\", \"steps\":25}},{\"service\":\"rotate-img-service\",\"parameters\":{\"angle\":90}},{\"service\":\"blur-img-service\",\"parameters\":{\"blur\":5}}]}"}'
+curl localhost:8080/workflow-executor/execute -H 'idempotency-key: user123-wf2' -H 'content-type: application/json' -d '{"id":"user123-wf2","steps":[{"service":"puppeteer-service","parameters":{"url":"https://restate.dev"}},{"service":"stable-diffusion-transformer","parameters":{"prompt":"Change the colors to black background and pink font", "steps":25}},{"service":"rotate-img-service","parameters":{"angle":90}},{"service":"blur-img-service","parameters":{"blur":5}}]}'
 ```
 
 Stable diffusion generation (15 steps) -> rotate -> blur:
 
 ```shell
-curl localhost:8080/workflow-executor/execute -H 'idempotency-key: user123-wf3' -H 'content-type: application/json' -d '{"request":"{\"id\":\"user123-wf3\",\"steps\":[{\"service\":\"stable-diffusion-generator\",\"parameters\":{\"prompt\":\"A sunny beach\", \"steps\":15}},{\"service\":\"rotate-img-service\",\"parameters\":{\"angle\":90}},{\"service\":\"blur-img-service\",\"parameters\":{\"blur\":5}}]}"}'
+curl localhost:8080/workflow-executor/execute -H 'idempotency-key: user123-wf3' -H 'content-type: application/json' -d '{"id":"user123-wf3","steps":[{"service":"stable-diffusion-generator","parameters":{"prompt":"A sunny beach", "steps":15}},{"service":"rotate-img-service","parameters":{"angle":90}},{"service":"blur-img-service","parameters":{"blur":5}}]}'
 ```
 
 Stable diffusion generation (1 step) -> stable diffusion transformation (1 step) -> rotate -> blur:
 
 ```shell
-curl localhost:8080/workflow-executor/execute -H 'idempotency-key: user123-wf4' -H 'content-type: application/json' -d '{"request":"{\"id\":\"user123-wf4\",\"steps\":[{\"service\":\"stable-diffusion-generator\",\"parameters\":{\"prompt\":\"A sunny beach\", \"steps\":1}},{\"service\":\"stable-diffusion-transformer\",\"parameters\":{\"prompt\":\"Make it snow on this sunny beach image\", \"steps\":1}},{\"service\":\"rotate-img-service\",\"parameters\":{\"angle\":90}},{\"service\":\"blur-img-service\",\"parameters\":{\"blur\":5}}]}"}'
+curl localhost:8080/workflow-executor/execute -H 'idempotency-key: user123-wf4' -H 'content-type: application/json' -d '{"id":"user123-wf4","steps":[{"service":"stable-diffusion-generator","parameters":{"prompt":"A sunny beach", "steps":1}},{"service":"stable-diffusion-transformer","parameters":{"prompt":"Make it snow on this sunny beach image", "steps":1}},{"service":"rotate-img-service","parameters":{"angle":90}},{"service":"blur-img-service","parameters":{"blur":5}}]}'
 ```
 
 Stable diffusion generation (15 steps) -> stable diffusion transformation (15 steps) -> rotate -> blur:
 
 ```shell
-curl localhost:8080/workflow-executor/execute -H 'idempotency-key: user123-wf5' -H 'content-type: application/json' -d '{"request":"{\"id\":\"user123-wf5\",\"steps\":[{\"service\":\"stable-diffusion-generator\",\"parameters\":{\"prompt\":\"A sunny beach\", \"steps\":15}},{\"service\":\"stable-diffusion-transformer\",\"parameters\":{\"prompt\":\"Make it snow on this sunny beach image\", \"steps\":15}},{\"service\":\"rotate-img-service\",\"parameters\":{\"angle\":90}},{\"service\":\"blur-img-service\",\"parameters\":{\"blur\":5}}]}"}'
+curl localhost:8080/workflow-executor/execute -H 'idempotency-key: user123-wf5' -H 'content-type: application/json' -d '{"id":"user123-wf5","steps":[{"service":"stable-diffusion-generator","parameters":{"prompt":"A sunny beach", "steps":15}},{"service":"stable-diffusion-transformer","parameters":{"prompt":"Make it snow on this sunny beach image", "steps":15}},{"service":"rotate-img-service","parameters":{"angle":90}},{"service":"blur-img-service","parameters":{"blur":5}}]}'
 ```
 
 
 Puppeteer screenshot -> blur -> rotate -> rotate -> rotate -> rotate:
 
 ```shell
-curl localhost:8080/workflow-executor/execute -H 'idempotency-key: user123-wf6' -H 'content-type: application/json' -d '{"request":"{\"id\":\"user123-wf6\",\"steps\":[{\"service\":\"puppeteer-service\",\"parameters\":{\"url\":\"https://restate.dev\"}},{\"service\":\"blur-img-service\",\"parameters\":{\"blur\":5}}, {\"service\":\"rotate-img-service\",\"parameters\":{\"angle\":90}}, {\"service\":\"rotate-img-service\",\"parameters\":{\"angle\":90}}, {\"service\":\"rotate-img-service\",\"parameters\":{\"angle\":90}}, {\"service\":\"rotate-img-service\",\"parameters\":{\"angle\":90}}]}"}' 
+curl localhost:8080/workflow-executor/execute -H 'idempotency-key: user123-wf6' -H 'content-type: application/json' -d '{"id":"user123-wf6","steps":[{"service":"puppeteer-service","parameters":{"url":"https://restate.dev"}},{"service":"blur-img-service","parameters":{"blur":5}}, {"service":"rotate-img-service","parameters":{"angle":90}}, {"service":"rotate-img-service","parameters":{"angle":90}}, {"service":"rotate-img-service","parameters":{"angle":90}}, {"service":"rotate-img-service","parameters":{"angle":90}}]}' 
 ```
 
 Invalid workflow definition (no image source is defined):
 
 ```shell
-curl localhost:8080/workflow-executor/execute -H 'content-type: application/json' -d '{"request":"{\"id\":\"invalid\",\"steps\":[{\"service\":\"rotate-img-service\",\"parameters\":{\"angle\":90}},{\"service\":\"blur-img-service\",\"parameters\":{\"blur\":5}}]}"}'
+curl localhost:8080/workflow-executor/execute -H 'content-type: application/json' -d '{"id":"invalid","steps":[{"service":"rotate-img-service","parameters":{"angle":90}},{"service":"blur-img-service","parameters":{"blur":5}}]}'
 ```
 
 

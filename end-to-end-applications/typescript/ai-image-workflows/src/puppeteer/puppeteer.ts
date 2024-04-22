@@ -14,5 +14,5 @@ import * as puppeteerService from "./puppeteer_generator";
 
 restate
     .endpoint()
-    .bindRouter(puppeteerService.service.path, puppeteerService.router)
+    .bind(puppeteerService.service)
     .listen(9081);

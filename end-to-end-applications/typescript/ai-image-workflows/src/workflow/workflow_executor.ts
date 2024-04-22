@@ -16,43 +16,34 @@ import { TerminalError } from "@restatedev/restate-sdk";
 import { workflowStepRegistry } from "./workflow_step_registry";
 import fs from 'fs';
 
-export const router = restate.router({
-    execute: async (ctx: restate.Context, jsonWf: string) => {
-        const wfDefinition = asValidatedWorkflowDefinition(jsonWf);
+export const service = restate.service({
+    name: "workflow-executor",
+    handlers: {
+        execute: async (ctx: restate.Context, wfDefinition: WorkflowDefinition) => {
+            validatedWorkflowDefinition(wfDefinition);
 
-        // Generate a stable image storage path and add it to the workflow definition
-        const imgName = ctx.rand.uuidv4();
-        const wf = addImgPathToSteps(wfDefinition, imgName);
+            // Generate a stable image storage path and add it to the workflow definition
+            const imgName = ctx.rand.uuidv4();
+            const wf = addImgPathToSteps(wfDefinition, imgName);
 
-        let status = { status: "Processing", imgName, output: [] } as WorfklowStatus;
-        for (const step of wf.steps) {
-            const result = await executeWorkflowStep(ctx, step);
-            status.output.push(result.msg);
+            let status = {status: "Processing", imgName, output: []} as WorfklowStatus;
+            for (const step of wf.steps) {
+                const result = await executeWorkflowStep(ctx, step);
+                status.output.push(result.msg);
 
-            ctx.send(workflowStatus.service).update(wf.id, status);
+                ctx.objectSendClient(workflowStatus.service, wf.id).update(status);
+            }
+
+            status.status = "Finished";
+            ctx.objectSendClient(workflowStatus.service, wf.id).update(status);
+            return status;
         }
-
-        status.status = "Finished";
-        ctx.send(workflowStatus.service).update(wf.id, status);
-        return status;
     }
 })
 
-export type api = typeof router;
-export const service: restate.ServiceApi<api> = { path: "workflow-executor" };
-
 // --------------------- Utils / helpers -------------------------------------
 
-function asValidatedWorkflowDefinition(jsonWf: string) {
-    let wfDefinition: WorkflowDefinition;
-
-    // Check if valid JSON
-    try {
-        wfDefinition = JSON.parse(jsonWf) as WorkflowDefinition;
-    } catch (e) {
-        throw new TerminalError("Invalid workflow definition: cannot parse JSON into workflow definition");
-    }
-
+function validatedWorkflowDefinition(wfDefinition: WorkflowDefinition) {
     // Check if workflow definition has steps
     if (!wfDefinition.steps) {
         throw new TerminalError("Invalid workflow definition: no steps defined");
@@ -104,5 +95,5 @@ function addImgPathToSteps(wfDefinition: WorkflowDefinition, imgName: string) {
 
 function executeWorkflowStep(ctx: restate.Context, step: WorkflowStep) {
     const servicePath = workflowStepRegistry.get(step.service)!;
-    return ctx.rpc(servicePath.api).run(step);
+    return ctx.serviceClient(servicePath.api).run(step);
 }
