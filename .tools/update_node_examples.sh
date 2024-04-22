@@ -22,5 +22,4 @@ bump_ts_sdk $PROJECT_ROOT/patterns-use-cases/state-machines/state-machines-types
 bump_ts_sdk $PROJECT_ROOT/patterns-use-cases/ticket-reservation/ticket-reservation-typescript
 
 bump_ts_sdk $PROJECT_ROOT/end-to-end-applications/typescript/ai-image-workflows
-bump_ts_sdk $PROJECT_ROOT/end-to-end-applications/typescript/ecommerce-store/services
 bump_ts_sdk $PROJECT_ROOT/end-to-end-applications/typescript/food-ordering/app
