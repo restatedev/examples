@@ -50,7 +50,7 @@ jobs:
         if: github.event.inputs.sdkJavaVersion != ''
         uses: gradle/actions/setup-gradle@v3
       - name: Bump sdk-java
-        if: github.event.inputs.sdkTypescriptVersion != ''
+        if: github.event.inputs.sdkJavaVersion != ''
         run: ./.tools/update_jvm_examples.sh
       - name: Run JVM tests
         if: github.event.inputs.sdkJavaVersion != ''
@@ -65,3 +65,4 @@ jobs:
             **/package.json
             **/package-lock.json
             **/build.gradle.kts
+            **/pom.xml
