@@ -43,25 +43,20 @@ challenges.
 
 ### Java
 
-| Type       | Name / Link                                                                                   |
-|------------|-----------------------------------------------------------------------------------------------|
-| Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-java/)                                                 |
-| End-to-End | [Food Ordering App](end-to-end-applications/java/food-ordering)                               |
-| Tutorial   | [Tour of Restate](tutorials/tour-of-restate-java/)                                            |
-| Templates  | [Restate Node/TS Template](templates/java-gradle/)                                            |
+| Type       | Name / Link                                                     |
+|------------|-----------------------------------------------------------------|
+| Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-java)                    |
+| End-to-End | [Food Ordering App](end-to-end-applications/java/food-ordering) |
+| Tutorial   | [Tour of Restate](tutorials/tour-of-restate-java/)              |
+| Templates  | [Template using Gradle](templates/java-gradle)                  |
+| Templates  | [Template using Maven](templates/java-maven)                    |
 
 ### Kotlin
 
-| Type       | Name / Link                                                                                   |
-|------------|-----------------------------------------------------------------------------------------------|
-| Templates  | [Restate Node/TS Template](templates/kotlin-gradle/)                                          |
-
-### Scala
-
 | Type       | Name / Link                                      |
 |------------|--------------------------------------------------|
-| Templates  | [Restate Node/TS Template](templates/scala-sbt/) |
-| Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-kotlin/)  |
+| Templates  | [Template using Gradle](templates/kotlin-gradle) |
+| Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-kotlin)   |
 
 ## Joining the community
 
