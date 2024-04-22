@@ -11,7 +11,17 @@
 
 import * as restate from "@restatedev/restate-sdk";
 
+const hello = async (ctx: restate.Context, name: string) => {
+    return `Hello ${name}!`;
+};
+
+// Create the Restate server to accept requests
 export const handler = restate
-  .endpoint()
-  .bindRouter("Greeter", restate.router({ greet: async () => "Hello!" }))
-  .lambdaHandler();
+    .endpoint()
+    .bind(
+        restate.service({
+            name: "Greeter", // the service that serves the handlers
+            handlers: { hello },
+        })
+    )
+    .lambdaHandler();
