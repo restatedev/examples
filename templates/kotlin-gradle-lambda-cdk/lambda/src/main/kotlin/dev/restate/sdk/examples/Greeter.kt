@@ -11,32 +11,28 @@
 
  package dev.restate.sdk.examples
 
-import dev.restate.sdk.common.Component
-import dev.restate.sdk.common.CoreSerdes
-import dev.restate.sdk.common.StateKey
-import dev.restate.sdk.examples.generated.*
-import dev.restate.sdk.examples.generated.GreeterProto.GreetRequest
-import dev.restate.sdk.examples.generated.GreeterProto.GreetResponse
+import dev.restate.sdk.annotation.Handler
+import dev.restate.sdk.annotation.VirtualObject
+import dev.restate.sdk.kotlin.KtStateKey
 import dev.restate.sdk.kotlin.ObjectContext
-import kotlinx.coroutines.Dispatchers
+import kotlinx.serialization.Serializable
 
-class Greeter :
-    // Use Dispatchers.Unconfined as the Executor/thread pool is managed by the SDK itself.
-    GreeterGrpcKt.GreeterCoroutineImplBase(Dispatchers.Unconfined),
-    Component {
+@Serializable
+data class GreetResponse(val message: String)
 
+@VirtualObject
+class Greeter {
   companion object {
-    private val COUNT = StateKey.of("count", CoreSerdes.JSON_INT)
+    private val COUNT = KtStateKey.json<Long>("count")
   }
 
-  override suspend fun greet(request: GreetRequest): GreetResponse {
-    val ctx = ObjectContext.current()
-
+  @Handler
+  suspend fun greet(ctx: ObjectContext, name: String): GreetResponse {
     val count = ctx.get(COUNT) ?: 1
     ctx.set(COUNT, count + 1)
 
-    return greetResponse {
-      message = "Hello ${request.name} for the $count time!"
-    }
+    return GreetResponse(
+      message= "Hello ${name} for the $count time!"
+    )
   }
 }

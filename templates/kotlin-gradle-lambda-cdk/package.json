@@ -15,7 +15,7 @@
     "deploy": "npm run build && cdk deploy"
   },
   "devDependencies": {
-    "@restatedev/restate-cdk": "^0.7.0",
+    "@restatedev/restate-cdk": "0.0.0-SNAPSHOT-20240326172134",
     "@types/jest": "^29.5.8",
     "@types/node": "20.9.1",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
@@ -29,7 +29,7 @@
     "typescript": "~5.2.2"
   },
   "dependencies": {
-    "aws-cdk-lib": "^2.113.0",
+    "aws-cdk-lib": "^2.138.0",
     "constructs": "^10.0.0",
     "source-map-support": "^0.5.21"
   }

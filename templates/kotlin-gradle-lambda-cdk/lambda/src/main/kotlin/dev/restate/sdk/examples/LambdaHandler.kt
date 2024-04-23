@@ -16,6 +16,6 @@ import dev.restate.sdk.lambda.RestateLambdaEndpointBuilder
 
 class LambdaHandler : BaseRestateLambdaHandler() {
     override fun register(builder: RestateLambdaEndpointBuilder) {
-        builder.withService(Greeter())
+        builder.bind(Greeter())
     }
 }

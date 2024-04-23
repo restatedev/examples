@@ -10,7 +10,9 @@
  */
 
 import * as cdk from "aws-cdk-lib";
+import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as logs from "aws-cdk-lib/aws-logs";
 import * as restate from "@restatedev/restate-cdk";
 import { Construct } from "constructs";
 
@@ -18,10 +20,7 @@ export class LambdaJvmCdkStack extends cdk.Stack {
   constructor(
     scope: Construct,
     id: string,
-    props: {
-      clusterId: string;
-      authTokenSecretArn: string;
-    } & cdk.StackProps,
+    props: cdk.StackProps,
   ) {
     super(scope, id, props);
 
@@ -36,23 +35,46 @@ export class LambdaJvmCdkStack extends cdk.Stack {
       systemLogLevel: "DEBUG",
     });
 
-    const environment = new restate.RestateCloudEnvironment(this, "RestateCloud", {
-      clusterId: props.clusterId,
-      authTokenSecretArn: props.authTokenSecretArn,
+    const environment = new restate.SingleNodeRestateDeployment(this, "Restate", {
+      restateImage: "ghcr.io/restatedev/restate",
+      restateTag: "main",
+      logGroup: new logs.LogGroup(this, "RestateLogs", {
+        retention: logs.RetentionDays.ONE_MONTH,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      }),
     });
 
-    // Alternatively, you can deploy Restate on your own infrastructure like this. See the Restate CDK docs for more.
-    // const environment = new restate.SingleNodeRestateInstance(this, "Restate", {
-    //   logGroup: new logs.LogGroup(this, "RestateLogs", {
-    //     retention: logs.RetentionDays.THREE_MONTHS,
-    //   }),
-    // });
+    new iam.Policy(this, "AssumeAnyRolePolicy", {
+      statements: [
+        new iam.PolicyStatement({
+          sid: "AllowAssumeAnyRole",
+          actions: ["sts:AssumeRole"],
+          resources: ["*"], // we don't know upfront what invoker roles we may be asked to assume at runtime
+        }),
+      ],
+    }).attachToRole(environment.invokerRole);
 
-    new restate.LambdaServiceRegistry(this, "RestateServices", {
-      handlers: {
-        "greeter.Greeter": greeter,
-      },
-      environment,
+    const invokerRole = new iam.Role(this, "InvokerRole", {
+      assumedBy: new iam.ArnPrincipal(environment.invokerRole.roleArn),
     });
+    invokerRole.grantAssumeRole(environment.invokerRole);
+
+    const restateEnvironment = restate.RestateEnvironment.fromAttributes({
+      adminUrl: environment.adminUrl,
+      invokerRole,
+    });
+
+    const deployer = new restate.ServiceDeployer(this, "ServiceDeployer", {
+      logGroup: new logs.LogGroup(this, "Deployer", {
+        retention: logs.RetentionDays.ONE_MONTH,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      }),
+    });
+
+    deployer.deployService("Greeter", greeter.currentVersion, restateEnvironment, {
+      insecure: true, // self-signed certificate
+    });
+
+    new cdk.CfnOutput(this, "restateIngressUrl", { value: environment.ingressUrl });
   }
 }
