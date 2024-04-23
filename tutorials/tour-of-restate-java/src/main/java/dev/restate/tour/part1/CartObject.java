@@ -17,8 +17,7 @@ import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.tour.app.CheckoutServiceClient;
 import dev.restate.tour.auxiliary.CheckoutRequest;
 
-import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 
 @VirtualObject
 public class CartObject {
@@ -45,7 +44,7 @@ public class CartObject {
     public boolean checkout(ObjectContext ctx) {
         // withClass(1:3) highlight-line
         boolean checkoutSuccess = CheckoutServiceClient.fromContext(ctx)
-                .handle(new CheckoutRequest("Mary", new HashSet<>(List.of("456"))))
+                .handle(new CheckoutRequest("Mary", Set.of("seat2B")))
                 .await();
 
         return checkoutSuccess;
