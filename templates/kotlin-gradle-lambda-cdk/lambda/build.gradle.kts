@@ -44,11 +44,6 @@ java {
   }
 }
 
-// Configure test platform
-tasks.withType<Test> {
-  useJUnitPlatform()
-}
-
 tasks.register<Zip>("lambdaZip") {
   from(tasks.compileKotlin.get())
   from(tasks.processResources.get())
