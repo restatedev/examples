@@ -11,6 +11,7 @@ function bump_ts_sdk() {
 bump_ts_sdk $PROJECT_ROOT/basics/basics-typescript
 
 bump_ts_sdk $PROJECT_ROOT/templates/typescript
+bump_ts_sdk $PROJECT_ROOT/templates/typescript-lambda-cdk
 
 bump_ts_sdk $PROJECT_ROOT/tutorials/tour-of-restate-typescript
 
