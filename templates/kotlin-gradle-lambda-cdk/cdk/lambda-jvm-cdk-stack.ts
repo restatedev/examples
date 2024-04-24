@@ -36,8 +36,8 @@ export class LambdaJvmCdkStack extends cdk.Stack {
     });
 
     const environment = new restate.SingleNodeRestateDeployment(this, "Restate", {
-      restateImage: "ghcr.io/restatedev/restate",
-      restateTag: "main",
+      // restateImage: "docker.io/restatedev/restate",
+      // restateTag: "0.9",
       logGroup: new logs.LogGroup(this, "RestateLogs", {
         retention: logs.RetentionDays.ONE_MONTH,
         removalPolicy: cdk.RemovalPolicy.DESTROY,
