@@ -9,30 +9,21 @@
  * https://github.com/restatedev/examples/
  */
 
- package dev.restate.sdk.examples
+package dev.restate.sdk.examples
 
 import dev.restate.sdk.annotation.Handler
-import dev.restate.sdk.annotation.VirtualObject
-import dev.restate.sdk.kotlin.KtStateKey
-import dev.restate.sdk.kotlin.ObjectContext
-import kotlinx.serialization.Serializable
+import dev.restate.sdk.annotation.Service
+import dev.restate.sdk.kotlin.Context
 
-@Serializable
-data class GreetResponse(val message: String)
-
-@VirtualObject
+/**
+ * Template of a Restate service and handler
+ * Have a look at the Kotlin QuickStart to learn how to run this: https://docs.restate.dev/get_started/quickstart?sdk=kotlin
+ */
+@Service
 class Greeter {
-  companion object {
-    private val COUNT = KtStateKey.json<Long>("count")
-  }
 
   @Handler
-  suspend fun greet(ctx: ObjectContext, name: String): GreetResponse {
-    val count = ctx.get(COUNT) ?: 1
-    ctx.set(COUNT, count + 1)
-
-    return GreetResponse(
-      message= "Hello ${name} for the $count time!"
-    )
+  suspend fun greet(ctx: Context, name: String): String {
+    return "Hello, ${name ?: "Restate"}!"
   }
 }

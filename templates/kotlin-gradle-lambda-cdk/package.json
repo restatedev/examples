@@ -7,15 +7,16 @@
   "scripts": {
     "lint": "eslint --ignore-path .eslintignore --ext .ts .",
     "build": "npm run build-lambda && npm run build-cdk",
-    "build-lambda": "cd lambda && ./gradlew shadowJar",
+    "build-lambda": "cd lambda && ./gradlew build",
     "build-cdk": "cdk synth",
     "watch": "tsc -w",
     "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
     "verify": "npm run format -- --check && npm run lint && npm run build",
-    "deploy": "npm run build && cdk deploy"
+    "deploy": "npm run build && cdk deploy",
+    "destroy": "npx cdk destroy"
   },
   "devDependencies": {
-    "@restatedev/restate-cdk": "0.0.0-SNAPSHOT-20240326172134",
+    "@restatedev/restate-cdk": "file:../../../cdk",
     "@types/jest": "^29.5.8",
     "@types/node": "20.9.1",
     "@typescript-eslint/eslint-plugin": "^6.4.0",

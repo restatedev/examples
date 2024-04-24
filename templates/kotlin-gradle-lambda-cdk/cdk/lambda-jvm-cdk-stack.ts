@@ -27,7 +27,7 @@ export class LambdaJvmCdkStack extends cdk.Stack {
     const greeter: lambda.Function = new lambda.Function(this, "RestateKotlin", {
       runtime: lambda.Runtime.JAVA_21,
       architecture: lambda.Architecture.ARM_64,
-      code: lambda.Code.fromAsset("lambda/build/libs/lambda-all.jar"),
+      code: lambda.Code.fromAsset("lambda/build/distributions/lambda.zip"),
       handler: "dev.restate.sdk.examples.LambdaHandler",
       timeout: cdk.Duration.seconds(10),
       logFormat: lambda.LogFormat.JSON,
