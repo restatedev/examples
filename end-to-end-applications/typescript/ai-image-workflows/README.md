@@ -104,7 +104,7 @@ Puppeteer screenshot -> rotate -> blur:
 curl localhost:8080/workflow-executor/execute -H 'idempotency-key: user123-wf1' -H 'content-type: application/json' -d '{"id":"user123-wf1","steps":[{"service":"puppeteer-service","parameters":{"url":"https://restate.dev"}},{"service":"rotate-img-service","parameters":{"angle":90}},{"service":"blur-img-service","parameters":{"blur":5}}]}'
 ```
 
-**NOTE: ** We use the [idempotent invoke feature](https://docs.restate.dev/operate/invocation#invoke-a-service-idempotently) (`-H 'idempotency-key: user123-wf1'`).
+**NOTE: ** We use the [idempotent invoke feature](https://docs.restate.dev/operate/invocation#invoke-a-handler-idempotently) (`-H 'idempotency-key: user123-wf1'`).
 This means that if you send the same request again, the workflow executor will not execute the workflow again, but instead return the result of the previous execution. This can be used for deduplicating multiple requests for the same workflow execution in case of infrastructure failures.
 
 The setup also contains a workflow status service which tracks the status of all workflow exeuctions.
