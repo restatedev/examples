@@ -15,8 +15,8 @@ import * as dp from "./dp/clients";
 // An illustration of durable promises across processes.
 //
 // This example instantiates a promise and randomly either awaits it
-// or completes it. Start this example multiple times in differnt shells,
-// and see how this
+// or completes it. Start this example multiple times in different shells,
+// and see how the processes communicate with each other through the promise.
 //
 // Run the example by calling `npm run example <promise-name> <restate-URI>`.
 // This requires that you have Restate and the Durable Promises app running

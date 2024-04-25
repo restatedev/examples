@@ -21,7 +21,7 @@ import { spawn } from "child_process";
 //  - Failures are automatically retried, unless they are explicitly labeled
 //    as terminal errors
 //  - Restate journals execution progress. Re-tries use that journal to replay
-//    previous alread completed results, avoiding a repetition of that work and
+//    previously completed results, avoiding a repetition of that work and
 //    ensuring stable deterministic values are used during execution.
 //  - Durable executed functions use the regular code and control flow,
 //    no custom DSLs
