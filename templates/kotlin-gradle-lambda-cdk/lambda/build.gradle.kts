@@ -1,93 +1,58 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
-import com.github.jengelman.gradle.plugins.shadow.transformers.ServiceFileTransformer
-import com.google.protobuf.gradle.id
-
-val restateVersion = "0.8.0"
+import java.net.URI
 
 plugins {
-  kotlin("jvm") version "1.9.10"
+  kotlin("jvm") version "1.9.22"
+  // Kotlinx serialization (optional)
+  kotlin("plugin.serialization") version "1.9.22"
 
-  id("com.google.protobuf") version "0.9.1"
+  id("com.google.devtools.ksp") version "1.9.22-1.0.18"
 
-  // To package the dependency for Lambda
-  id("com.github.johnrengelman.shadow") version "8.1.1"
+  id("distribution")
 }
 
 repositories {
+  maven {
+    url = URI.create("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+  }
   mavenCentral()
 }
 
+val restateVersion = "0.9.0-SNAPSHOT"
+
 dependencies {
+  // Annotation processor
+  ksp("dev.restate:sdk-api-kotlin-gen:$restateVersion")
+
   // Restate SDK
   implementation("dev.restate:sdk-api-kotlin:$restateVersion")
   implementation("dev.restate:sdk-lambda:$restateVersion")
-  // To use Jackson to read/write state entries (optional)
-  implementation("dev.restate:sdk-serde-jackson:$restateVersion")
 
-  // Protobuf and grpc dependencies (we need the Java dependencies as well because the Kotlin dependencies rely on Java)
-  implementation("com.google.protobuf:protobuf-java:3.24.3")
-  implementation("com.google.protobuf:protobuf-kotlin:3.24.3")
-  implementation("io.grpc:grpc-stub:1.58.0")
-  implementation("io.grpc:grpc-protobuf:1.58.0")
-  implementation("io.grpc:grpc-kotlin-stub:1.4.0") { exclude("javax.annotation", "javax.annotation-api") }
-  // This is needed to compile the @Generated annotation forced by the grpc compiler
-  // See https://github.com/grpc/grpc-java/issues/9153
-  compileOnly("org.apache.tomcat:annotations-api:6.0.53")
-
-  // To specify the coroutines dispatcher
-  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+  // Kotlinx serialization (optional)
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 
   // AWS Lambda-specific logging, see https://docs.aws.amazon.com/lambda/latest/dg/java-logging.html#java-logging-log4j2
-  val log4j2version = "2.22.0"
+  val log4j2version = "2.23.1"
   implementation("org.apache.logging.log4j:log4j-core:$log4j2version")
   implementation("org.apache.logging.log4j:log4j-layout-template-json:$log4j2version")
   implementation("com.amazonaws:aws-lambda-java-log4j2:1.6.0")
-
-  // Testing (optional)
-  testImplementation("org.junit.jupiter:junit-jupiter:5.9.1")
-  testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-  testImplementation("dev.restate:sdk-testing:$restateVersion")
 }
 
 // Setup Java/Kotlin compiler target
 java {
   toolchain {
-    languageVersion.set(JavaLanguageVersion.of(17))
+    languageVersion.set(JavaLanguageVersion.of(21))
   }
 }
 
-// Configure protoc plugin
-protobuf {
-  protoc { artifact = "com.google.protobuf:protoc:3.24.3" }
+tasks.register<Zip>("lambdaZip") {
+  from(tasks.compileKotlin.get())
+  from(tasks.processResources.get())
 
-  plugins {
-    id("grpc") { artifact = "io.grpc:protoc-gen-grpc-java:1.58.0" }
-    id("grpckt") { artifact = "io.grpc:protoc-gen-grpc-kotlin:1.4.0:jdk8@jar" }
-  }
-
-  generateProtoTasks {
-    all().forEach {
-      // We need both java and kotlin codegen(s) because the kotlin protobuf/grpc codegen depends on the java ones
-      it.plugins {
-        id("grpc")
-        id("grpckt")
-      }
-      it.builtins {
-        java {}
-        id("kotlin")
-      }
-    }
+  into("lib") {
+    from(configurations.runtimeClasspath)
   }
 }
 
-// Configure shadowJar plugin to properly merge SPI files and Log4j plugin configurations
-tasks.withType<ShadowJar> {
-  transform(Log4j2PluginsCacheFileTransformer::class.java)
-  transform(ServiceFileTransformer::class.java)
-}
-
-// Configure test platform
-tasks.withType<Test> {
-  useJUnitPlatform()
+tasks.build {
+  dependsOn("lambdaZip")
 }
