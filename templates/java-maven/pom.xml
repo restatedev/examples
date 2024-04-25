@@ -15,23 +15,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
-    <restate.version>0.9.0-SNAPSHOT</restate.version>
+    <restate.version>0.9.0</restate.version>
   </properties>
-
-  <!-- TODO Remove this once we release -->
-  <repositories>
-    <repository>
-      <id>nexus</id>
-      <name>nexus-snapshot</name>
-      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-    </repository>
-  </repositories>
 
   <dependencies>
     <dependency>
