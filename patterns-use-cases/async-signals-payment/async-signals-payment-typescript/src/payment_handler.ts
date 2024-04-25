@@ -62,18 +62,14 @@ async function processPayment(ctx: restate.Context, request: PaymentRequest) {
     return;
   }
 
-  // We did not get the response on the synchros path, talking to stripe.
+  // We did not get the response on the synchronous path, talking to stripe.
   // No worries, stripe will let us know when it is done processing via a webhook.
-  // 
-  //
   ctx.console.log(
     `Synchronous response for ${idempotencyKey} yielded 'processing', awaiting webhook call...`
   );
 
-  //
   // We will now wait for the webhook call to complete this promise.
   // Check out the handler below.
-  // 
   const processedPaymentIntent = await webhookPromise.promise;
 
   console.log(`Webhook call for ${idempotencyKey} received!`);

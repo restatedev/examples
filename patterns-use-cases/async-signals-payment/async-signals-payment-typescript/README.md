@@ -8,12 +8,11 @@ you later via a webhook.
 
 This example combines both paths in a single function that reliably waits for both
 paths, if needed, thus giving you a single long-running synchronous function.
-This is useful, for example, when payment is processes completely asynchronously,
-like durin periodic charging of a subscription.
+This is useful, for example, when the payment is processed completely asynchronously,
+like during periodic charging of a subscription.
 
 And because we have a durable execution system that suspends and resumes state
 and promises, we can actually combine this into a single reliably promise/async-function.
-
 
 ### Running the Example
 
@@ -47,7 +46,7 @@ webhooks to your local machine.
 8. Put the webhook secret (`whsec_...`) to the [stripe_utils.ts](./src/utils/stripe_utils.ts) file.
 
 Use as test data `pm_card_visa` for a successful payment and `pm_card_visa_chargeDeclined` for a declined payment.
-Because the test data rarely triggers an async response, this example's tools can minick that
+Because the test data rarely triggers an async response, this example's tools can mimic that
 if you add `"delayedStatus": true` to the request.
 
 ```shell
