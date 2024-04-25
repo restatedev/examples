@@ -17,6 +17,8 @@ import { LambdaJvmCdkStack } from "../cdk/lambda-jvm-cdk-stack";
 
 const app = new cdk.App();
 new LambdaJvmCdkStack(app, "LambdaJvmCdkStack", {
-  clusterId: app.node.getContext("clusterId"),
-  authTokenSecretArn: app.node.getContext("authTokenSecretArn"),
+  env: {
+    account: process.env.CDK_DEFAULT_ACCOUNT,
+    region: process.env.CDK_DEFAULT_REGION,
+  },
 });
