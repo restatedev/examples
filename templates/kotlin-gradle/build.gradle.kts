@@ -10,13 +10,10 @@ plugins {
 }
 
 repositories {
-  maven {
-    url = URI.create("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-  }
   mavenCentral()
 }
 
-val restateVersion = "0.9.0-SNAPSHOT"
+val restateVersion = "0.9.0"
 
 dependencies {
   // Annotation processor
