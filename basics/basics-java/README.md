@@ -52,7 +52,7 @@ about how they work and how they can be run.
 2. Start the relevant example. The commands are listed above for each example.
 
 3. Register the example at Restate server by calling
-   `npx restate -y deployment register --force "localhost:9080"`.
+   `npx restate -y deployment register --force localhost:9080`.
 
    _Note: the '--force' flag here is to circumvent all checks related to graceful upgrades, because it is only a playground, not a production setup._
 

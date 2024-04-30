@@ -33,7 +33,11 @@ dependencies {
 
 // Set main class
 application {
-  mainClass.set("durable_execution.RoleUpdateService")
+  if (project.hasProperty("mainClass")) {
+    mainClass.set(project.property("mainClass") as String)
+  } else {
+    throw IllegalArgumentException("mainClass property is required")
+  }
 }
 
 tasks.withType<JavaCompile> {

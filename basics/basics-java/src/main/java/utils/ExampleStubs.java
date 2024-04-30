@@ -22,16 +22,16 @@ public class ExampleStubs {
 
     public static boolean applyUserRole(String userId, UserRole role) {
         maybeCrash(0.3);
-        logger.info(">>> Applying role " + role + " to user " + userId);
+        logger.info(String.format(">>> Applying role %s to user %s", role, userId));
         return true;
     }
 
     public static void applyPermission(String userId, Permission permission) {
         maybeCrash(0.2);
-        logger.info(">>> Applying permission %s:%s for user %s",
+        logger.info(String.format(">>> Applying permission %s:%s for user %s",
                 permission.getPermissionKey(),
                 permission.getSetting(),
-                userId);
+                userId));
     }
 
     public static UserRole getCurrentRole(String userId){
@@ -44,7 +44,7 @@ public class ExampleStubs {
         if(!role.getRoleKey().equals("viewer")){
             applicationError(0.3, "Role " + role.getRoleKey() + " is not possible for user " + userId);
         }
-        logger.error(">>> Applying role " + role + " to user " + userId);
+        logger.error(String.format(">>> Applying role %s to user %s", role, userId));
     }
 
     public static Permission tryApplyPermission(String userId, Permission permission){
@@ -56,10 +56,10 @@ public class ExampleStubs {
                             ":" + permission.getSetting() + " for user" + userId + " due to a conflict."
                     );
         }
-        logger.info(">>> Applying permission %s:%s for user %s",
+        logger.info(String.format(">>> Applying permission %s:%s for user %s",
                 permission.getPermissionKey(),
                 permission.getSetting(),
-                userId);
+                userId));
 
         return new Permission(permission.getPermissionKey(), "blocked");
     }

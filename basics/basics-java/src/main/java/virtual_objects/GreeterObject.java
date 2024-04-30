@@ -33,7 +33,7 @@ public class GreeterObject {
         int newCount = count + 1;
         ctx.set(COUNT, newCount);
 
-        return String.format( "%s %s, for the %d-th time", greeting, ctx.key(), count);
+        return String.format( "%s %s, for the %d-th time", greeting, ctx.key(), newCount);
     }
 
     @Handler
@@ -56,6 +56,6 @@ public class GreeterObject {
 
 // See README for details on how to start and connect to Restate.
 // Call this service through HTTP directly the following way:
-// Example1: `curl localhost:8080/greeter/mary/greet   -H 'content-type: application/json' -d '{ "greeting" : "Hi" }'`;
-// Example2: `curl localhost:8080/greeter/barack/greet   -H 'content-type: application/json' -d '{"greeting" : "Hello" }'`;
-// Example3: `curl localhost:8080/greeter/mary/ungreet -H 'content-type: application/json' -d '{}'`;
+// Example1: `curl localhost:8080/GreeterObject/mary/greet -H 'content-type: application/json' -d '"Hi"'`;
+// Example2: `curl localhost:8080/GreeterObject/barack/greet -H 'content-type: application/json' -d '"Hello"'`;
+// Example3: `curl localhost:8080/GreeterObject/mary/ungreet -H 'content-type: application/json' -d ''`;

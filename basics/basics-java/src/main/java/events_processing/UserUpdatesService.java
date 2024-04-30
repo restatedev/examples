@@ -25,6 +25,8 @@ import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.CoreSerdes;
+import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import events_state.ProfileService;
 import utils.UserUpdate;
 
 import java.time.Duration;
@@ -67,6 +69,12 @@ public class UserUpdatesService {
         String roleId = ctx.run(CoreSerdes.JSON_STRING,
                 () -> setUserPermissions(finalUserId, update.getPermissions()));
         ctx.run(() -> provisionResources(finalUserId, roleId, update.getResources()));
-
     }
+
+    public static void main(String[] args) {
+        RestateHttpEndpointBuilder.builder()
+                .bind(new UserUpdatesService())
+                .buildAndListen();
+    }
+
 }

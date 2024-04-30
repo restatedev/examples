@@ -16,6 +16,7 @@ import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.StateKey;
+import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 import utils.UserProfile;
 
 //
@@ -48,5 +49,11 @@ public class ProfileService {
         var name = ctx.get(NAME).orElse("");
         var email = ctx.get(EMAIL).orElse("");
         return new UserProfile(ctx.key(), name, email);
+    }
+
+    public static void main(String[] args) {
+        RestateHttpEndpointBuilder.builder()
+                .bind(new ProfileService())
+                .buildAndListen();
     }
 }
