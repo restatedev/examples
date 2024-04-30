@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
+ *
+ * This file is part of the Restate Examples for the Node.js/TypeScript SDK,
+ * which is released under the MIT license.
+ *
+ * You can find a copy of the license in the file LICENSE
+ * in the root directory of this repository or package or at
+ * https://github.com/restatedev/examples/blob/main/LICENSE
+ */
+
 package durable_execution;
 
 import dev.restate.sdk.Context;
@@ -56,6 +67,9 @@ public class RoleUpdateService {
     }
 }
 
+//
+// See README for details on how to start and connect Restate.
+//
 // When invoking this function (see below for sample request), it will apply all
 // role and permission changes, regardless of crashes.
 // You will see all lines of the type "Applied permission remove:allow for user Sam Beckett"

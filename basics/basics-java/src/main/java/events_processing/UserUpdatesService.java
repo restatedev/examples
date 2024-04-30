@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
+ *
+ * This file is part of the Restate Examples for the Node.js/TypeScript SDK,
+ * which is released under the MIT license.
+ *
+ * You can find a copy of the license in the file LICENSE
+ * in the root directory of this repository or package or at
+ * https://github.com/restatedev/examples/blob/main/LICENSE
+ */
+
 package events_processing;
 
 //
@@ -40,13 +51,14 @@ public class UserUpdatesService {
     @Handler
     public void updateUserEvent(ObjectContext ctx, UserUpdate update) {
 
+        // event handler is a durably executed function that can use all the features of Restate
         String userId = ctx.run(CoreSerdes.JSON_STRING, () -> updateUserProfile(update.getProfile()));
-        while(userId.equals("NOT_READY")){
+        while(userId.equals("NOT_READY")) {
             // Delay the processing of the event by sleeping.
             // The other events for this Virtual Object / key are queued.
             // Events for other keys are processed concurrently.
             // The sleep suspends the function (e.g., when running on FaaS).
-            ctx.sleep(Duration.ofMillis(1000));
+            ctx.sleep(Duration.ofMillis(5000));
             userId = ctx.run(CoreSerdes.JSON_STRING, () -> updateUserProfile(update.getProfile()));
         }
 
@@ -57,5 +69,4 @@ public class UserUpdatesService {
         ctx.run(() -> provisionResources(finalUserId, roleId, update.getResources()));
 
     }
-
 }

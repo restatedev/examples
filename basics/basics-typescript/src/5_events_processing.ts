@@ -33,7 +33,7 @@ const userUpdates = restate.object({
   name: "userUpdates",
   handlers: {
     /*
-     * uses the Event's key (populated for example from Kafka's key) to route the events
+     * uses the Event's key (populated for example from Kafka's key) to route the events to the correct Virtual Object
      * and ensure that events with the same key are processed one after the other.
      */
     updateUserEvent: async (ctx: restate.ObjectContext, event: UserUpdate) => {

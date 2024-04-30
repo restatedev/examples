@@ -30,7 +30,8 @@ async function applyRoleUpdate(ctx: restate.Context, update: UpdateRequest) {
   // Restate does retries for regular failures.
   // TerminalErrors, on the other hand, are not retried and are propagated
   // back to the caller.
-  // Nothing applied so far, so we propagate the error directly back to the caller.
+  // No permissions were applied so far, so if this fails,
+  // we propagate the error directly back to the caller.
   const previousRole = await ctx.run(() => getCurrentRole(userId));
   await ctx.run(() => tryApplyUserRole(userId, role));
 

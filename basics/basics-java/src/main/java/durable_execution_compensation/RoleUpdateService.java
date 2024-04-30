@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
+ *
+ * This file is part of the Restate Examples for the Node.js/TypeScript SDK,
+ * which is released under the MIT license.
+ *
+ * You can find a copy of the license in the file LICENSE
+ * in the root directory of this repository or package or at
+ * https://github.com/restatedev/examples/blob/main/LICENSE
+ */
 package durable_execution_compensation;
 
 import dev.restate.sdk.Context;
@@ -38,7 +48,8 @@ public class RoleUpdateService {
         // Restate does retries for regular failures.
         // TerminalErrors, on the other hand, are not retried and are propagated
         // back to the caller.
-        // Nothing applied so far, so we propagate the error directly back to the caller.
+        // No permissions were applied so far, so if this fails,
+        // we propagate the error directly back to the caller.
         UserRole previousRole = ctx.run(JacksonSerdes.of(UserRole.class),
                 () -> getCurrentRole(update.getUserId()));
         ctx.run(() -> tryApplyUserRole(update.getUserId(), update.getRole()));
@@ -53,7 +64,8 @@ public class RoleUpdateService {
                         () -> tryApplyPermission(update.getUserId(), permission));
                 previousPermissions.add(previous); // remember the previous setting
             } catch (TerminalException err) {
-                    rollback(ctx, update.getUserId(), previousRole, previousPermissions);
+                rollback(ctx, update.getUserId(), previousRole, previousPermissions);
+                throw err;
             }
         }
     }
@@ -67,8 +79,8 @@ public class RoleUpdateService {
     private void rollback(Context ctx, String userId, UserRole previousRole, List<Permission> previousPermissions) {
         logger.info(">>>  !!! ROLLING BACK CHANGES for user ID: " + userId);
 
-        for (Permission permission : previousPermissions) {
-            ctx.run(() -> tryApplyPermission(userId, permission));
+        for (Permission prev : previousPermissions) {
+            ctx.run(() -> tryApplyPermission(userId, prev));
         }
 
         ctx.run(() -> tryApplyUserRole(userId, previousRole));
