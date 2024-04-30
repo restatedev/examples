@@ -36,7 +36,7 @@ application {
   if (project.hasProperty("mainClass")) {
     mainClass.set(project.property("mainClass") as String)
   } else {
-    throw IllegalArgumentException("mainClass property is required")
+    mainClass.set("durable_execution.RoleUpdateService")
   }
 }
 
