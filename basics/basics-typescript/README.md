@@ -1,7 +1,7 @@
 # Examples of the basic concepts for Restate in TypeScript / JavaScript
 
-The examples here showcase the most basic building blocks of Restate. **durable execution**,
-**durable promises**, and **virtual objects**, and the **workflows** abstraction built on top
+The examples here showcase the most basic building blocks of Restate. **Durable Execution**,
+**Durable Promises**, and **Virtual Objects**, and the **Workflows** abstraction built on top
 of them.
 
 The individual example files contain code snippets with comments and a brief descriptions
@@ -46,7 +46,7 @@ about how they work and how they can be run.
 4. Register the example at Restate server by calling
    `npx restate -y deployment register --force "localhost:9080"`.
 
-   _Note: the '--force' flag here is to circumvent all checks relating to graceful upgrades, because it is only a playground, not a production setup._
+   _Note: the '--force' flag here is to circumvent all checks related to graceful upgrades, because it is only a playground, not a production setup._
 
 5. Check the comments in the example for how to interact with the example.
 
