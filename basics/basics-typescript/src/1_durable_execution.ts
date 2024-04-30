@@ -12,15 +12,18 @@
 import * as restate from "@restatedev/restate-sdk";
 import { UpdateRequest, applyUserRole, applyPermission } from "./utils/example_stubs";
 
-// Durable execution ensures code runs to the end, even in the presence of
-// failures. Use this for code that updates different systems and needs to
-// make sure all updates are applied.
+
+// This is an example of the benefits of Durable Execution.
+// Durable Execution ensures code runs to the end, even in the presence of
+// failures. This is particularly useful for code that updates different systems and needs to
+// make sure all updates are applied:
 //
 //  - Failures are automatically retried, unless they are explicitly labeled
 //    as terminal errors
-//  - Restate journals execution progress. Re-tries use that journal to replay
-//    previous already completed results, avoiding a repetition of that work and
-//    ensuring stable deterministic values are used during execution.
+//  - Restate tracks execution progress in a journal.
+//    Work that has already been completed is not repeated during retries.
+//    Instead, the previously completed journal entries are replayed.
+//    This ensures that stable deterministic values are used during execution.
 //  - Durable executed functions use the regular code and control flow,
 //    no custom DSLs
 //
@@ -29,17 +32,18 @@ async function applyRoleUpdate(ctx: restate.Context, update: UpdateRequest) {
   // parameters are durable across retries
   const { userId, role, permissions } = update;
 
-  // apply a change to one system (e.g., DB upsert, API call, ...)
-  // the side effect persists the result with a consensus method so any
-  // any later code relies on a deterministic result
+  // Apply a change to one system (e.g., DB upsert, API call, ...).
+  // The side effect persists the result with a consensus method so
+  // any later code relies on a deterministic result.
   const success = await ctx.run(() => applyUserRole(userId, role));
   if (!success) {
     return;
   }
 
-  // simply loop over the array or permission settings.
-  // each operation through the Restate context is journaled and recovery restores
-  // results of previous operations from the journal without re-executing them
+  // Loop over the permission settings and apply them.
+  // Each operation through the Restate context is journaled
+  // and recovery restores results of previous operations from the journal
+  // without re-executing them.
   for (const permission of permissions) {
     await ctx.run(() => applyPermission(userId, permission));
   }
