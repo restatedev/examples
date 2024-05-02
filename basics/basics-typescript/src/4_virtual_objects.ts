@@ -32,8 +32,8 @@ const greeterObject = restate.object({
     ) => {
       const greeting = request?.greeting ?? "Hello";
 
-      // access the state attached to this object (this 'name')
-      // state access and updates are exclusive and consistent with the invocations
+      // Access the state attached to this object (this 'name')
+      // State access and updates are exclusive and consistent with the invocations
       let count = (await ctx.get<number>("count")) ?? 0;
       count++;
       ctx.set("count", count);

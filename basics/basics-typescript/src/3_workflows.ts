@@ -85,7 +85,7 @@ export const workflowApi = myWorkflow.api;
 //                                                   "email": "bob@builder.com"
 //                                               } }'
 
-// or programatically
+// or programmatically
 async function signupUser(userId: string, name: string, email: string) {
   const rs = restate.clients.connect("http://restate:8080");
   const { client, status } = await rs.submitWorkflow(workflowApi, "signup-" + userId, {

@@ -27,13 +27,16 @@ async function applyRoleUpdate(ctx: restate.Context, update: UpdateRequest) {
   // parameters are durable across retries
   const { userId, role, permissions: permissions } = update;
 
-  // regular failures are re-tries, TerminalErrors are propagated
-  // nothing applied so far, so we propagate the error directly
+  // Restate does retries for regular failures.
+  // TerminalErrors, on the other hand, are not retried and are propagated
+  // back to the caller.
+  // No permissions were applied so far, so if this fails,
+  // we propagate the error directly back to the caller.
   const previousRole = await ctx.run(() => getCurrentRole(userId));
   await ctx.run(() => tryApplyUserRole(userId, role));
 
-  // apply all permissions in order
-  // we collect the previous permission settings to reset if the process fails
+  // Apply all permissions in order.
+  // We collect the previous permission settings to reset if the process fails.
   const previousPermissions: Permission[] = [];
   for (const permission of permissions) {
     try {
@@ -87,7 +90,7 @@ serve.listen(9080);
 // and, in case of a terminal error, their reversal.
 //
 // This will proceed reliably across the occasional process crash, that we blend in.
-// Re-tries will not re-execute previously completed actions again, so each line occurs only once.
+// Once an action has completed, it does not get re-executed on retries, so each line occurs only once.
 
 /* 
 curl localhost:8080/roleUpdate/applyRoleUpdate -H 'content-type: application/json' -d \

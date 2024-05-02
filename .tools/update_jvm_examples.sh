@@ -17,6 +17,8 @@ search_and_replace_version_maven $PROJECT_ROOT/templates/java-maven
 search_and_replace_version_gradle $PROJECT_ROOT/templates/kotlin-gradle
 search_and_replace_version_gradle $PROJECT_ROOT/templates/kotlin-gradle-lambda-cdk/lambda
 
+search_and_replace_version_gradle $PROJECT_ROOT/basics/basics-java
+
 search_and_replace_version_gradle $PROJECT_ROOT/patterns-use-cases/sagas/sagas-java
 search_and_replace_version_gradle $PROJECT_ROOT/patterns-use-cases/sagas/sagas-kotlin
 

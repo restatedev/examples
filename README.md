@@ -43,13 +43,14 @@ challenges.
 
 ### Java
 
-| Type       | Name / Link                                                     |
-|------------|-----------------------------------------------------------------|
-| Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-java)                    |
-| End-to-End | [Food Ordering App](end-to-end-applications/java/food-ordering) |
-| Tutorial   | [Tour of Restate](tutorials/tour-of-restate-java/)              |
-| Templates  | [Template using Gradle](templates/java-gradle)                  |
-| Templates  | [Template using Maven](templates/java-maven)                    |
+| Type       | Name / Link                                                                |
+|------------|----------------------------------------------------------------------------|
+| Basics     | [Durable Execution, Event-processing, Virtual Objects](basics/basics-java) |
+| Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-java)                               |
+| End-to-End | [Food Ordering App](end-to-end-applications/java/food-ordering)            |
+| Tutorial   | [Tour of Restate](tutorials/tour-of-restate-java/)                         |
+| Templates  | [Template using Gradle](templates/java-gradle)                             |
+| Templates  | [Template using Maven](templates/java-maven)                               |
 
 ### Kotlin
 
@@ -81,17 +82,15 @@ Install and run the `restate-server` binary:
   - Download from https://github.com/restatedev/restate/releases
   - Install with Homebrew: `brew install restatedev/tap/restate-server`
   - Install with _npm_: `npm install --global @restatedev/restate-server@latest`
-
-Or run Restate Server in Docker:
-  - `docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:latest`
+  - Run in Docker: `docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:latest`
 
 
 ### (2) Register the examples at Restate Server
 
-Many examples need to be registered at Restate, so that Restate will proxy their function calls and
-do its magic. Once both server and example are running, register the example
+The service endpoints need to be registered in Restate, so that Restate will proxy their function calls and
+do its magic. Once both server and example are running, register the example:
 
-* Via the [CLI](https://docs.restate.dev/operate/cli): `restate dp reg localhost:9080`
+* Via the [CLI](https://docs.restate.dev/operate/cli): `restate deployments register localhost:9080`
 * Via `curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'`
 
 **Important** When running Restate with Docker, use `host.docker.internal` instead of `localhost` in the URIs above.
