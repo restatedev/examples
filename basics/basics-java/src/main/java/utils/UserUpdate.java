@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
  *
- * This file is part of the Restate Examples for the Node.js/TypeScript SDK,
+ * This file is part of the Restate Examples
  * which is released under the MIT license.
  *
  * You can find a copy of the license in the file LICENSE
