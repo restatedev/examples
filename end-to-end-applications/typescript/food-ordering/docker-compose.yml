@@ -104,7 +104,7 @@ services:
     curl -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://order_app:9080\"}' &&
     curl -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://delivery_app:9081\"}' &&
     sleep 3 && 
-    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/driver-updates\", \"sink\":\"component://driver-digital-twin/handleDriverLocationUpdateEvent\" }' &&
+    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/driver-updates\", \"sink\":\"service://driver-digital-twin/handleDriverLocationUpdateEvent\" }' &&
     curl -X POST -H 'content-type: application/json' runtime:8080/driver-mobile-app/driver-01/startDriver -d '{}' &&
     curl -X POST -H 'content-type: application/json' runtime:8080/driver-mobile-app/driver-02/startDriver -d '{}' &&
     exit 1"]
