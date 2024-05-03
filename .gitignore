@@ -4,3 +4,4 @@
 **/.idea
 **/package-lock.json
 **/target
+**/restate-data
