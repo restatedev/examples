@@ -9,8 +9,8 @@
     "prebundle": "rm -rf dist",
     "bundle": "esbuild src/delivery-app/app.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
     "postbundle": "cd dist && zip -r index.zip index.js*",
-    "order-app": "node ./dist/app/order-app.js",
-    "delivery-app": "node ./dist/app/delivery-app.js",
+    "order-app": "node ./dist/order-app/app.js",
+    "delivery-app": "node ./dist/delivery-app/app.js",
     "restaurant-app": "node ./dist/restaurant/server.js",
     "app-dev": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --watch src --respawn --transpile-only src/order-app/app.ts"
   },
