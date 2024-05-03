@@ -36,6 +36,9 @@ jobs:
       - name: Bump sdk-typescript
         if: github.event.inputs.sdkTypescriptVersion != ''
         run: ./.tools/update_node_examples.sh ${{ inputs.sdkTypescriptVersion }}
+      - name: Bump cdk
+        if: github.event.inputs.cdkVersion != ''
+        run: ./.tools/update_cdk_examples.sh ${{ inputs.cdkVersion }}
       - name: Run Node tests
         if: github.event.inputs.sdkTypescriptVersion != ''
         run: ./.tools/run_node_tests.sh
