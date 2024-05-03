@@ -15,7 +15,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
-    <restate.version>0.9.0</restate.version>
+    <restate.version>0.9.2</restate.version>
   </properties>
 
   <dependencies>
