@@ -13,7 +13,7 @@
     "destroy": "npx cdk destroy"
   },
   "devDependencies": {
-    "@restatedev/restate-cdk": "0.8.0",
+    "@restatedev/restate-cdk": "^0.8.1",
     "@types/node": "20.12.7",
     "@typescript-eslint/eslint-plugin": "^7.7.1",
     "aws-cdk": "^2.138.0",
@@ -23,7 +23,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^0.9.0",
+    "@restatedev/restate-sdk": "^0.9.1",
     "aws-cdk-lib": "^2.138.0",
     "constructs": "^10.3.0",
     "source-map-support": "^0.5.21"
