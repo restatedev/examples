@@ -36,7 +36,7 @@ export async function createOrder(orderId: string, order: any) {
 
 export async function getStatus(orderId: string) {
   return await (
-    await axios.post(`${RESTATE_HOST}/OrderStatusService/${orderId}/get`, {
+    await axios.get(`${RESTATE_HOST}/OrderStatusService/${orderId}/get`, {
       headers: challengeHeaders(),
     })
   ).data;
