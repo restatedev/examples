@@ -35,7 +35,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Bump sdk-typescript
         if: github.event.inputs.sdkTypescriptVersion != ''
-        run: ./.tools/update_node_examples.sh
+        run: ./.tools/update_node_examples.sh ${{ inputs.sdkTypescriptVersion }}
       - name: Run Node tests
         if: github.event.inputs.sdkTypescriptVersion != ''
         run: ./.tools/run_node_tests.sh
@@ -51,7 +51,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
       - name: Bump sdk-java
         if: github.event.inputs.sdkJavaVersion != ''
-        run: ./.tools/update_jvm_examples.sh
+        run: ./.tools/update_jvm_examples.sh ${{ inputs.sdkJavaVersion }}
       - name: Run JVM tests
         if: github.event.inputs.sdkJavaVersion != ''
         run: ./.tools/run_jvm_tests.sh
