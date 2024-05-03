@@ -9,7 +9,7 @@ repositories {
   mavenCentral()
 }
 
-val restateVersion = "0.9.0"
+val restateVersion = "0.9.2"
 
 dependencies {
   annotationProcessor("dev.restate:sdk-api-gen:$restateVersion")
