@@ -111,7 +111,13 @@ When adding a new example:
 
 Before releasing, trigger the "pre-release" workflow to update sdk versions. This automatically creates a pull request, which must be manually merged.
 
-Once the repo is ready for the release, push a tag of the form `vX.Y.Z`.
+Once the repo is ready for the release, push a tag of the form `vX.Y.Z`:
+
+```shell
+git checkout main
+git tag -m "Examples v0.9.1" v0.9.1
+git push origin v0.9.1
+```
 
 This triggers a workflow that [creates a draft release](https://github.com/restatedev/examples/releases) on Github, which you need to approve to finalize it.
 
