@@ -27,7 +27,7 @@ const Tweet = () => {
       <Share
         url="https://restate.dev"
         options={{
-          hashtags: 'Current2023,restatedev',
+          hashtags: 'restatedev',
           size: 'large',
           text: tweetText(products),
         }}
