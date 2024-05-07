@@ -37,13 +37,13 @@ type PaymentRequest = {
 async function processPayment(ctx: restate.Context, request: PaymentRequest) {
   verifyPaymentRequest(request);
 
-  // generate a deterministic idempotency key
+  // Generate a deterministic idempotency key
   const idempotencyKey = ctx.rand.uuidv4();
 
-  // initiate a listener for external calls for potential webhook callbacks
+  // Initiate a listener for external calls for potential webhook callbacks
   const webhookPromise = ctx.awakeable<Stripe.PaymentIntent>();
 
-  // make a synchronous call to the payment service
+  // Make a synchronous call to the payment service
   const paymentIntent = await ctx.run("stripe call", () =>
     stripe_utils.createPaymentIntent({
       paymentMethodId: request.paymentMethodId,
@@ -55,15 +55,15 @@ async function processPayment(ctx: restate.Context, request: PaymentRequest) {
   );
 
   if (paymentIntent.status !== "processing") {
-    // the synchros call to stripe had already been completed.
+    // The synchronous call to Stripe had already been completed.
     // That was fast :)
     ctx.console.log(`Request ${idempotencyKey} was processed synchronously!`);
     stripe_utils.ensureSuccess(paymentIntent.status);
     return;
   }
 
-  // We did not get the response on the synchronous path, talking to stripe.
-  // No worries, stripe will let us know when it is done processing via a webhook.
+  // We did not get the response on the synchronous path, talking to Stripe.
+  // No worries, Stripe will let us know when it is done processing via a webhook.
   ctx.console.log(
     `Synchronous response for ${idempotencyKey} yielded 'processing', awaiting webhook call...`
   );
