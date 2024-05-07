@@ -8,45 +8,56 @@ import {
   NonReducibleUnknown,
   Snapshot,
 } from "xstate";
-import {AnyActorSystem} from "xstate/dist/declarations/src/system";
-import {RestateActorSystem, SerialisableActorRef, serialiseActorRef, xStateApi} from "./lib";
+import { AnyActorSystem } from "xstate/dist/declarations/src/system";
+import {
+  RestateActorSystem,
+  SerialisableActorRef,
+  serialiseActorRef,
+  xStateApi,
+} from "./lib";
 import * as restate from "@restatedev/restate-sdk";
-import {TerminalError} from "@restatedev/restate-sdk";
+import { TerminalError } from "@restatedev/restate-sdk";
 
 export type PromiseSnapshot<TOutput, TInput> = Snapshot<TOutput> & {
   input: TInput | undefined;
   sent: boolean;
 };
 
-const RESTATE_PROMISE_SENT = 'restate.promise.sent';
-const RESTATE_PROMISE_RESOLVE = 'restate.promise.resolve';
-const RESTATE_PROMISE_REJECT = 'restate.promise.reject';
-const XSTATE_STOP = 'xstate.stop';
+const RESTATE_PROMISE_SENT = "restate.promise.sent";
+const RESTATE_PROMISE_RESOLVE = "restate.promise.resolve";
+const RESTATE_PROMISE_REJECT = "restate.promise.reject";
+const XSTATE_STOP = "xstate.stop";
 
-type PromiseCreator<TOutput, TInput extends NonReducibleUnknown> = ({input, ctx}: {
+type PromiseCreator<TOutput, TInput extends NonReducibleUnknown> = ({
+  input,
+  ctx,
+}: {
   input: TInput;
-  ctx: restate.RpcContext,
-}) => PromiseLike<TOutput>
+  ctx: restate.Context;
+}) => PromiseLike<TOutput>;
 
 export type PromiseActorLogic<TOutput, TInput = unknown> = ActorLogic<
   PromiseSnapshot<TOutput, TInput>,
   { type: string; [k: string]: unknown },
   TInput, // input
   AnyActorSystem
-> & { sentinel: "restate.promise.actor", config: PromiseCreator<TOutput, TInput> };
+> & {
+  sentinel: "restate.promise.actor";
+  config: PromiseCreator<TOutput, TInput>;
+};
 
 export type PromiseActorRef<TOutput> = ActorRefFrom<
   PromiseActorLogic<TOutput, unknown>
 >;
 
 export function fromPromise<TOutput, TInput extends NonReducibleUnknown>(
-  promiseCreator: PromiseCreator<TOutput, TInput>,
+  promiseCreator: PromiseCreator<TOutput, TInput>
 ): PromiseActorLogic<TOutput, TInput> {
   const logic: PromiseActorLogic<TOutput, TInput> = {
     sentinel: "restate.promise.actor",
     config: promiseCreator,
     transition: (state, event) => {
-      if (state.status !== 'active') {
+      if (state.status !== "active") {
         return state;
       }
 
@@ -61,30 +72,30 @@ export function fromPromise<TOutput, TInput extends NonReducibleUnknown>(
           const resolvedValue = (event as any).data;
           return {
             ...state,
-            status: 'done',
+            status: "done",
             output: resolvedValue,
-            input: undefined
+            input: undefined,
           };
         }
         case RESTATE_PROMISE_REJECT:
           return {
             ...state,
-            status: 'error',
+            status: "error",
             error: (event as any).data,
-            input: undefined
+            input: undefined,
           };
         case XSTATE_STOP:
           return {
             ...state,
-            status: 'stopped',
-            input: undefined
+            status: "stopped",
+            input: undefined,
           };
         default:
           return state;
       }
     },
-    start: (state, {self, system}) => {
-      if (state.status !== 'active') {
+    start: (state, { self, system }) => {
+      if (state.status !== "active") {
         return;
       }
 
@@ -92,13 +103,13 @@ export function fromPromise<TOutput, TInput extends NonReducibleUnknown>(
         return;
       }
 
-      const rs = (system as RestateActorSystem<any>)
+      const rs = system as RestateActorSystem<any>;
 
       rs.ctx.send(rs.api.promise).invoke({
         systemName: rs.systemName,
         self: serialiseActorRef(self),
         srcs: actorSrc(self),
-        input: state.input
+        input: state.input,
       });
 
       // note that we sent off the promise so we don't do it again
@@ -108,7 +119,7 @@ export function fromPromise<TOutput, TInput extends NonReducibleUnknown>(
     },
     getInitialSnapshot: (_, input) => {
       return {
-        status: 'active',
+        status: "active",
         output: undefined,
         error: undefined,
         input,
@@ -116,7 +127,7 @@ export function fromPromise<TOutput, TInput extends NonReducibleUnknown>(
       };
     },
     getPersistedSnapshot: (snapshot) => snapshot,
-    restoreSnapshot: (snapshot: any) => snapshot
+    restoreSnapshot: (snapshot: any) => snapshot,
   };
 
   return logic;
@@ -124,64 +135,97 @@ export function fromPromise<TOutput, TInput extends NonReducibleUnknown>(
 
 function actorSrc(actor?: AnyActorRef): string[] {
   if (actor === undefined) {
-    return []
+    return [];
   }
   if (typeof actor.src !== "string") {
-    return []
+    return [];
   }
-  return [actor.src, ...actorSrc(actor._parent)]
+  return [actor.src, ...actorSrc(actor._parent)];
 }
 
-export const promiseMethods = <TLogic extends AnyStateMachine>(path: string, logic: TLogic) => {
-  const api = xStateApi(path)
+export const promiseMethods = <TLogic extends AnyStateMachine>(
+  path: string,
+  logic: TLogic
+) => {
+  const api = xStateApi(path);
 
   return {
-    invoke: async (ctx: restate.RpcContext, {
-      systemName,
-      self,
-      srcs,
-      input
-    }: { systemName: string, self: SerialisableActorRef, srcs: string[], input: NonReducibleUnknown }) => {
-      console.log("run promise with srcs", srcs, "in system", systemName, "with input", input)
+    invoke: async (
+      ctx: restate.Context,
+      {
+        systemName,
+        self,
+        srcs,
+        input,
+      }: {
+        systemName: string;
+        self: SerialisableActorRef;
+        srcs: string[];
+        input: NonReducibleUnknown;
+      }
+    ) => {
+      console.log(
+        "run promise with srcs",
+        srcs,
+        "in system",
+        systemName,
+        "with input",
+        input
+      );
 
-      const [promiseSrc, ...machineSrcs] = srcs
+      const [promiseSrc, ...machineSrcs] = srcs;
 
       let stateMachine: AnyStateMachine = logic;
       for (const src of machineSrcs) {
-        let maybeSM
+        let maybeSM;
         try {
-          maybeSM = resolveReferencedActor(stateMachine, src)
+          maybeSM = resolveReferencedActor(stateMachine, src);
         } catch (e) {
-          throw new TerminalError(`Failed to resolve promise actor ${src}: ${e}`)
+          throw new TerminalError(
+            `Failed to resolve promise actor ${src}: ${e}`
+          );
         }
         if (maybeSM === undefined) {
-          throw new TerminalError(`Couldn't find state machine actor with src ${src}`)
+          throw new TerminalError(
+            `Couldn't find state machine actor with src ${src}`
+          );
         }
         if ("implementations" in maybeSM) {
-          stateMachine = maybeSM as AnyStateMachine
+          stateMachine = maybeSM as AnyStateMachine;
         } else {
-          throw new TerminalError(`Couldn't recognise machine actor with src ${src}`)
+          throw new TerminalError(
+            `Couldn't recognise machine actor with src ${src}`
+          );
         }
       }
 
-      let promiseActor: PromiseActorLogic<any> | undefined
-      let maybePA
+      let promiseActor: PromiseActorLogic<any> | undefined;
+      let maybePA;
       try {
-        maybePA = resolveReferencedActor(stateMachine, promiseSrc)
+        maybePA = resolveReferencedActor(stateMachine, promiseSrc);
       } catch (e) {
-        throw new TerminalError(`Failed to resolve promise actor ${promiseSrc}: ${e}`)
+        throw new TerminalError(
+          `Failed to resolve promise actor ${promiseSrc}: ${e}`
+        );
       }
       if (maybePA === undefined) {
-        throw new TerminalError(`Couldn't find promise actor with src ${promiseSrc}`)
+        throw new TerminalError(
+          `Couldn't find promise actor with src ${promiseSrc}`
+        );
       }
-      if ("sentinel" in maybePA && maybePA.sentinel === "restate.promise.actor") {
-        promiseActor = maybePA as PromiseActorLogic<any>
+      if (
+        "sentinel" in maybePA &&
+        maybePA.sentinel === "restate.promise.actor"
+      ) {
+        promiseActor = maybePA as PromiseActorLogic<any>;
       } else {
-        throw new TerminalError(`Couldn't recognise promise actor with src ${promiseSrc}`)
+        throw new TerminalError(
+          `Couldn't recognise promise actor with src ${promiseSrc}`
+        );
       }
 
       const resolvedPromise = Promise.resolve(
-        promiseActor.config({input, ctx})
+        promiseActor.config({ input, ctx })
       );
 
       await resolvedPromise.then(
@@ -191,8 +235,8 @@ export const promiseMethods = <TLogic extends AnyStateMachine>(path: string, log
             target: self,
             event: {
               type: RESTATE_PROMISE_RESOLVE,
-              data: response
-            }
+              data: response,
+            },
           });
         },
         (errorData) => {
@@ -201,17 +245,19 @@ export const promiseMethods = <TLogic extends AnyStateMachine>(path: string, log
             target: self,
             event: {
               type: RESTATE_PROMISE_REJECT,
-              data: errorData
-            }
+              data: errorData,
+            },
           });
         }
       );
-    }
-  }
-}
+    },
+  };
+};
 
-
-export function resolveReferencedActor(machine: AnyStateMachine, src: string): AnyActorLogic | undefined {
+export function resolveReferencedActor(
+  machine: AnyStateMachine,
+  src: string
+): AnyActorLogic | undefined {
   const match = src.match(/^xstate\.invoke\.(\d+)\.(.*)/)!;
   if (!match) {
     return machine.implementations.actors[src] as AnyActorLogic;

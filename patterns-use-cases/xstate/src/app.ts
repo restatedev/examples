@@ -11,69 +11,72 @@
 
 import * as restate from "@restatedev/restate-sdk";
 
-import {createMachine, sendTo} from 'xstate';
-import {bindXStateRouter} from "./lib";
-import {fromPromise} from "./promise";
+import { createMachine, sendTo } from "xstate";
+import { bindXStateRouter } from "./lib";
+import { fromPromise } from "./promise";
 
-const authServerMachine = createMachine({
-  id: 'server',
-  initial: 'waitingForCode',
-  states: {
-    waitingForCode: {
-      on: {
-        CODE: {
-          target: "process"
+const authServerMachine = createMachine(
+  {
+    id: "server",
+    initial: "waitingForCode",
+    states: {
+      waitingForCode: {
+        on: {
+          CODE: {
+            target: "process",
+          },
+        },
+      },
+      process: {
+        invoke: {
+          id: "process",
+          src: "authorise",
+          onDone: {
+            actions: sendTo(
+              ({ self }) => self._parent!,
+              { type: "TOKEN" },
+              { delay: 1000 }
+            ),
+          },
         },
       },
     },
-    process: {
-      invoke: {
-        id: 'process',
-        src: 'authorise',
-        onDone: {
-          actions: sendTo(
-            ({self}) => self._parent!,
-            { type: 'TOKEN' },
-            { delay: 1000 },
-          ),
-        },
-      }
+  },
+  {
+    actors: {
+      authorise: fromPromise(
+        () => new Promise((resolve) => setTimeout(resolve, 5000))
+      ),
     },
   }
-}, {
-  actors: {
-    authorise: fromPromise(() => new Promise((resolve) => setTimeout(resolve, 5000))),
-  }
-});
+);
 
 const authClientMachine = createMachine({
-  id: 'client',
-  initial: 'idle',
+  id: "client",
+  initial: "idle",
   states: {
     idle: {
       on: {
-        AUTH: {target: 'authorizing'},
+        AUTH: { target: "authorizing" },
       },
     },
     authorizing: {
       invoke: {
-        id: 'auth-server',
+        id: "auth-server",
         src: authServerMachine,
       },
-      entry: sendTo('auth-server', ({self}) => ({
-        type: 'CODE',
+      entry: sendTo("auth-server", ({ self }) => ({
+        type: "CODE",
         sender: self,
       })),
       on: {
-        TOKEN: {target: 'authorized'},
+        TOKEN: { target: "authorized" },
       },
     },
     authorized: {
-      type: 'final',
+      type: "final",
     },
   },
 });
 
-
-bindXStateRouter(restate.createServer(), "foo", authClientMachine).listen()
-
+bindXStateRouter(restate.endpoint(), "auth", authClientMachine).listen();

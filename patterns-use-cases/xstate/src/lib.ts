@@ -17,48 +17,54 @@ import {
   Observer,
   Snapshot,
   Subscription,
-  toObserver
+  toObserver,
 } from "xstate";
 import * as restate from "@restatedev/restate-sdk";
-import {TerminalError} from "@restatedev/restate-sdk";
-import {promiseMethods} from "./promise";
+import { TerminalError } from "@restatedev/restate-sdk";
+import { promiseMethods } from "./promise";
 import {
   AreAllImplementationsAssumedToBeProvided,
-  MissingImplementationsError
+  MissingImplementationsError,
 } from "xstate/dist/declarations/src/typegenTypes";
 
-export interface RestateActorSystem<T extends ActorSystemInfo> extends ActorSystem<T> {
+export interface RestateActorSystem<T extends ActorSystemInfo>
+  extends ActorSystem<T> {
   _bookId: () => string;
   _register: (sessionId: string, actorRef: AnyActorRef) => string;
   _unregister: (actorRef: AnyActorRef) => void;
   _sendInspectionEvent: (
-    event: HomomorphicOmit<InspectionEvent, 'rootId'>
+    event: HomomorphicOmit<InspectionEvent, "rootId">
   ) => void;
-  actor: (sessionId: string) => AnyActorRef | undefined,
-  _set: <K extends keyof T['actors']>(key: K, actorRef: T['actors'][K]) => void;
+  actor: (sessionId: string) => AnyActorRef | undefined;
+  _set: <K extends keyof T["actors"]>(key: K, actorRef: T["actors"][K]) => void;
   _relay: (
     source: AnyActorRef | SerialisableActorRef | undefined,
     target: AnyActorRef,
     event: AnyEventObject
   ) => void;
-  api: XStateApi<ActorLogicFrom<T>>
-  ctx: restate.RpcContext,
-  systemName: string,
+  api: XStateApi<ActorLogicFrom<T>>;
+  ctx: restate.KeyedContext;
+  systemName: string;
 }
 
 export type SerialisableActorRef = {
   id: string;
   sessionId: string;
-  _parent?: SerialisableActorRef,
-}
+  _parent?: SerialisableActorRef;
+};
 
-export const serialiseActorRef = (actorRef: AnyActorRef): SerialisableActorRef => {
+export const serialiseActorRef = (
+  actorRef: AnyActorRef
+): SerialisableActorRef => {
   return {
     id: actorRef.id,
     sessionId: actorRef.sessionId,
-    _parent: actorRef._parent === undefined ? undefined : serialiseActorRef(actorRef._parent)
-  }
-}
+    _parent:
+      actorRef._parent === undefined
+        ? undefined
+        : serialiseActorRef(actorRef._parent),
+  };
+};
 
 type SerialisableScheduledEvent = {
   id: string;
@@ -68,27 +74,51 @@ type SerialisableScheduledEvent = {
   source: SerialisableActorRef;
   target: SerialisableActorRef;
   uuid: string;
-}
+};
 
-async function createSystem<T extends ActorSystemInfo>(ctx: restate.RpcContext, api: XStateApi<ActorLogicFrom<T>>, systemName: string): Promise<RestateActorSystem<T>> {
-  const events = await ctx.get<{ [key: string]: SerialisableScheduledEvent }>("events") ?? {}
-  const childrenByID = await ctx.get<{ [key: string]: SerialisableActorRef }>("children") ?? {}
+async function createSystem<T extends ActorSystemInfo>(
+  ctx: restate.KeyedContext,
+  api: XStateApi<ActorLogicFrom<T>>,
+  systemName: string
+): Promise<RestateActorSystem<T>> {
+  const events =
+    (await ctx.get<{ [key: string]: SerialisableScheduledEvent }>("events")) ??
+    {};
+  const childrenByID =
+    (await ctx.get<{ [key: string]: SerialisableActorRef }>("children")) ?? {};
 
-  let idCounter = 0;
   const children = new Map<string, AnyActorRef>();
-  const keyedActors = new Map<keyof T['actors'], AnyActorRef | undefined>();
-  const reverseKeyedActors = new WeakMap<AnyActorRef, keyof T['actors']>();
+  const keyedActors = new Map<keyof T["actors"], AnyActorRef | undefined>();
+  const reverseKeyedActors = new WeakMap<AnyActorRef, keyof T["actors"]>();
   const observers = new Set<Observer<InspectionEvent>>();
 
   const scheduler = {
-    schedule(_source: AnyActorRef, _target: AnyActorRef, event: EventObject, delay: number, id: string | undefined): void {
+    schedule(
+      _source: AnyActorRef,
+      _target: AnyActorRef,
+      event: EventObject,
+      delay: number,
+      id: string | undefined
+    ): void {
       if (id === undefined) {
-        id = ctx.rand.random().toString(36).slice(2)
+        id = ctx.rand.random().toString(36).slice(2);
       }
 
-      const {source, target} = {source: serialiseActorRef(_source), target: serialiseActorRef(_target)}
+      const { source, target } = {
+        source: serialiseActorRef(_source),
+        target: serialiseActorRef(_target),
+      };
 
-      console.log("schedule from", source.id, "to", target.id, "with id", id, "and delay", delay)
+      console.log(
+        "schedule from",
+        source.id,
+        "to",
+        target.id,
+        "with id",
+        id,
+        "and delay",
+        delay
+      );
 
       const scheduledEvent: SerialisableScheduledEvent = {
         source,
@@ -101,25 +131,32 @@ async function createSystem<T extends ActorSystemInfo>(ctx: restate.RpcContext, 
       };
       const scheduledEventId = createScheduledEventId(source, id);
       if (scheduledEventId in events) {
-        console.log("Ignoring duplicated schedule from", source.id, "to", target.id)
-        return
+        console.log(
+          "Ignoring duplicated schedule from",
+          source.id,
+          "to",
+          target.id
+        );
+        return;
       }
 
       events[scheduledEventId] = scheduledEvent;
 
-      ctx.sendDelayed(api.actor, delay).send(systemName, {scheduledEvent, source, target, event})
-      ctx.set("events", events)
+      ctx
+        .sendDelayed(api.actor, delay)
+        .send(systemName, { scheduledEvent, source, target, event });
+      ctx.set("events", events);
     },
     cancel(source: AnyActorRef, id: string): void {
-      console.log("cancel schedule from", source.id, "with id", id)
+      console.log("cancel schedule from", source.id, "with id", id);
 
       const scheduledEventId = createScheduledEventId(source, id);
 
       delete events[scheduledEventId];
-      ctx.set("events", events)
+      ctx.set("events", events);
     },
     cancelAll(actorRef: AnyActorRef): void {
-      console.log("cancel all for", actorRef.id)
+      console.log("cancel all for", actorRef.id);
 
       for (const scheduledEventId in events) {
         const scheduledEvent = events[scheduledEventId];
@@ -127,9 +164,9 @@ async function createSystem<T extends ActorSystemInfo>(ctx: restate.RpcContext, 
           delete events[scheduledEventId];
         }
       }
-      ctx.set("events", events)
+      ctx.set("events", events);
     },
-  }
+  };
 
   const system: RestateActorSystem<T> = {
     ctx,
@@ -140,26 +177,26 @@ async function createSystem<T extends ActorSystemInfo>(ctx: restate.RpcContext, 
     _register: (sessionId, actorRef) => {
       if (actorRef.id in childrenByID) {
         // rehydration case; ensure session ID maintains continuity
-        sessionId = childrenByID[actorRef.id].sessionId
-        actorRef.sessionId = sessionId
+        sessionId = childrenByID[actorRef.id].sessionId;
+        actorRef.sessionId = sessionId;
       } else {
         // new actor case
-        childrenByID[actorRef.id] = serialiseActorRef(actorRef)
-        ctx.set("children", childrenByID)
+        childrenByID[actorRef.id] = serialiseActorRef(actorRef);
+        ctx.set("children", childrenByID);
       }
-      console.log("register", sessionId, actorRef.id)
+      console.log("register", sessionId, actorRef.id);
       children.set(sessionId, actorRef);
       return sessionId;
     },
     _unregister: (actorRef) => {
       if (actorRef.id in childrenByID) {
         // rehydration case; ensure session ID maintains continuity
-        actorRef.sessionId = childrenByID[actorRef.id].sessionId
+        actorRef.sessionId = childrenByID[actorRef.id].sessionId;
       }
 
       children.delete(actorRef.sessionId);
-      delete childrenByID[actorRef.id]
-      ctx.set("children", childrenByID)
+      delete childrenByID[actorRef.id];
+      ctx.set("children", childrenByID);
       const systemId = reverseKeyedActors.get(actorRef);
 
       if (systemId !== undefined) {
@@ -175,10 +212,10 @@ async function createSystem<T extends ActorSystemInfo>(ctx: restate.RpcContext, 
       observers.forEach((observer) => observer.next?.(resolvedInspectionEvent));
     },
     actor: (sessionId) => {
-      return children.get(sessionId)
+      return children.get(sessionId);
     },
     get: (systemId) => {
-      return keyedActors.get(systemId) as T['actors'][any];
+      return keyedActors.get(systemId) as T["actors"][any];
     },
     _set: (systemId, actorRef) => {
       const existing = keyedActors.get(systemId);
@@ -195,17 +232,23 @@ async function createSystem<T extends ActorSystemInfo>(ctx: restate.RpcContext, 
       observers.add(observer);
     },
     _relay: (source, target, event) => {
-      console.log("Relaying message from", source?.id, "to", target.id, ":", event.type);
+      console.log(
+        "Relaying message from",
+        source?.id,
+        "to",
+        target.id,
+        ":",
+        event.type
+      );
       (target as any)._send(event);
     },
     scheduler,
     getSnapshot: () => {
       return {
-        _scheduledEvents: {} // unused
+        _scheduledEvents: {}, // unused
       };
     },
-    start: () => {
-    }
+    start: () => {},
   };
 
   return system;
@@ -215,141 +258,212 @@ interface FakeParent<TLogic extends AnyStateMachine> extends AnyActorRef {
   _send: (event: EventFromLogic<TLogic>) => void;
 }
 
-export async function createActor<TLogic extends AnyStateMachine>(ctx: restate.RpcContext, api: XStateApi<TLogic>, systemName: string, logic: TLogic extends AnyStateMachine ? AreAllImplementationsAssumedToBeProvided<TLogic['__TResolvedTypesMeta']> extends true ? TLogic : MissingImplementationsError<TLogic['__TResolvedTypesMeta']> : TLogic, options?: ActorOptions<TLogic>): Promise<Actor<TLogic>> {
-  const system = await createSystem(ctx, api, systemName)
-  const snapshot = await ctx.get<Snapshot<unknown>>("snapshot") ?? undefined;
+export async function createActor<TLogic extends AnyStateMachine>(
+  ctx: restate.KeyedContext,
+  api: XStateApi<TLogic>,
+  systemName: string,
+  logic: TLogic extends AnyStateMachine
+    ? AreAllImplementationsAssumedToBeProvided<
+        TLogic["__TResolvedTypesMeta"]
+      > extends true
+      ? TLogic
+      : MissingImplementationsError<TLogic["__TResolvedTypesMeta"]>
+    : TLogic,
+  options?: ActorOptions<TLogic>
+): Promise<Actor<TLogic>> {
+  const system = await createSystem(ctx, api, systemName);
+  const snapshot = (await ctx.get<Snapshot<unknown>>("snapshot")) ?? undefined;
 
   const parent: FakeParent<TLogic> = {
     id: "fakeRoot",
     sessionId: "fakeRoot",
-    send: () => {
-    },
-    _send: () => {
-    },
-    start: () => {
-    },
+    send: () => {},
+    _send: () => {},
+    start: () => {},
     getSnapshot: (): null => {
-      return null
+      return null;
     }, // TODO
     getPersistedSnapshot: (): Snapshot<unknown> => {
       return {
-        status: 'active',
+        status: "active",
         output: undefined,
         error: undefined,
-      }
+      };
     }, // TODO
-    stop: () => {
-    }, // TODO
+    stop: () => {}, // TODO
     system,
     src: "fakeRoot",
     subscribe: (): Subscription => {
       return {
-        unsubscribe() {
-        }
-      }
+        unsubscribe() {},
+      };
     },
     [Symbol.observable]: (): InteropSubscribable<any> => {
       return {
         subscribe(): Subscription {
           return {
-            unsubscribe() {
-            }
-          }
-        }
-      }
+            unsubscribe() {},
+          };
+        },
+      };
     },
-  }
+  };
 
   if (options?.inspect) {
     // Always inspect at the system-level
     system.inspect(toObserver(options.inspect));
   }
 
-  return createXActor(logic, {id: "root", ...options, parent, snapshot} as any);
+  return createXActor(logic, {
+    id: "root",
+    ...options,
+    parent,
+    snapshot,
+  } as any);
 }
 
-const actorMethods = <TLogic extends AnyStateMachine>(path: string, logic: TLogic) => {
-  const api = xStateApi(path)
+const actorMethods = <TLogic extends AnyStateMachine>(
+  path: string,
+  logic: TLogic
+) => {
+  const api = xStateApi(path);
 
   return {
-    create: async (ctx: restate.RpcContext, systemName: string, request?: { input?: InputFrom<TLogic> }): Promise<Snapshot<unknown>> => {
-      ctx.clear("snapshot")
-      ctx.clear("events")
-      ctx.clear("children")
+    create: async (
+      ctx: restate.KeyedContext,
+      systemName: string,
+      request?: { input?: InputFrom<TLogic> }
+    ): Promise<Snapshot<unknown>> => {
+      ctx.clear("snapshot");
+      ctx.clear("events");
+      ctx.clear("children");
 
-      const root = (await createActor(ctx, api, systemName, logic, {
-        input: request?.input,
-      })).start();
+      const root = (
+        await createActor(ctx, api, systemName, logic, {
+          input: request?.input,
+        })
+      ).start();
 
-      ctx.set("snapshot", root.getPersistedSnapshot())
+      ctx.set("snapshot", root.getPersistedSnapshot());
 
-      return root.getPersistedSnapshot()
+      return root.getPersistedSnapshot();
     },
-    send: async (ctx: restate.RpcContext, systemName: string, request?: { scheduledEvent?: SerialisableScheduledEvent, source?: SerialisableActorRef, target?: SerialisableActorRef, event: AnyEventObject }): Promise<Snapshot<unknown> | undefined> => {
+    send: async (
+      ctx: restate.KeyedContext,
+      systemName: string,
+      request?: {
+        scheduledEvent?: SerialisableScheduledEvent;
+        source?: SerialisableActorRef;
+        target?: SerialisableActorRef;
+        event: AnyEventObject;
+      }
+    ): Promise<Snapshot<unknown> | undefined> => {
       if (!request) {
-        throw new TerminalError("Must provide a request")
+        throw new TerminalError("Must provide a request");
       }
 
       if (request.scheduledEvent) {
-        const events = await ctx.get<{ [key: string]: SerialisableScheduledEvent }>("events") ?? {}
-        const scheduledEventId = createScheduledEventId(request.scheduledEvent.source, request.scheduledEvent.id)
+        const events =
+          (await ctx.get<{ [key: string]: SerialisableScheduledEvent }>(
+            "events"
+          )) ?? {};
+        const scheduledEventId = createScheduledEventId(
+          request.scheduledEvent.source,
+          request.scheduledEvent.id
+        );
         if (!(scheduledEventId in events)) {
-          console.log("Received now cancelled event", scheduledEventId, "for target", request.target)
-          return
+          console.log(
+            "Received now cancelled event",
+            scheduledEventId,
+            "for target",
+            request.target
+          );
+          return;
         }
         if (events[scheduledEventId].uuid !== request.scheduledEvent.uuid) {
-          console.log("Received now replaced event", scheduledEventId, "for target", request.target)
-          return
+          console.log(
+            "Received now replaced event",
+            scheduledEventId,
+            "for target",
+            request.target
+          );
+          return;
         }
-        delete events[scheduledEventId]
-        ctx.set("events", events)
+        delete events[scheduledEventId];
+        ctx.set("events", events);
       }
 
       const root = (await createActor(ctx, api, systemName, logic)).start();
 
-
       let actor;
       if (request.target) {
-        actor = (root.system as RestateActorSystem<any>).actor(request.target.sessionId)
+        actor = (root.system as RestateActorSystem<any>).actor(
+          request.target.sessionId
+        );
         if (!actor) {
-          throw new TerminalError(`Actor ${request.target.id} not found; it may have since stopped`)
+          throw new TerminalError(
+            `Actor ${request.target.id} not found; it may have since stopped`
+          );
         }
       } else {
-        actor = root
+        actor = root;
       }
 
-      (root.system as RestateActorSystem<any>)._relay(request.source, actor, request.event)
+      (root.system as RestateActorSystem<any>)._relay(
+        request.source,
+        actor,
+        request.event
+      );
 
-      const nextSnapshot = root.getPersistedSnapshot()
-      ctx.set("snapshot", nextSnapshot)
+      const nextSnapshot = root.getPersistedSnapshot();
+      ctx.set("snapshot", nextSnapshot);
 
-      return nextSnapshot
+      return nextSnapshot;
     },
-    snapshot: async (ctx: restate.RpcContext, systemName: string): Promise<Snapshot<unknown>> => {
-      const root = (await createActor(ctx, api, systemName, logic));
+    snapshot: async (
+      ctx: restate.KeyedContext,
+      systemName: string
+    ): Promise<Snapshot<unknown>> => {
+      const root = await createActor(ctx, api, systemName, logic);
 
-      return root.getPersistedSnapshot()
+      return root.getPersistedSnapshot();
     },
-  }
-}
+  };
+};
 
-export const bindXStateRouter = <
-  TLogic extends AnyStateMachine,
->(server: restate.RestateServer, path: string, logic: TLogic): restate.RestateServer => {
+export const bindXStateRouter = <TLogic extends AnyStateMachine>(
+  server: restate.RestateEndpoint,
+  path: string,
+  logic: TLogic
+): restate.RestateEndpoint => {
   return server
     .bindKeyedRouter(path, restate.keyedRouter(actorMethods(path, logic)))
-    .bindRouter(`${path}.promises`, restate.router(promiseMethods(path, logic)))
-}
+    .bindRouter(
+      `${path}.promises`,
+      restate.router(promiseMethods(path, logic))
+    );
+};
 
-export const xStateApi = <TLogic extends AnyStateMachine>(path: string): XStateApi<TLogic> => {
-  const actor: restate.ServiceApi<ActorRouter<TLogic>> = {path}
-  const promise: restate.ServiceApi<PromiseRouter<TLogic>> = {path: `${path}.promises`}
-  return {actor, promise}
-}
+export const xStateApi = <TLogic extends AnyStateMachine>(
+  path: string
+): XStateApi<TLogic> => {
+  const actor: restate.ServiceApi<ActorRouter<TLogic>> = { path };
+  const promise: restate.ServiceApi<PromiseRouter<TLogic>> = {
+    path: `${path}.promises`,
+  };
+  return { actor, promise };
+};
 
-type ActorRouter<TLogic extends AnyStateMachine> = restate.KeyedRouter<ReturnType<typeof actorMethods<TLogic>>>
-type PromiseRouter<TLogic extends AnyStateMachine> = restate.UnKeyedRouter<ReturnType<typeof promiseMethods<TLogic>>>
-type XStateApi<TLogic extends AnyStateMachine> = { actor: restate.ServiceApi<ActorRouter<TLogic>>, promise: restate.ServiceApi<PromiseRouter<TLogic>> }
+type ActorRouter<TLogic extends AnyStateMachine> = restate.KeyedRouter<
+  ReturnType<typeof actorMethods<TLogic>>
+>;
+type PromiseRouter<TLogic extends AnyStateMachine> = restate.UnKeyedRouter<
+  ReturnType<typeof promiseMethods<TLogic>>
+>;
+type XStateApi<TLogic extends AnyStateMachine> = {
+  actor: restate.ServiceApi<ActorRouter<TLogic>>;
+  promise: restate.ServiceApi<PromiseRouter<TLogic>>;
+};
 
 function createScheduledEventId(
   actorRef: SerialisableActorRef,
@@ -357,4 +471,3 @@ function createScheduledEventId(
 ): string {
   return `${actorRef.sessionId}.${id}`;
 }
-
