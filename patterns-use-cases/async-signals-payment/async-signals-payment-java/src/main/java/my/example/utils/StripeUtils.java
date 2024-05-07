@@ -9,16 +9,21 @@ import com.stripe.net.RequestOptions;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.PaymentIntentCreateParams.ConfirmationMethod;
 import dev.restate.sdk.common.TerminalException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class StripeUtils {
 
+    Logger logger = LogManager.getLogger(StripeUtils.class);
     private final String stripeSecretKey = "...";
     private final String webhookSecret = "...";
+    private final String stripeApiBase = "http://localhost:12112";
     private final StripeClient stripe;
 
     public StripeUtils (){
         stripe = StripeClient.builder()
                 .setApiKey(stripeSecretKey)
+                .setApiBase(stripeApiBase)
                 .build();
     }
 
@@ -46,14 +51,14 @@ public class StripeUtils {
     ){
 
         try {
-            PaymentIntent paymentIntent = PaymentIntent.create(
+            PaymentIntent paymentIntent = stripe.paymentIntents().create(
                     new PaymentIntentCreateParams.Builder()
                             .setPaymentMethod(paymentMethodId)
                             .setAmount(amount)
                             .setCurrency("USD")
                             .setConfirm(true)
                             .setConfirmationMethod(ConfirmationMethod.AUTOMATIC)
-                            .setReturnUrl("https://restate.dev/")
+//                            .setReturnUrl("https://restate.dev/")
                             .build(),
                     RequestOptions.builder()
                             .setIdempotencyKey(idempotencyKey)
@@ -66,13 +71,18 @@ public class StripeUtils {
 
             return paymentIntent;
         } catch (StripeException err) {
+            logger.error("Payment error: " + err.getMessage());
             // Simulate delayed notifications for testing
-            PaymentIntent paymentIntent = err.getStripeError().getPaymentIntent();
-            if(delayedStatus) {
-                paymentIntent.setStatus("processing");
-                return paymentIntent;
-            } else {
-                throw new TerminalException("Payment declined: " + paymentIntent.getStatus() + " - " + err.getMessage());
+            try {
+                PaymentIntent paymentIntent = err.getStripeError().getPaymentIntent();
+                if(delayedStatus) {
+                    paymentIntent.setStatus("processing");
+                    return paymentIntent;
+                } else {
+                    throw new TerminalException("Payment declined: " + paymentIntent.getStatus() + " - " + err.getMessage());
+                }
+            } catch (NullPointerException exc) {
+                throw new TerminalException("Payment error: " + exc.getMessage());
             }
         }
     }
