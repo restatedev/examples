@@ -22,7 +22,7 @@ export default restate.object({
 
     deposit: async (ctx: restate.ObjectContext, amountCents: number) => {
       if (amountCents < 0) {
-        throw new restate.TerminalError("Amount must not be negative");
+        throw new restate.TerminalError("Amount must be greater than 0: amount = " + amountCents);
       }
 
       const balanceCents: number =
@@ -36,7 +36,7 @@ export default restate.object({
       amountCents: number
     ): Promise<Result> => {
       if (amountCents < 0) {
-        throw new restate.TerminalError("Amount must not be negative");
+        throw new restate.TerminalError("Amount must be greater than 0: amount = " + amountCents);
       }
 
       const balanceCents =
@@ -45,7 +45,7 @@ export default restate.object({
       if (balanceCents < amountCents) {
         return {
           success: false,
-          reason: `balance to low: ${balanceCents} cents`,
+          reason: `Insufficient funds: ${balanceCents} cents`,
         };
       }
 
