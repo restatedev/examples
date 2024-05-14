@@ -8,6 +8,7 @@ import com.stripe.model.PaymentIntent;
 import com.stripe.net.RequestOptions;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.PaymentIntentCreateParams.ConfirmationMethod;
+import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.TerminalException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,15 +16,13 @@ import org.apache.logging.log4j.Logger;
 public class StripeUtils {
 
     Logger logger = LogManager.getLogger(StripeUtils.class);
-    private final String stripeSecretKey = "...";
-    private final String webhookSecret = "...";
-    private final String stripeApiBase = "http://localhost:12112";
+    private final String stripeSecretKey = "sk_test_...";
+    private final String webhookSecret = "whsec_...";
     private final StripeClient stripe;
 
     public StripeUtils (){
         stripe = StripeClient.builder()
                 .setApiKey(stripeSecretKey)
-                .setApiBase(stripeApiBase)
                 .build();
     }
 
@@ -58,7 +57,7 @@ public class StripeUtils {
                             .setCurrency("USD")
                             .setConfirm(true)
                             .setConfirmationMethod(ConfirmationMethod.AUTOMATIC)
-//                            .setReturnUrl("https://restate.dev/")
+                            .setReturnUrl("https://restate.dev/")
                             .build(),
                     RequestOptions.builder()
                             .setIdempotencyKey(idempotencyKey)
@@ -84,6 +83,14 @@ public class StripeUtils {
             } catch (NullPointerException exc) {
                 throw new TerminalException("Payment error: " + exc.getMessage());
             }
+        }
+    }
+
+    public PaymentIntent retrieve(String id) {
+        try {
+            return stripe.paymentIntents().retrieve(id);
+        } catch (StripeException e) {
+            throw new RuntimeException(e);
         }
     }
 

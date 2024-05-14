@@ -22,6 +22,7 @@ import dev.restate.sdk.common.Request;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
+import my.example.serde.PaymentIntentSerde;
 import my.example.types.PaymentRequest;
 import my.example.utils.PaymentUtils;
 import my.example.utils.StripeUtils;
@@ -58,12 +59,12 @@ public class PaymentService {
     String idempotencyKey = ctx.random().nextUUID().toString();
 
     // Initiate a listener for external calls for potential webhook callbacks
-    Awakeable<PaymentIntent> webhookPromise = ctx.awakeable(JacksonSerdes.of(PaymentIntent.class));
+    Awakeable<PaymentIntent> webhookPromise = ctx.awakeable(new PaymentIntentSerde());
 
     // Make a synchronous call to the payment service
     PaymentIntent paymentIntent = ctx.run(
           "Stripe call",
-          JacksonSerdes.of(PaymentIntent.class),
+          new PaymentIntentSerde(),
             () -> {
                 // create payment intent
                 return stripe.createPaymentIntent(
@@ -99,7 +100,7 @@ public class PaymentService {
 
 
   @Handler
-  public boolean processWebhook(Context ctx){
+  public boolean processWebhook(Context ctx, byte[] body){
     Request req = ctx.request();
     String sig = req.headers().get("stripe-signature");
     Event event = stripe.parseWebhookCall(req.body(), sig);
@@ -126,7 +127,7 @@ public class PaymentService {
     }
 
     ctx.awakeableHandle(webhookPromise)
-            .resolve(JacksonSerdes.of(PaymentIntent.class), paymentIntent);
+            .resolve(new PaymentIntentSerde(), paymentIntent);
     return true;
   }
 
