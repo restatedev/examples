@@ -17,66 +17,61 @@ import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
+import java.time.Duration;
 import my.example.accounts.AccountClient;
 import my.example.types.Payment;
 import my.example.types.PaymentStatus;
 import my.example.types.Result;
-import my.example.utils.TypeChecks;
-
-import java.time.Duration;
 
 /**
  * The service that processes the payment requests.
  *
- * This is implemented as a virtual object to ensure that only
- * one concurrent request can happen per token (requests are queued and
- * processed sequentially per token).
+ * <p>This is implemented as a virtual object to ensure that only one concurrent request can happen
+ * per token (requests are queued and processed sequentially per token).
  *
- * Note that this idempotency-token is more of an operation/payment-id.
- * Methods can be called multiple times with the same token, but payment
- * will be executed only once. Also, if a cancellation is triggered for that
- * token, the payment will not happen or be undine, regardless of whether
- * the cancel call comes before or after the payment call.
+ * <p>Note that this idempotency-token is more of an operation/payment-id. Methods can be called
+ * multiple times with the same token, but payment will be executed only once. Also, if a
+ * cancellation is triggered for that token, the payment will not happen or be undine, regardless of
+ * whether the cancel call comes before or after the payment call.
  */
 @VirtualObject
-public class PaymentService {
+public class PaymentProcessor {
 
-  private final long EXPIRY_TIMEOUT = 60 * 60 * 1000L; // 1 hour
+  private static final long EXPIRY_TIMEOUT = 60 * 60 * 1000L; // 1 hour
 
   private static final StateKey<PaymentStatus> STATUS =
-          StateKey.of("status", JacksonSerdes.of(PaymentStatus.class));
+      StateKey.of("status", JacksonSerdes.of(PaymentStatus.class));
   private static final StateKey<Payment> PAYMENT =
-          StateKey.of("payment", JacksonSerdes.of(Payment.class));
+      StateKey.of("payment", JacksonSerdes.of(Payment.class));
 
   @Handler
   public Result makePayment(ObjectContext ctx, Payment payment) {
     // De-duplication to make calls idempotent
     PaymentStatus status = ctx.get(STATUS).orElse(PaymentStatus.NEW);
     if (status == PaymentStatus.CANCELLED) {
-        return new Result(false, "Payment already cancelled");
+      return new Result(false, "Payment already cancelled");
     }
 
     if (status == PaymentStatus.COMPLETED_SUCCESSFULLY) {
-        return new Result(false, "Payment already completed in prior call");
+      return new Result(false, "Payment already completed in prior call");
     }
 
-    // We check the types, because external calls via http may evade some type checks
-    TypeChecks.validatePayment(payment);
-
     // Charge the target account
-    Result paymentResult = AccountClient.fromContext(ctx, payment.getAccountId())
-            .withdraw(payment.getAmountCents()).await();
+    Result paymentResult =
+        AccountClient.fromContext(ctx, payment.getAccountId())
+            .withdraw(payment.getAmountCents())
+            .await();
 
     // Remember only on success, so that on failure (when we didn't charge) the external
     // caller may retry this (with the same token), for the sake of this example
     if (paymentResult.isSuccess()) {
-        ctx.set(STATUS, PaymentStatus.COMPLETED_SUCCESSFULLY);
-        ctx.set(PAYMENT, payment);
+      ctx.set(STATUS, PaymentStatus.COMPLETED_SUCCESSFULLY);
+      ctx.set(PAYMENT, payment);
 
-        String idempotencyToken = ctx.key();
-        PaymentServiceClient.fromContext(ctx, idempotencyToken)
-                .send(Duration.ofMillis(EXPIRY_TIMEOUT))
-                .expireToken();
+      String idempotencyToken = ctx.key();
+      PaymentProcessorClient.fromContext(ctx, idempotencyToken)
+          .send(Duration.ofMillis(EXPIRY_TIMEOUT))
+          .expireToken();
     }
 
     return paymentResult;
@@ -86,36 +81,36 @@ public class PaymentService {
   public void cancelPayment(ObjectContext ctx) {
     PaymentStatus status = ctx.get(STATUS).orElse(PaymentStatus.NEW);
 
-    switch (status){
-      case NEW:
+    switch (status) {
+      case NEW -> {
         // not seen this token before, mark as canceled, in case the cancellation
         // overtook the actual payment request (on the external caller's side)
         ctx.set(STATUS, PaymentStatus.CANCELLED);
 
         // cancel the scheduled expiry
-        PaymentServiceClient.fromContext(ctx, ctx.key())
-                .send(Duration.ofMillis(EXPIRY_TIMEOUT))
-                .expireToken();
-        break;
-      case CANCELLED:
+        PaymentProcessorClient.fromContext(ctx, ctx.key())
+            .send(Duration.ofMillis(EXPIRY_TIMEOUT))
+            .expireToken();
+      }
+      case CANCELLED -> {
         // already cancelled, this is a repeated request
-        break;
-      case COMPLETED_SUCCESSFULLY:
+      }
+      case COMPLETED_SUCCESSFULLY -> {
         // remember this as cancelled
         ctx.set(STATUS, PaymentStatus.CANCELLED);
 
         // undo the payment
-        Payment payment = ctx.get(PAYMENT)
-                .orElseThrow(() -> new TerminalException("Payment not found"));
+        Payment payment =
+            ctx.get(PAYMENT).orElseThrow(() -> new TerminalException("Payment not found"));
         AccountClient.fromContext(ctx, payment.getAccountId())
-                .send()
-                .deposit(payment.getAmountCents());
-        break;
+            .send()
+            .deposit(payment.getAmountCents());
+      }
     }
   }
 
   @Handler
-  public void expireToken(ObjectContext ctx){
+  public void expireToken(ObjectContext ctx) {
     ctx.clear(STATUS);
     ctx.clear(PAYMENT);
   }

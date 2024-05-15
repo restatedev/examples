@@ -3,6 +3,7 @@ import java.net.URI
 plugins {
   java
   application
+  id("com.diffplug.spotless") version "6.25.0"
 }
 
 repositories {
@@ -40,4 +41,19 @@ tasks.withType<JavaCompile> {
   // Using -parameters allows to use Jackson ParameterName feature
   // https://github.com/FasterXML/jackson-modules-java8/tree/2.14/parameter-names
   options.compilerArgs.add("-parameters")
+}
+
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(17))
+  }
+}
+
+spotless {
+  java {
+    importOrder()
+    removeUnusedImports()
+    googleJavaFormat()
+    formatAnnotations()
+  }
 }

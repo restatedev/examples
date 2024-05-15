@@ -11,7 +11,7 @@
 package my.example.types;
 
 public enum PaymentStatus {
-    NEW,
-    COMPLETED_SUCCESSFULLY,
-    CANCELLED;
+  NEW,
+  COMPLETED_SUCCESSFULLY,
+  CANCELLED;
 }

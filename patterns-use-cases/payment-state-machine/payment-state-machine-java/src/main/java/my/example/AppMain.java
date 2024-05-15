@@ -15,10 +15,10 @@ import my.example.accounts.Account;
 
 public class AppMain {
 
-    public static void main(String[] args) {
-        RestateHttpEndpointBuilder.builder()
-                .bind(new Account())
-                .bind(new PaymentService())
-                .buildAndListen();
-    }
+  public static void main(String[] args) {
+    RestateHttpEndpointBuilder.builder()
+        .bind(new Account())
+        .bind(new PaymentProcessor())
+        .buildAndListen();
+  }
 }

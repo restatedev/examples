@@ -11,15 +11,15 @@
 package my.example.types;
 
 public class Result {
-    private final boolean success;
-    private final String reason;
+  private final boolean success;
+  private final String reason;
 
-    public Result(boolean success, String reason) {
-        this.success = success;
-        this.reason = reason;
-    }
+  public Result(boolean success, String reason) {
+    this.success = success;
+    this.reason = reason;
+  }
 
-    public boolean isSuccess() {
-        return success;
-    }
+  public boolean isSuccess() {
+    return success;
+  }
 }

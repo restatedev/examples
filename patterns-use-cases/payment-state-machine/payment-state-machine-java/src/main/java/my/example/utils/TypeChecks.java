@@ -15,12 +15,12 @@ import my.example.types.Payment;
 
 public class TypeChecks {
 
-    public static void validatePayment(Payment payment){
-        if(payment.getAccountId() == null || payment.getAccountId().isEmpty()){
-            throw new TerminalException("Account ID is required");
-        }
-        if(payment.getAmountCents() <= 0){
-            throw new TerminalException("Amount must be greater than 0");
-        }
+  public static void validatePayment(Payment payment) {
+    if (payment.getAccountId() == null || payment.getAccountId().isEmpty()) {
+      throw new TerminalException("Account ID is required");
     }
+    if (payment.getAmountCents() <= 0) {
+      throw new TerminalException("Amount must be greater than 0");
+    }
+  }
 }

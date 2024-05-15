@@ -26,37 +26,34 @@ import my.example.types.Result;
 @VirtualObject
 public class Account {
 
-    private static final StateKey<Long> BALANCE =
-            StateKey.of("balance", CoreSerdes.JSON_LONG);
+  private static final StateKey<Long> BALANCE = StateKey.of("balance", CoreSerdes.JSON_LONG);
 
-
-    @Handler
-    public void deposit(ObjectContext ctx, Long amountCents) {
-        if(amountCents <= 0) {
-            throw new TerminalException("Amount must be greater than 0");
-        }
-
-        long balanceCents = ctx.get(BALANCE).orElse(initializeRandomAmount());
-        ctx.set(BALANCE, balanceCents + amountCents);
+  @Handler
+  public void deposit(ObjectContext ctx, Long amountCents) {
+    if (amountCents <= 0) {
+      throw new TerminalException("Amount must be greater than 0");
     }
 
-    @Handler
-    public Result withdraw(ObjectContext ctx, Long amountCents) {
-            if(amountCents <= 0) {
-                throw new TerminalException("Amount must be greater than 0");
-            }
+    long balanceCents = ctx.get(BALANCE).orElse(initializeRandomAmount());
+    ctx.set(BALANCE, balanceCents + amountCents);
+  }
 
-            long balanceCents = ctx.get(BALANCE).orElse(initializeRandomAmount());
-            if(balanceCents < amountCents) {
-                return new Result(false, "Insufficient funds: " + balanceCents + " cents");
-            }
-
-            ctx.set(BALANCE, balanceCents - amountCents);
-            return new Result(true, "Withdrawal successful");
+  @Handler
+  public Result withdraw(ObjectContext ctx, Long amountCents) {
+    if (amountCents <= 0) {
+      throw new TerminalException("Amount must be greater than 0");
     }
 
-    private long initializeRandomAmount() {
-        return (long) (Math.random() * 100_000 + 100_000);
+    long balanceCents = ctx.get(BALANCE).orElse(initializeRandomAmount());
+    if (balanceCents < amountCents) {
+      return new Result(false, "Insufficient funds: " + balanceCents + " cents");
     }
 
+    ctx.set(BALANCE, balanceCents - amountCents);
+    return new Result(true, "Withdrawal successful");
+  }
+
+  private long initializeRandomAmount() {
+    return (long) (Math.random() * 100_000 + 100_000);
+  }
 }

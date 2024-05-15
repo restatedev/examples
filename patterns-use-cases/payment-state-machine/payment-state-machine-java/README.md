@@ -23,25 +23,25 @@ and failures.
 
 ## Running this example
 
-Start a Restate Server: `npx restate-server`
+Start a Restate Server. Have a look at the [root README](https://github.com/restatedev/examples?tab=readme-ov-file#1-starting-the-restate-server) for instructions.
 
 Build and start the example
 ```shell
 ./gradlew run
 ```
 
-Register the services: `npx restate dep reg localhost:9080`
+Register the services: `restate dep reg localhost:9080`
 
 Make some requests:
 
 - Make a payment
   ```shell
-  curl -X POST localhost:8080/PaymentService/some-string-id/makePayment -H 'content-type: application/json' \
+  curl -X POST localhost:8080/PaymentProcessor/some-string-id/makePayment -H 'content-type: application/json' \
    -d '{  "accountId": "abc", "amountCents": 100 }'
   ```
 
 - Cancel a payment. The 'key' parameter is the idempotency token, there is no further request data.
 
   ```shell
-  curl -X POST localhost:8080/PaymentService/some-string-id/cancelPayment
+  curl -X POST localhost:8080/PaymentProcessor/some-string-id/cancelPayment
   ```
