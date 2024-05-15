@@ -36,7 +36,7 @@ challenges.
 | Use Cases  | [Durable Promises](patterns-use-cases/durable-promises/durable-promises-typescript)                  |
 | Use Cases  | [State Machines](patterns-use-cases/state-machines/state-machines-typescript/)                       |
 | Use Cases  | [Payment Service](patterns-use-cases/payment-state-machine/payment-state-machine-typescript/)        |
-| Use Cases  | [Async signals: payments](patterns-use-cases/async-signals-payment/async-signals-payment-typescript) |
+| Use Cases  | [Async Tasks - Payments](patterns-use-cases/async-signals-payment/async-signals-payment-typescript/) |
 | End-to-End | [Food Ordering App](end-to-end-applications/typescript/food-ordering)                                |
 | End-to-End | [AI Image Processing Workflow](end-to-end-applications/typescript/ai-image-workflows)                |
 | Tutorial   | [Tour of Restate](tutorials/tour-of-restate-typescript)                                              |
@@ -48,7 +48,8 @@ challenges.
 |------------|------------------------------------------------------------------------------------------------|
 | Basics     | [Durable Execution, Event-processing, Virtual Objects](basics/basics-java)                     |
 | Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-java)                                                   |
-| Use Cases  | [Async signals: payments](patterns-use-cases/async-signals-payment/async-signals-payment-java) |
+| Use Cases  | [Payment Service](patterns-use-cases/payment-state-machine/payment-state-machine-typescript/)  |
+| Use Cases  | [Async Tasks - Payments](patterns-use-cases/async-signals-payment/async-signals-payment-java/) |
 | End-to-End | [Food Ordering App](end-to-end-applications/java/food-ordering)                                |
 | Tutorial   | [Tour of Restate](tutorials/tour-of-restate-java/)                                             |
 | Templates  | [Template using Gradle](templates/java-gradle)                                                 |

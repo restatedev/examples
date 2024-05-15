@@ -21,6 +21,7 @@ search_and_replace_version_gradle $PROJECT_ROOT/basics/basics-java
 
 search_and_replace_version_gradle $PROJECT_ROOT/patterns-use-cases/sagas/sagas-java
 search_and_replace_version_gradle $PROJECT_ROOT/patterns-use-cases/async-signals-payment/async-signals-payment-java
+search_and_replace_version_gradle $PROJECT_ROOT/patterns-use-cases/payment-state-machine/payment-state-machine-java
 search_and_replace_version_gradle $PROJECT_ROOT/patterns-use-cases/sagas/sagas-kotlin
 
 search_and_replace_version_gradle $PROJECT_ROOT/tutorials/tour-of-restate-java

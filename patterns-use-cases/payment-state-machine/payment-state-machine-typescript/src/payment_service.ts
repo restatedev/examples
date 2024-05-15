@@ -27,13 +27,13 @@ const EXPIRY_TIMEOUT = 60 * 60 * 1000; // 1 hour
 /**
  * The service that processes the payment requests.
  *
- * This is implemented as a virtual object (keyed service) to ensure that only
+ * This is implemented as a virtual object to ensure that only
  * one concurrent request can happen per token (requests are queued and
  * processed sequentially per token).
  *
  * Note that this idempotency-token is more of an operation/payment-id.
  * Methods can be called multiple times with the same token, but payment
- * will be executed only once. Also if a cancellation is triggered for that
+ * will be executed only once. Also, if a cancellation is triggered for that
  * token, the payment will not happen or be undine, regardless of whether
  * the cancel call comes before or after the payment call.
  */
