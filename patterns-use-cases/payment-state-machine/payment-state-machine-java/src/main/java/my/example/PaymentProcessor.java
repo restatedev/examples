@@ -85,7 +85,6 @@ public class PaymentProcessor {
         // overtook the actual payment request (on the external caller's side)
         ctx.set(STATUS, PaymentStatus.CANCELLED);
 
-        // cancel the scheduled expiry
         PaymentProcessorClient.fromContext(ctx, ctx.key()).send(EXPIRY_TIMEOUT).expireToken();
       }
       case CANCELLED -> {
