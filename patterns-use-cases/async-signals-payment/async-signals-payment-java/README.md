@@ -31,7 +31,7 @@ webhooks to your local machine.
 
 4. Run this application code here: `./gradlew run`
 
-5. Connect the apps: `npx restate deployments register localhost:9080`
+5. Connect the apps: `restate deployments register localhost:9080`
 
 6. Run launch _ngrok_: Get a free account and download the binary, or launch a docker container.
    Make it forward HTTP calls to local port `8080`

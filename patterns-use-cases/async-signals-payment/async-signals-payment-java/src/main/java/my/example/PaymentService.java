@@ -13,15 +13,16 @@ package my.example;
 
 import com.stripe.model.Event;
 import com.stripe.model.PaymentIntent;
+import com.stripe.net.ApiResource;
 import dev.restate.sdk.Awakeable;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Accept;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Raw;
 import dev.restate.sdk.annotation.Service;
+import dev.restate.sdk.common.Serde;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
-import my.example.serde.PaymentIntentSerde;
 import my.example.types.PaymentRequest;
 import my.example.utils.PaymentUtils;
 import my.example.utils.StripeUtils;
@@ -47,6 +48,11 @@ public class PaymentService {
   private static final Logger logger = LogManager.getLogger(PaymentService.class);
   private static final StripeUtils stripe = new StripeUtils();
 
+  private static final Serde<PaymentIntent> paymentIntentSerde = Serde.using(
+          intent -> intent.toJson().getBytes(),
+          bytes -> ApiResource.GSON.fromJson(new String(bytes), PaymentIntent.class)
+  );
+
   @Handler
   public void processPayment(Context ctx, PaymentRequest request) {
     PaymentUtils.verifyPaymentRequest(request);
@@ -55,13 +61,13 @@ public class PaymentService {
     String idempotencyKey = ctx.random().nextUUID().toString();
 
     // Initiate a listener for external calls for potential webhook callbacks
-    Awakeable<PaymentIntent> webhookPromise = ctx.awakeable(new PaymentIntentSerde());
+    Awakeable<PaymentIntent> webhookPromise = ctx.awakeable(paymentIntentSerde);
 
     // Make a synchronous call to the payment service
     PaymentIntent paymentIntent =
         ctx.run(
             "Stripe call",
-            new PaymentIntentSerde(),
+            paymentIntentSerde,
             () -> {
               // create payment intent
               return stripe.createPaymentIntent(
@@ -94,7 +100,10 @@ public class PaymentService {
   }
 
   @Handler
-  public boolean processWebhook(Context ctx, @Accept("*/*") @Raw byte[] request) {
+  public boolean processWebhook(Context ctx,
+                                // The raw request is the webhook call from Stripe that we will verify in the handler
+                                @Accept("*/*") @Raw byte[] request
+  ) {
     Event event = stripe.parseWebhookCall(request, ctx.request().headers().get("stripe-signature"));
 
     if (!PaymentUtils.isPaymentIntent(event)) {
@@ -109,10 +118,10 @@ public class PaymentService {
 
     if (webhookPromise == null) {
       throw new TerminalException(
-          404, "Missing callback property: " + PaymentUtils.RESTATE_CALLBACK_ID);
+          400, "Missing callback property: " + PaymentUtils.RESTATE_CALLBACK_ID);
     }
 
-    ctx.awakeableHandle(webhookPromise).resolve(new PaymentIntentSerde(), paymentIntent);
+    ctx.awakeableHandle(webhookPromise).resolve(paymentIntentSerde, paymentIntent);
     return true;
   }
 
