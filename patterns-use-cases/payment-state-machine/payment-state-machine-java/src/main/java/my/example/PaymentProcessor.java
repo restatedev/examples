@@ -69,9 +69,7 @@ public class PaymentProcessor {
       ctx.set(PAYMENT, payment);
 
       String idempotencyToken = ctx.key();
-      PaymentProcessorClient.fromContext(ctx, idempotencyToken)
-          .send(EXPIRY_TIMEOUT)
-          .expireToken();
+      PaymentProcessorClient.fromContext(ctx, idempotencyToken).send(EXPIRY_TIMEOUT).expireToken();
     }
 
     return paymentResult;
@@ -88,9 +86,7 @@ public class PaymentProcessor {
         ctx.set(STATUS, PaymentStatus.CANCELLED);
 
         // cancel the scheduled expiry
-        PaymentProcessorClient.fromContext(ctx, ctx.key())
-            .send(EXPIRY_TIMEOUT)
-            .expireToken();
+        PaymentProcessorClient.fromContext(ctx, ctx.key()).send(EXPIRY_TIMEOUT).expireToken();
       }
       case CANCELLED -> {
         // already cancelled, this is a repeated request
