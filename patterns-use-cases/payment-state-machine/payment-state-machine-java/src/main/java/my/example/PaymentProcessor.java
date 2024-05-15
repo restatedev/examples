@@ -37,7 +37,7 @@ import my.example.types.Result;
 @VirtualObject
 public class PaymentProcessor {
 
-  private static final long EXPIRY_TIMEOUT = 60 * 60 * 1000L; // 1 hour
+  private static final Duration EXPIRY_TIMEOUT = Duration.ofHours(1);
 
   private static final StateKey<PaymentStatus> STATUS =
       StateKey.of("status", JacksonSerdes.of(PaymentStatus.class));
@@ -70,7 +70,7 @@ public class PaymentProcessor {
 
       String idempotencyToken = ctx.key();
       PaymentProcessorClient.fromContext(ctx, idempotencyToken)
-          .send(Duration.ofMillis(EXPIRY_TIMEOUT))
+          .send(EXPIRY_TIMEOUT)
           .expireToken();
     }
 
@@ -89,7 +89,7 @@ public class PaymentProcessor {
 
         // cancel the scheduled expiry
         PaymentProcessorClient.fromContext(ctx, ctx.key())
-            .send(Duration.ofMillis(EXPIRY_TIMEOUT))
+            .send(EXPIRY_TIMEOUT)
             .expireToken();
       }
       case CANCELLED -> {
