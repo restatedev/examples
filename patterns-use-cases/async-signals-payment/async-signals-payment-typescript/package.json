@@ -6,7 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "build": "tsc --noEmitOnError",
-    "payments": "ts-node-dev --watch ./src --transpile-only ./src/payment_handler.ts"
+    "app-dev": "ts-node-dev --watch ./src --transpile-only ./src/payment_handler.ts"
   },
   "dependencies": {
     "@restatedev/restate-sdk": "^0.9.2",

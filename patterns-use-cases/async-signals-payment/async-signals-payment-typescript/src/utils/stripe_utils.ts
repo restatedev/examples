@@ -12,8 +12,8 @@
 import { TerminalError } from "@restatedev/restate-sdk";
 import Stripe from "stripe";
 
-const stripeSecretKey = "...";
-const webHookSecret = "...";
+const stripeSecretKey = "sk_test_...";
+const webHookSecret = "whsec_...";
 
 const stripe = new Stripe(stripeSecretKey, { apiVersion: "2023-10-16" });
 

@@ -1,7 +1,7 @@
 # Combining Sync and Async (Webhook) Responses from Stripe
 
 This example issues a payment request to Stripe.
-When calling Stripe, the result often comes synchronously as a response API call. 
+When calling Stripe, the result often comes synchronously as a response API call.
 But sometimes, an immediate answer is not possible, and especially some payment
 methods (like IBAN transfers or Klarna) frequently only return "processing" to notify
 you later via a webhook.
@@ -24,33 +24,33 @@ webhooks to your local machine.
    with test data, not make real payments. Good enough for this example.
 
 2. In the Stripe UI, go to "Developers" -> "API Keys" and copy the _secret key_ (`sk_test_...`).
-   Add it to the [stripe_utils.ts](./src/utils/stripe_utils.ts) file. Because this is a dev-only
-   API key and it supports only test data, it isn't super sensitive.
+   Add it to the [StripeUtils.java](./src/main/java/my/example/utils/StripeUtils.java) file. Because this is a dev-only
+   API key, it supports only test data, so it isn't super sensitive.
 
-3. Start Restate locally (`npx restate-server`).
+3. Start Restate locally: [See options in root README](https://github.com/restatedev/examples?tab=readme-ov-file#1-starting-the-restate-server).
 
-4. Run this application code here: `npm run app-dev`
+4. Run this application code here: `./gradlew run`
 
-5. Connect the apps: `npx restate dep reg localhost:9080`
+5. Connect the apps: `restate deployments register localhost:9080`
 
 6. Run launch _ngrok_: Get a free account and download the binary, or launch a docker container.
-   Make it forward http calls to local port 8080
-   - `NGROK_AUTHTOKEN=<your token> ngrok http 8080`
-   - or `docker run --rm -it -e NGROK_AUTHTOKEN=<your token> --network host ngrok/ngrok http 8080` (on Linux command).
-   Copy the public URL that ngrok shows you: `https://<some random numbers>.ngrok-free.app`
+   Make it forward HTTP calls to local port `8080`
+    - `NGROK_AUTHTOKEN=<your token> ngrok http 8080`
+    - or `docker run --rm -it -e NGROK_AUTHTOKEN=<your token> --network host ngrok/ngrok http 8080` (on Linux command).
+      Copy the public URL that ngrok shows you: `https://<some random numbers>.ngrok-free.app`
 
 7. Go to the Stripe UI and create a webhook. Select all _"Payment Intent"_ event types. Put the ngrok
-   public URL + `/payments/processWebhook` as the webhook URL (you need to update this whenever you stop/start ngrok).
-   Example: `https://<some random numbers>.ngrok-free.app/payments/processWebhooks`
+   public URL + `/PaymentService/processWebhook` as the webhook URL (you need to update this whenever you stop/start ngrok).
+   Example: `https://<some random numbers>.ngrok-free.app/PaymentService/processWebhooks`
 
-8. Put the webhook secret (`whsec_...`) to the [stripe_utils.ts](./src/utils/stripe_utils.ts) file.
+8. Put the webhook secret (`whsec_...`) to the [StripeUtils.java](./src/main/java/my/example/utils/StripeUtils.java) file.
 
 Use as test data `pm_card_visa` for a successful payment and `pm_card_visa_chargeDeclined` for a declined payment.
 Because the test data rarely triggers an async response, this example's tools can mimic that
 if you add `"delayedStatus": true` to the request.
 
 ```shell
-curl localhost:8080/payments/processPayment -H 'content-type: application/json' -d '{
+curl localhost:8080/PaymentService/processPayment -H 'content-type: application/json' -d '{
         "paymentMethodId": "pm_card_visa",
         "amount": 109,
         "delayedStatus": true
