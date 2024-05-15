@@ -1,8 +1,7 @@
-import java.net.URI
-
 plugins {
   java
   application
+  id("com.diffplug.spotless") version "6.25.0"
 }
 
 repositories {
@@ -28,7 +27,8 @@ dependencies {
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.1")
 
   // Stripe
-  implementation("com.stripe:stripe-java:25.5.0")
+  implementation("com.stripe:stripe-java:25.7.0")
+  implementation("com.google.code.gson:gson:2.10.1")
 
   // Logging (optional)
   implementation("org.apache.logging.log4j:log4j-core:2.20.0")
@@ -44,4 +44,20 @@ tasks.withType<JavaCompile> {
   // Using -parameters allows to use Jackson ParameterName feature
   // https://github.com/FasterXML/jackson-modules-java8/tree/2.14/parameter-names
   options.compilerArgs.add("-parameters")
+}
+
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(17))
+  }
+}
+
+
+spotless {
+  java {
+    importOrder()
+    removeUnusedImports()
+    googleJavaFormat()
+    formatAnnotations()
+  }
 }

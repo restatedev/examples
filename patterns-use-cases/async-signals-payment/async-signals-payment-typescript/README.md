@@ -29,7 +29,7 @@ webhooks to your local machine.
 
 3. Start Restate locally (`npx restate-server`).
 
-4. Run this application code here: `npm run payments`
+4. Run this application code here: `npm run app-dev`
 
 5. Connect the apps: `npx restate dep reg localhost:9080`
 

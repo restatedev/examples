@@ -1,21 +1,27 @@
+/*
+ * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
+ *
+ * This file is part of the Restate examples,
+ * which is released under the MIT license.
+ *
+ * You can find a copy of the license in the file LICENSE
+ * in the root directory of this repository or package or at
+ * https://github.com/restatedev/examples/
+ */
 package my.example.serde;
 
 import com.stripe.model.PaymentIntent;
-import dev.restate.sdk.common.CoreSerdes;
+import com.stripe.net.ApiResource;
 import dev.restate.sdk.common.Serde;
-import my.example.utils.StripeUtils;
 
 public class PaymentIntentSerde implements Serde<PaymentIntent> {
+  @Override
+  public byte[] serialize(PaymentIntent intent) {
+    return intent.toJson().getBytes();
+  }
 
-    StripeUtils stripe = new StripeUtils();
-
-    @Override
-    public byte[] serialize(PaymentIntent intent) {
-        return CoreSerdes.JSON_STRING.serialize(intent.getId());
-    }
-
-    @Override
-    public PaymentIntent deserialize(byte[] bytes) {
-        return stripe.retrieve(CoreSerdes.JSON_STRING.deserialize(bytes));
-    }
+  @Override
+  public PaymentIntent deserialize(byte[] bytes) {
+    return ApiResource.GSON.fromJson(new String(bytes), PaymentIntent.class);
+  }
 }

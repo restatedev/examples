@@ -27,7 +27,7 @@ webhooks to your local machine.
    Add it to the [StripeUtils.java](./src/main/java/my/example/utils/StripeUtils.java) file. Because this is a dev-only
    API key, it supports only test data, so it isn't super sensitive.
 
-3. Start Restate locally (`npx restate-server`).
+3. Start Restate locally: [See options in root README](https://github.com/restatedev/examples?tab=readme-ov-file#1-starting-the-restate-server).
 
 4. Run this application code here: `./gradlew run`
 

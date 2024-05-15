@@ -13,23 +13,20 @@ package my.example;
 
 import com.stripe.model.Event;
 import com.stripe.model.PaymentIntent;
-import com.stripe.model.StripeObject;
 import dev.restate.sdk.Awakeable;
 import dev.restate.sdk.Context;
+import dev.restate.sdk.annotation.Accept;
 import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.Raw;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.common.Request;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
-import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import my.example.serde.PaymentIntentSerde;
 import my.example.types.PaymentRequest;
 import my.example.utils.PaymentUtils;
 import my.example.utils.StripeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.Optional;
 
 //
 // The payment handlers that issues calls to Stripe.
@@ -50,7 +47,6 @@ public class PaymentService {
   private static final Logger logger = LogManager.getLogger(PaymentService.class);
   private static final StripeUtils stripe = new StripeUtils();
 
-
   @Handler
   public void processPayment(Context ctx, PaymentRequest request) {
     PaymentUtils.verifyPaymentRequest(request);
@@ -62,21 +58,21 @@ public class PaymentService {
     Awakeable<PaymentIntent> webhookPromise = ctx.awakeable(new PaymentIntentSerde());
 
     // Make a synchronous call to the payment service
-    PaymentIntent paymentIntent = ctx.run(
-          "Stripe call",
-          new PaymentIntentSerde(),
+    PaymentIntent paymentIntent =
+        ctx.run(
+            "Stripe call",
+            new PaymentIntentSerde(),
             () -> {
-                // create payment intent
-                return stripe.createPaymentIntent(
-                        request.getPaymentMethodId(),
-                        request.getAmount(),
-                        idempotencyKey,
-                        webhookPromise.id(),
-                        request.isDelayed()
-                );
-    });
+              // create payment intent
+              return stripe.createPaymentIntent(
+                  request.getPaymentMethodId(),
+                  request.getAmount(),
+                  idempotencyKey,
+                  webhookPromise.id(),
+                  request.isDelayed());
+            });
 
-    if(!paymentIntent.getStatus().equals("processing")){
+    if (!paymentIntent.getStatus().equals("processing")) {
       // The synchronous call to Stripe had already been completed.
       // That was fast :)
       logger.info("Request {} was processed synchronously!", idempotencyKey);
@@ -86,9 +82,8 @@ public class PaymentService {
     // We did not get the response on the synchronous path, talking to Stripe.
     // No worries, Stripe will let us know when it is done processing via a webhook.
     logger.info(
-            "Synchronous response for {} yielded 'processing', awaiting webhook call...",
-            idempotencyKey
-    );
+        "Synchronous response for {} yielded 'processing', awaiting webhook call...",
+        idempotencyKey);
 
     // We will now wait for the webhook call to complete this promise.
     // Check out the handler below.
@@ -98,42 +93,30 @@ public class PaymentService {
     PaymentUtils.ensureSuccess(processedPaymentIntent.getStatus());
   }
 
-
   @Handler
-  public boolean processWebhook(Context ctx, byte[] body){
-    Request req = ctx.request();
-    String sig = req.headers().get("stripe-signature");
-    Event event = stripe.parseWebhookCall(req.body(), sig);
+  public boolean processWebhook(Context ctx, @Accept("*/*") @Raw byte[] request) {
+    Event event = stripe.parseWebhookCall(request, ctx.request().headers().get("stripe-signature"));
 
-    if(!PaymentUtils.isPaymentIntent(event)){
+    if (!PaymentUtils.isPaymentIntent(event)) {
       logger.info("Unhandled event type: {}", event.getType());
       return true;
     }
 
-    Optional<StripeObject> stripeObject = event.getDataObjectDeserializer().getObject();
-
-    if(stripeObject.isEmpty()){
-      logger.info("No Stripe object found in event");
-      return true;
-    }
-
-    PaymentIntent paymentIntent = (PaymentIntent) stripeObject.get();
-    logger.info(paymentIntent.toJson());
+    PaymentIntent paymentIntent = stripe.parseAsPaymentIntent(event);
+    logger.info("Received webhook call for payment intent: {}", paymentIntent.toJson());
 
     String webhookPromise = paymentIntent.getMetadata().get(PaymentUtils.RESTATE_CALLBACK_ID);
 
-    if(webhookPromise == null){
-      throw new TerminalException(404, "Missing callback property: " + PaymentUtils.RESTATE_CALLBACK_ID);
+    if (webhookPromise == null) {
+      throw new TerminalException(
+          404, "Missing callback property: " + PaymentUtils.RESTATE_CALLBACK_ID);
     }
 
-    ctx.awakeableHandle(webhookPromise)
-            .resolve(new PaymentIntentSerde(), paymentIntent);
+    ctx.awakeableHandle(webhookPromise).resolve(new PaymentIntentSerde(), paymentIntent);
     return true;
   }
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder()
-            .bind(new PaymentService())
-            .buildAndListen();
+    RestateHttpEndpointBuilder.builder().bind(new PaymentService()).buildAndListen();
   }
 }
