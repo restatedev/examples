@@ -48,10 +48,10 @@ public class PaymentService {
   private static final Logger logger = LogManager.getLogger(PaymentService.class);
   private static final StripeUtils stripe = new StripeUtils();
 
-  private static final Serde<PaymentIntent> paymentIntentSerde = Serde.using(
+  private static final Serde<PaymentIntent> paymentIntentSerde =
+      Serde.using(
           intent -> intent.toJson().getBytes(),
-          bytes -> ApiResource.GSON.fromJson(new String(bytes), PaymentIntent.class)
-  );
+          bytes -> ApiResource.GSON.fromJson(new String(bytes), PaymentIntent.class));
 
   @Handler
   public void processPayment(Context ctx, PaymentRequest request) {
@@ -100,10 +100,10 @@ public class PaymentService {
   }
 
   @Handler
-  public boolean processWebhook(Context ctx,
-                                // The raw request is the webhook call from Stripe that we will verify in the handler
-                                @Accept("*/*") @Raw byte[] request
-  ) {
+  public boolean processWebhook(
+      Context ctx,
+      // The raw request is the webhook call from Stripe that we will verify in the handler
+      @Accept("*/*") @Raw byte[] request) {
     Event event = stripe.parseWebhookCall(request, ctx.request().headers().get("stripe-signature"));
 
     if (!PaymentUtils.isPaymentIntent(event)) {
