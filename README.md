@@ -57,10 +57,11 @@ challenges.
 
 ### Kotlin
 
-| Type       | Name / Link                                      |
-|------------|--------------------------------------------------|
-| Templates  | [Template using Gradle](templates/kotlin-gradle) |
-| Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-kotlin)   |
+| Type       | Name / Link                                                       |
+|------------|-------------------------------------------------------------------|
+| Templates  | [Template using Gradle](templates/kotlin-gradle)                  |
+| Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-kotlin)                    |
+| End-to-End | [Food Ordering App](end-to-end-applications/kotlin/food-ordering) |
 
 ## Joining the community
 

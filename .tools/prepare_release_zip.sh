@@ -30,5 +30,6 @@ create_release_zip patterns-use-cases/ticket-reservation/ticket-reservation-type
 create_release_zip patterns-use-cases/payment-state-machine/payment-state-machine-typescript typescript-payment-state-machine
 
 create_release_zip end-to-end-applications/java/food-ordering java-food-ordering
+create_release_zip end-to-end-applications/kotlin/food-ordering kotlin-food-ordering
 create_release_zip end-to-end-applications/typescript/food-ordering typescript-food-ordering
 create_release_zip end-to-end-applications/typescript/ai-image-workflows typescript-ai-image-workflows

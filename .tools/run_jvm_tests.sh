@@ -17,3 +17,4 @@ pushd $PROJECT_ROOT/patterns-use-cases/async-signals-payment/async-signals-payme
 pushd $PROJECT_ROOT/tutorials/tour-of-restate-java && ./gradlew check && popd || exit
 
 pushd $PROJECT_ROOT/end-to-end-applications/java/food-ordering/app && ./gradlew check && popd || exit
+pushd $PROJECT_ROOT/end-to-end-applications/kotlin/food-ordering/app && ./gradlew check && popd || exit

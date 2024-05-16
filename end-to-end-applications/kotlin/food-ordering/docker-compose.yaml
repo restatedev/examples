@@ -1,0 +1,120 @@
+version: '3'
+services:
+  broker:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: broker
+    ports:
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@broker:29093
+      KAFKA_LISTENERS: PLAINTEXT://broker:29092,CONTROLLER://broker:29093,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+
+  init-kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - broker
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server broker:29092 --list
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic orders --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic driver-updates --replication-factor 1 --partitions 1
+
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server broker:29092 --list
+      "
+
+  rest-proxy:
+    image: confluentinc/cp-kafka-rest:7.5.0
+    ports:
+      - 8088:8088
+    hostname: rest-proxy
+    container_name: rest-proxy
+    environment:
+      KAFKA_REST_HOST_NAME: rest-proxy
+      KAFKA_REST_LISTENERS: "http://0.0.0.0:8088"
+      KAFKA_REST_BOOTSTRAP_SERVERS: "broker:29092"
+      KAFKA_REST_ACCESS_CONTROL_ALLOW_ORIGIN: "*"
+      KAFKA_REST_ACCESS_CONTROL_ALLOW_METHODS: "OPTIONS,GET,POST,PUT,DELETE"
+      KAFKA_REST_ACCESS_CONTROL_ALLOW_HEADERS: "origin,content-type,accept,authorization"
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.47
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+
+  restaurantpos:
+    container_name: restaurantpos
+    image: restaurant-app:0.0.1
+    environment:
+      - RESTATE_RUNTIME_ENDPOINT=http://runtime:8080
+    ports:
+      - "5050:5050"
+    entrypoint: ["java", "-cp", "@/app/jib-classpath-file", "dev.restate.sdk.examples.RestaurantMainKt"]
+
+  restate_app:
+    container_name: restate_app
+    image: restate-app:0.0.1
+    environment:
+      - RESTAURANT_ENDPOINT=http://restaurantpos:5050
+      - KAFKA_BOOTSTRAP_SERVERS=broker:29092
+
+  runtime:
+    image: docker.io/restatedev/restate
+    depends_on:
+      - restaurantpos
+      - broker
+      - rest-proxy
+      - jaeger
+    ports:
+      - "9070:9070"
+      - "9071:9071"
+      - "8080:8080"
+    volumes:
+      - ./restate-docker.toml:/restate.toml:Z,ro
+    environment:
+      - RESTATE_CONFIG=/restate.toml
+
+  runtimesetup:
+    image: alpine
+    depends_on:
+      - runtime
+      - restate_app
+    restart: "no"
+    entrypoint: ["sh", "-c", "sleep 5 && 
+    apk add --no-cache bash jq curl &&
+    curl -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://restate_app:9080\"}' &&
+    sleep 3 && 
+    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/orders\", \"sink\":\"service://OrderWorkflow/create\" }' &&
+    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/driver-updates\", \"sink\":\"service://DriverDigitalTwin/handleDriverLocationUpdateEvent\" }' &&
+    sleep 3 && 
+    curl -X POST 'runtime:8080/DriverMobileAppSimulator/driver-A/startDriver' && 
+    curl -X POST 'runtime:8080/DriverMobileAppSimulator/driver-B/startDriver' && 
+    exit 1"]
+
+  foodorderingwebui:
+    build:
+      context: ./webui
+    depends_on:
+      - runtimesetup
+    ports:
+      - "3000:3000"
