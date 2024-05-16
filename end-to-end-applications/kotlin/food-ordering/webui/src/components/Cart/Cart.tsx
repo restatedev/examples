@@ -8,7 +8,7 @@ import { useOrderStatusContext } from '../../contexts/status-context/OrderStatus
 import { useState } from 'react';
 import Dropdown from '../Dropdown';
 
-const isKafkaEnabled = process.env.REACT_APP_ENABLE_KAFKA !== 'false';
+const isKafkaEnabled = process.env.REACT_APP_ENABLE_KAFKA === 'true';
 
 const Cart = () => {
   const {

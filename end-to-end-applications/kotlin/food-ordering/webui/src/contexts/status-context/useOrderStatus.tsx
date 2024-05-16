@@ -11,7 +11,7 @@ const useOrderStatus = () => {
     if (user) {
       console.debug(`Found user ${user}`);
       getStatus(user!.shopping_cart_id).then((response) => {
-        setOrderStatus(response.response);
+        setOrderStatus(response);
       });
     } else {
       console.debug("Didn't find user");

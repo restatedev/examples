@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {IOrderStatus} from "../models";
 
 const RESTATE_HOST =
   process.env.REACT_APP_RESTATE_HOST || 'http://localhost:8080';
@@ -20,26 +21,32 @@ const challengeHeaders = () => {
 };
 
 export async function createOrder(orderId: string, order: any) {
-  return await (
-    await axios.post(
-      `${RESTATE_HOST}/OrderWorkflow/${orderId}/create`,
-      order,
-      {
-        headers: {
-          'content-type': 'application/json',
-          ...challengeHeaders(),
-        },
-      }
-    )
-  ).data;
+  let res = await fetch(
+    `${RESTATE_HOST}/OrderWorkflow/${orderId}/process/send`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Idempotency-Key": orderId,
+        ...challengeHeaders()
+      },
+      body: JSON.stringify(order),
+    });
+  if (!res.ok) {
+    throw new Error(`Got status code ${res.status} with response body ${await res.text()}`);
+  }
+
+  console.log(`Sent the order request. Response: ${await res.text()}`)
 }
 
-export async function getStatus(orderId: string) {
-  return await (
-    await axios.get(`${RESTATE_HOST}/OrderStatusService/${orderId}/get`, {
-      headers: challengeHeaders(),
-    })
-  ).data;
+export async function getStatus(orderId: string): Promise<IOrderStatus> {
+  let status = await (
+    await fetch(`${RESTATE_HOST}/OrderWorkflow/${orderId}/getStatus`, { headers: challengeHeaders()})
+  ).json();
+  let eta = await (
+    await fetch(`${RESTATE_HOST}/OrderETAService/${orderId}/get`, { headers: challengeHeaders()})
+  ).json();
+  return { eta, status }
 }
 
 export const publishToKafka = async (record: any) => {
