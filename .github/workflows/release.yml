@@ -35,5 +35,6 @@ jobs:
             typescript-ticket-reservation.zip
             typescript-payment-state-machine.zip
             java-food-ordering.zip
+            kotlin-food-ordering.zip
             typescript-food-ordering.zip
             typescript-ai-image-workflows.zip

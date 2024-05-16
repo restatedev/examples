@@ -28,3 +28,5 @@ search_and_replace_version_gradle $PROJECT_ROOT/tutorials/tour-of-restate-java
 
 search_and_replace_version_gradle $PROJECT_ROOT/end-to-end-applications/java/food-ordering/app/restate-app
 search_and_replace_version_gradle $PROJECT_ROOT/end-to-end-applications/java/food-ordering/app/restaurant
+search_and_replace_version_gradle $PROJECT_ROOT/end-to-end-applications/kotlin/food-ordering/app/restate-app
+search_and_replace_version_gradle $PROJECT_ROOT/end-to-end-applications/kotlin/food-ordering/app/restaurant
