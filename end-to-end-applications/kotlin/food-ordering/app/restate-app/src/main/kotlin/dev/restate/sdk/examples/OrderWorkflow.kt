@@ -11,12 +11,13 @@
 package dev.restate.sdk.examples
 
 import dev.restate.sdk.annotation.Handler
+import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.VirtualObject
+import dev.restate.sdk.common.TerminalException
 import dev.restate.sdk.examples.clients.PaymentClient
 import dev.restate.sdk.examples.clients.RestaurantClient
-import dev.restate.sdk.kotlin.ObjectContext
-import dev.restate.sdk.kotlin.awakeable
-import dev.restate.sdk.kotlin.runBlock
+import dev.restate.sdk.examples.utils.GeoUtils
+import dev.restate.sdk.kotlin.*
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -27,43 +28,113 @@ import kotlin.time.Duration.Companion.milliseconds
 @VirtualObject
 class OrderWorkflow {
 
+  companion object {
+    private val STATUS = KtStateKey.json<Status>("order-status")
+    private val PICKUP_CALLBACK_ID = KtStateKey.json<String>("pickup-callback-id")
+    private val DELIVERY_CALLBACK_ID = KtStateKey.json<String>("delivery-callback-id")
+  }
+
   @Handler
-  suspend fun create(ctx: ObjectContext, order: OrderRequest) {
-    val id: String = order.orderId
+  suspend fun process(ctx: ObjectContext, order: OrderRequest) {
+    // --- 📝 Created
+    ctx.set(STATUS, Status.CREATED)
 
-    val orderStatusSend = OrderStatusServiceClient.fromContext(ctx, id)
-
-    // 1. Set status
-    orderStatusSend.send().setStatus(StatusEnum.CREATED)
-
-    // 2. Handle payment
+    // --- 💳 Payment
     val token: String = ctx.random().nextUUID().toString()
-    val paid: Boolean = ctx.runBlock { PaymentClient.charge(id, token, order.totalCost) }
-
+    val paid: Boolean = ctx.runBlock { PaymentClient.charge(order.orderId, token, order.totalCost) }
     if (!paid) {
-      orderStatusSend.send().setStatus(StatusEnum.REJECTED)
+      ctx.set(STATUS, Status.REJECTED)
       return
     }
 
-    // 3. Schedule preparation
-    orderStatusSend.setStatus(StatusEnum.SCHEDULED)
+    // --- 🕧 Scheduled
+    ctx.set(STATUS, Status.SCHEDULED)
     ctx.sleep(order.deliveryDelay.milliseconds)
 
-    // 4. Trigger preparation
+    // --- 🧑‍🍳 Preparing
     val preparationAwakeable = ctx.awakeable<Unit>()
-    ctx.runBlock { RestaurantClient.prepare(id, preparationAwakeable.id) }
-    orderStatusSend.setStatus(StatusEnum.IN_PREPARATION)
-
+    ctx.runBlock { RestaurantClient.prepare(order.orderId, preparationAwakeable.id) }
+    ctx.set(STATUS, Status.IN_PREPARATION)
     preparationAwakeable.await()
-    orderStatusSend.setStatus(StatusEnum.SCHEDULING_DELIVERY)
 
-    // 5. Find a driver and start delivery
+    // Declare pick-up and delivery signals
+    val pickupAwakeable = ctx.awakeable<Unit>()
+    ctx.set(PICKUP_CALLBACK_ID, pickupAwakeable.id)
     val deliveryAwakeable = ctx.awakeable<Unit>()
+    ctx.set(DELIVERY_CALLBACK_ID, deliveryAwakeable.id)
 
-    DeliveryManagerClient.fromContext(ctx, id)
-        .send()
-        .start(DeliveryRequest(order.restaurantId, deliveryAwakeable.id))
+    // 🎙️ Scheduling delivery
+    ctx.set(STATUS, Status.SCHEDULING_DELIVERY)
+    startDelivery(ctx, order)
+
+    // 🔜 Waiting for a driver
+    ctx.set(STATUS, Status.WAITING_FOR_DRIVER)
+
+    // 🚴 Delivery
+    pickupAwakeable.await()
+    ctx.set(STATUS, Status.IN_DELIVERY)
+
+    // 😋 Delivered
     deliveryAwakeable.await()
-    orderStatusSend.setStatus(StatusEnum.DELIVERED)
+    ctx.set(STATUS, Status.DELIVERED)
+  }
+
+  @Shared
+  suspend fun getStatus(ctx: SharedObjectContext): Status {
+    return ctx.get(STATUS) ?: Status.NEW
+  }
+
+  /**
+   * Notifies that the delivery was picked up. Gets called by the DriverService.NotifyDeliveryPickup
+   * when the driver has arrived at the restaurant.
+   */
+  @Shared
+  suspend fun notifyDeliveryPickup(ctx: SharedObjectContext) {
+    // Retrieve the delivery information for this delivery
+    val callbackId =
+        ctx.get(PICKUP_CALLBACK_ID)
+            ?: throw TerminalException("Delivery was picked up but there is no ongoing delivery.")
+
+    // Notify that the delivery was picked up
+    ctx.awakeableHandle(callbackId).resolve(Unit)
+  }
+
+  /**
+   * Notifies that the order was delivered. Gets called by the DriverService.NotifyDeliveryDelivered
+   * when the driver has delivered the order to the customer.
+   */
+  @Shared
+  suspend fun notifyDeliveryDelivered(ctx: SharedObjectContext) {
+    // Retrieve the delivery information for this delivery
+    val callbackId =
+        ctx.get(DELIVERY_CALLBACK_ID)
+            ?: throw TerminalException("Delivery was delivered but there is no ongoing delivery.")
+
+    // Notify that the delivery has been completed
+    ctx.awakeableHandle(callbackId).resolve(Unit)
+  }
+
+  /* Coordinates DriverDeliveryMatcher and DriverDigitalTwin to start a delivery */
+  private suspend fun startDelivery(ctx: ObjectContext, order: OrderRequest) {
+    // --- Wait for a driver to be available and acquire it
+    val driverAwakeable = ctx.awakeable<String>()
+    DriverDeliveryMatcherClient.fromContext(ctx, GeoUtils.DEMO_REGION)
+        .send()
+        .requestDriverForDelivery(driverAwakeable.id)
+    // Wait until the driver pool service has located a driver
+    // This awakeable gets resolved either immediately when there is a pending delivery
+    // or later, when a new delivery comes in.
+    val driverId = driverAwakeable.await()
+
+    // --- Generate random restaurant/customer locations
+    val restaurantLocation = ctx.runBlock { GeoUtils.randomLocation() }
+    val customerLocation = ctx.runBlock { GeoUtils.randomLocation() }
+
+    // --- Assign the driver to the job
+    DriverDigitalTwinClient.fromContext(ctx, driverId)
+        .assignDeliveryJob(
+            AssignDeliveryRequest(
+                order.orderId, order.restaurantId, restaurantLocation, customerLocation))
+        .await()
   }
 }

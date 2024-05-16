@@ -48,6 +48,12 @@ data class DeliveryInformation(
   }
 }
 
+@Serializable
+data class DeliveryLocations(
+    val restaurant: Location,
+    val customer: Location,
+)
+
 @Serializable data class DeliveryRequest(val restaurantId: String, val callback: String)
 
 @Serializable
@@ -71,7 +77,7 @@ data class OrderRequest(
 @Serializable data class Product(val productId: String, val description: String, val quantity: Int)
 
 @Serializable
-enum class StatusEnum {
+enum class Status {
   NEW,
   CREATED,
   SCHEDULED,
@@ -86,5 +92,3 @@ enum class StatusEnum {
 }
 
 @Serializable data class GetAssignedDeliveryResult(val assignedDelivery: AssignedDelivery? = null)
-
-@Serializable data class OrderStatus(val status: StatusEnum, val eta: Long)

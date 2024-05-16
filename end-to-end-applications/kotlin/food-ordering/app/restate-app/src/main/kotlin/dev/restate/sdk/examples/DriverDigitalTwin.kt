@@ -11,10 +11,12 @@
 package dev.restate.sdk.examples
 
 import dev.restate.sdk.annotation.Handler
+import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.VirtualObject
 import dev.restate.sdk.common.TerminalException
 import dev.restate.sdk.kotlin.KtStateKey
 import dev.restate.sdk.kotlin.ObjectContext
+import dev.restate.sdk.kotlin.SharedObjectContext
 
 /**
  * Digital twin for the driver. Represents a driver and his status, assigned delivery, and location.
@@ -66,9 +68,15 @@ class DriverDigitalTwin {
             request.restaurantLocation,
             request.customerLocation))
 
+    // Initialize the ETA service
+    OrderETAServiceClient.fromContext(ctx, request.orderId)
+        .send()
+        .notifyDeliveryLocations(
+            DeliveryLocations(request.restaurantLocation, request.customerLocation))
+
     // Notify current location to the delivery service
     ctx.get(DRIVER_LOCATION)?.let {
-      DeliveryManagerClient.fromContext(ctx, request.orderId).send().handleDriverLocationUpdate(it)
+      OrderETAServiceClient.fromContext(ctx, request.orderId).send().notifyDriverLocationUpdate(it)
     }
   }
 
@@ -88,7 +96,8 @@ class DriverDigitalTwin {
     ctx.set(ASSIGNED_DELIVERY, currentDelivery)
 
     // Update the status of the delivery in the delivery manager
-    DeliveryManagerClient.fromContext(ctx, currentDelivery.orderId).send().notifyDeliveryPickup()
+    OrderWorkflowClient.fromContext(ctx, currentDelivery.orderId).send().notifyDeliveryPickup()
+    OrderETAServiceClient.fromContext(ctx, currentDelivery.orderId).send().notifyDeliveryPickup()
   }
 
   /** Gets called by the driver's mobile app when he has delivered the order to the customer. */
@@ -105,9 +114,7 @@ class DriverDigitalTwin {
     ctx.clear(ASSIGNED_DELIVERY)
 
     // Notify the delivery service that the delivery was delivered
-    DeliveryManagerClient.fromContext(ctx, assignedDelivery.orderId)
-        .send()
-        .notifyDeliveryDelivered()
+    OrderWorkflowClient.fromContext(ctx, assignedDelivery.orderId).send().notifyDeliveryDelivered()
 
     // Update the status of the driver to idle
     ctx.set(DRIVER_STATUS, DriverStatus.IDLE)
@@ -121,7 +128,7 @@ class DriverDigitalTwin {
 
     // Update the location of the delivery, if there is one
     ctx.get(ASSIGNED_DELIVERY)?.let {
-      DeliveryManagerClient.fromContext(ctx, it.orderId).send().handleDriverLocationUpdate(location)
+      OrderETAServiceClient.fromContext(ctx, it.orderId).send().notifyDriverLocationUpdate(location)
     }
   }
 
@@ -130,8 +137,8 @@ class DriverDigitalTwin {
    * assigned. Gets polled by the driver's mobile app at regular intervals to check if a delivery
    * got assigned to him.
    */
-  @Handler
-  suspend fun getAssignedDelivery(ctx: ObjectContext): GetAssignedDeliveryResult {
+  @Shared
+  suspend fun getAssignedDelivery(ctx: SharedObjectContext): GetAssignedDeliveryResult {
     return GetAssignedDeliveryResult(ctx.get(ASSIGNED_DELIVERY))
   }
 
