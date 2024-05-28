@@ -8,6 +8,10 @@ function bump_ts_sdk() {
     npm --prefix $1 install @restatedev/restate-sdk@^$NEW_VERSION
 }
 
+function bump_ts_sdk_clients() {
+    npm --prefix $1 install @restatedev/restate-sdk-clients@^$NEW_VERSION
+}
+
 bump_ts_sdk $PROJECT_ROOT/basics/basics-typescript
 
 bump_ts_sdk $PROJECT_ROOT/templates/typescript
@@ -17,6 +21,7 @@ bump_ts_sdk $PROJECT_ROOT/tutorials/tour-of-restate-typescript
 
 bump_ts_sdk $PROJECT_ROOT/patterns-use-cases/async-signals-payment/async-signals-payment-typescript
 bump_ts_sdk $PROJECT_ROOT/patterns-use-cases/durable-promises/durable-promises-typescript
+bump_ts_sdk_clients $PROJECT_ROOT/patterns-use-cases/durable-promises/durable-promises-typescript
 bump_ts_sdk $PROJECT_ROOT/patterns-use-cases/payment-state-machine/payment-state-machine-typescript
 bump_ts_sdk $PROJECT_ROOT/patterns-use-cases/sagas/sagas-typescript
 bump_ts_sdk $PROJECT_ROOT/patterns-use-cases/state-machines/state-machines-typescript
