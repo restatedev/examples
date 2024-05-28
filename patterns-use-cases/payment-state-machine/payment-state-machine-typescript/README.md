@@ -23,16 +23,17 @@ and failures.
 
 ## Running this example
 
-Start a Restate Server: `npx restate-server`
+First, install all dependencies via `npm install`.
 
-Build and start the example
+Next, start a Restate Server: `npx restate-server`
+
+Now build and start the example (in a new terminal):
 ```shell
-npm install
 npm run build
 npm run app
 ```
 
-Register the services: `npx restate dep reg "localhost:9080"`
+Register the services: `npx restate deployment register "localhost:9080"`
 
 Make some requests:
 

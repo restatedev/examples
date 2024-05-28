@@ -25,7 +25,7 @@ avoiding accidental state corruption and concurrency issues.
 * Start Restate Server in a separate shell: `npx restate-server`
 * Start this example: `npm run example`. (Use `npm run example-crash` to use the
   variant that crashes the process and restarts, to see the state recovery happen).
-* Register the example at Restate server by calling `npx restate -y dep reg --force "localhost:9080"`.
+* Register the example at Restate server by calling `npx restate -y deployment register --force "localhost:9080"`.
 
 Invoke the state machine transitions like
 ```shell

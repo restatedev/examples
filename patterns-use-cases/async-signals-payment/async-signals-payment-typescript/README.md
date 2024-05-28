@@ -31,7 +31,7 @@ webhooks to your local machine.
 
 4. Run this application code here: `npm run app-dev`
 
-5. Connect the apps: `npx restate dep reg localhost:9080`
+5. Connect the apps: `npx restate deployment register localhost:9080`
 
 6. Run launch _ngrok_: Get a free account and download the binary, or launch a docker container.
    Make it forward http calls to local port 8080
