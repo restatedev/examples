@@ -16,8 +16,9 @@
     "@restatedev/restate-sdk": "^0.9.2"
   },
   "devDependencies": {
-    "@restatedev/restate": "0.8.0",
-    "@restatedev/restate-server": "0.8.0",
+    "@restatedev/restate": "^0.9.2",
+    "@restatedev/restate-server": "^0.9.2",
+    "@types/node": "^20.12.12",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.0.2"
