@@ -14,7 +14,7 @@ import * as geo from "../utils/geo";
 import {DEMO_REGION, Location, DeliveryState} from "../types/types";
 import { getPublisher } from "../clients/kafka_publisher";
 import {updateLocation} from "./driver_mobile_app_sim_utils";
-import type {DriverDigitalTwin } from "../twin/api";
+import type {DriverDigitalTwin } from "../driver/api";
 
 /**
  * !!!SHOULD BE AN EXTERNAL APP ON THE DRIVER's PHONE!!! Simulated driver with application that
@@ -41,7 +41,7 @@ const mobileAppObject =  object({
   name : "driver-mobile-app",
   handlers: {
 
-    startDriver: async (ctx: ObjectContext) => {
+  startDriver: async (ctx: ObjectContext) => {
     // check if we exist already
     if (await ctx.get<Location>(CURRENT_LOCATION) !== null) {
       return;

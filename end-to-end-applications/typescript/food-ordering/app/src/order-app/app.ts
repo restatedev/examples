@@ -10,9 +10,8 @@
  */
 
 import { endpoint } from "@restatedev/restate-sdk";
-import orderWorkflow from "./order_workflow";
-import orderStatus from "./status/impl";
+import orderWorkflow from "./workflow/impl";
 
 if (require.main === module) {
-  endpoint().bind(orderWorkflow).bind(orderStatus).listen();
+  endpoint().bind(orderWorkflow).listen();
 }

@@ -34,6 +34,7 @@ export enum Status {
     DELIVERED = "DELIVERED",
     REJECTED = "REJECTED",
     CANCELLED = "CANCELLED",
+    UNKNOWN = "UNKNOWN"
 }
 
 export type OrderStatus = {

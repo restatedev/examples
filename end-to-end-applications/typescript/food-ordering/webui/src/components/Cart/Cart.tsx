@@ -2,11 +2,13 @@ import formatPrice from 'utils/formatPrice';
 import CartProducts from './CartProducts';
 import { useCart } from 'contexts/cart-context';
 import * as S from './style';
-import { sendRequestToRestate } from 'services/sendToRestate';
+import {createOrder, getStatus, publishToKafka} from 'services/sendToRestate';
 import { useUser } from 'contexts/user-context';
 import { useOrderStatusContext } from '../../contexts/status-context/OrderStatusProvider';
 import { useState } from 'react';
 import Dropdown from '../Dropdown';
+
+const isKafkaEnabled = process.env.REACT_APP_ENABLE_KAFKA === 'true';
 
 const Cart = () => {
   const {
@@ -61,49 +63,42 @@ const Cart = () => {
       return;
     }
 
-    const generateJsonReq = () => {
-      const productsToSend = products.map((prod) => {
-        return {
-          productId: prod.id,
-          description: prod.description,
-          quantity: prod.quantity,
-        };
-      });
+    const productsToSend = products.map((prod) => {
       return {
-        id: user!.user_id,
-        restaurantId: details.restaurant_id,
-        products: productsToSend,
-        totalCost: total.totalPrice,
-        deliveryDelay: details.delivery_delay,
+        productId: prod.id.toString(),
+        description: prod.description,
+        quantity: prod.quantity,
       };
+    });
+    const order = {
+      orderId: user!.user_id,
+      restaurantId: details.restaurant_id,
+      products: productsToSend,
+      totalCost: total.totalPrice,
+      deliveryDelay: details.delivery_delay,
     };
 
-    const request = generateJsonReq();
-   
     const flow = async () => {
       closeCart();
       const checkedOutStatus = { checked_out: true };
       updateCartDetails({ ...details, ...checkedOutStatus });
 
-      console.info(request);
-      await sendRequestToRestate({
-        service: 'order-workflow',
-        method: 'create',
-        key: user!.user_id,
-        data: JSON.stringify(request),
-        bg: true,
-      });
+      if (isKafkaEnabled) {
+        const kafkaRecord = JSON.stringify({
+          key: user!.user_id,
+          value: order,
+        });
+        console.info('Generating Kafka record');
+        console.info(kafkaRecord);
+        await publishToKafka(kafkaRecord);
+      } else {
+        console.info(order);
+        await createOrder(user!.user_id, order);
+      }
 
       let done = false;
       while (!done) {
-        const newOrderStatus = (
-          await sendRequestToRestate({
-            service: 'order-status',
-            method: 'get',
-            key: user!.user_id,
-            data: {},
-          })
-        );
+        const newOrderStatus = await getStatus(order.orderId);
         console.info(newOrderStatus);
 
         if (newOrderStatus) {
@@ -118,7 +113,7 @@ const Cart = () => {
       setNewShoppingCartId();
     };
 
-    flow().catch((err) => console.log(err));
+    flow();
   };
 
   const handleToggleCart = (isOpen: boolean) => () =>
