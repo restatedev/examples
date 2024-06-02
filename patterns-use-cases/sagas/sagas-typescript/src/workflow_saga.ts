@@ -60,18 +60,16 @@ export default async (ctx: restate.Context, tripID: string) => {
     //
     await flights.confirm(tripID, flightBooking);
     await cars.confirm(tripID, carBooking);
-  } catch (e: any) {
-    // undo all the steps up to this point by running the compensations
-    for (const compensation of compensations.reverse()) {
-      await compensation();
+    
+  } catch (e) {
+
+    if (e instanceof restate.TerminalError) {
+      // undo all the steps up to this point by running the compensations
+      for (const compensation of compensations.reverse()) {
+        await compensation();
+      }
     }
 
-    // exit with an error
-    throw new restate.TerminalError(
-      `Travel reservation failed with an error: ${e.message}`,
-      {
-        cause: e,
-      }
-    );
+    throw e;
   }
 };
