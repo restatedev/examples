@@ -5,7 +5,7 @@ plugins {
 
 repositories { mavenCentral() }
 
-val restateVersion = "0.9.2"
+val restateVersion = "0.10.0-SNAPSHOT"
 
 dependencies {
   // Kafka
