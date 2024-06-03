@@ -10,16 +10,16 @@
  */
 
 import {endpoint} from "@restatedev/restate-sdk";
-import driverDigitalTwin from "./twin/impl";
+import driverDigitalTwin from "./driver/impl";
 import driverDeliveryMatcher from "./matcher/impl";
-import deliveryManager from "./delivery_manager/impl";
+import delivery from "./delivery/impl";
 import driverMobileAppSimulator from "./external/driver_mobile_app_sim";
 
 if (require.main === module) {
       endpoint()
         .bind(driverDigitalTwin)
         .bind(driverDeliveryMatcher)
-        .bind(deliveryManager)
+        .bind(delivery)
         .bind(driverMobileAppSimulator)
         .listen(9081);
 }

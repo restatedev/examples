@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {IOrderStatus} from "../models";
 
 const RESTATE_HOST =
   process.env.REACT_APP_RESTATE_HOST || 'http://localhost:8080';
@@ -13,42 +14,40 @@ const challenge = (): { challenge: string; challengeTime: string } => {
   };
 };
 
-export const sendRequestToRestate = async ({
-  service,
-  method,
-  key,
-  data,
-  bg,
-}: {
-  service: string;
-  method: string;
-  data: any;
-  key?: string;
-  bg?: boolean;
-}) => {
+const challengeHeaders = () => {
   const c = challenge();
 
-  let url;
-  if (key) {
-    url = `${RESTATE_HOST}/${service}/${key}/${method}`;
-  } else {
-    url = `${RESTATE_HOST}/${service}/${method}`;
-  }
-
-  if (bg) {
-    url = url + '/send';
-  }
-
-  return await (
-    await axios.post(url, data, {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Challenge': c.challenge,
-        'X-Challenge-Time': c.challengeTime,
-      },
-    })
-  ).data;
+  return { 'X-Challenge': c.challenge, 'X-Challenge-Time': c.challengeTime };
 };
+
+export async function createOrder(orderId: string, order: any) {
+  let res = await fetch(
+    `${RESTATE_HOST}/order-workflow/${orderId}/run/send`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...challengeHeaders()
+      },
+      body: JSON.stringify(order),
+    });
+  if (!res.ok) {
+    throw new Error(`Got status code ${res.status} with response body ${await res.text()}`);
+  }
+
+  console.log(`Sent the order request. Response: ${await res.text()}`)
+}
+
+export async function getStatus(orderId: string): Promise<IOrderStatus> {
+  let status = await (
+    await fetch(`${RESTATE_HOST}/order-workflow/${orderId}/getStatus`, { headers: challengeHeaders()})
+  ).json();
+  let eta = await (
+    await fetch(`${RESTATE_HOST}/delivery/${orderId}/getETA`, { headers: challengeHeaders()})
+  ).json();
+  return { eta, status }
+}
+
 
 export const publishToKafka = async (record: any) => {
   return await (

@@ -50,7 +50,15 @@ export type DeliveryRequest = {
 
 export type PendingDelivery = {
   promiseId: string;
+  deliveryInfo: DeliveryInfo;
 }
+
+export type DeliveryInfo = {
+  restaurantLocation: Location,
+  customerLocation: Location,
+  isPickedUp: boolean
+};
+
 
 export type Location = {
   long: number,
@@ -69,15 +77,6 @@ export const DEMO_REGION = "San Jose (CA)";
 export type OrderAndPromise = {
   order: Order,
   promise: string
-}
-
-export type DeliveryInformation = {
-  orderId: string,
-  orderPromise: string,
-  restaurantId: string,
-  restaurantLocation: Location,
-  customerLocation: Location,
-  orderPickedUp: boolean
 }
 
 export type DeliveryState = {

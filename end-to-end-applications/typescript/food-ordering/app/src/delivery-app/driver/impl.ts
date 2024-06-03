@@ -13,7 +13,7 @@ import { object, ObjectContext, TerminalError } from "@restatedev/restate-sdk";
 import { DeliveryRequest, DriverStatus, Location } from "../types/types";
 
 import type { DriverDeliveryMatcher } from "../matcher/api";
-import type { DeliveryManager } from "../delivery_manager/api";
+import { Delivery } from "../delivery/api";
 
 /**
  * Digital twin for the driver. Represents a driver and his status, assigned delivery, and location.
@@ -51,8 +51,8 @@ export default object({
       const currentLocation = await ctx.get<Location>(DRIVER_LOCATION);
       if (currentLocation) {
         ctx
-          .objectSendClient(DeliveryManagerObject, deliveryRequest.deliveryId)
-          .handleDriverLocationUpdate(currentLocation);
+          .objectSendClient(DeliveryObject, deliveryRequest.deliveryId)
+          .updateDeliveryLocation(currentLocation);
       }
     },
 
@@ -64,8 +64,8 @@ export default object({
       ))!;
 
       ctx
-        .objectSendClient(DeliveryManagerObject, assignedDelivery.deliveryId)
-        .notifyDeliveryPickup(assignedDelivery.deliveryId);
+        .objectSendClient(DeliveryObject, assignedDelivery.deliveryId)
+        .notifyDeliveryPickup();
     },
 
     // Called by driver's mobile app after delivery success.
@@ -78,8 +78,8 @@ export default object({
       ctx.clear(ASSIGNED_DELIVERY);
 
       ctx
-        .objectSendClient(DeliveryManagerObject, assignedDelivery.deliveryId)
-        .notifyDeliveryDelivered(assignedDelivery.deliveryId);
+        .objectSendClient(DeliveryObject, assignedDelivery.deliveryId)
+        .notifyDeliveryDelivered();
 
       ctx.set(DRIVER_STATUS, DriverStatus.IDLE);
     },
@@ -95,8 +95,8 @@ export default object({
       );
       if (assignedDelivery) {
         ctx
-          .objectSendClient(DeliveryManagerObject, assignedDelivery.deliveryId)
-          .handleDriverLocationUpdate(location);
+          .objectSendClient(DeliveryObject, assignedDelivery.deliveryId)
+          .updateDeliveryLocation(location);
       }
     },
   },
@@ -117,5 +117,5 @@ const DRIVER_LOCATION = "driver-location";
 const DriverDeliveryMatcherObject: DriverDeliveryMatcher = {
   name: "driver-delivery-matcher",
 };
-const DeliveryManagerObject: DeliveryManager = { name: "delivery-manager" };
+const DeliveryObject: Delivery = { name: "delivery" };
 
