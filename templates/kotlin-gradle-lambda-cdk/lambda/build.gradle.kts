@@ -1,11 +1,11 @@
 import java.net.URI
 
 plugins {
-  kotlin("jvm") version "1.9.22"
+  kotlin("jvm") version "2.0.0"
   // Kotlinx serialization (optional)
-  kotlin("plugin.serialization") version "1.9.22"
+  kotlin("plugin.serialization") version "2.0.0"
 
-  id("com.google.devtools.ksp") version "1.9.22-1.0.18"
+  id("com.google.devtools.ksp") version "2.0.0-1.0.21"
 
   id("distribution")
 }
@@ -14,7 +14,7 @@ repositories {
   mavenCentral()
 }
 
-val restateVersion = "0.9.2"
+val restateVersion = "0.10.0-SNAPSHOT"
 
 dependencies {
   // Annotation processor
@@ -25,7 +25,7 @@ dependencies {
   implementation("dev.restate:sdk-lambda:$restateVersion")
 
   // Kotlinx serialization (optional)
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
 
   // AWS Lambda-specific logging, see https://docs.aws.amazon.com/lambda/latest/dg/java-logging.html#java-logging-log4j2
   val log4j2version = "2.23.1"
