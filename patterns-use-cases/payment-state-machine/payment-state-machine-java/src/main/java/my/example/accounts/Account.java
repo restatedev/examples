@@ -10,10 +10,10 @@
  */
 package my.example.accounts;
 
+import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
 import my.example.types.Result;
@@ -26,7 +26,7 @@ import my.example.types.Result;
 @VirtualObject
 public class Account {
 
-  private static final StateKey<Long> BALANCE = StateKey.of("balance", CoreSerdes.JSON_LONG);
+  private static final StateKey<Long> BALANCE = StateKey.of("balance", JsonSerdes.LONG);
 
   @Handler
   public void deposit(ObjectContext ctx, Long amountCents) {
