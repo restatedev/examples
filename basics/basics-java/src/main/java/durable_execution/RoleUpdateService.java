@@ -11,10 +11,10 @@
 
 package durable_execution;
 
+import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 import utils.Permission;
 import durable_execution.utils.UpdateRequest;
@@ -45,7 +45,7 @@ public class RoleUpdateService {
         // Apply a change to one system (e.g., DB upsert, API call, ...).
         // The side effect persists the result with a consensus method so
         // any later code relies on a deterministic result.
-        boolean success = ctx.run(CoreSerdes.JSON_BOOLEAN, () ->
+        boolean success = ctx.run(JsonSerdes.BOOLEAN, () ->
             applyUserRole(req.getUserId(), req.getRole()));
         if (!success) {
             return;
