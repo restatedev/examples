@@ -7,9 +7,8 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-
-import dev.restate.sdk.client.IngressClient;
-import dev.restate.sdk.common.CoreSerdes;
+import dev.restate.sdk.client.Client;
+import dev.restate.sdk.common.Serde;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,7 +34,7 @@ public class RestaurantMain {
 
   /** Preparation request handler. */
   static class PrepareHandler implements HttpHandler {
-    private final IngressClient ingressClient = IngressClient.defaultClient(RESTATE_RUNTIME_ENDPOINT);
+    private final Client ingressClient = Client.connect(RESTATE_RUNTIME_ENDPOINT);
 
     @Override
     public void handle(HttpExchange t) throws IOException {
@@ -44,7 +43,7 @@ public class RestaurantMain {
 
       ingressClient.awakeableHandle(node.get("cb").asText())
               // Resolve empty
-              .resolve(CoreSerdes.VOID, null);
+              .resolve(Serde.VOID, null);
         logger.info("Order {} prepared and ready for shipping", node.get("orderId").asText());
 
       t.sendResponseHeaders(200, -1);

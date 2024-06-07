@@ -1,12 +1,12 @@
 plugins {
   application
   id("com.google.cloud.tools.jib") version "3.4.0"
-  id("com.google.devtools.ksp") version "1.9.22-1.0.18"
+  id("com.google.devtools.ksp") version "2.0.0-1.0.21"
 }
 
 repositories { mavenCentral() }
 
-val restateVersion = "0.9.2"
+val restateVersion = "1.0.0"
 
 dependencies {
   // Restate SDK
@@ -18,7 +18,7 @@ dependencies {
   implementation("org.apache.kafka:kafka-clients:3.6.1")
 
   // Logging (optional)
-  implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+  implementation("org.apache.logging.log4j:log4j-core:2.23.0")
 }
 
 // Set main class

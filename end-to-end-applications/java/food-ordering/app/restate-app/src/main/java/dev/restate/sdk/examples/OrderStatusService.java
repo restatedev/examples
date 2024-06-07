@@ -11,10 +11,10 @@
 
 package dev.restate.sdk.examples;
 
+import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.examples.types.StatusEnum;
@@ -25,7 +25,7 @@ public class OrderStatusService {
 
   private static final StateKey<StatusEnum> ORDER_STATUS =
       StateKey.of("order-status", JacksonSerdes.of(StatusEnum.class));
-  private static final StateKey<Long> ORDER_ETA = StateKey.of("order-eta", CoreSerdes.JSON_LONG);
+  private static final StateKey<Long> ORDER_ETA = StateKey.of("order-eta", JsonSerdes.LONG);
 
   public static class OrderStatus {
     private final StatusEnum status;

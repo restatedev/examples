@@ -11,10 +11,10 @@
 
 package dev.restate.sdk.examples;
 
+import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.Serde;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
@@ -59,7 +59,7 @@ public class DeliveryManager {
     ctx.set(DELIVERY_INFO, deliveryInfo);
 
     // Acquire a driver
-    var driverAwakeable = ctx.awakeable(CoreSerdes.JSON_STRING);
+    var driverAwakeable = ctx.awakeable(JsonSerdes.STRING);
     DriverDeliveryMatcherClient.fromContext(ctx, GeoUtils.DEMO_REGION)
         .send()
         .requestDriverForDelivery(driverAwakeable.id());
@@ -119,7 +119,7 @@ public class DeliveryManager {
     ctx.clear(DELIVERY_INFO);
 
     // Notify the OrderService that the delivery has been completed
-    ctx.awakeableHandle(delivery.getCallbackId()).resolve(CoreSerdes.VOID, null);
+    ctx.awakeableHandle(delivery.getCallbackId()).resolve(Serde.VOID, null);
   }
 
   /**

@@ -11,10 +11,10 @@
 
 package events_state;
 
+import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 import utils.UserProfile;
@@ -27,10 +27,10 @@ import utils.UserProfile;
 public class ProfileService {
 
     private static final StateKey<String> NAME =
-            StateKey.of("name", CoreSerdes.JSON_STRING);
+            StateKey.of("name", JsonSerdes.STRING);
 
     private static final StateKey<String> EMAIL =
-            StateKey.of("email", CoreSerdes.JSON_STRING);
+            StateKey.of("email", JsonSerdes.STRING);
 
     @Handler
     public void registration(ObjectContext ctx, String name){
