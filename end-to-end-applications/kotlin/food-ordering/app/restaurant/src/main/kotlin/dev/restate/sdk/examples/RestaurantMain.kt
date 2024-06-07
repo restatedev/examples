@@ -3,7 +3,7 @@ package dev.restate.sdk.examples
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 import com.sun.net.httpserver.HttpServer
-import dev.restate.sdk.client.IngressClient
+import dev.restate.sdk.client.Client
 import dev.restate.sdk.kotlin.KtSerdes
 import java.net.InetSocketAddress
 import kotlinx.serialization.ExperimentalSerializationApi
@@ -35,7 +35,7 @@ fun main() {
 
 /** Preparation request handler. */
 internal class PrepareHandler : HttpHandler {
-  private val ingressClient: IngressClient = IngressClient.defaultClient(RESTATE_RUNTIME_ENDPOINT)
+  private val ingressClient: Client = Client.connect(RESTATE_RUNTIME_ENDPOINT)
 
   @OptIn(ExperimentalSerializationApi::class)
   override fun handle(t: HttpExchange) {

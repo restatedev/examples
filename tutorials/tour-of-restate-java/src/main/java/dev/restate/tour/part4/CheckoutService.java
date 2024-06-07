@@ -27,7 +27,7 @@ public class CheckoutService {
         double totalPrice = request.getTickets().size() * 40.0;
 
         String idempotencyKey = ctx.random().nextUUID().toString();
-        boolean success = ctx.run(JsonSerdes.JSON_BOOLEAN, () ->
+        boolean success = ctx.run(JsonSerdes.BOOLEAN, () ->
                 PaymentClient.get().call(idempotencyKey, totalPrice));
 
         if (success) {

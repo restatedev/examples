@@ -95,5 +95,6 @@ function addImgPathToSteps(wfDefinition: WorkflowDefinition, imgName: string) {
 
 function executeWorkflowStep(ctx: restate.Context, step: WorkflowStep) {
     const servicePath = workflowStepRegistry.get(step.service)!;
+    // @ts-ignore
     return ctx.serviceClient(servicePath.api).run(step);
 }

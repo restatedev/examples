@@ -12,10 +12,10 @@
 package dev.restate.sdk.examples;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.CoreSerdes;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
@@ -52,7 +52,7 @@ public class DriverDeliveryMatcher {
       // Update the queue in state. Delivery was removed.
       ctx.set(PENDING_DELIVERIES, pendingDeliveries);
       // Notify that delivery is ongoing
-      ctx.awakeableHandle(nextDelivery).resolve(CoreSerdes.JSON_STRING, driverId);
+      ctx.awakeableHandle(nextDelivery).resolve(JsonSerdes.STRING, driverId);
       return;
     }
 
@@ -77,7 +77,7 @@ public class DriverDeliveryMatcher {
       // Remove driver from the pool
       ctx.set(AVAILABLE_DRIVERS, availableDrivers);
       // Notify that delivery is ongoing
-      ctx.awakeableHandle(deliveryCallbackId).resolve(CoreSerdes.JSON_STRING, nextAvailableDriver);
+      ctx.awakeableHandle(deliveryCallbackId).resolve(JsonSerdes.STRING, nextAvailableDriver);
       return;
     }
 
