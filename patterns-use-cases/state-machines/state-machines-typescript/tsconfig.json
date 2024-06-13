@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "esnext",
     "lib": ["esnext"],
-    "module": "commonjs",
+    "module": "nodenext",
     "allowJs": true,
     "declaration": true,
     "declarationMap": true,
