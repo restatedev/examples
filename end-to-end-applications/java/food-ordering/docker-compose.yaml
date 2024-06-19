@@ -87,9 +87,7 @@ services:
   runtime:
     image: docker.io/restatedev/restate:1.0.1
     depends_on:
-      - restaurantpos
-      - broker
-      - rest-proxy
+      - init-kafka
       - jaeger
     ports:
       - "9070:9070"
@@ -107,6 +105,7 @@ services:
       - runtime
       - delivery_service
       - driver_app
+      - restaurantpos
     restart: "no"
     entrypoint: ["sh", "-c", "-x", "sleep 5 &&
     echo '-w \"\\n\"' >> ~/.curlrc &&
@@ -125,5 +124,6 @@ services:
       context: ./webui
     depends_on:
       - runtimesetup
+      - rest-proxy
     ports:
       - "3000:3000"
