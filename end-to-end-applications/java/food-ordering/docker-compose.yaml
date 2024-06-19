@@ -101,14 +101,15 @@ services:
       - runtime
       - restate_app
     restart: "no"
-    entrypoint: ["sh", "-c", "sleep 5 && 
-    curl -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://restate_app:9080\"}' &&
+    entrypoint: ["sh", "-c", "-x", "sleep 5 &&
+    echo '-w \"\\n\"' >> ~/.curlrc &&
+    curl -i -s --fail -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://restate_app:9080\"}' &&
     sleep 3 && 
-    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/orders\", \"sink\":\"service://OrderWorkflow/create\" }' &&
-    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/driver-updates\", \"sink\":\"service://DriverDigitalTwin/handleDriverLocationUpdateEvent\" }' &&
+    curl -i -s --fail -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/orders\", \"sink\":\"service://OrderWorkflow/create\" }' &&
+    curl -i -s --fail -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/driver-updates\", \"sink\":\"service://DriverDigitalTwin/handleDriverLocationUpdateEvent\" }' &&
     sleep 3 && 
-    curl -X POST 'runtime:8080/DriverMobileAppSimulator/driver-A/startDriver' && 
-    curl -X POST 'runtime:8080/DriverMobileAppSimulator/driver-B/startDriver' && 
+    curl -i -s --fail -X POST 'runtime:8080/DriverMobileAppSimulator/driver-A/startDriver' &&
+    curl -i -s --fail -X POST 'runtime:8080/DriverMobileAppSimulator/driver-B/startDriver' &&
     exit 1"]
 
   foodorderingwebui:
