@@ -11,7 +11,6 @@
 
 package dev.restate.sdk.examples;
 
-import dev.restate.sdk.examples.external.DriverMobileAppSimulator;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
 public class AppMain {
@@ -22,7 +21,6 @@ public class AppMain {
         .bind(new DeliveryManager())
         .bind(new DriverDeliveryMatcher())
         .bind(new DriverDigitalTwin())
-        .bind(new DriverMobileAppSimulator()) // external mobile app on driver's phone
-        .buildAndListen();
+        .buildAndListen(9080);
   }
 }
