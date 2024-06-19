@@ -11,10 +11,10 @@
 
 package dev.restate.sdk.examples;
 
+import dev.restate.sdk.Context;
 import dev.restate.sdk.JsonSerdes;
-import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
-import dev.restate.sdk.annotation.VirtualObject;
+import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.common.Serde;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.examples.clients.PaymentClient;
@@ -29,13 +29,13 @@ import java.time.Duration;
  * The event contains the order ID and the raw JSON order. The workflow handles the payment, asks
  * the restaurant to start the preparation, and triggers the delivery.
  */
-@VirtualObject
+@Service
 public class OrderWorkflow {
   private final RestaurantClient restaurant = RestaurantClient.get();
   private final PaymentClient paymentClnt = PaymentClient.get();
 
   @Handler
-  public void create(ObjectContext ctx, OrderRequest order) throws TerminalException {
+  public void create(Context ctx, OrderRequest order) throws TerminalException {
     String id = order.getOrderId();
 
     var orderStatusService = OrderStatusServiceClient.fromContext(ctx, id);
