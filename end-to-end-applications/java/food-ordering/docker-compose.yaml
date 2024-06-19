@@ -79,7 +79,7 @@ services:
       - KAFKA_BOOTSTRAP_SERVERS=broker:29092
 
   runtime:
-    image: docker.io/restatedev/restate
+    image: docker.io/restatedev/restate:1.0.0
     depends_on:
       - restaurantpos
       - broker
@@ -95,13 +95,13 @@ services:
       - RESTATE_CONFIG=/restate.toml
 
   runtimesetup:
-    image: alpine
+    build:
+      context: ./tools
     depends_on:
       - runtime
       - restate_app
     restart: "no"
     entrypoint: ["sh", "-c", "sleep 5 && 
-    apk add --no-cache bash jq curl &&
     curl -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://restate_app:9080\"}' &&
     sleep 3 && 
     curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/orders\", \"sink\":\"service://OrderWorkflow/create\" }' &&
