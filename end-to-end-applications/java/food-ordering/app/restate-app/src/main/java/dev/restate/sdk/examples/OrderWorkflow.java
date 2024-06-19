@@ -38,32 +38,36 @@ public class OrderWorkflow {
   public void create(ObjectContext ctx, OrderRequest order) throws TerminalException {
     String id = order.getOrderId();
 
-    var orderStatusSend = OrderStatusServiceClient.fromContext(ctx, id);
+    var orderStatusService = OrderStatusServiceClient.fromContext(ctx, id);
 
     // 1. Set status
-    orderStatusSend.send().setStatus(StatusEnum.CREATED);
+    orderStatusService.setStatus(StatusEnum.CREATED);
 
     // 2. Handle payment
     String token = ctx.random().nextUUID().toString();
     boolean paid =
-        ctx.run(JsonSerdes.BOOLEAN, () -> paymentClnt.charge(id, token, order.getTotalCost()));
+        ctx.run(
+            "process payment",
+            JsonSerdes.BOOLEAN,
+            () -> paymentClnt.charge(id, token, order.getTotalCost()));
 
     if (!paid) {
-      orderStatusSend.send().setStatus(StatusEnum.REJECTED);
+      orderStatusService.setStatus(StatusEnum.REJECTED);
       return;
     }
 
     // 3. Schedule preparation
-    orderStatusSend.setStatus(StatusEnum.SCHEDULED);
+    orderStatusService.setStatus(StatusEnum.SCHEDULED);
+
     ctx.sleep(Duration.ofMillis(order.getDeliveryDelay()));
 
     // 4. Trigger preparation
-    var preparationAwakeable = ctx.awakeable(Serde.VOID);
-    ctx.run(() -> restaurant.prepare(id, preparationAwakeable.id()));
-    orderStatusSend.setStatus(StatusEnum.IN_PREPARATION);
+    var preparationFuture = ctx.awakeable(Serde.VOID);
+    ctx.run("notify restaurant", () -> restaurant.prepare(id, preparationFuture.id()));
 
-    preparationAwakeable.await();
-    orderStatusSend.setStatus(StatusEnum.SCHEDULING_DELIVERY);
+    orderStatusService.setStatus(StatusEnum.IN_PREPARATION);
+    preparationFuture.await();
+    orderStatusService.setStatus(StatusEnum.SCHEDULING_DELIVERY);
 
     // 5. Find a driver and start delivery
     var deliveryAwakeable = ctx.awakeable(Serde.VOID);
@@ -72,6 +76,6 @@ public class OrderWorkflow {
         .send()
         .start(new DeliveryRequest(order.getRestaurantId(), deliveryAwakeable.id()));
     deliveryAwakeable.await();
-    orderStatusSend.setStatus(StatusEnum.DELIVERED);
+    orderStatusService.setStatus(StatusEnum.DELIVERED);
   }
 }
