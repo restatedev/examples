@@ -11,7 +11,11 @@
 
 import * as restate from "@restatedev/restate-sdk";
 import { UpdateRequest, UserRole, Permission } from "./utils/example_stubs";
-import { getCurrentRole, tryApplyUserRole, tryApplyPermission } from "./utils/example_stubs";
+import {
+  getCurrentRole,
+  tryApplyUserRole,
+  tryApplyPermission,
+} from "./utils/example_stubs";
 
 // Durable execution ensures code runs to the end, even in the presence of
 // failures. That allows developers to implement error handling with common
@@ -40,7 +44,9 @@ async function applyRoleUpdate(ctx: restate.Context, update: UpdateRequest) {
   const previousPermissions: Permission[] = [];
   for (const permission of permissions) {
     try {
-      const previous = await ctx.run(() => tryApplyPermission(userId, permission));
+      const previous = await ctx.run(() =>
+        tryApplyPermission(userId, permission),
+      );
       previousPermissions.push(previous); // remember the previous setting
     } catch (err) {
       if (err instanceof restate.TerminalError) {
@@ -55,7 +61,7 @@ async function rollback(
   ctx: restate.Context,
   userId: string,
   role: UserRole,
-  permissions: Permission[]
+  permissions: Permission[],
 ) {
   console.log(">>> !!! ROLLING BACK CHANGES !!! <<<");
   for (const prev of permissions.reverse()) {
@@ -65,18 +71,18 @@ async function rollback(
 }
 
 // ---------------------------- deploying / running ---------------------------
-import {service} from "@restatedev/restate-sdk";
+import { service } from "@restatedev/restate-sdk";
 
 const serve = restate.endpoint().bind(
   service({
     name: "roleUpdate",
     handlers: { applyRoleUpdate },
-  })
+  }),
 );
 
 serve.listen(9080);
-// or serve.lambdaHandler();
 // or serve.http2Handler();
+// or serve.handler() from "@restatedev/restate-sdk/lambda" or "@restatedev/restate-sdk/fetch"
 // or ...
 
 //
@@ -92,7 +98,7 @@ serve.listen(9080);
 // This will proceed reliably across the occasional process crash, that we blend in.
 // Once an action has completed, it does not get re-executed on retries, so each line occurs only once.
 
-/* 
+/*
 curl localhost:8080/roleUpdate/applyRoleUpdate -H 'content-type: application/json' -d \
 '{
     "userId": "Sam Beckett",

@@ -9,19 +9,19 @@
  * https://github.com/restatedev/examples/
  */
 
-import * as restate from "@restatedev/restate-sdk";
+import * as restate from "@restatedev/restate-sdk/lambda";
 
 const greet = async (ctx: restate.Context, name: string) => {
-    return `Hello, ${name ?? "Restate user"}!`;
+  return `Hello, ${name ?? "Restate user"}!`;
 };
 
 // Create the Restate server to accept requests
 export const handler = restate
-    .endpoint()
-    .bind(
-        restate.service({
-            name: "Greeter", // the service that serves the handlers
-            handlers: { greet },
-        })
-    )
-    .lambdaHandler();
+  .endpoint()
+  .bind(
+    restate.service({
+      name: "Greeter", // the service that serves the handlers
+      handlers: { greet },
+    }),
+  )
+  .handler();

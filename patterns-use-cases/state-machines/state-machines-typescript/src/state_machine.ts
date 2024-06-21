@@ -31,19 +31,18 @@ enum State {
 const resource = restate.object({
   name: "resource",
   handlers: {
-
     setUp: async (ctx: restate.ObjectContext) => {
       const state = (await ctx.get<State>("state")) ?? State.DOWN;
       const stateMachineId = ctx.key;
 
       ctx.console.log(
-        ` >>> Invoking 'setUp()' for ${stateMachineId} in state ${state}`
+        ` >>> Invoking 'setUp()' for ${stateMachineId} in state ${state}`,
       );
 
       // the state cannot be inconsistent, but someone could call 'setUp' multiple times in a row
       if (state === State.UP) {
         ctx.console.log(
-          `>>> Resource ${stateMachineId} is already UP, so nothing to do`
+          `>>> Resource ${stateMachineId} is already UP, so nothing to do`,
         );
         return `${stateMachineId} is already UP`;
       }
@@ -63,12 +62,12 @@ const resource = restate.object({
       const stateMachineId = ctx.key;
 
       ctx.console.log(
-        ` >>> Invoking 'tearDown()' for ${stateMachineId} in state ${state}`
+        ` >>> Invoking 'tearDown()' for ${stateMachineId} in state ${state}`,
       );
 
       if (state !== State.UP) {
         ctx.console.log(
-          `" >>> Resource ${stateMachineId} is not UP, cannot tear down`
+          `" >>> Resource ${stateMachineId} is not UP, cannot tear down`,
         );
         return `${stateMachineId} is not yet UP`;
       }
@@ -90,8 +89,8 @@ const resource = restate.object({
 const serve = restate.endpoint().bind(resource);
 
 serve.listen(9080);
-// or serve.lambdaHandler();
 // or serve.http2Handler();
+// or serve.handler() from "@restatedev/restate-sdk/lambda" or "@restatedev/restate-sdk/fetch"
 // or ...
 
 //
