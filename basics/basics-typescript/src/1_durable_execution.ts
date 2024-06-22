@@ -10,8 +10,11 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import { UpdateRequest, applyUserRole, applyPermission } from "./utils/example_stubs";
-
+import {
+  UpdateRequest,
+  applyUserRole,
+  applyPermission,
+} from "./utils/example_stubs";
 
 // This is an example of the benefits of Durable Execution.
 // Durable Execution ensures code runs to the end, even in the presence of
@@ -50,18 +53,18 @@ async function applyRoleUpdate(ctx: restate.Context, update: UpdateRequest) {
 }
 
 // ---------------------------- deploying / running ---------------------------
-import {service} from "@restatedev/restate-sdk";
+import { service } from "@restatedev/restate-sdk";
 
 const serve = restate.endpoint().bind(
   service({
     name: "roleUpdate",
     handlers: { applyRoleUpdate },
-  })
+  }),
 );
 
 serve.listen(9080);
-// or serve.lambdaHandler();
 // or serve.http2Handler();
+// or serve.handler() from "@restatedev/restate-sdk/lambda" or "@restatedev/restate-sdk/fetch"
 // or ...
 
 //
@@ -72,7 +75,7 @@ serve.listen(9080);
 // You will see all lines of the type "Applied permission remove:allow for user Sam Beckett"
 // in the log, across all retries. You will also see that re-tries will not re-execute
 // previously completed actions again, so each line occurs only once.
-/* 
+/*
 curl localhost:8080/roleUpdate/applyRoleUpdate -H 'content-type: application/json' -d \
 '{
     "userId": "Sam Beckett",

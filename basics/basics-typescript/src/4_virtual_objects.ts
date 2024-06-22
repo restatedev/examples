@@ -25,10 +25,9 @@ import * as restate from "@restatedev/restate-sdk";
 const greeterObject = restate.object({
   name: "greeter",
   handlers: {
-
     greet: async (
       ctx: restate.ObjectContext,
-      request: { greeting?: string }
+      request: { greeting?: string },
     ) => {
       const greeting = request?.greeting ?? "Hello";
 
@@ -59,12 +58,11 @@ example3: `curl localhost:8080/greeter/mary/ungreet -H 'content-type: applicatio
 
 // --------------------------------- deploying --------------------------------
 
-
 const serve = restate.endpoint().bind(greeterObject);
 
 serve.listen(9080);
-// or serve.lambdaHandler();
 // or serve.http2Handler();
+// or serve.handler() from "@restatedev/restate-sdk/lambda" or "@restatedev/restate-sdk/fetch"
 // or ...
 
 // See README for details on how to start and connect to Restate.
