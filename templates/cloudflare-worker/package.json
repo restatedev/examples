@@ -4,12 +4,12 @@
   "version": "0.0.1",
   "scripts": {
     "deploy": "wrangler deploy",
-    "dev": "wrangler dev",
-    "start": "wrangler dev",
+    "dev": "wrangler dev --port 9080",
+    "start": "wrangler dev --port 9080",
     "format": "prettier --write \"src/*.+(js|ts|json)\""
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "dev"
+    "@restatedev/restate-sdk": "^1.0.1"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240605.0",
