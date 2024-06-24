@@ -14,7 +14,7 @@ challenges.
   durable execution or virtual objects.
 
 * **[End-to-End Applications](end-to-end-applications):** Runnable demo applications that consist
-  of many components, e.g., a fodo ordering app, or an e-commerce site.
+  of many components, e.g., a food ordering app, or an e-commerce site.
   Typically packaged as a docker compose setup.
 
 * **[Tutorials](tutorials):** A step-by-step guide that builds an application and introduces
