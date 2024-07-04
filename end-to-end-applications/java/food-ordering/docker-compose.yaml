@@ -64,6 +64,7 @@ services:
       - KAFKA_BOOTSTRAP_SERVERS=broker:29092
     entrypoint: ["java", "-cp", "@/app/jib-classpath-file", "dev.restate.sdk.examples.external.DriverMobileAppSimulator"]
 
+# To run the delivery services directly (in IDE, standalone), comment out this service
   delivery_service:
     container_name: delivery_service
     image: delivery-service:1.0.0
@@ -83,13 +84,15 @@ services:
       - ./restate-docker.toml:/restate.toml:Z,ro
     environment:
       - RESTATE_CONFIG=/restate.toml
+# remove those comments when running delivery services directly (in IDE, standalone), so the runtime can reach out to them
+#    extra_hosts:
+#      - "delivery_service:host-gateway"
 
   runtimesetup:
     build:
       context: ./tools
     depends_on:
       - runtime
-      - delivery_service
       - driver_app
       - restaurantpos
     restart: "no"
