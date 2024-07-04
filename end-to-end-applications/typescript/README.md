@@ -17,3 +17,15 @@ relaying the calls to services implementing the steps.
 
 The example shows how to build a dynamic workflow interpreter and use workflows to drive work in
 other services.
+
+
+### Chatbot - LLM / Agents
+
+The [Chat Bot](chat-bot) example implements an LLM-powered chat bot with Slack integration that can be asked to
+handle tasks, like watching flight prices, or sending reminders.
+
+It illustrates how to
+* Use restate for stateful LLM interactions (state holds the chat history and active tasks)
+* Create and interact the async tasks running the respective activities
+
+
