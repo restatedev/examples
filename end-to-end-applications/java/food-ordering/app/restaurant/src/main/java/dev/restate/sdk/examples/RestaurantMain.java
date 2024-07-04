@@ -7,6 +7,10 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import dev.restate.sdk.client.Client;
 import dev.restate.sdk.common.Serde;
 import org.apache.logging.log4j.LogManager;
@@ -34,17 +38,26 @@ public class RestaurantMain {
 
   /** Preparation request handler. */
   static class PrepareHandler implements HttpHandler {
+
+    private static final ScheduledExecutorService DELAY_EXECUTOR =
+        Executors.newSingleThreadScheduledExecutor();
+
     private final Client ingressClient = Client.connect(RESTATE_RUNTIME_ENDPOINT);
 
     @Override
     public void handle(HttpExchange t) throws IOException {
       ObjectMapper mapper = new ObjectMapper();
       JsonNode node = mapper.readTree(t.getRequestBody());
+      String orderId = node.get("orderId").asText();
+      String callbackId = node.get("cb").asText();
 
-      ingressClient.awakeableHandle(node.get("cb").asText())
-              // Resolve empty
-              .resolve(Serde.VOID, null);
-        logger.info("Order {} prepared and ready for shipping", node.get("orderId").asText());
+      logger.info("Order {} received", orderId);
+
+      Runnable orderReadyNotification = () -> {
+        logger.info("Order {} prepared and ready for shipping", orderId);
+        ingressClient.awakeableHandle(callbackId).resolve(Serde.VOID, null);
+      };
+      DELAY_EXECUTOR.schedule(orderReadyNotification, 3, TimeUnit.SECONDS);
 
       t.sendResponseHeaders(200, -1);
     }
