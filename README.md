@@ -39,6 +39,7 @@ challenges.
 | Use Cases  | [Async Tasks - Payments](patterns-use-cases/async-signals-payment/async-signals-payment-typescript/) |
 | End-to-End | [Food Ordering App](end-to-end-applications/typescript/food-ordering)                                |
 | End-to-End | [AI Image Processing Workflow](end-to-end-applications/typescript/ai-image-workflows)                |
+| End-to-End | [LLM-powered Chat Bot / Task Agent](end-to-end-applications/typescript/chat-bot)                     |
 | Tutorial   | [Tour of Restate](tutorials/tour-of-restate-typescript)                                              |
 | Templates  | [Restate Node/TS Template](templates/typescript)                                                     |
 | Templates  | [Restate Bun/TS Template](templates/bun)                                                             |
