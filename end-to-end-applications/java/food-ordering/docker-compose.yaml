@@ -3,13 +3,10 @@ services:
   broker:
     image: confluentinc/cp-kafka:7.5.0
     container_name: broker
-    ports:
-      - "9092:9092"
-      - "9101:9101"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://broker:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
@@ -44,7 +41,6 @@ services:
     image: jaegertracing/all-in-one:1.47
     ports:
       - "16686:16686"
-      - "4317:4317"
     environment:
       - COLLECTOR_OTLP_ENABLED=true
 
@@ -54,7 +50,7 @@ services:
     environment:
       - RESTATE_RUNTIME_ENDPOINT=http://runtime:8080
     ports:
-      - "5050:5050"
+      - "5050:5050"  # exposed so that can be called when delivery services run outside docker compose
     entrypoint: ["java", "-cp", "@/app/jib-classpath-file", "dev.restate.sdk.examples.RestaurantMain"]
 
   driver_app:
