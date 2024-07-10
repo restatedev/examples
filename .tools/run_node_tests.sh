@@ -11,6 +11,8 @@ npm_install_check $PROJECT_ROOT/basics/basics-typescript
 
 npm_install_check $PROJECT_ROOT/templates/typescript
 npm_install_check $PROJECT_ROOT/templates/typescript-lambda-cdk
+npm_install_check $PROJECT_ROOT/templates/cloudflare-worker
+npm_install_check $PROJECT_ROOT/templates/bun
 
 npm_install_check $PROJECT_ROOT/tutorials/tour-of-restate-typescript
 
