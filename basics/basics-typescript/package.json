@@ -13,7 +13,7 @@
     "example-4": "ts-node-dev --transpile-only src/4_virtual_objects.ts"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.0.0",
+    "@restatedev/restate-sdk": "^1.0.1",
     "@restatedev/restate-sdk-clients": "^1.0.0"
   },
   "devDependencies": {

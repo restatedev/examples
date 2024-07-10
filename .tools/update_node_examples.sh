@@ -16,6 +16,13 @@ bump_ts_sdk $PROJECT_ROOT/basics/basics-typescript
 
 bump_ts_sdk $PROJECT_ROOT/templates/typescript
 bump_ts_sdk $PROJECT_ROOT/templates/typescript-lambda-cdk
+bump_ts_sdk $PROJECT_ROOT/templates/cloudflare-worker
+bump_ts_sdk $PROJECT_ROOT/templates/bun
+
+# -i works differently in gnu sed and mac (bsd) sed - best avoided
+tmp=$(mktemp)
+sed "s#\"npm:@restatedev/restate-sdk@^.*/fetch\"#\"npm:@restatedev/restate-sdk@^${NEW_VERSION}/fetch\"#g" $PROJECT_ROOT/templates/deno/main.ts > $tmp
+mv $tmp $PROJECT_ROOT/templates/deno/main.ts
 
 bump_ts_sdk $PROJECT_ROOT/tutorials/tour-of-restate-typescript
 
