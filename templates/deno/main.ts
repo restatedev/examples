@@ -6,7 +6,7 @@ import { Context, endpoint, service } from "npm:@restatedev/restate-sdk@^1.0.1/f
 //
 
 const greeter = service({
-  name: "greeter",
+  name: "Greeter",
   handlers: {
     greet: async (ctx: Context, greeting: string) => {
       return `${greeting}!`;
