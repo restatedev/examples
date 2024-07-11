@@ -29,9 +29,9 @@ jobs:
             kotlin-hello-world-gradle.zip
             typescript-hello-world.zip
             typescript-hello-world-lambda-cdk.zip
-            bun-hello-world.zip
-            cloudflare-worker-hello-world.zip
-            deno-hello-world.zip
+            typescript-bun-hello-world.zip
+            typescript-cloudflare-worker-hello-world.zip
+            typescript-deno-hello-world.zip
             kotlin-hello-world-lambda-cdk.zip
             java-tour-of-restate.zip
             typescript-tour-of-restate.zip
