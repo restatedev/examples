@@ -10,7 +10,10 @@
     "build": "tsc --noEmitOnError",
     "example-1": "CRASH_PROCESS=true ./src/utils/restart-process.sh 'ts-node-dev --transpile-only src/1_durable_execution.ts'",
     "example-2": "CRASH_PROCESS=true ./src/utils/restart-process.sh 'ts-node-dev --transpile-only src/2_durable_execution_compensation.ts'",
-    "example-4": "ts-node-dev --transpile-only src/4_virtual_objects.ts"
+    "example-3": "ts-node-dev --transpile-only src/3_workflows.ts",
+    "example-4": "ts-node-dev --transpile-only src/4_virtual_objects.ts",
+    "example-5": "ts-node-dev --transpile-only src/5_events_processing.ts",
+    "example-6": "ts-node-dev --transpile-only src/6_events_state.ts"
   },
   "dependencies": {
     "@restatedev/restate-sdk": "^1.0.1",

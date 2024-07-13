@@ -57,3 +57,10 @@ const userUpdates = restate.object({
     },
   },
 });
+
+restate.endpoint().bind(userUpdates).listen();
+
+// Update users via creating a Kafka subscriptions or calling the endpoint directly:
+/*
+curl localhost:8080/userUpdates/userid1/updateUserEvent --json '{"profile": "dev", "permissions": "all", "resources": "all"}'
+*/
