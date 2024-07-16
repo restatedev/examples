@@ -10,17 +10,13 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import type {AccountsObject}  from "./accounts/api";
+import type { AccountsObject }  from "./accounts/api";
 
 type Payment = { accountId: string; amount: number };
 
 type Result = { success: boolean; reason?: string };
 
-enum PaymentStatus {
-  NEW = 0,
-  COMPLETED_SUCCESSFULLY = 1,
-  CANCELLED = 2,
-}
+type PaymentStatus = "NEW" | "COMPLETED" | "CANCELLED";
 
 const EXPIRY_TIMEOUT = 60 * 60 * 1000; // 1 hour
 
@@ -28,55 +24,44 @@ const EXPIRY_TIMEOUT = 60 * 60 * 1000; // 1 hour
  * The service that processes the payment requests.
  *
  * This is implemented as a virtual object to ensure that only
- * one concurrent request can happen per token (requests are queued and
- * processed sequentially per token).
+ * one concurrent request can happen per payment-id (requests are queued and
+ * processed sequentially per id).
  *
- * Note that this idempotency-token is more of an operation/payment-id.
- * Methods can be called multiple times with the same token, but payment
- * will be executed only once. Also, if a cancellation is triggered for that
- * token, the payment will not happen or be undine, regardless of whether
+ * Methods can be called multiple times with the same payment-id, but payment
+ * will be executed only once. If a cancellation is triggered for that
+ * token, the payment will not happen or be undone, regardless of whether
  * the cancel call comes before or after the payment call.
  */
 
 const payments = restate.object({
   name: "payments",
   handlers: {
-    makePayment: async (
-      ctx: restate.ObjectContext,
-      payment: Payment
-    ): Promise<Result> => {
-      // de-duplication to make calls idempotent
-      const status: PaymentStatus =
-        (await ctx.get("status")) ?? PaymentStatus.NEW;
-      if (status === PaymentStatus.CANCELLED) {
+    makePayment: async (ctx: restate.ObjectContext, payment: Payment) => {
+      const { accountId, amount } = checkTypes(payment);
+
+      // check whether this payment-id was already processed (repeated call)
+      const status = (await ctx.get<PaymentStatus>("status")) ?? "NEW";
+      if (status === "CANCELLED") {
         return {
           success: false,
-          reason: "This token was already marked as cancelled",
+          reason: "This payment-id was already cancelled",
         };
       }
-      if (status === PaymentStatus.COMPLETED_SUCCESSFULLY) {
+      if (status === "COMPLETED") {
         return { success: true, reason: "Already completed in a prior call" };
       }
 
-      // we check the types, because external calls via http may evade some type checks
-      const { accountId, amount } = checkTypes(payment);
-
       // charge the target account
       const paymentResult = await ctx
-        .objectClient(AccountsObject, accountId)
+        .objectClient(Accounts, accountId)
         .withdraw(amount);
 
-      // remember only on success, so that on failure (when we didn't charge) the external
-      // caller may retry this (with the same token), for the sake of this example
       if (paymentResult.success) {
-        ctx.set("status", PaymentStatus.COMPLETED_SUCCESSFULLY);
-        ctx.set("payment", payment); // remember this in case we need to roll-back later
+        ctx.set("status", "COMPLETED");
+        ctx.set("payment", payment);
 
-        const idempotencyToken = ctx.key;
-        ctx
-          .objectSendClient(PaymentsObject, idempotencyToken, {
-            delay: EXPIRY_TIMEOUT,
-          })
+        const self = ctx.key;
+        ctx.objectSendClient(payments, self, { delay: EXPIRY_TIMEOUT })
           .expireToken();
       }
 
@@ -84,48 +69,42 @@ const payments = restate.object({
     },
 
     cancelPayment: async (ctx: restate.ObjectContext) => {
-      const status: PaymentStatus =
-        (await ctx.get("status")) ?? PaymentStatus.NEW;
+      const status = (await ctx.get<PaymentStatus>("status")) ?? "NEW";
 
       switch (status) {
-        case PaymentStatus.NEW: {
+        case "NEW": {
           // not seen this token before, mark as canceled, in case the cancellation
           // overtook the actual payment request (on the external caller's side)
-          ctx.set("status", PaymentStatus.CANCELLED);
+          ctx.set("status", "CANCELLED");
 
           ctx
-            .objectSendClient(PaymentsObject, ctx.key, {
-              delay: EXPIRY_TIMEOUT,
-            })
+            .objectSendClient(payments, ctx.key, { delay: EXPIRY_TIMEOUT })
             .expireToken();
           break;
         }
 
-        case PaymentStatus.CANCELLED:
+        case "CANCELLED":
           // already cancelled, this is a repeated request
           break;
 
-        case PaymentStatus.COMPLETED_SUCCESSFULLY: {
-          // remember this as cancelled
-          ctx.set("status", PaymentStatus.CANCELLED);
+        case "COMPLETED": {
+          ctx.set("status", "CANCELLED");
 
           // undo the payment
           const { accountId, amount } = (await ctx.get<Payment>("payment"))!;
-          ctx.objectSendClient(AccountsObject, accountId).deposit(amount);
+          ctx.objectSendClient(Accounts, accountId).deposit(amount);
           break;
         }
       }
     },
 
     expireToken: async (ctx: restate.ObjectContext) => {
-      ctx.clear("status");
-      ctx.clear("payment");
+      ctx.clearAll();
     },
   },
 });
 
-const AccountsObject: AccountsObject = { name : "accounts" };
-const PaymentsObject: typeof payments = { name: "payments" };
+const Accounts: AccountsObject = { name : "accounts" };
 
 // ----------------------------------------------------------------------------
 //  serve everything
