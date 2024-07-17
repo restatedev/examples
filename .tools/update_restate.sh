@@ -21,9 +21,6 @@ bump_npm_restate_cli $PROJECT_ROOT/patterns-use-cases/async-signals-payment/asyn
 bump_npm_restate $PROJECT_ROOT/patterns-use-cases/durable-promises/durable-promises-typescript
 bump_npm_restate_cli $PROJECT_ROOT/patterns-use-cases/durable-promises/durable-promises-typescript
 
-bump_npm_restate $PROJECT_ROOT/patterns-use-cases/payment-state-machine/payment-state-machine-typescript
-bump_npm_restate_cli $PROJECT_ROOT/patterns-use-cases/payment-state-machine/payment-state-machine-typescript
-
 bump_npm_restate $PROJECT_ROOT/patterns-use-cases/state-machines/state-machines-typescript
 bump_npm_restate_cli $PROJECT_ROOT/patterns-use-cases/state-machines/state-machines-typescript
 
