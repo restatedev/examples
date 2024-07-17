@@ -13,6 +13,7 @@ function bump_ts_sdk_clients() {
 }
 
 bump_ts_sdk $PROJECT_ROOT/basics/basics-typescript
+bump_ts_sdk_clients $PROJECT_ROOT/basics/basics-typescript
 
 bump_ts_sdk $PROJECT_ROOT/templates/typescript
 bump_ts_sdk $PROJECT_ROOT/templates/typescript-lambda-cdk
@@ -37,3 +38,4 @@ bump_ts_sdk $PROJECT_ROOT/patterns-use-cases/ticket-reservation/ticket-reservati
 
 bump_ts_sdk $PROJECT_ROOT/end-to-end-applications/typescript/ai-image-workflows
 bump_ts_sdk $PROJECT_ROOT/end-to-end-applications/typescript/food-ordering/app
+bump_ts_sdk_clients $PROJECT_ROOT/end-to-end-applications/typescript/food-ordering/webui
