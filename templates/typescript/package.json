@@ -13,7 +13,7 @@
     "app-dev": "ts-node-dev --watch ./src --respawn --transpile-only ./src/app.ts"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.1.0"
+    "@restatedev/restate-sdk": "^1.1.1"
   },
   "devDependencies": {
     "@types/node": "^20.14.2",
