@@ -3,6 +3,10 @@ name: Pre-release updates
 on:
   workflow_dispatch:
     inputs:
+      restateVersion:
+        description: 'Restate runtime version (without prepending v). Leave empty if you do not want to update it.'
+        required: false
+        type: string
       sdkTypescriptVersion:
         description: 'sdk-typescript version (without prepending v). Leave empty if you do not want to update it.'
         required: false
@@ -26,6 +30,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Bump Restate
+        if: github.event.inputs.restateVersion != ''
+        run: ./.tools/update_restate.sh ${{ inputs.restateVersion }}
 
       # Bump Typescript SDK
       - uses: actions/setup-node@v3
@@ -62,8 +70,8 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          title: "[GithubActions] Update Restate ${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }}${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0} ', inputs.sdkJavaVersion) }}${{ inputs.cdkVersion != '' && format('CDK {0} ', inputs.cdkVersion) }}"
-          commit-message: "[GithubActions] Update Restate ${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }}${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0} ', inputs.sdkJavaVersion) }}${{ inputs.cdkVersion != '' && format('CDK {0} ', inputs.cdkVersion) }}"
+          title: "[GithubActions] Update Restate ${{ inputs.restateVersion != '' && format('Runtime {0} ', inputs.restateVersion) }}${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }}${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0} ', inputs.sdkJavaVersion) }}${{ inputs.cdkVersion != '' && format('CDK {0} ', inputs.cdkVersion) }}"
+          commit-message: "[GithubActions] Update Restate ${{ inputs.restateVersion != '' && format('Runtime {0} ', inputs.restateVersion) }}${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }}${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0} ', inputs.sdkJavaVersion) }}${{ inputs.cdkVersion != '' && format('CDK {0} ', inputs.cdkVersion) }}"
           add-paths: |
             **/package.json
             **/package-lock.json
