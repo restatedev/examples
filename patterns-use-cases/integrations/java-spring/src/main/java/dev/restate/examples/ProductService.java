@@ -15,29 +15,33 @@ import org.springframework.stereotype.Component;
 @VirtualObject
 public class ProductService {
 
-  @Autowired
-  private ProductRepository productRepository;
+  @Autowired private ProductRepository productRepository;
 
   private Serde<Product> productSerde = JacksonSerdes.of(Product.class);
 
   @Handler
   public Product getProductInformation(ObjectContext ctx) {
-    return ctx.run(productSerde, () ->
-        productRepository.findById(ctx.key())
-            .orElseThrow(() -> new TerminalException("Product does not exist"))
-    );
+    return ctx.run(
+        productSerde,
+        () ->
+            productRepository
+                .findById(ctx.key())
+                .orElseThrow(() -> new TerminalException("Product does not exist")));
   }
 
   @Handler
   public boolean reserve(ObjectContext ctx) {
     String productId = ctx.key();
 
-    Product product = ctx.run(productSerde, () ->
-          productRepository.findById(productId)
-              .orElseThrow(() -> new TerminalException("Product does not exist"))
-    );
+    Product product =
+        ctx.run(
+            productSerde,
+            () ->
+                productRepository
+                    .findById(productId)
+                    .orElseThrow(() -> new TerminalException("Product does not exist")));
 
-    if(product.getQuantity() == 0){
+    if (product.getQuantity() == 0) {
       return false;
     }
 
@@ -48,10 +52,13 @@ public class ProductService {
   @Handler
   public void release(ObjectContext ctx) {
     String productId = ctx.key();
-    Product product = ctx.run(productSerde, () ->
-            productRepository.findById(productId)
-                    .orElseThrow(() -> new TerminalException("Product does not exist"))
-    );
+    Product product =
+        ctx.run(
+            productSerde,
+            () ->
+                productRepository
+                    .findById(productId)
+                    .orElseThrow(() -> new TerminalException("Product does not exist")));
 
     ctx.run(() -> productRepository.updateQuantity(productId, product.getQuantity() + 1));
   }

@@ -3,6 +3,7 @@ plugins {
     application
 	id("org.springframework.boot") version "3.3.1"
 	id("io.spring.dependency-management") version "1.1.5"
+	id("com.diffplug.spotless") version "6.25.0"
 }
 
 group = "dev.restate.examples"
@@ -48,4 +49,14 @@ application {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+spotless {
+	java {
+		googleJavaFormat()
+		importOrder()
+		removeUnusedImports()
+		formatAnnotations()
+		toggleOffOn("//", "/n")
+	}
 }

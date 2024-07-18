@@ -9,13 +9,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class RestateEndpoint implements ApplicationRunner {
 
-    @Autowired
-    private ProductService productService;
+  @Autowired private ProductService productService;
 
-    @Override
-    public void run(ApplicationArguments args) throws Exception {
-        RestateHttpEndpointBuilder.builder()
-                .bind(productService)
-                .buildAndListen();
-    }
+  @Override
+  public void run(ApplicationArguments args) throws Exception {
+    RestateHttpEndpointBuilder.builder().bind(productService).buildAndListen();
+  }
 }
