@@ -14,7 +14,7 @@
     "workflow-service": "ts-node-dev --watch ./src --respawn --transpile-only src/workflow/workflow.ts"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.1.1",
+    "@restatedev/restate-sdk": "^1.1.2",
     "axios": "^1.6.7",
     "axios-retry": "^4.0.0",
     "express": "^4.18.2",
