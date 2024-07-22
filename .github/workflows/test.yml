@@ -49,3 +49,19 @@ jobs:
 
       - name: Run tests
         run: ./.tools/run_node_tests.sh
+
+  build-py:
+    # prevent from running on forks
+    if: github.repository_owner == 'restatedev'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: [ "3.12" ]
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Run tests
+        run: ./.tools/run_python_tests.sh
