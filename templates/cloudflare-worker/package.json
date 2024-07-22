@@ -3,6 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
+    "build": "tsc --noEmitOnError",
     "deploy": "wrangler deploy",
     "dev": "wrangler dev --port 9080",
     "start": "wrangler dev --port 9080",

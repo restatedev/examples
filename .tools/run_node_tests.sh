@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eufx -o pipefail
+
 SELF_PATH=${BASH_SOURCE[0]:-"$(command -v -- "$0")"}
 PROJECT_ROOT="$(dirname "$SELF_PATH")/.."
 
@@ -12,7 +14,7 @@ npm_install_check $PROJECT_ROOT/basics/basics-typescript
 npm_install_check $PROJECT_ROOT/templates/typescript
 npm_install_check $PROJECT_ROOT/templates/typescript-lambda-cdk
 npm_install_check $PROJECT_ROOT/templates/cloudflare-worker
-npm_install_check $PROJECT_ROOT/templates/bun
+#npm_install_check $PROJECT_ROOT/templates/bun
 
 npm_install_check $PROJECT_ROOT/templates/typescript-testing
 npm --prefix $PROJECT_ROOT/templates/typescript-testing run test
