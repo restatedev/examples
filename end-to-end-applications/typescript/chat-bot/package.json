@@ -1,0 +1,23 @@
+{
+  "name": "restate-announcement-demo-chatbot",
+  "version": "1.0.0",
+  "description": "ChatBot demo for the Restate 1.0 announcement",
+  "main": "app.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc --noEmitOnError",
+    "app": "ts-node-dev --watch ./src --transpile-only ./src/app.ts",
+    "reminder-task": "RESTATE_LOGGING=INFO ts-node-dev --watch ./src --transpile-only ./src/tasks/reminder.ts",
+    "flights-task": "RESTATE_LOGGING=INFO ts-node-dev --watch ./src --transpile-only ./src/tasks/flight_prices.ts"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "1.1.0",
+    "@slack/bolt": "^3.19.0",
+    "@slack/web-api": "^7.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^5.0.2"
+  }
+}

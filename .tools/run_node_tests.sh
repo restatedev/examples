@@ -28,3 +28,4 @@ npm_install_check $PROJECT_ROOT/patterns-use-cases/ticket-reservation/ticket-res
 
 npm_install_check $PROJECT_ROOT/end-to-end-applications/typescript/ai-image-workflows
 npm_install_check $PROJECT_ROOT/end-to-end-applications/typescript/food-ordering/app
+npm_install_check $PROJECT_ROOT/end-to-end-applications/typescript/chat-bot

@@ -134,18 +134,17 @@ public class DriverDigitalTwin {
 
   /** Gets called by the driver's mobile app when he has moved to a new location. */
   @Handler
-  public void handleDriverLocationUpdateEvent(ObjectContext ctx, Location location)
-      throws TerminalException {
+  public void handleDriverLocationUpdateEvent(ObjectContext ctx, Location location) {
     // Update the location of the driver
     ctx.set(DRIVER_LOCATION, location);
 
     // Update the location of the delivery, if there is one
-    ctx.get(ASSIGNED_DELIVERY)
-        .ifPresent(
-            delivery ->
-                DeliveryManagerClient.fromContext(ctx, delivery.getOrderId())
-                    .send()
-                    .handleDriverLocationUpdate(location));
+    Optional<AssignedDelivery> assignedDelivery = ctx.get(ASSIGNED_DELIVERY);
+    if (assignedDelivery.isPresent()) {
+      DeliveryManagerClient.fromContext(ctx, assignedDelivery.get().getOrderId())
+          .send()
+          .handleDriverLocationUpdate(location);
+    }
   }
 
   /**
@@ -154,8 +153,7 @@ public class DriverDigitalTwin {
    * got assigned to him.
    */
   @Handler
-  public Optional<AssignedDelivery> getAssignedDelivery(ObjectContext ctx)
-      throws TerminalException {
+  public Optional<AssignedDelivery> getAssignedDelivery(ObjectContext ctx) {
     return ctx.get(ASSIGNED_DELIVERY);
   }
 

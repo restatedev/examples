@@ -3,3 +3,14 @@ tracing-endpoint = "http://jaeger:4317"
 [[ingress.kafka-clusters]]
 name = "my-cluster"
 brokers = ["PLAINTEXT://broker:29092"]
+
+[http-keep-alive-options]
+interval = "40s"
+timeout = "2000000s"
+
+[worker.invoker]
+inactivity-timeout = "100m"
+abort-timeout = "100m"
+
+[worker.invoker.retry-policy]
+max-interval = "2s"

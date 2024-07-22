@@ -39,8 +39,12 @@ challenges.
 | Use Cases  | [Async Tasks - Payments](patterns-use-cases/async-signals-payment/async-signals-payment-typescript/) |
 | End-to-End | [Food Ordering App](end-to-end-applications/typescript/food-ordering)                              |
 | End-to-End | [AI Image Processing Workflow](end-to-end-applications/typescript/ai-image-workflows)              |
+| End-to-End | [LLM-powered Chat Bot / Task Agent](end-to-end-applications/typescript/chat-bot)                     |
 | Tutorial   | [Tour of Restate](tutorials/tour-of-restate-typescript)                                            |
-| Templates  | [Restate Node/TS Template](templates/typescript)                                                   |
+| Templates  | [Restate Node/TS Template](templates/typescript)                                                     |
+| Templates  | [Restate Bun/TS Template](templates/bun)                                                             |
+| Templates  | [Restate CloudFlare Workers/TS Template](templates/cloudflare-workers)                               |
+| Templates  | [Restate Deno/TS Template](templates/deno)                                                           |
 | Templates  | [Testing Restate app with Test Containers](templates/typescript-testing)                           |
 
 ### Java
@@ -51,6 +55,7 @@ challenges.
 | Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-java)                                                   |
 | Use Cases  | [Payment Service](patterns-use-cases/payment-state-machine/payment-state-machine-typescript/)  |
 | Use Cases  | [Async Tasks - Payments](patterns-use-cases/async-signals-payment/async-signals-payment-java/) |
+| Patterns   | [Java - Spring - Spring JPA - Restate example ](patterns-use-cases/integrations/java-spring)
 | End-to-End | [Food Ordering App](end-to-end-applications/java/food-ordering)                                |
 | Tutorial   | [Tour of Restate](tutorials/tour-of-restate-java/)                                             |
 | Templates  | [Template using Gradle](templates/java-gradle)                                                 |

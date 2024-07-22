@@ -47,3 +47,12 @@ type UserProfile = {
   name: string;
   email: string;
 };
+
+restate.endpoint().bind(profileService).listen();
+
+// Update and query the state via:
+/*
+curl localhost:8080/profile/userid1/registration --json '{ "name": "Bob" }'
+curl localhost:8080/profile/userid1/email --json '{ "email": "bob@mydomain.com"}'
+curl localhost:8080/profile/userid1/get
+*/

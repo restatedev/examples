@@ -16,11 +16,12 @@ import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
-import dev.restate.sdk.examples.DriverDigitalTwinClient;
+import dev.restate.sdk.examples.*;
 import dev.restate.sdk.examples.clients.KafkaPublisher;
 import dev.restate.sdk.examples.types.AssignedDelivery;
 import dev.restate.sdk.examples.types.Location;
 import dev.restate.sdk.examples.utils.GeoUtils;
+import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import java.time.Duration;
 import org.apache.logging.log4j.LogManager;
@@ -160,5 +161,11 @@ public class DriverMobileAppSimulator {
 
     // Call this method again after a short delay
     thisDriverSim.send(Duration.ofMillis(MOVE_INTERVAL)).move();
+  }
+
+  public static void main(String[] args) {
+    RestateHttpEndpointBuilder.builder()
+        .bind(new DriverMobileAppSimulator()) // external mobile app on driver's phone
+        .buildAndListen(9081);
   }
 }

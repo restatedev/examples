@@ -1,4 +1,4 @@
-import { Context, endpoint, service } from "npm:@restatedev/restate-sdk@^1.0.1/fetch";
+import { Context, endpoint, service } from "npm:@restatedev/restate-sdk@^1.1.1/fetch";
 
 // Template of a Restate service and handler
 //
