@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euf -o pipefail
+set -eufx -o pipefail
 
 SELF_PATH=${BASH_SOURCE[0]:-"$(command -v -- "$0")"}
 PROJECT_ROOT="$(dirname "$SELF_PATH")/.."
