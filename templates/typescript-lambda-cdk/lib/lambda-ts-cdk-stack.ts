@@ -18,54 +18,41 @@ import { Construct } from "constructs";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 
 export class LambdaTsCdkStack extends cdk.Stack {
-  constructor(
-    scope: Construct,
-    id: string,
-    props: cdk.StackProps,
-  ) {
+  constructor(scope: Construct, id: string, props: cdk.StackProps) {
     super(scope, id, props);
 
     const greeter: lambda.Function = new NodejsFunction(this, "GreeterService", {
-      runtime: lambda.Runtime.NODEJS_LATEST,
+      runtime: lambda.Runtime.NODEJS_20_X,
       entry: "lib/lambda/handler.ts",
       architecture: lambda.Architecture.ARM_64,
       bundling: {
         minify: true,
         sourceMap: true,
       },
-      environment: {
-        NODE_OPTIONS: "--enable-source-maps",
-      },
     });
 
-    const environment = new restate.SingleNodeRestateDeployment(this, "Restate", {
-      // restateImage: "docker.io/restatedev/restate",
-      // restateTag: "0.9",
-      logGroup: new logs.LogGroup(this, "RestateLogs", {
-        retention: logs.RetentionDays.ONE_MONTH,
-        removalPolicy: cdk.RemovalPolicy.DESTROY,
-      }),
-    });
-
-    new iam.Policy(this, "AssumeAnyRolePolicy", {
-      statements: [
-        new iam.PolicyStatement({
-          sid: "AllowAssumeAnyRole",
-          actions: ["sts:AssumeRole"],
-          resources: ["*"], // we don't know upfront what invoker roles we may be asked to assume at runtime
-        }),
-      ],
-    }).attachToRole(environment.invokerRole);
-
+    // This role is used by Restate to invoke Lambda service handlers; see https://docs.restate.dev/deploy/cloud for
+    // information on deploying services to Restate Cloud environments. For standalone environments, the EC2 instance
+    // profile can be used directly instead of creating a separate role.
     const invokerRole = new iam.Role(this, "InvokerRole", {
-      assumedBy: new iam.ArnPrincipal(environment.invokerRole.roleArn),
+      assumedBy: new iam.AccountRootPrincipal(), // set up trust such that your Restate environment can assume this role
     });
-    invokerRole.grantAssumeRole(environment.invokerRole);
 
+    // You can reference an existing Restate environment you manage yourself or a Restate Cloud environment by
+    // configuring its address and optionally auth token. The deployer will use these settings to register the handlers.
     const restateEnvironment = restate.RestateEnvironment.fromAttributes({
-      adminUrl: environment.adminUrl,
+      adminUrl: "https://restate.example.com:9070", // pre-existing Restate server address not managed by this stack
       invokerRole,
     });
+
+    // Alternatively, you can deploy a standalone Restate server using the RestateServer construct. Please refer to
+    // https://docs.restate.dev/deploy/lambda/self-hosted and the construct documentation for details.
+    // const restateEnvironment = new restate.SingleNodeRestateDeployment(this, "Restate", {
+    //   logGroup: new logs.LogGroup(this, "RestateLogs", {
+    //     logGroupName: "/restate/server-logs",
+    //     retention: logs.RetentionDays.ONE_MONTH,
+    //   }),
+    // });
 
     const deployer = new restate.ServiceDeployer(this, "ServiceDeployer", {
       logGroup: new logs.LogGroup(this, "Deployer", {
@@ -75,9 +62,10 @@ export class LambdaTsCdkStack extends cdk.Stack {
     });
 
     deployer.deployService("Greeter", greeter.currentVersion, restateEnvironment, {
-      insecure: true, // self-signed certificate
+      // insecure: true, // accept self-signed certificate for SingleNodeRestateDeployment
     });
 
-    new cdk.CfnOutput(this, "restateIngressUrl", { value: environment.ingressUrl });
+    // If deploying a standalone Restate server, we can output the ingress URL like this.
+    // new cdk.CfnOutput(this, "restateIngressUrl", { value: restateEnvironment.ingressUrl });
   }
 }
