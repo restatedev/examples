@@ -16,6 +16,7 @@ bump_ts_sdk $PROJECT_ROOT/basics/basics-typescript
 bump_ts_sdk_clients $PROJECT_ROOT/basics/basics-typescript
 
 bump_ts_sdk $PROJECT_ROOT/templates/typescript
+bump_ts_sdk $PROJECT_ROOT/templates/typescript-testing
 bump_ts_sdk $PROJECT_ROOT/templates/typescript-lambda-cdk
 bump_ts_sdk $PROJECT_ROOT/templates/cloudflare-worker
 bump_ts_sdk $PROJECT_ROOT/templates/bun
