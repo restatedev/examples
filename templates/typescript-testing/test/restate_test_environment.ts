@@ -21,7 +21,7 @@ async function prepareRestateEndpoint(
     const restateHttpServer = http2.createServer(restateEndpoint.http2Handler());
     await new Promise((resolve, reject) => {
         restateHttpServer
-            .listen(9080)
+            .listen(0)
             .once("listening", resolve)
             .once("error", reject);
     });
