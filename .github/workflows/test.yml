@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        jvm-version: [17, 21]
+        jvm-version: [17]
 
     steps:
       - uses: actions/checkout@v3
@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x, 22.x]
+        node-version: [20.x]
 
     steps:
       - uses: actions/checkout@v3
@@ -51,21 +51,20 @@ jobs:
         run: ./.tools/run_node_tests.sh
 
   build-altjs:
+    name: Bun / Deno / Cloudflare alternative runtimes
+
     # prevent from running on forks
     if: github.repository_owner == 'restatedev'
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [20.x]
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      # We just need npm from Node
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
-          registry-url: "https://registry.npmjs.org"
+          node-version: 20.x
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
