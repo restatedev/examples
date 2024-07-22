@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eufx -o pipefail
+
 SELF_PATH=${BASH_SOURCE[0]:-"$(command -v -- "$0")"}
 PROJECT_ROOT="$(dirname "$SELF_PATH")/.."
 
@@ -7,12 +9,34 @@ function npm_install_check() {
     npm install --prefix $1 && npm --prefix $1 run build
 }
 
+function bun_install_check() {
+    pushd $1
+    bun install
+    bun run build
+    popd
+}
+
+function deno_install_check() {
+    pushd $1
+    deno task build
+    popd
+}
+
+function wrangler_install_check() {
+    pushd $1
+    npm install
+    npm run build
+    npx wrangler deploy --dry-run --outdir dist
+    popd
+}
+
 npm_install_check $PROJECT_ROOT/basics/basics-typescript
 
 npm_install_check $PROJECT_ROOT/templates/typescript
 npm_install_check $PROJECT_ROOT/templates/typescript-lambda-cdk
-npm_install_check $PROJECT_ROOT/templates/cloudflare-worker
-npm_install_check $PROJECT_ROOT/templates/bun
+wrangler_install_check $PROJECT_ROOT/templates/cloudflare-worker
+bun_install_check $PROJECT_ROOT/templates/bun
+deno_install_check $PROJECT_ROOT/templates/deno
 
 npm_install_check $PROJECT_ROOT/tutorials/tour-of-restate-typescript
 
