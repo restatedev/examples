@@ -15,6 +15,10 @@ on:
         description: 'sdk-java version (without prepending v). Leave empty if you do not want to update it.'
         required: false
         type: string
+      sdkPythonVersion:
+        description: 'sdk-python version (without prepending v). Leave empty if you do not want to update it.'
+        required: false
+        type: string
       cdkVersion:
         description: 'cdk version (without prepending v). Leave empty if you do not want to update it.'
         required: false
@@ -66,6 +70,20 @@ jobs:
       - name: Run JVM tests
         if: github.event.inputs.sdkJavaVersion != ''
         run: ./.tools/run_jvm_tests.sh
+
+      # Bump Python SDK
+      - uses: actions/checkout@v3
+        if: github.event.inputs.sdkPythonVersion != ''
+      - uses: actions/setup-python@v5
+        if: github.event.inputs.sdkPythonVersion != ''
+        with:
+          python-version: "3.12"
+      - name: Bump Python SDK
+        if: github.event.inputs.sdkPythonVersion != ''
+        run: ./.tools/update_python_examples.sh ${{ inputs.sdkPythonVersion }}
+      - name: Run Python tests
+        if: github.event.inputs.sdkPythonVersion != ''
+        run: ./.tools/run_python_tests.sh
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
