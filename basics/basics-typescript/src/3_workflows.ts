@@ -40,7 +40,7 @@ const myWorkflow = restate.workflow({
       ctx.set("stage", "Email Verification");
 
       // send the email with the verification secret
-      const secret = await ctx.run(() => crypto.randomUUID());
+      const secret = ctx.rand.uuidv4();
       ctx.run(() => sendEmailWithLink({email, secret}));
 
       try {
