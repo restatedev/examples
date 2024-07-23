@@ -1,2 +1,2 @@
 hypercorn
-restate_sdk
+restate_sdk==0.1.1
