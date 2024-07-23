@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"os"
 
@@ -18,10 +17,4 @@ func main() {
 		slog.Error("application exited unexpectedly", "err", err.Error())
 		os.Exit(1)
 	}
-}
-
-type Greeter struct{}
-
-func (Greeter) Greet(ctx restate.Context, greeting string) (string, error) {
-	return fmt.Sprintf("%s!", greeting), nil
 }
