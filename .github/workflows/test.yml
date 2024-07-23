@@ -51,8 +51,6 @@ jobs:
         run: ./.tools/run_node_tests.sh
 
   build-altjs:
-    name: Bun / Deno / Cloudflare alternative runtimes
-
     # prevent from running on forks
     if: github.repository_owner == 'restatedev'
     runs-on: ubuntu-latest
