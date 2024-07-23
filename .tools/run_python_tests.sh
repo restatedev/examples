@@ -15,3 +15,4 @@ function python_mypi_lint() {
 }
 
 pushd $PROJECT_ROOT/templates/python && python_mypi_lint && popd || exit
+pushd $PROJECT_ROOT/patterns-use-cases/ticket-reservation/ticket-reservation-python && python_mypi_lint && popd || exit
