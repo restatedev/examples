@@ -4,19 +4,23 @@ on:
   workflow_dispatch:
     inputs:
       restateVersion:
-        description: 'Restate runtime version (without prepending v). Leave empty if you do not want to update it.'
+        description: "Restate runtime version (without prepending v). Leave empty if you do not want to update it."
         required: false
         type: string
       sdkTypescriptVersion:
-        description: 'sdk-typescript version (without prepending v). Leave empty if you do not want to update it.'
+        description: "sdk-typescript version (without prepending v). Leave empty if you do not want to update it."
         required: false
         type: string
       sdkJavaVersion:
-        description: 'sdk-java version (without prepending v). Leave empty if you do not want to update it.'
+        description: "sdk-java version (without prepending v). Leave empty if you do not want to update it."
+        required: false
+        type: string
+      sdkGoVersion:
+        description: "sdk-go version (WITH the prepending v). Leave empty if you do not want to update it."
         required: false
         type: string
       cdkVersion:
-        description: 'cdk version (without prepending v). Leave empty if you do not want to update it.'
+        description: "cdk version (without prepending v). Leave empty if you do not want to update it."
         required: false
         type: string
 
@@ -40,7 +44,7 @@ jobs:
         if: github.event.inputs.sdkTypescriptVersion != ''
         with:
           node-version: "19.x"
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: "https://registry.npmjs.org"
       - name: Bump sdk-typescript
         if: github.event.inputs.sdkTypescriptVersion != ''
         run: ./.tools/update_node_examples.sh ${{ inputs.sdkTypescriptVersion }}
@@ -55,8 +59,8 @@ jobs:
       - uses: actions/setup-java@v3
         if: github.event.inputs.sdkJavaVersion != ''
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: "temurin"
+          java-version: "17"
       - name: Setup Gradle
         if: github.event.inputs.sdkJavaVersion != ''
         uses: gradle/actions/setup-gradle@v3
@@ -67,13 +71,27 @@ jobs:
         if: github.event.inputs.sdkJavaVersion != ''
         run: ./.tools/run_jvm_tests.sh
 
+      # Bump Go SDK
+      - uses: actions/setup-go@v5
+        if: github.event.inputs.sdkGoVersion != ''
+        with:
+          go-version: "1.22"
+      - name: Bump sdk-go
+        if: github.event.inputs.sdkGoVersion != ''
+        run: ./.tools/update_go_examples.sh ${{ inputs.sdkGoVersion }}
+      - name: Run Go tests
+        if: github.event.inputs.sdkGoVersion != ''
+        run: ./.tools/run_go_tests.sh
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          title: "[GithubActions] Update Restate ${{ inputs.restateVersion != '' && format('Runtime {0} ', inputs.restateVersion) }}${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }}${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0} ', inputs.sdkJavaVersion) }}${{ inputs.cdkVersion != '' && format('CDK {0} ', inputs.cdkVersion) }}"
+          title: "[GithubActions] Update Restate ${{ inputs.restateVersion != '' && format('Runtime {0} ', inputs.restateVersion) }}${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }}${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0} ', inputs.sdkJavaVersion) }}${{ inputs.cdkVersion != '' && format('CDK {0} ', inputs.cdkVersion) }}${{ inputs.sdkGoVersion != '' && format('SDK-Go {0} ', inputs.sdkGoVersion) }}"
           commit-message: "[GithubActions] Update Restate ${{ inputs.restateVersion != '' && format('Runtime {0} ', inputs.restateVersion) }}${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }}${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0} ', inputs.sdkJavaVersion) }}${{ inputs.cdkVersion != '' && format('CDK {0} ', inputs.cdkVersion) }}"
           add-paths: |
             **/package.json
             **/package-lock.json
             **/build.gradle.kts
             **/pom.xml
+            **/go.mod
+            **/go.sum

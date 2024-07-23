@@ -79,13 +79,32 @@ jobs:
       - name: Run tests
         run: ./.tools/run_altjs_tests.sh
 
+  build-go:
+    # prevent from running on forks
+    if: github.repository_owner == 'restatedev'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: [1.22]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Go ${{ matrix.go-version }}
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Run tests
+        run: ./.tools/run_go_tests.sh
+
   build-py:
     # prevent from running on forks
     if: github.repository_owner == 'restatedev'
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [ "3.12" ]
+        python: ["3.12"]
 
     steps:
       - uses: actions/checkout@v3
