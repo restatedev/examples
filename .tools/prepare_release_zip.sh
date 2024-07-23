@@ -23,6 +23,7 @@ create_release_zip templates/typescript typescript-hello-world
 create_release_zip templates/bun typescript-bun-hello-world
 create_release_zip templates/cloudflare-worker typescript-cloudflare-worker-hello-world
 create_release_zip templates/deno typescript-deno-hello-world
+create_release_zip templates/go go-hello-world
 create_release_zip templates/typescript-lambda-cdk typescript-hello-world-lambda-cdk
 create_release_zip templates/kotlin-gradle-lambda-cdk kotlin-hello-world-lambda-cdk
 create_release_zip templates/python python-hello-world
