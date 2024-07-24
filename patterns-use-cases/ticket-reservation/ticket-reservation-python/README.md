@@ -29,7 +29,7 @@ Start the app as follows:
 python3 -m hypercorn example/app:app
 ```
 
-Start the Restate Server ([other options here]()):
+Start the Restate Server ([other options here](https://docs.restate.dev/develop/local_dev)):
 
 ```shell
 restate-server
