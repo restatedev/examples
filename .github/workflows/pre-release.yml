@@ -95,3 +95,4 @@ jobs:
             **/package-lock.json
             **/build.gradle.kts
             **/pom.xml
+            **/requirements.txt

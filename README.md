@@ -69,6 +69,14 @@ challenges.
 | Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-kotlin)                    |
 | End-to-End | [Food Ordering App](end-to-end-applications/kotlin/food-ordering) |
 
+
+### Python
+
+| Type      | Name / Link                                                                           |
+|-----------|---------------------------------------------------------------------------------------|
+| Templates | [Python Template](templates/python)                                                   |
+| Use Cases | [Ticket reservation](patterns-use-cases/ticket-reservation/ticket-reservation-python) |
+
 ## Joining the community
 
 If you want to join the Restate community in order to stay up to date, then please join our [Discord](https://discord.gg/skW3AZ6uGd).
@@ -129,6 +137,6 @@ git tag -m "Examples v0.9.1" v0.9.1
 git push origin v0.9.1
 ```
 
-This triggers a workflow that [creates a draft release](https://github.com/restatedev/examples/releases) on Github, which you need to approve to finalize it.
+This triggers a workflow that [creates a draft release](https://github.com/restatedev/examples/releases) on GitHub, which you need to approve to finalize it.
 
 Please update the version tag referenced on the [Tour of Restate](https://github.com/restatedev/documentation/blob/main/docs/tour.mdx) documentation page.
