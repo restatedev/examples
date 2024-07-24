@@ -19,6 +19,10 @@ on:
         description: "sdk-go version (WITH the prepending v). Leave empty if you do not want to update it."
         required: false
         type: string
+      sdkPythonVersion:
+        description: 'sdk-python version (without prepending v). Leave empty if you do not want to update it.'
+        required: false
+        type: string
       cdkVersion:
         description: "cdk version (without prepending v). Leave empty if you do not want to update it."
         required: false
@@ -71,6 +75,20 @@ jobs:
         if: github.event.inputs.sdkJavaVersion != ''
         run: ./.tools/run_jvm_tests.sh
 
+      # Bump Python SDK
+      - uses: actions/checkout@v3
+        if: github.event.inputs.sdkPythonVersion != ''
+      - uses: actions/setup-python@v5
+        if: github.event.inputs.sdkPythonVersion != ''
+        with:
+          python-version: "3.12"
+      - name: Bump Python SDK
+        if: github.event.inputs.sdkPythonVersion != ''
+        run: ./.tools/update_python_examples.sh ${{ inputs.sdkPythonVersion }}
+      - name: Run Python tests
+        if: github.event.inputs.sdkPythonVersion != ''
+        run: ./.tools/run_python_tests.sh
+
       # Bump Go SDK
       - uses: actions/setup-go@v5
         if: github.event.inputs.sdkGoVersion != ''
@@ -93,5 +111,6 @@ jobs:
             **/package-lock.json
             **/build.gradle.kts
             **/pom.xml
+            **/requirements.txt
             **/go.mod
             **/go.sum
