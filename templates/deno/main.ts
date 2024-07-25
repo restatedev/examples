@@ -1,4 +1,8 @@
-import { Context, endpoint, service } from "npm:@restatedev/restate-sdk@^1.1.1/fetch";
+import {
+  Context,
+  endpoint,
+  service,
+} from "npm:@restatedev/restate-sdk@^1.1.2/fetch";
 
 // Template of a Restate service and handler
 //
@@ -14,6 +18,6 @@ const greeter = service({
   },
 });
 
-const handler = endpoint().bind(greeter).handler();
+const handler = endpoint().bind(greeter).bidirectional().handler();
 
 Deno.serve({ port: 9080 }, handler.fetch);
