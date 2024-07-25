@@ -25,6 +25,11 @@ about how they work and how they can be run.
     ./gradlew -PmainClass=durable_execution_compensation.RoleUpdateService run
     ```
 
+* **[Workflows](workflows/SignupWorkflow.java):** Workflows are durable execution tasks that can
+  be submitted and awaited. They have an identity and can be signaled and queried
+  through durable promises. The example is a user-signup flow that takes multiple
+  operations, including verifying the email address.
+
 * **[Virtual Objects](virtual_objects/GreeterObject.java):** Stateful serverless objects
   to manage durable consistent state and state-manipulating logic.
     ```shell

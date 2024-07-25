@@ -35,12 +35,12 @@ const myWorkflow = restate.workflow({
       ctx.set("stage", "Creating User");
 
       // use all the standard durable execution features here
-      await ctx.run(() => createUserEntry({userId, name}));
+      await ctx.run(() => createUserEntry({name, email}));
 
       ctx.set("stage", "Email Verification");
 
       // send the email with the verification secret
-      const secret = await ctx.run(() => crypto.randomUUID());
+      const secret = ctx.rand.uuidv4();
       ctx.run(() => sendEmailWithLink({email, secret}));
 
       try {

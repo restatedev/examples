@@ -9,6 +9,6 @@
  * https://github.com/restatedev/examples/blob/main/LICENSE
  */
 
-export async function createUserEntry(entry: { userId: string; name: string }) {}
+export async function createUserEntry(entry: { name: string, email: string }) {}
 
 export async function sendEmailWithLink(details: { email: string; secret: string }) {}

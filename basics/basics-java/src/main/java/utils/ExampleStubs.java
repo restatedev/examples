@@ -74,4 +74,9 @@ public class ExampleStubs {
 
     public static void provisionResources(String userId, String role, String resources){}
 
+    public static void createUserEntry(User user){
+
+    }
+    public static void sendEmailWithLink(String email, String secret){
+    }
 }
