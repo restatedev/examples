@@ -3,7 +3,7 @@ from datetime import timedelta
 from restate.context import ObjectContext
 from restate.object import VirtualObject
 
-from example.checkout_service import handle
+from example.checkout_service import handle as checkout_handle
 from example.ticket_object import reserve, mark_as_sold, unreserve
 
 cart = VirtualObject("cart")
