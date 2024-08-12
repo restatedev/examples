@@ -13,7 +13,7 @@
     "app-dev": "ts-node-dev --watch ./src --transpile-only ./src/payment_service.ts"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.1.2"
+    "@restatedev/restate-sdk": "^1.2.1"
   },
   "devDependencies": {
     "@types/node": "^20.12.7",
