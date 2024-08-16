@@ -9,7 +9,7 @@ type CheckoutRequest struct {
 	Tickets []string `json:"tickets"`
 }
 
-func (CheckoutService) Handle(ctx restate.ObjectContext, request CheckoutRequest) (bool, error) {
+func (CheckoutService) Handle(ctx restate.Context, request CheckoutRequest) (bool, error) {
 	ctx.Log().Info("Hello")
 	return true, nil
 }
