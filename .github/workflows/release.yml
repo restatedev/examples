@@ -34,6 +34,7 @@ jobs:
             typescript-deno-hello-world.zip
             go-hello-world.zip
             kotlin-hello-world-lambda-cdk.zip
+            go-tour-of-restate.zip
             java-tour-of-restate.zip
             typescript-tour-of-restate.zip
             typescript-ticket-reservation.zip

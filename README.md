@@ -77,6 +77,13 @@ challenges.
 | Templates | [Python Template](templates/python)                                                   |
 | Use Cases | [Ticket reservation](patterns-use-cases/ticket-reservation/ticket-reservation-python) |
 
+### Go
+
+| Type      | Name / Link                                     |
+|-----------|-------------------------------------------------|
+| Templates | [Go Template](templates/go)                     |
+| Tutorial  | [Tour of Restate](tutorials/tour-of-restate-go) |
+
 ## Joining the community
 
 If you want to join the Restate community in order to stay up to date, then please join our [Discord](https://discord.gg/skW3AZ6uGd).
