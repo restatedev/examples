@@ -7,6 +7,20 @@ on:
     branches: [main]
 
 jobs:
+  build-rust:
+    # prevent from running on forks
+    if: github.repository_owner == 'restatedev'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: clippy
+          rustflags: ""
+      - name: Run tests
+        run: ./.tools/run_rust_tests.sh
+
   build-jvm:
     # prevent from running on forks
     if: github.repository_owner == 'restatedev'

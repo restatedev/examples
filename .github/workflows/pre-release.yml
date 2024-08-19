@@ -23,6 +23,10 @@ on:
         description: 'sdk-python version (without prepending v). Leave empty if you do not want to update it.'
         required: false
         type: string
+      sdkRustVersion:
+        description: 'sdk-rust version (without prepending v). Leave empty if you do not want to update it.'
+        required: false
+        type: string
       cdkVersion:
         description: "cdk version (without prepending v). Leave empty if you do not want to update it."
         required: false
@@ -101,11 +105,25 @@ jobs:
         if: github.event.inputs.sdkGoVersion != ''
         run: ./.tools/run_go_tests.sh
 
+      # Bump Rust SDK
+      - name: Install Rust toolchain
+        if: github.event.inputs.sdkRustVersion != ''
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          components: clippy
+          rustflags: ""
+      - name: Bump sdk-rust
+        if: github.event.inputs.sdkRustVersion != ''
+        run: ./.tools/update_rust_examples.sh ${{ inputs.sdkRustVersion }}
+      - name: Run Rust tests
+        if: github.event.inputs.sdkRustVersion != ''
+        run: ./.tools/run_rust_tests.sh
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          title: "[GithubActions] Update Restate ${{ inputs.restateVersion != '' && format('Runtime {0} ', inputs.restateVersion) }}${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }}${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0} ', inputs.sdkJavaVersion) }}${{ inputs.cdkVersion != '' && format('CDK {0} ', inputs.cdkVersion) }}${{ inputs.sdkGoVersion != '' && format('SDK-Go {0} ', inputs.sdkGoVersion) }}"
-          commit-message: "[GithubActions] Update Restate ${{ inputs.restateVersion != '' && format('Runtime {0} ', inputs.restateVersion) }}${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }}${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0} ', inputs.sdkJavaVersion) }}${{ inputs.cdkVersion != '' && format('CDK {0} ', inputs.cdkVersion) }}"
+          title: "[GithubActions] Update Restate ${{ inputs.restateVersion != '' && format('Runtime {0} ', inputs.restateVersion) }}${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }}${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0} ', inputs.sdkJavaVersion) }}${{ inputs.cdkVersion != '' && format('CDK {0} ', inputs.cdkVersion) }}${{ inputs.sdkGoVersion != '' && format('SDK-Go {0} ', inputs.sdkGoVersion) }}${{ inputs.sdkRustVersion != '' && format('SDK-Rust {0} ', inputs.sdkRustVersion) }}"
+          commit-message: "[GithubActions] Update Restate ${{ inputs.restateVersion != '' && format('Runtime {0} ', inputs.restateVersion) }}${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }}${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0} ', inputs.sdkJavaVersion) }}${{ inputs.cdkVersion != '' && format('CDK {0} ', inputs.cdkVersion) }}${{ inputs.sdkGoVersion != '' && format('SDK-Go {0} ', inputs.sdkGoVersion) }}${{ inputs.sdkRustVersion != '' && format('SDK-Rust {0} ', inputs.sdkRustVersion) }}"
           add-paths: |
             **/package.json
             **/package-lock.json
@@ -114,3 +132,5 @@ jobs:
             **/requirements.txt
             **/go.mod
             **/go.sum
+            **/Cargo.lock
+            **/Cargo.toml

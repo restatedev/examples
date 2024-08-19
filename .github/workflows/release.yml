@@ -33,6 +33,7 @@ jobs:
             typescript-cloudflare-worker-hello-world.zip
             typescript-deno-hello-world.zip
             go-hello-world.zip
+            rust-hello-world.zip
             kotlin-hello-world-lambda-cdk.zip
             java-tour-of-restate.zip
             typescript-tour-of-restate.zip
