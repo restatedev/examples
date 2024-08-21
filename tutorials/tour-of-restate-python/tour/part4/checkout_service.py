@@ -1,10 +1,18 @@
-import uuid
+# Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
+#
+# This file is part of the Restate examples,
+# which is released under the MIT license.
+#
+# You can find a copy of the license in the file LICENSE
+# in the root directory of this repository or package or at
+# https://github.com/restatedev/examples/
+
 from typing import TypedDict, List
 from restate.context import ObjectContext, Serde
 from restate.service import Service
 
-from example.utils.email_client import EmailClient
-from example.utils.payment_client import PaymentClient
+from tour.auxiliary.email_client import EmailClient
+from tour.auxiliary.payment_client import PaymentClient
 
 
 class Order(TypedDict):
@@ -15,7 +23,7 @@ class Order(TypedDict):
 payment_client = PaymentClient()
 email_client = EmailClient()
 
-checkout = Service("checkout")
+checkout = Service("CheckoutService")
 
 
 @checkout.handler()

@@ -1,15 +1,24 @@
+# Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
+#
+# This file is part of the Restate examples,
+# which is released under the MIT license.
+#
+# You can find a copy of the license in the file LICENSE
+# in the root directory of this repository or package or at
+# https://github.com/restatedev/examples/
+
 from datetime import timedelta
 
 from restate.context import ObjectContext
 from restate.object import VirtualObject
 
-from example.checkout_service import handle as checkout_handle
-from example.ticket_object import reserve, mark_as_sold, unreserve
+from tour.part4.checkout_service import handle
+from tour.part4.ticket_object import reserve, mark_as_sold, unreserve
 
-cart = VirtualObject("cart")
+cart = VirtualObject("CartObject")
 
 
-@cart.handler()
+@cart.handler("addTicket")
 async def add_ticket(ctx: ObjectContext, ticket_id: str) -> bool:
     reserved = await ctx.object_call(reserve, key=ticket_id, arg=None)
 
@@ -30,7 +39,7 @@ async def checkout(ctx: ObjectContext) -> bool:
     if len(tickets) == 0:
         return False
 
-    success = await ctx.service_call(checkout_handle, arg={'user_id': ctx.key(),
+    success = await ctx.service_call(handle, arg={'user_id': ctx.key(),
                 'tickets': tickets})
 
     if success:
@@ -42,7 +51,7 @@ async def checkout(ctx: ObjectContext) -> bool:
     return success
 
 
-@cart.handler()
+@cart.handler("expireTicket")
 async def expire_ticket(ctx: ObjectContext, ticket_id: str):
     tickets = await ctx.get("tickets") or []
 
