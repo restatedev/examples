@@ -9,12 +9,12 @@ func (CartObject) AddTicket(ctx restate.ObjectContext, ticketId string) (bool, e
 	return true, nil
 }
 
-func (CartObject) Checkout(ctx restate.ObjectContext, _ restate.Void) (bool, error) {
+func (CartObject) Checkout(ctx restate.ObjectContext) (bool, error) {
 	return true, nil
 }
 
-func (CartObject) ExpireTicket(ctx restate.ObjectContext, ticketId string) (restate.Void, error) {
-	return restate.Void{}, nil
+func (CartObject) ExpireTicket(ctx restate.ObjectContext, ticketId string) error {
+	return nil
 }
 
 // <end_user_session>
