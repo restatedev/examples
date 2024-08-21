@@ -19,11 +19,11 @@ export const ticketObject = restate.object({
     },
 
     async unreserve(ctx: restate.ObjectContext) {
-      return true;
+      return;
     },
 
     async markAsSold(ctx: restate.ObjectContext) {
-      return true;
+      return;
     },
   }
 });

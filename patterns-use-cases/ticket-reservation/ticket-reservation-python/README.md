@@ -26,7 +26,7 @@ pip install -r requirements.txt
 Start the app as follows:
 
 ```shell
-python3 -m hypercorn example/app:app
+python3 -m hypercorn tour/part4/app:app
 ```
 
 Start the Restate Server ([other options here](https://docs.restate.dev/develop/local_dev)):
@@ -44,12 +44,12 @@ restate dp register http://localhost:8000
 Then add a ticket to Mary's cart:
 
 ```shell
-curl localhost:8080/cart/Mary/add_ticket -H 'content-type: application/json' -d '"seat2B"'
+curl localhost:8080/CartObject/Mary/addTicket -H 'content-type: application/json' -d '"seat2B"'
 ```
 
 Let Mary buy the ticket via:
 ```shell
-curl -X POST localhost:8080/cart/Mary/checkout
+curl -X POST localhost:8080/CartObject/Mary/checkout
 ```
 
 That's it! We managed to run the example, add a ticket to the user session cart, and buy it!
