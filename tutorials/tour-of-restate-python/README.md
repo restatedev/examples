@@ -1,10 +1,11 @@
-# Restate Example: Ticket reservation system Python
+# A Tour of Restate with Python
 
-This example shows a subset of a ticket booking system.
+Restate is a system for easily building resilient applications, workflows, asynchronous tasks,
+and event-driven applications.
 
-Restate is a system for easily building resilient applications using **distributed durable building blocks**.
+This example contains the code for the `Tour of Restate` tutorial, for the Python API.
+This tutorial takes your through key Restate features by developing an end-to-end ticketing app.
 
-❓ Learn more about Restate from the [Restate documentation](https://docs.restate.dev).
 
 ## Running the example
 
