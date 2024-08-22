@@ -1,8 +1,6 @@
 package main
 
 import (
-	"errors"
-
 	"github.com/restatedev/examples/tutorials/tour-of-restate-go/auxiliary"
 	restate "github.com/restatedev/sdk-go"
 )
@@ -10,14 +8,14 @@ import (
 type TicketObject struct{}
 
 // <start_reserve>
-func (TicketObject) Reserve(ctx restate.ObjectContext, _ restate.Void) (bool, error) {
-	status, err := restate.GetAs[auxiliary.TicketStatus](ctx, "status")
-	if err != nil && !errors.Is(err, restate.ErrKeyNotFound) {
+func (TicketObject) Reserve(ctx restate.ObjectContext) (bool, error) {
+	status, err := restate.Get[auxiliary.TicketStatus](ctx, "status")
+	if err != nil {
 		return false, err
 	}
 
 	if status == auxiliary.TicketStatusAvailable {
-		ctx.Set("status", auxiliary.TicketStatusReserved)
+		restate.Set(ctx, "status", auxiliary.TicketStatusReserved)
 		return true, nil
 	} else {
 		return false, nil
@@ -27,33 +25,33 @@ func (TicketObject) Reserve(ctx restate.ObjectContext, _ restate.Void) (bool, er
 // <end_reserve>
 
 // <start_unreserve>
-func (TicketObject) Unreserve(ctx restate.ObjectContext, _ restate.Void) (restate.Void, error) {
-	status, err := restate.GetAs[auxiliary.TicketStatus](ctx, "status")
-	if err != nil && !errors.Is(err, restate.ErrKeyNotFound) {
-		return restate.Void{}, err
+func (TicketObject) Unreserve(ctx restate.ObjectContext) error {
+	status, err := restate.Get[auxiliary.TicketStatus](ctx, "status")
+	if err != nil {
+		return err
 	}
 
 	if status != auxiliary.TicketStatusSold {
-		ctx.Clear("status")
+		restate.Clear(ctx, "status")
 	}
 
-	return restate.Void{}, nil
+	return nil
 }
 
 // <end_unreserve>
 
 // <start_mark_as_sold>
-func (TicketObject) MarkAsSold(ctx restate.ObjectContext, _ restate.Void) (restate.Void, error) {
-	status, err := restate.GetAs[auxiliary.TicketStatus](ctx, "status")
-	if err != nil && !errors.Is(err, restate.ErrKeyNotFound) {
-		return restate.Void{}, err
+func (TicketObject) MarkAsSold(ctx restate.ObjectContext) error {
+	status, err := restate.Get[auxiliary.TicketStatus](ctx, "status")
+	if err != nil {
+		return err
 	}
 
 	if status == auxiliary.TicketStatusReserved {
-		ctx.Set("status", auxiliary.TicketStatusSold)
+		restate.Set(ctx, "status", auxiliary.TicketStatusSold)
 	}
 
-	return restate.Void{}, nil
+	return nil
 }
 
 // <end_mark_as_sold>

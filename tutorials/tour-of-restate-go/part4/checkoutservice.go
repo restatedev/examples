@@ -16,11 +16,11 @@ type CheckoutRequest struct {
 func (CheckoutService) Handle(ctx restate.Context, request CheckoutRequest) (bool, error) {
 	totalPrice := len(request.Tickets) * 40
 
-	idempotencyKey := ctx.Rand().UUID().String()
-	if _, err := restate.RunAs(ctx, func(ctx restate.RunContext) (restate.Void, error) {
+	idempotencyKey := restate.Rand(ctx).UUID().String()
+	if _, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
 		return restate.Void{}, auxiliary.PaymentClient{}.Call(idempotencyKey, totalPrice)
 	}); err != nil {
-		if _, err := restate.RunAs(ctx, func(ctx restate.RunContext) (bool, error) {
+		if _, err := restate.Run(ctx, func(ctx restate.RunContext) (bool, error) {
 			return auxiliary.EmailClient{}.NotifyUserOfPaymentFailure(request.UserId)
 		}); err != nil {
 			return false, err
@@ -29,7 +29,7 @@ func (CheckoutService) Handle(ctx restate.Context, request CheckoutRequest) (boo
 		return false, nil
 	}
 
-	if _, err := restate.RunAs(ctx, func(ctx restate.RunContext) (bool, error) {
+	if _, err := restate.Run(ctx, func(ctx restate.RunContext) (bool, error) {
 		return auxiliary.EmailClient{}.NotifyUserOfPaymentSuccess(request.UserId)
 	}); err != nil {
 		return false, err
