@@ -9,8 +9,8 @@
 
 import restate
 
-from tour.part4.cart_object import cart
-from tour.part4.checkout_service import checkout
-from tour.part4.ticket_object import ticket
+from tour.part3.cart_object import cart
+from tour.part3.checkout_service import checkout
+from tour.part3.ticket_object import ticket
 
 app = restate.app(services=[cart, checkout, ticket])

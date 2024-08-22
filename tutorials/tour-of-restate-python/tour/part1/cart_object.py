@@ -10,8 +10,8 @@
 from restate.context import ObjectContext
 from restate.object import VirtualObject
 
-from tour.part4.checkout_service import handle
-from tour.part4.ticket_object import reserve, mark_as_sold, unreserve
+from tour.part1.checkout_service import handle
+from tour.part1.ticket_object import reserve, unreserve
 
 cart = VirtualObject("CartObject")
 

@@ -38,7 +38,7 @@ async def unreserve(ctx: ObjectContext):
 
 
 # <start_mark_as_sold>
-@ticket.handler()
+@ticket.handler("markAsSold")
 async def mark_as_sold(ctx: ObjectContext):
     status = await ctx.get("status") or "AVAILABLE"
 

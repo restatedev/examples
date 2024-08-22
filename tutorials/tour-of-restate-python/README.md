@@ -27,7 +27,7 @@ pip install -r requirements.txt
 Start the app as follows:
 
 ```shell
-python3 -m hypercorn tour/part4/app:app
+python3 -m hypercorn -b localhost:9080 tour/app/app:app
 ```
 
 Start the Restate Server ([other options here](https://docs.restate.dev/develop/local_dev)):
@@ -39,7 +39,7 @@ restate-server
 Register the service:
 
 ```shell
-restate dp register http://localhost:8000
+restate dp register http://localhost:9080
 ```
 
 Then add a ticket to Mary's cart:

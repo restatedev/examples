@@ -12,8 +12,8 @@ from datetime import timedelta
 from restate.context import ObjectContext
 from restate.object import VirtualObject
 
-from tour.part4.checkout_service import handle
-from tour.part4.ticket_object import reserve, mark_as_sold, unreserve
+from tour.part3.checkout_service import handle
+from tour.part3.ticket_object import reserve, mark_as_sold, unreserve
 
 cart = VirtualObject("CartObject")
 
@@ -38,8 +38,10 @@ async def add_ticket(ctx: ObjectContext, ticket_id: str) -> bool:
 # <start_checkout>
 @cart.handler()
 async def checkout(ctx: ObjectContext) -> bool:
+    # withClass highlight-line
     tickets = await ctx.get("tickets") or []
 
+    # withClass(1:2) highlight-line
     if len(tickets) == 0:
         return False
 

@@ -6,7 +6,7 @@
 # You can find a copy of the license in the file LICENSE
 # in the root directory of this repository or package or at
 # https://github.com/restatedev/examples/
-
+import uuid
 from typing import TypedDict, List
 from restate.context import ObjectContext, Serde
 from restate.service import Service
@@ -26,6 +26,7 @@ email_client = EmailClient()
 checkout = Service("CheckoutService")
 
 
+# <start_checkout>
 @checkout.handler()
 async def handle(ctx: ObjectContext, order: Order) -> bool:
     total_price = len(order['tickets']) * 40
@@ -42,3 +43,4 @@ async def handle(ctx: ObjectContext, order: Order) -> bool:
         await ctx.run("send_failure_email", lambda: email_client.notify_user_of_payment_failure(order['user_id']))
 
     return success
+# <end_checkout>
