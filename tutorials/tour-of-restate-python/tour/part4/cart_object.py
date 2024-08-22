@@ -32,6 +32,7 @@ async def add_ticket(ctx: ObjectContext, ticket_id: str) -> bool:
     return reserved
 
 
+# <start_checkout>
 @cart.handler()
 async def checkout(ctx: ObjectContext) -> bool:
     tickets = await ctx.get("tickets") or []
@@ -49,6 +50,7 @@ async def checkout(ctx: ObjectContext) -> bool:
         ctx.clear("tickets")
 
     return success
+# <end_checkout>
 
 
 @cart.handler("expireTicket")

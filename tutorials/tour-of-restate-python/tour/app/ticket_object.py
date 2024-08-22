@@ -23,6 +23,6 @@ async def unreserve(ctx: ObjectContext):
     return
 
 
-@ticket.handler()
+@ticket.handler("markAsSold")
 async def mark_as_sold(ctx: ObjectContext):
     return
