@@ -35,7 +35,6 @@ bump_ts_sdk_clients $PROJECT_ROOT/patterns-use-cases/durable-promises/durable-pr
 bump_ts_sdk $PROJECT_ROOT/patterns-use-cases/payment-state-machine/payment-state-machine-typescript
 bump_ts_sdk $PROJECT_ROOT/patterns-use-cases/sagas/sagas-typescript
 bump_ts_sdk $PROJECT_ROOT/patterns-use-cases/state-machines/state-machines-typescript
-bump_ts_sdk $PROJECT_ROOT/patterns-use-cases/ticket-reservation/ticket-reservation-typescript
 
 bump_ts_sdk $PROJECT_ROOT/end-to-end-applications/typescript/ai-image-workflows
 bump_ts_sdk $PROJECT_ROOT/end-to-end-applications/typescript/food-ordering/app

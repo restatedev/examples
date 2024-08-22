@@ -33,7 +33,6 @@ create_release_zip tutorials/tour-of-restate-go go-tour-of-restate
 create_release_zip tutorials/tour-of-restate-java java-tour-of-restate
 create_release_zip tutorials/tour-of-restate-typescript typescript-tour-of-restate
 
-create_release_zip patterns-use-cases/ticket-reservation/ticket-reservation-typescript typescript-ticket-reservation
 create_release_zip patterns-use-cases/payment-state-machine/payment-state-machine-typescript typescript-payment-state-machine
 
 create_release_zip end-to-end-applications/java/food-ordering java-food-ordering

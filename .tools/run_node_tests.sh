@@ -25,7 +25,6 @@ npm_install_check $PROJECT_ROOT/patterns-use-cases/durable-promises/durable-prom
 npm_install_check $PROJECT_ROOT/patterns-use-cases/payment-state-machine/payment-state-machine-typescript
 npm_install_check $PROJECT_ROOT/patterns-use-cases/sagas/sagas-typescript
 npm_install_check $PROJECT_ROOT/patterns-use-cases/state-machines/state-machines-typescript
-npm_install_check $PROJECT_ROOT/patterns-use-cases/ticket-reservation/ticket-reservation-typescript
 
 npm_install_check $PROJECT_ROOT/end-to-end-applications/typescript/ai-image-workflows
 npm_install_check $PROJECT_ROOT/end-to-end-applications/typescript/food-ordering/app

@@ -23,6 +23,3 @@ bump_npm_restate_cli $PROJECT_ROOT/patterns-use-cases/durable-promises/durable-p
 
 bump_npm_restate $PROJECT_ROOT/patterns-use-cases/state-machines/state-machines-typescript
 bump_npm_restate_cli $PROJECT_ROOT/patterns-use-cases/state-machines/state-machines-typescript
-
-bump_npm_restate $PROJECT_ROOT/patterns-use-cases/ticket-reservation/ticket-reservation-typescript
-bump_npm_restate_cli $PROJECT_ROOT/patterns-use-cases/ticket-reservation/ticket-reservation-typescript
