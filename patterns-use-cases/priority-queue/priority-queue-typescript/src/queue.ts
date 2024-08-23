@@ -22,14 +22,21 @@ type QueueItem = {
 };
 
 type TickCause =
-  | {
-      type: "done";
-    }
-  | { type: "push"; item: QueueItem };
+  | { type: "done" }
+  | { type: "push"; item: QueueItem }
+  | { type: "drop"; awakeable: string };
 
 // Put your super clever queue fairness algorithm here
 function selectAndPopItem<T>(items: QueueItem[]): QueueItem {
-  return items.pop()!;
+  let lowest = { priority: Number.MAX_SAFE_INTEGER, index: 0 };
+  for (const [i, item] of items.entries()) {
+    if (item.priority < lowest.priority) {
+      lowest.priority = item.priority;
+      lowest.index = i;
+    }
+  }
+  const [item] = items.splice(lowest.index, 1);
+  return item;
 }
 
 const MAX_IN_FLIGHT = 10;
@@ -49,6 +56,19 @@ export const queue = object({
           break;
         case "push":
           items.push(cause.item);
+          break;
+        case "drop":
+          const index = items.findIndex(
+            (item) => item.awakeable == cause.awakeable,
+          );
+          if (index == -1) {
+            // we have already popped it; treat this as a 'done'
+            inFlight--;
+          } else {
+            // remove from the queue
+            items.splice(index, 1);
+          }
+          items = items.filter((item) => item.awakeable != cause.awakeable);
           break;
         default:
           throw new TerminalError(`unexpected queue tick cause ${cause}`);

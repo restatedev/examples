@@ -10,39 +10,61 @@
  */
 
 import { Context, TerminalError } from "@restatedev/restate-sdk";
-import type { Queue } from "./queue";
+import { Ingress } from "@restatedev/restate-sdk-clients";
+import type { Queue as QueueObject } from "./queue";
 
-export async function doWithQueue<T>(
-  ctx: Context,
-  queue: string,
-  priority: number,
-  operation: () => Promise<T>,
-): Promise<T> {
-  const awakeable = ctx.awakeable();
-  ctx.objectSendClient<Queue>({ name: "queue" }, queue).tick({
-    type: "push",
-    item: {
-      awakeable: awakeable.id,
-      priority,
-    },
-  });
+export interface QueueClient {
+  run<T>(priority: number, op: () => Promise<T>): Promise<T>;
+}
 
-  await awakeable.promise;
+export namespace QueueClient {
+  export function fromContext(ctx: Context, name: string): QueueClient {
+    return {
+      async run<T>(priority: number, op: () => Promise<T>): Promise<T> {
+        const client = ctx.objectSendClient<QueueObject>(
+          { name: "queue" },
+          name,
+        );
 
-  try {
-    const result = await operation();
+        const awakeable = ctx.awakeable();
+        client.tick({
+          type: "push",
+          item: {
+            awakeable: awakeable.id,
+            priority,
+          },
+        });
 
-    ctx.objectSendClient<Queue>({ name: "queue" }, queue).tick({
-      type: "done",
-    });
+        try {
+          await awakeable.promise;
+        } catch (e) {
+          if (e instanceof TerminalError) {
+            // this should only happen on cancellation; inform the queue that we no longer need to be scheduled
+            client.tick({
+              type: "drop",
+              awakeable: awakeable.id,
+            });
+          }
+          throw e;
+        }
 
-    return result;
-  } catch (e) {
-    if (e instanceof TerminalError) {
-      ctx.objectSendClient<Queue>({ name: "queue" }, queue).tick({
-        type: "done",
-      });
-    }
-    throw e;
+        try {
+          const result = await op();
+
+          client.tick({
+            type: "done",
+          });
+
+          return result;
+        } catch (e) {
+          if (e instanceof TerminalError) {
+            client.tick({
+              type: "done",
+            });
+          }
+          throw e;
+        }
+      },
+    };
   }
 }

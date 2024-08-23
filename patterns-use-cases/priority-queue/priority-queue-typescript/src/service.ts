@@ -10,7 +10,7 @@
  */
 
 import { Context, service } from "@restatedev/restate-sdk";
-import { doWithQueue } from "./queue_client";
+import { QueueClient } from "./queue_client";
 
 const QUEUE_NAME = "myService/expensiveMethod";
 
@@ -19,9 +19,10 @@ export const myService = service({
   handlers: {
     expensiveMethod: async (
       ctx: Context,
-      params: { left: number; right: number },
+      params: { left: number; right: number; priority: number },
     ): Promise<number> => {
-      return doWithQueue(ctx, QUEUE_NAME, 1, () =>
+      const queue = QueueClient.fromContext(ctx, QUEUE_NAME);
+      return queue.run(params.priority, () =>
         ctx.run(() => expensiveOperation(params.left, params.right)),
       );
     },
@@ -32,9 +33,8 @@ async function expensiveOperation(
   left: number,
   right: number,
 ): Promise<number> {
-  await new Promise((resolve) => setTimeout(resolve, 5_000));
-
   // very cpu heavy - important that the queue protects this
+  await new Promise((resolve) => setTimeout(resolve, 5_000));
   return left + right;
 }
 
