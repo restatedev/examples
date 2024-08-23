@@ -23,19 +23,22 @@ export const myService = service({
     ): Promise<number> => {
       const queue = Queue.fromContext(ctx, QUEUE_NAME);
       return queue.run(params.priority ?? 1, () =>
-        ctx.run(() => expensiveOperation(params.left, params.right)),
+        expensiveOperation(ctx, params.left, params.right),
       );
     },
   },
 });
 
 async function expensiveOperation(
+  ctx: Context,
   left: number,
   right: number,
 ): Promise<number> {
-  // very cpu heavy - important that the queue protects this
-  await new Promise((resolve) => setTimeout(resolve, 5_000));
-  return left + right;
+  return ctx.run(async () => {
+    // very cpu heavy - important that the queue protects this
+    await new Promise((resolve) => setTimeout(resolve, 5_000));
+    return left + right;
+  });
 }
 
 export type MyService = typeof myService;
