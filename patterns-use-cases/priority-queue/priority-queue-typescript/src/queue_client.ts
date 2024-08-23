@@ -14,11 +14,12 @@ import type { Queue } from "./queue";
 
 export async function doWithQueue<T>(
   ctx: Context,
+  queue: string,
   priority: number,
   operation: () => Promise<T>,
 ): Promise<T> {
   const awakeable = ctx.awakeable();
-  ctx.objectSendClient<Queue>({ name: "queue" }, "").tick({
+  ctx.objectSendClient<Queue>({ name: "queue" }, queue).tick({
     type: "push",
     item: {
       awakeable: awakeable.id,
@@ -31,14 +32,14 @@ export async function doWithQueue<T>(
   try {
     const result = await operation();
 
-    ctx.objectSendClient<Queue>({ name: "queue" }, "").tick({
+    ctx.objectSendClient<Queue>({ name: "queue" }, queue).tick({
       type: "done",
     });
 
     return result;
   } catch (e) {
     if (e instanceof TerminalError) {
-      ctx.objectSendClient<Queue>({ name: "queue" }, "").tick({
+      ctx.objectSendClient<Queue>({ name: "queue" }, queue).tick({
         type: "done",
       });
     }

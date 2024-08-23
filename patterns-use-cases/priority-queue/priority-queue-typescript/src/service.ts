@@ -12,6 +12,8 @@
 import { Context, service } from "@restatedev/restate-sdk";
 import { doWithQueue } from "./queue_client";
 
+const QUEUE_NAME = "myService/expensiveMethod";
+
 export const myService = service({
   name: "myService",
   handlers: {
@@ -19,7 +21,7 @@ export const myService = service({
       ctx: Context,
       params: { left: number; right: number },
     ): Promise<number> => {
-      return doWithQueue(ctx, 1, () =>
+      return doWithQueue(ctx, QUEUE_NAME, 1, () =>
         ctx.run(() => expensiveOperation(params.left, params.right)),
       );
     },
