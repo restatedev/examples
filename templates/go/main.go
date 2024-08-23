@@ -11,7 +11,7 @@ import (
 
 func main() {
 	server := server.NewRestate().
-		Bind(restate.Service(Greeter{}))
+		Bind(restate.Reflect(Greeter{}))
 
 	if err := server.Start(context.Background(), ":9080"); err != nil {
 		slog.Error("application exited unexpectedly", "err", err.Error())
