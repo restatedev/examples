@@ -19,10 +19,10 @@ export const myService = service({
   handlers: {
     expensiveMethod: async (
       ctx: Context,
-      params: { left: number; right: number; priority: number },
+      params: { left: number; right: number; priority?: number },
     ): Promise<number> => {
       const queue = Queue.fromContext(ctx, QUEUE_NAME);
-      return queue.run(params.priority, () =>
+      return queue.run(params.priority ?? 1, () =>
         ctx.run(() => expensiveOperation(params.left, params.right)),
       );
     },
