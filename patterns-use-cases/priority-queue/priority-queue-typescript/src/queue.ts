@@ -44,50 +44,73 @@ const MAX_IN_FLIGHT = 10;
 export const queue = object({
   name: "queue",
   handlers: {
-    tick: async (
+    done: async (ctx: ObjectContext<QueueState>): Promise<void> => {
+      const state = await getState(ctx);
+
+      state.inFlight--;
+
+      tick(ctx, state);
+
+      setState(ctx, state);
+    },
+    push: async (
       ctx: ObjectContext<QueueState>,
-      cause: TickCause,
+      item: QueueItem,
     ): Promise<void> => {
-      let items = (await ctx.get("items")) ?? [];
-      let inFlight = (await ctx.get("inFlight")) ?? 0;
-      switch (cause?.type) {
-        case "done":
-          inFlight--;
-          break;
-        case "push":
-          items.push(cause.item);
-          break;
-        case "drop":
-          const index = items.findIndex(
-            (item) => item.awakeable == cause.awakeable,
-          );
-          if (index == -1) {
-            // we have already popped it; treat this as a 'done'
-            inFlight--;
-          } else {
-            // remove from the queue
-            items.splice(index, 1);
-          }
-          items = items.filter((item) => item.awakeable != cause.awakeable);
-          break;
-        default:
-          throw new TerminalError(`unexpected queue tick cause ${cause}`);
-      }
+      const state = await getState(ctx);
 
-      while (inFlight < MAX_IN_FLIGHT && items.length > 0) {
-        let item = selectAndPopItem(items);
-        inFlight++;
-        ctx.resolveAwakeable(item.awakeable);
-      }
+      state.items.push(item);
 
-      ctx.console.log(
-        `Tick end. Queue length: ${items.length}, In Flight: ${inFlight}`,
+      tick(ctx, state);
+
+      setState(ctx, state);
+    },
+    drop: async (
+      ctx: ObjectContext<QueueState>,
+      awakeable: string,
+    ): Promise<void> => {
+      const state = await getState(ctx);
+
+      const index = state.items.findIndex(
+        (item) => item.awakeable == awakeable,
       );
+      if (index == -1) {
+        // we have already popped it; treat this as a 'done'
+        state.inFlight--;
+      } else {
+        // remove from the queue
+        state.items.splice(index, 1);
+      }
 
-      ctx.set("items", items);
-      ctx.set("inFlight", inFlight);
+      tick(ctx, state);
+
+      setState(ctx, state);
     },
   },
 });
+
+async function getState(ctx: ObjectContext<QueueState>): Promise<QueueState> {
+  return {
+    items: (await ctx.get("items")) ?? [],
+    inFlight: (await ctx.get("inFlight")) ?? 0,
+  };
+}
+
+function setState(ctx: ObjectContext<QueueState>, state: QueueState) {
+  ctx.set("items", state.items);
+  ctx.set("inFlight", state.inFlight);
+}
+
+function tick(ctx: ObjectContext<QueueState>, state: QueueState) {
+  while (state.inFlight < MAX_IN_FLIGHT && state.items.length > 0) {
+    let item = selectAndPopItem(state.items);
+    state.inFlight++;
+    ctx.resolveAwakeable(item.awakeable);
+  }
+
+  ctx.console.log(
+    `Tick end. Queue length: ${state.items.length}, In Flight: ${state.inFlight}`,
+  );
+}
 
 export type Queue = typeof queue;

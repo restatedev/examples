@@ -10,7 +10,7 @@
  */
 
 import { Context, service } from "@restatedev/restate-sdk";
-import { QueueClient } from "./queue_client";
+import { Queue } from "./queue_client";
 
 const QUEUE_NAME = "myService/expensiveMethod";
 
@@ -21,7 +21,7 @@ export const myService = service({
       ctx: Context,
       params: { left: number; right: number; priority: number },
     ): Promise<number> => {
-      const queue = QueueClient.fromContext(ctx, QUEUE_NAME);
+      const queue = Queue.fromContext(ctx, QUEUE_NAME);
       return queue.run(params.priority, () =>
         ctx.run(() => expensiveOperation(params.left, params.right)),
       );

@@ -26,12 +26,9 @@ export namespace Queue {
         );
 
         const awakeable = ctx.awakeable();
-        client.tick({
-          type: "push",
-          item: {
-            awakeable: awakeable.id,
-            priority,
-          },
+        client.push({
+          awakeable: awakeable.id,
+          priority,
         });
 
         try {
@@ -39,10 +36,7 @@ export namespace Queue {
         } catch (e) {
           if (e instanceof TerminalError) {
             // this should only happen on cancellation; inform the queue that we no longer need to be scheduled
-            client.tick({
-              type: "drop",
-              awakeable: awakeable.id,
-            });
+            client.drop(awakeable.id);
           }
           throw e;
         }
@@ -50,16 +44,12 @@ export namespace Queue {
         try {
           const result = await op();
 
-          client.tick({
-            type: "done",
-          });
+          client.done();
 
           return result;
         } catch (e) {
           if (e instanceof TerminalError) {
-            client.tick({
-              type: "done",
-            });
+            client.done();
           }
           throw e;
         }
