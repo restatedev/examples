@@ -10,15 +10,14 @@
  */
 
 import { Context, TerminalError } from "@restatedev/restate-sdk";
-import { Ingress } from "@restatedev/restate-sdk-clients";
 import type { Queue as QueueObject } from "./queue";
 
-export interface QueueClient {
+export interface Queue {
   run<T>(priority: number, op: () => Promise<T>): Promise<T>;
 }
 
-export namespace QueueClient {
-  export function fromContext(ctx: Context, name: string): QueueClient {
+export namespace Queue {
+  export function fromContext(ctx: Context, name: string): Queue {
     return {
       async run<T>(priority: number, op: () => Promise<T>): Promise<T> {
         const client = ctx.objectSendClient<QueueObject>(
