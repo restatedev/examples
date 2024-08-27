@@ -14,5 +14,5 @@ function python_mypi_lint() {
   deactivate
 }
 
-cd $PROJECT_ROOT/templates/python && python_mypi_lint || exit
-cd $PROJECT_ROOT/tutorials/tour-of-restate-python && python_mypi_lint || exit
+pushd $PROJECT_ROOT/templates/python && python_mypi_lint && popd
+pushd $PROJECT_ROOT/tutorials/tour-of-restate-python && python_mypi_lint && popd
