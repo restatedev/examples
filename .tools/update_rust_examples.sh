@@ -11,3 +11,4 @@ function bump_rust_sdk() {
 }
 
 bump_rust_sdk $PROJECT_ROOT/templates/rust
+bump_rust_sdk $PROJECT_ROOT/templates/rust-shuttle
