@@ -14,5 +14,5 @@ function python_mypi_lint() {
   deactivate
 }
 
-pushd $PROJECT_ROOT/templates/python && python_mypi_lint && popd || exit
-pushd $PROJECT_ROOT/patterns-use-cases/ticket-reservation/ticket-reservation-python && python_mypi_lint && popd || exit
+pushd $PROJECT_ROOT/templates/python && python_mypi_lint && popd
+pushd $PROJECT_ROOT/tutorials/tour-of-restate-python && python_mypi_lint && popd

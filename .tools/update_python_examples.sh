@@ -12,4 +12,4 @@ function search_and_replace_version() {
 }
 
 search_and_replace_version $PROJECT_ROOT/templates/python
-search_and_replace_version $PROJECT_ROOT/patterns-use-cases/ticket-reservation/ticket-reservation-python
+search_and_replace_version $PROJECT_ROOT/tutorials/tour-of-restate-python
