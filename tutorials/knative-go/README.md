@@ -1,8 +1,3 @@
----
-title: Building Stateful applications with Knative and Restate
-
----
-
 # Tutorial: Restate and Knative
 
 This tutorial shows how to set up Knative and Restate in a local Kubernetes cluster, 
