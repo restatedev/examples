@@ -11,4 +11,5 @@ function go_build_check() {
 }
 
 go_build_check $PROJECT_ROOT/templates/go
+go_build_check $PROJECT_ROOT/tutorials/knative-go
 go_build_check $PROJECT_ROOT/tutorials/tour-of-restate-go
