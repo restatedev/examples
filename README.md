@@ -83,6 +83,7 @@ challenges.
 |-----------|-------------------------------------------------|
 | Templates | [Go Template](templates/go)                     |
 | Tutorial  | [Tour of Restate](tutorials/tour-of-restate-go) |
+| Tutorial  | [Restate + Knative](tutorials/knative-go)       |
 
 ## Joining the community
 

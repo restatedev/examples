@@ -12,4 +12,5 @@ function bump_go_sdk() {
 }
 
 bump_go_sdk $PROJECT_ROOT/templates/go
+bump_go_sdk $PROJECT_ROOT/tutorials/knative-go
 bump_go_sdk $PROJECT_ROOT/tutorials/tour-of-restate-go
