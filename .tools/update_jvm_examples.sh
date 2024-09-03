@@ -18,6 +18,7 @@ search_and_replace_version_gradle $PROJECT_ROOT/templates/kotlin-gradle
 search_and_replace_version_gradle $PROJECT_ROOT/templates/kotlin-gradle-lambda-cdk/lambda
 
 search_and_replace_version_gradle $PROJECT_ROOT/basics/basics-java
+search_and_replace_version_gradle $PROJECT_ROOT/basics/basics-kotlin
 
 search_and_replace_version_gradle $PROJECT_ROOT/patterns-use-cases/sagas/sagas-java
 search_and_replace_version_gradle $PROJECT_ROOT/patterns-use-cases/async-signals-payment/async-signals-payment-java
