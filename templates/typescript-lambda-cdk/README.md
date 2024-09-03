@@ -43,8 +43,8 @@ Install npm dependencies:
 npm install
 ```
 
-To deploy the stack create a free  account, export the Restate Cloud environment id and API key, and run:
-
+To deploy the stack, export the Restate Cloud environment id and API key, and run `cdk deploy`:
+              
 ```shell
 export RESTATE_ENV_ID=env_... RESTATE_API_KEY=key_...
 npx cdk deploy

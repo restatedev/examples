@@ -35,20 +35,21 @@ For more information on CDK, please see [Getting started with the AWS CDK](https
 * npm
 * gradle
 * JDK >= 21
-* Restate Cloud access (cluster id + API token)
 * AWS account, bootstrapped for CDK use
 * valid AWS credentials with sufficient privileges to create the necessary resources
+* an existing [Restate Cloud](https://restate.dev) environment (environment id + API key)
 
 Install npm dependencies:
 
 ```shell
-npm clean-install
+npm install
 ```
 
-To deploy the stack, simply run:
+To deploy the stack, export the Restate Cloud environment id and API key, and run `cdk deploy`:
 
 ```shell
-npm run deploy
+export RESTATE_ENV_ID=env_... RESTATE_API_KEY=key_...
+npx cdk deploy
 ```
 
 The stack output will print out the Restate server ingress URL.
@@ -59,6 +60,7 @@ You can send a test request to the Restate ingress endpoint to call the newly de
 
 ```shell
 curl -k ${restateIngressUrl}/Greeter/greet \
+  -H "Authorization: Bearer $RESTATE_API_KEY" \
   -H 'content-type: application/json' -d '"Restate"'
 ```
 
