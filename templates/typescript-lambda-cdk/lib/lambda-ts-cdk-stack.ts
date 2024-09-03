@@ -9,19 +9,18 @@
  * https://github.com/restatedev/examples/
  */
 
-import * as cdk from "aws-cdk-lib";
-import * as iam from "aws-cdk-lib/aws-iam";
-import * as lambda from "aws-cdk-lib/aws-lambda";
-import * as logs from "aws-cdk-lib/aws-logs";
 import * as restate from "@restatedev/restate-cdk";
+import * as cdk from "aws-cdk-lib";
+import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as lambda_nodejs from "aws-cdk-lib/aws-lambda-nodejs";
+import * as secrets from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
-import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 
 export class LambdaTsCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: cdk.StackProps) {
     super(scope, id, props);
 
-    const greeter: lambda.Function = new NodejsFunction(this, "GreeterService", {
+    const handler = new lambda_nodejs.NodejsFunction(this, "GreeterService", {
       runtime: lambda.Runtime.NODEJS_20_X,
       entry: "lib/lambda/handler.ts",
       architecture: lambda.Architecture.ARM_64,
@@ -31,41 +30,33 @@ export class LambdaTsCdkStack extends cdk.Stack {
       },
     });
 
-    // This role is used by Restate to invoke Lambda service handlers; see https://docs.restate.dev/deploy/cloud for
-    // information on deploying services to Restate Cloud environments. For standalone environments, the EC2 instance
-    // profile can be used directly instead of creating a separate role.
-    const invokerRole = new iam.Role(this, "InvokerRole", {
-      assumedBy: new iam.AccountRootPrincipal(), // set up trust such that your Restate environment can assume this role
-    });
-
-    // You can reference an existing Restate environment you manage yourself or a Restate Cloud environment by
-    // configuring its address and optionally auth token. The deployer will use these settings to register the handlers.
-    const restateEnvironment = restate.RestateEnvironment.fromAttributes({
-      adminUrl: "https://restate.example.com:9070", // pre-existing Restate server address not managed by this stack
-      invokerRole,
-    });
-
-    // Alternatively, you can deploy a standalone Restate server using the RestateServer construct. Please refer to
-    // https://docs.restate.dev/deploy/lambda/self-hosted and the construct documentation for details.
-    // const restateEnvironment = new restate.SingleNodeRestateDeployment(this, "Restate", {
-    //   logGroup: new logs.LogGroup(this, "RestateLogs", {
-    //     logGroupName: "/restate/server-logs",
-    //     retention: logs.RetentionDays.ONE_MONTH,
-    //   }),
-    // });
-
-    const deployer = new restate.ServiceDeployer(this, "ServiceDeployer", {
-      logGroup: new logs.LogGroup(this, "Deployer", {
-        retention: logs.RetentionDays.ONE_MONTH,
-        removalPolicy: cdk.RemovalPolicy.DESTROY,
+    // Set the RESTATE_ENV_ID and RESTATE_API_KEY environment variables to point to your Restate Cloud environment.
+    // This construct automatically creates an invoker role that Restate Cloud will be able to assume to invoke handlers
+    // on behalf of your environment. See https://docs.restate.dev/deploy/cloud for more information.
+    const restateEnvironment = new restate.RestateCloudEnvironment(this, "RestateCloud", {
+      environmentId: process.env.RESTATE_ENV_ID! as restate.EnvironmentId,
+      // Warning: this will result in the API key being baked into the CloudFormation template!
+      // For improved security, pre-populate the secret and pass it to the construct as a reference.
+      // See: https://docs.aws.amazon.com/secretsmanager/latest/userguide/cdk.html
+      apiKey: new secrets.Secret(this, "RestateCloudApiKey", {
+        secretStringValue: cdk.SecretValue.unsafePlainText(process.env.RESTATE_API_KEY!),
       }),
     });
+    const deployer = new restate.ServiceDeployer(this, "ServiceDeployer");
 
-    deployer.deployService("Greeter", greeter.currentVersion, restateEnvironment, {
-      // insecure: true, // accept self-signed certificate for SingleNodeRestateDeployment
-    });
+    // Alternatively, you can deploy a standalone Restate server using the SingleNodeRestateDeployment construct.
+    // Please see https://docs.restate.dev/deploy/lambda/self-hosted and the construct documentation for more details.
+    // const vpc = ec2.Vpc.fromLookup(this, "Vpc", { vpcId: "..." });
+    // const restateEnvironment = new restate.SingleNodeRestateDeployment(this, "Restate", {
+    //   vpc,
+    //   networkConfiguration: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+    // });
+    // const deployer = new restate.ServiceDeployer(this, "ServiceDeployer", {
+    //   vpc,
+    //   securityGroups: [restateEnvironment.adminSecurityGroup],
+    // });
 
-    // If deploying a standalone Restate server, we can output the ingress URL like this.
-    // new cdk.CfnOutput(this, "restateIngressUrl", { value: restateEnvironment.ingressUrl });
+    deployer.deployService("Greeter", handler.currentVersion, restateEnvironment);
+    new cdk.CfnOutput(this, "restateIngressUrl", { value: restateEnvironment.ingressUrl });
   }
 }

@@ -8,7 +8,7 @@ For more information on CDK, please see [Getting started with the AWS CDK](https
 
 * [CDK app entry point `lambda-ts-cdk.ts`](typescript-lambda-cdk-test/bin/lambda-ts-cdk.ts)
 * [CDK stack consisting of a Lambda function and providing Restate service registration](lib/lambda-ts-cdk-stack.ts)
-* [TypeScript Lambda handler](lib/lambda/app.ts) - based on [`hello-world-lambda`](../hello-world-lambda)
+* [TypeScript Lambda handler](lib/lambda/handler.ts)
 
 ## Download the example
 
@@ -33,20 +33,21 @@ For more information on CDK, please see [Getting started with the AWS CDK](https
 **Pre-requisites:**
 
 * npm
-* Restate Cloud access (cluster id + API token)
 * AWS account, bootstrapped for CDK use
 * valid AWS credentials with sufficient privileges to create the necessary resources
+* an existing [Restate Cloud](https://restate.dev) environment (environment id + API key)
 
 Install npm dependencies:
 
 ```shell
-npm clean-install
+npm install
 ```
 
-To deploy the stack, simply run:
+To deploy the stack create a free  account, export the Restate Cloud environment id and API key, and run:
 
 ```shell
-npm run deploy
+export RESTATE_ENV_ID=env_... RESTATE_API_KEY=key_...
+npx cdk deploy
 ```
 
 You can send a test request to the Restate ingress endpoint to call the newly deployed service:
@@ -57,8 +58,12 @@ You can send a test request to the Restate cluster ingress endpoint to call the 
 
 ```shell
 curl -k ${restateIngressUrl}/Greeter/greet \
+  -H "Authorization: Bearer $RESTATE_API_KEY" \
   -H 'content-type: application/json' -d '"Restate"'
 ```
+
+Note the single-quotes around the input to prevent the shell from interpreting the inner quotes - the request must be a
+valid JSON string value.
 
 ### Useful commands
 
