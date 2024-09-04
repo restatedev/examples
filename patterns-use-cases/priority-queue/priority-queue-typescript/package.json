@@ -1,0 +1,19 @@
+{
+  "name": "@restatedev/example-pattern-priority-queue",
+  "version": "0.1.0",
+  "description": "A Restate example showing the implementation of a distributed priority queue",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc --noEmitOnError",
+    "app-dev": "tsx --watch ./src/app.ts",
+    "app": "tsx ./src/app.ts"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "^1.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "tsx": "^4.17.0",
+    "typescript": "^5.0.2"
+  }
+}
