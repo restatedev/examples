@@ -31,7 +31,7 @@ dependencies {
 // Setup Java/Kotlin compiler target
 java {
   toolchain {
-    languageVersion.set(JavaLanguageVersion.of(17))
+    languageVersion.set(JavaLanguageVersion.of(11))
   }
 }
 

@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        jvm-version: [17]
+        jvm-version: [ 11 ]
 
     steps:
       - uses: actions/checkout@v3

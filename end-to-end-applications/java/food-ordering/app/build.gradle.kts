@@ -12,7 +12,7 @@ allprojects {
 
   java {
     // Configure the java toolchain to use. If not found, it will be downloaded automatically
-    toolchain { languageVersion = JavaLanguageVersion.of(17) }
+    toolchain { languageVersion = JavaLanguageVersion.of(11) }
   }
 }
 
