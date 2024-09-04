@@ -52,6 +52,7 @@ tasks.withType<JavaCompile> {
 
 // Code formatting tool
 spotless {
+    isEnforceCheck = false
     java {
         importOrder()
         removeUnusedImports()

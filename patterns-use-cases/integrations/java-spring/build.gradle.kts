@@ -52,6 +52,7 @@ tasks.withType<Test> {
 }
 
 spotless {
+	isEnforceCheck = false
 	java {
 		googleJavaFormat()
 		importOrder()

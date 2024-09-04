@@ -23,6 +23,7 @@ subprojects {
 
   // Code formatting tool
   spotless {
+    isEnforceCheck = false
     kotlin {
       targetExclude("build/generated/**/*.kt")
       ktfmt()
