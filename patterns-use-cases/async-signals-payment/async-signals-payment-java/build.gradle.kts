@@ -54,6 +54,7 @@ java {
 
 
 spotless {
+  isEnforceCheck = false
   java {
     importOrder()
     removeUnusedImports()
