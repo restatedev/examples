@@ -1,4 +1,4 @@
-# Examples of the basic concepts for Restate in Java
+# Examples of the basic concepts for Restate in Kotlin
 
 The examples here showcase the most basic building blocks of Restate. **Durable Execution**,
 **Durable Promises**, and **Virtual Objects**, and the **Workflows** abstraction built on top
@@ -14,7 +14,7 @@ about how they work and how they can be run.
   finished actions. The example applies a series of updates and permission setting changes
   to user's profile.
     ```shell
-    ./gradlew -PmainClass=durable_execution.RoleUpdateService run
+    ./gradlew -PmainClass=durable_execution.RoleUpdateServiceKt run
     ```
 
 * **[Durable Execution with Compensations](durable_execution_compensation/RoleUpdateService.java):**
@@ -22,7 +22,7 @@ about how they work and how they can be run.
   through multi-step change. This is the same example as above, extended for cases where
   a part of the change cannot be applied (conflict) and everything has to roll back.
     ```shell
-    ./gradlew -PmainClass=durable_execution_compensation.RoleUpdateService run
+    ./gradlew -PmainClass=durable_execution_compensation.RoleUpdateServiceKt run
     ```
 
 * **[Workflows](workflows/SignupWorkflow.java):** Workflows are durable execution tasks that can
@@ -33,20 +33,20 @@ about how they work and how they can be run.
 * **[Virtual Objects](virtual_objects/GreeterObject.java):** Stateful serverless objects
   to manage durable consistent state and state-manipulating logic.
     ```shell
-    ./gradlew -PmainClass=virtual_objects.GreeterObject run
+    ./gradlew -PmainClass=virtual_objects.GreeterObjectKt run
     ```
 
 * **[Kafka Event-processing](events_processing/UserUpdatesService.java):** Processing events to
   update various downstream systems with durable event handlers, event-delaying,
   in a strict-per-key order.
     ```shell
-    ./gradlew -PmainClass=events_processing.UserUpdatesService run
+    ./gradlew -PmainClass=events_processing.UserUpdatesServiceKt run
     ```
 
 * **[Stateful Event-processing](events_state/ProfileService.java):** Populating state from
   events and making is queryable via RPC handlers.
     ```shell
-    ./gradlew -PmainClass=events_state.ProfileService run
+    ./gradlew -PmainClass=events_state.ProfileServiceKt run
     ```
 
 
