@@ -30,17 +30,17 @@ To try out this example:
 
 ```bash
 # start a local Restate instance
-docker run -d -it --network=host --name restate_dev --rm restatedev/restate:0.8.1
+restate-server
 # start the service
-npm run dev
+npm run example
 # register the state machine service against restate
-npx @restatedev/restate@0.8.1 dep register http://localhost:9080
+restate dep register http://localhost:9080
 
 # create a state machine
-curl http://localhost:8080/auth/create --json '{"key": "myMachine"}'
+curl http://localhost:8080/auth/myMachine/create
 # watch the state
-watch -n1 'curl -s http://localhost:8080/auth/snapshot --json "{\"key\": \"myMachine\"}"'
+watch -n1 'curl -s http://localhost:8080/auth/myMachine/snapshot'
 # kick off the machine
-curl http://localhost:8080/auth/send --json '{"key": "myMachine", "request": {"event": {"type": "AUTH"}}}'
+curl http://localhost:8080/auth/myMachine/send --json '{"event": {"type": "AUTH"}}'
 # and watch the auth flow progress!
 ```

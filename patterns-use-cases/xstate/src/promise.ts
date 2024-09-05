@@ -50,7 +50,7 @@ export type PromiseActorRef<TOutput> = ActorRefFrom<
   PromiseActorLogic<TOutput, unknown>
 >;
 
-export function fromPromise<TOutput, TInput extends NonReducibleUnknown>(
+export function fromPromise<P extends string, TOutput, TInput extends NonReducibleUnknown>(
   promiseCreator: PromiseCreator<TOutput, TInput>
 ): PromiseActorLogic<TOutput, TInput> {
   const logic: PromiseActorLogic<TOutput, TInput> = {
@@ -105,7 +105,7 @@ export function fromPromise<TOutput, TInput extends NonReducibleUnknown>(
 
       const rs = system as RestateActorSystem<any>;
 
-      rs.ctx.send(rs.api.promise).invoke({
+      rs.ctx.serviceSendClient(rs.api.promise).invoke({
         systemName: rs.systemName,
         self: serialiseActorRef(self),
         srcs: actorSrc(self),
@@ -143,115 +143,118 @@ function actorSrc(actor?: AnyActorRef): string[] {
   return [actor.src, ...actorSrc(actor._parent)];
 }
 
-export const promiseMethods = <TLogic extends AnyStateMachine>(
+export const promiseService = <TLogic extends AnyStateMachine>(
   path: string,
   logic: TLogic
 ) => {
   const api = xStateApi(path);
 
-  return {
-    invoke: async (
-      ctx: restate.Context,
-      {
-        systemName,
-        self,
-        srcs,
-        input,
-      }: {
-        systemName: string;
-        self: SerialisableActorRef;
-        srcs: string[];
-        input: NonReducibleUnknown;
-      }
-    ) => {
-      console.log(
-        "run promise with srcs",
-        srcs,
-        "in system",
-        systemName,
-        "with input",
-        input
-      );
+  return restate.service({
+    name: `${path}.promises`,
+    handlers: {
+      invoke: async (
+        ctx: restate.Context,
+        {
+          systemName,
+          self,
+          srcs,
+          input,
+        }: {
+          systemName: string;
+          self: SerialisableActorRef;
+          srcs: string[];
+          input: NonReducibleUnknown;
+        }
+      ) => {
+        console.log(
+          "run promise with srcs",
+          srcs,
+          "in system",
+          systemName,
+          "with input",
+          input
+        );
 
-      const [promiseSrc, ...machineSrcs] = srcs;
+        const [promiseSrc, ...machineSrcs] = srcs;
 
-      let stateMachine: AnyStateMachine = logic;
-      for (const src of machineSrcs) {
-        let maybeSM;
+        let stateMachine: AnyStateMachine = logic;
+        for (const src of machineSrcs) {
+          let maybeSM;
+          try {
+            maybeSM = resolveReferencedActor(stateMachine, src);
+          } catch (e) {
+            throw new TerminalError(
+              `Failed to resolve promise actor ${src}: ${e}`
+            );
+          }
+          if (maybeSM === undefined) {
+            throw new TerminalError(
+              `Couldn't find state machine actor with src ${src}`
+            );
+          }
+          if ("implementations" in maybeSM) {
+            stateMachine = maybeSM as AnyStateMachine;
+          } else {
+            throw new TerminalError(
+              `Couldn't recognise machine actor with src ${src}`
+            );
+          }
+        }
+
+        let promiseActor: PromiseActorLogic<any> | undefined;
+        let maybePA;
         try {
-          maybeSM = resolveReferencedActor(stateMachine, src);
+          maybePA = resolveReferencedActor(stateMachine, promiseSrc);
         } catch (e) {
           throw new TerminalError(
-            `Failed to resolve promise actor ${src}: ${e}`
+            `Failed to resolve promise actor ${promiseSrc}: ${e}`
           );
         }
-        if (maybeSM === undefined) {
+        if (maybePA === undefined) {
           throw new TerminalError(
-            `Couldn't find state machine actor with src ${src}`
+            `Couldn't find promise actor with src ${promiseSrc}`
           );
         }
-        if ("implementations" in maybeSM) {
-          stateMachine = maybeSM as AnyStateMachine;
+        if (
+          "sentinel" in maybePA &&
+          maybePA.sentinel === "restate.promise.actor"
+        ) {
+          promiseActor = maybePA as PromiseActorLogic<any>;
         } else {
           throw new TerminalError(
-            `Couldn't recognise machine actor with src ${src}`
+            `Couldn't recognise promise actor with src ${promiseSrc}`
           );
         }
-      }
 
-      let promiseActor: PromiseActorLogic<any> | undefined;
-      let maybePA;
-      try {
-        maybePA = resolveReferencedActor(stateMachine, promiseSrc);
-      } catch (e) {
-        throw new TerminalError(
-          `Failed to resolve promise actor ${promiseSrc}: ${e}`
+        const resolvedPromise = Promise.resolve(
+          promiseActor.config({ input, ctx })
         );
-      }
-      if (maybePA === undefined) {
-        throw new TerminalError(
-          `Couldn't find promise actor with src ${promiseSrc}`
-        );
-      }
-      if (
-        "sentinel" in maybePA &&
-        maybePA.sentinel === "restate.promise.actor"
-      ) {
-        promiseActor = maybePA as PromiseActorLogic<any>;
-      } else {
-        throw new TerminalError(
-          `Couldn't recognise promise actor with src ${promiseSrc}`
-        );
-      }
 
-      const resolvedPromise = Promise.resolve(
-        promiseActor.config({ input, ctx })
-      );
-
-      await resolvedPromise.then(
-        (response) => {
-          ctx.send(api.actor).send(systemName, {
-            source: self,
-            target: self,
-            event: {
-              type: RESTATE_PROMISE_RESOLVE,
-              data: response,
-            },
-          });
-        },
-        (errorData) => {
-          ctx.send(api.actor).send(systemName, {
-            source: self,
-            target: self,
-            event: {
-              type: RESTATE_PROMISE_REJECT,
-              data: errorData,
-            },
-          });
-        }
-      );
+        await resolvedPromise.then(
+          (response) => {
+            ctx.objectSendClient(api.actor, systemName).send({
+              source: self,
+              target: self,
+              event: {
+                type: RESTATE_PROMISE_RESOLVE,
+                data: response,
+              },
+            });
+          },
+          (errorData) => {
+            ctx.objectSendClient(api.actor, systemName).send({
+              source: self,
+              target: self,
+              event: {
+                type: RESTATE_PROMISE_REJECT,
+                data: errorData,
+              },
+            });
+          }
+        );
+      },
     },
-  };
+  })
 };
 
 export function resolveReferencedActor(
@@ -268,6 +271,6 @@ export function resolveReferencedActor(
   return (
     Array.isArray(invokeConfig)
       ? invokeConfig[indexStr as any]
-      : (invokeConfig as InvokeConfig<any, any, any, any, any, any>)
+      : (invokeConfig as InvokeConfig<any, any, any, any, any, any, any, any>)
   )?.src;
 }

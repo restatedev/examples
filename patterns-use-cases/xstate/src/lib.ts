@@ -21,11 +21,7 @@ import {
 } from "xstate";
 import * as restate from "@restatedev/restate-sdk";
 import { TerminalError } from "@restatedev/restate-sdk";
-import { promiseMethods } from "./promise";
-import {
-  AreAllImplementationsAssumedToBeProvided,
-  MissingImplementationsError,
-} from "xstate/dist/declarations/src/typegenTypes";
+import { promiseService } from "./promise";
 
 export interface RestateActorSystem<T extends ActorSystemInfo>
   extends ActorSystem<T> {
@@ -43,7 +39,7 @@ export interface RestateActorSystem<T extends ActorSystemInfo>
     event: AnyEventObject
   ) => void;
   api: XStateApi<ActorLogicFrom<T>>;
-  ctx: restate.KeyedContext;
+  ctx: restate.ObjectContext;
   systemName: string;
 }
 
@@ -76,8 +72,8 @@ type SerialisableScheduledEvent = {
   uuid: string;
 };
 
-async function createSystem<T extends ActorSystemInfo>(
-  ctx: restate.KeyedContext,
+async function createSystem<P extends string, T extends ActorSystemInfo>(
+  ctx: restate.ObjectContext,
   api: XStateApi<ActorLogicFrom<T>>,
   systemName: string
 ): Promise<RestateActorSystem<T>> {
@@ -90,7 +86,7 @@ async function createSystem<T extends ActorSystemInfo>(
   const children = new Map<string, AnyActorRef>();
   const keyedActors = new Map<keyof T["actors"], AnyActorRef | undefined>();
   const reverseKeyedActors = new WeakMap<AnyActorRef, keyof T["actors"]>();
-  const observers = new Set<Observer<InspectionEvent>>();
+  const observers = new Set<Observer<InspectionEvent> | ((inspectionEvent: InspectionEvent) => void)>();
 
   const scheduler = {
     schedule(
@@ -143,8 +139,8 @@ async function createSystem<T extends ActorSystemInfo>(
       events[scheduledEventId] = scheduledEvent;
 
       ctx
-        .sendDelayed(api.actor, delay)
-        .send(systemName, { scheduledEvent, source, target, event });
+        .objectSendClient(api.actor, systemName, { delay })
+        .send({ scheduledEvent, source, target, event });
       ctx.set("events", events);
     },
     cancel(source: AnyActorRef, id: string): void {
@@ -209,7 +205,13 @@ async function createSystem<T extends ActorSystemInfo>(
         ...event,
         rootId: "root",
       };
-      observers.forEach((observer) => observer.next?.(resolvedInspectionEvent));
+      observers.forEach((observer) => {
+        if (typeof observer == "function") {
+          observer(resolvedInspectionEvent)
+        } else {
+          observer.next?.(resolvedInspectionEvent);
+        }
+      });
     },
     actor: (sessionId) => {
       return children.get(sessionId);
@@ -230,6 +232,9 @@ async function createSystem<T extends ActorSystemInfo>(
     },
     inspect: (observer) => {
       observers.add(observer);
+      return {unsubscribe: () => {
+        observers.delete(observer)
+      }}
     },
     _relay: (source, target, event) => {
       console.log(
@@ -249,6 +254,15 @@ async function createSystem<T extends ActorSystemInfo>(
       };
     },
     start: () => {},
+    _logger: (...args) => ctx.console.log(...args),
+    _clock: {
+      setTimeout(fn, timeout) {
+        throw new Error("clock should be unused")
+      },
+      clearTimeout(id) {
+        throw new Error("clock should be unused")
+      }
+    }
   };
 
   return system;
@@ -259,16 +273,10 @@ interface FakeParent<TLogic extends AnyStateMachine> extends AnyActorRef {
 }
 
 export async function createActor<TLogic extends AnyStateMachine>(
-  ctx: restate.KeyedContext,
+  ctx: restate.ObjectContext,
   api: XStateApi<TLogic>,
   systemName: string,
-  logic: TLogic extends AnyStateMachine
-    ? AreAllImplementationsAssumedToBeProvided<
-        TLogic["__TResolvedTypesMeta"]
-      > extends true
-      ? TLogic
-      : MissingImplementationsError<TLogic["__TResolvedTypesMeta"]>
-    : TLogic,
+  logic: TLogic,
   options?: ActorOptions<TLogic>
 ): Promise<Actor<TLogic>> {
   const system = await createSystem(ctx, api, systemName);
@@ -291,6 +299,7 @@ export async function createActor<TLogic extends AnyStateMachine>(
       };
     }, // TODO
     stop: () => {}, // TODO
+    on: () => { return {unsubscribe: () => {}} }, // TODO
     system,
     src: "fakeRoot",
     subscribe: (): Subscription => {
@@ -322,113 +331,118 @@ export async function createActor<TLogic extends AnyStateMachine>(
   } as any);
 }
 
-const actorMethods = <TLogic extends AnyStateMachine>(
+const actorObject = <TLogic extends AnyStateMachine>(
   path: string,
   logic: TLogic
 ) => {
   const api = xStateApi(path);
 
-  return {
-    create: async (
-      ctx: restate.KeyedContext,
-      systemName: string,
-      request?: { input?: InputFrom<TLogic> }
-    ): Promise<Snapshot<unknown>> => {
-      ctx.clear("snapshot");
-      ctx.clear("events");
-      ctx.clear("children");
+  return restate.object({
+    name: path,
+    handlers: {
+      create: async (
+        ctx: restate.ObjectContext,
+        request?: { input?: InputFrom<TLogic> }
+      ): Promise<Snapshot<unknown>> => {
+        const systemName = ctx.key;
 
-      const root = (
-        await createActor(ctx, api, systemName, logic, {
-          input: request?.input,
-        })
-      ).start();
+        ctx.clear("snapshot");
+        ctx.clear("events");
+        ctx.clear("children");
 
-      ctx.set("snapshot", root.getPersistedSnapshot());
+        const root = (
+          await createActor(ctx, api, systemName, logic, {
+            input: request?.input,
+          })
+        ).start();
 
-      return root.getPersistedSnapshot();
-    },
-    send: async (
-      ctx: restate.KeyedContext,
-      systemName: string,
-      request?: {
-        scheduledEvent?: SerialisableScheduledEvent;
-        source?: SerialisableActorRef;
-        target?: SerialisableActorRef;
-        event: AnyEventObject;
-      }
-    ): Promise<Snapshot<unknown> | undefined> => {
-      if (!request) {
-        throw new TerminalError("Must provide a request");
-      }
+        ctx.set("snapshot", root.getPersistedSnapshot());
 
-      if (request.scheduledEvent) {
-        const events =
-          (await ctx.get<{ [key: string]: SerialisableScheduledEvent }>(
-            "events"
-          )) ?? {};
-        const scheduledEventId = createScheduledEventId(
-          request.scheduledEvent.source,
-          request.scheduledEvent.id
+        return root.getPersistedSnapshot();
+      },
+      send: async (
+        ctx: restate.ObjectContext,
+        request?: {
+          scheduledEvent?: SerialisableScheduledEvent;
+          source?: SerialisableActorRef;
+          target?: SerialisableActorRef;
+          event: AnyEventObject;
+        }
+      ): Promise<Snapshot<unknown> | undefined> => {
+        const systemName = ctx.key;
+
+        if (!request) {
+          throw new TerminalError("Must provide a request");
+        }
+
+        if (request.scheduledEvent) {
+          const events =
+            (await ctx.get<{ [key: string]: SerialisableScheduledEvent }>(
+              "events"
+            )) ?? {};
+          const scheduledEventId = createScheduledEventId(
+            request.scheduledEvent.source,
+            request.scheduledEvent.id
+          );
+          if (!(scheduledEventId in events)) {
+            console.log(
+              "Received now cancelled event",
+              scheduledEventId,
+              "for target",
+              request.target
+            );
+            return;
+          }
+          if (events[scheduledEventId].uuid !== request.scheduledEvent.uuid) {
+            console.log(
+              "Received now replaced event",
+              scheduledEventId,
+              "for target",
+              request.target
+            );
+            return;
+          }
+          delete events[scheduledEventId];
+          ctx.set("events", events);
+        }
+
+        const root = (await createActor(ctx, api, systemName, logic)).start();
+
+        let actor;
+        if (request.target) {
+          actor = (root.system as RestateActorSystem<any>).actor(
+            request.target.sessionId
+          );
+          if (!actor) {
+            throw new TerminalError(
+              `Actor ${request.target.id} not found; it may have since stopped`
+            );
+          }
+        } else {
+          actor = root;
+        }
+
+        (root.system as RestateActorSystem<any>)._relay(
+          request.source,
+          actor,
+          request.event
         );
-        if (!(scheduledEventId in events)) {
-          console.log(
-            "Received now cancelled event",
-            scheduledEventId,
-            "for target",
-            request.target
-          );
-          return;
-        }
-        if (events[scheduledEventId].uuid !== request.scheduledEvent.uuid) {
-          console.log(
-            "Received now replaced event",
-            scheduledEventId,
-            "for target",
-            request.target
-          );
-          return;
-        }
-        delete events[scheduledEventId];
-        ctx.set("events", events);
-      }
 
-      const root = (await createActor(ctx, api, systemName, logic)).start();
+        const nextSnapshot = root.getPersistedSnapshot();
+        ctx.set("snapshot", nextSnapshot);
 
-      let actor;
-      if (request.target) {
-        actor = (root.system as RestateActorSystem<any>).actor(
-          request.target.sessionId
-        );
-        if (!actor) {
-          throw new TerminalError(
-            `Actor ${request.target.id} not found; it may have since stopped`
-          );
-        }
-      } else {
-        actor = root;
-      }
+        return nextSnapshot;
+      },
+      snapshot: async (
+        ctx: restate.ObjectContext,
+        systemName: string
+      ): Promise<Snapshot<unknown>> => {
+        const root = await createActor(ctx, api, systemName, logic);
 
-      (root.system as RestateActorSystem<any>)._relay(
-        request.source,
-        actor,
-        request.event
-      );
-
-      const nextSnapshot = root.getPersistedSnapshot();
-      ctx.set("snapshot", nextSnapshot);
-
-      return nextSnapshot;
+        return root.getPersistedSnapshot();
+      },
     },
-    snapshot: async (
-      ctx: restate.KeyedContext,
-      systemName: string
-    ): Promise<Snapshot<unknown>> => {
-      const root = await createActor(ctx, api, systemName, logic);
-
-      return root.getPersistedSnapshot();
-    },
-  };
+  })
 };
 
 export const bindXStateRouter = <TLogic extends AnyStateMachine>(
@@ -437,32 +451,25 @@ export const bindXStateRouter = <TLogic extends AnyStateMachine>(
   logic: TLogic
 ): restate.RestateEndpoint => {
   return server
-    .bindKeyedRouter(path, restate.keyedRouter(actorMethods(path, logic)))
-    .bindRouter(
-      `${path}.promises`,
-      restate.router(promiseMethods(path, logic))
-    );
+    .bind(actorObject(path, logic))
+    .bind(promiseService(path, logic))
 };
 
 export const xStateApi = <TLogic extends AnyStateMachine>(
   path: string
 ): XStateApi<TLogic> => {
-  const actor: restate.ServiceApi<ActorRouter<TLogic>> = { path };
-  const promise: restate.ServiceApi<PromiseRouter<TLogic>> = {
-    path: `${path}.promises`,
+  const actor: ActorObject<TLogic> = { name: path };
+  const promise: PromiseService<TLogic> = {
+    name: `${path}.promises`,
   };
   return { actor, promise };
 };
 
-type ActorRouter<TLogic extends AnyStateMachine> = restate.KeyedRouter<
-  ReturnType<typeof actorMethods<TLogic>>
->;
-type PromiseRouter<TLogic extends AnyStateMachine> = restate.UnKeyedRouter<
-  ReturnType<typeof promiseMethods<TLogic>>
->;
+type ActorObject<TLogic extends AnyStateMachine> = ReturnType<typeof actorObject<TLogic>>;
+type PromiseService<TLogic extends AnyStateMachine> = ReturnType<typeof promiseService<TLogic>>;
 type XStateApi<TLogic extends AnyStateMachine> = {
-  actor: restate.ServiceApi<ActorRouter<TLogic>>;
-  promise: restate.ServiceApi<PromiseRouter<TLogic>>;
+  actor: ActorObject<TLogic>;
+  promise: PromiseService<TLogic>;
 };
 
 function createScheduledEventId(
