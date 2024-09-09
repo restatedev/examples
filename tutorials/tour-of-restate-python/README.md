@@ -27,7 +27,7 @@ pip install -r requirements.txt
 Start the app as follows:
 
 ```shell
-python3 -m hypercorn -b localhost:9080 tour/app/app:app
+python -m hypercorn --config hypercorn-config.toml tour/app/app:app
 ```
 
 Start the Restate Server ([other options here](https://docs.restate.dev/develop/local_dev)):
