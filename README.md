@@ -73,10 +73,10 @@ challenges.
 
 ### Python
 
-| Type      | Name / Link                                                                           |
-|-----------|---------------------------------------------------------------------------------------|
-| Templates | [Python Template](templates/python)                                                   |
-| Use Cases | [Ticket reservation](patterns-use-cases/ticket-reservation/ticket-reservation-python) |
+| Type      | Name / Link                                         |
+|-----------|-----------------------------------------------------|
+| Templates | [Python Template](templates/python)                 |
+| Tutorial  | [Tour of Restate](tutorials/tour-of-restate-python) |
 
 ### Go
 
