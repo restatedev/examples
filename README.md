@@ -86,6 +86,12 @@ challenges.
 | Tutorial  | [Tour of Restate](tutorials/tour-of-restate-go) |
 | Tutorial  | [Restate + Knative](tutorials/knative-go)       |
 
+### Rust
+
+| Type      | Name / Link                                     |
+|-----------|-------------------------------------------------|
+| Templates | [Rust Template](templates/rust)                     |
+
 ## Joining the community
 
 If you want to join the Restate community in order to stay up to date, then please join our [Discord](https://discord.gg/skW3AZ6uGd).
