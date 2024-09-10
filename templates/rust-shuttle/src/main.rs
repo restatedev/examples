@@ -21,7 +21,7 @@ impl Greeter for GreeterImpl {
 async fn main() -> Result<RestateShuttleEndpoint, shuttle_runtime::Error> {
     Ok(RestateShuttleEndpoint::new(
         Endpoint::builder()
-            .with_service(GreeterImpl.serve())
+            .bind(GreeterImpl.serve())
             .build(),
     ))
 }
