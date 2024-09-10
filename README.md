@@ -88,9 +88,10 @@ challenges.
 
 ### Rust
 
-| Type      | Name / Link                                     |
-|-----------|-------------------------------------------------|
-| Templates | [Rust Template](templates/rust)                     |
+| Type      | Name / Link                                          |
+|-----------|------------------------------------------------------|
+| Templates | [Rust Template](templates/rust)                      |
+| Templates | [Rust - Shuttle.rs Template](templates/rust-shuttle) |
 
 ## Joining the community
 

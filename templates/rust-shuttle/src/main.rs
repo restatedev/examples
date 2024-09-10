@@ -1,5 +1,9 @@
 use restate_sdk::prelude::*;
 
+// Restate shuttle integration
+mod restate_shuttle;
+use restate_shuttle::RestateShuttleEndpoint;
+
 #[restate_sdk::service]
 trait Greeter {
     async fn greet(name: String) -> HandlerResult<String>;
@@ -13,16 +17,11 @@ impl Greeter for GreeterImpl {
     }
 }
 
-#[tokio::main]
-async fn main() {
-    // To enable logging
-    tracing_subscriber::fmt::init();
-
-    HttpServer::new(
+#[shuttle_runtime::main]
+async fn main() -> Result<RestateShuttleEndpoint, shuttle_runtime::Error> {
+    Ok(RestateShuttleEndpoint::new(
         Endpoint::builder()
             .bind(GreeterImpl.serve())
             .build(),
-    )
-        .listen_and_serve("0.0.0.0:9080".parse().unwrap())
-        .await;
+    ))
 }

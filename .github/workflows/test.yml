@@ -18,6 +18,7 @@ jobs:
         with:
           components: clippy
           rustflags: ""
+      - uses: Swatinem/rust-cache@v2
       - name: Run tests
         run: ./.tools/run_rust_tests.sh
 
