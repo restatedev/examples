@@ -3,7 +3,7 @@
 Build the project with Maven:
 
 ```bash
-mvn clean install compile package
+mvn clean install
 ```
 
 
