@@ -1,0 +1,27 @@
+version: '3'
+services:
+  greeter:
+    container_name: greeter
+    build: .
+    ports:
+      - "9080:9080"
+
+  runtime:
+    image: docker.io/restatedev/restate:1.0.2
+    depends_on:
+      - greeter
+    ports:
+      - "9070:9070"
+      - "9071:9071"
+      - "8080:8080"
+
+  runtimesetup:
+    image: alpine
+    depends_on:
+      - runtime
+    restart: "no"
+    entrypoint: ["sh", "-c", "-x", "apk add --no-cache bash jq curl &&
+    sleep 5 &&
+    echo '-w \"\\n\"' >> ~/.curlrc &&
+    curl -i -s --fail -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://greeter:9080\"}' &&
+    exit 1"]
