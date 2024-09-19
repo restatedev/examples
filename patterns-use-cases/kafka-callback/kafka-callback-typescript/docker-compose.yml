@@ -1,0 +1,59 @@
+---
+services:
+  kafka:
+    image: "bitnami/kafka:3.3.1"
+    environment:
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9094
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_BROKER_ID=1
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_KRAFT_CLUSTER_ID=r4zt_wrqTRuT7W2NJsB_GA
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+    healthcheck:
+      test: /opt/bitnami/kafka/bin/kafka-cluster.sh cluster-id --bootstrap-server kafka:9092 || exit 1
+      interval: 2s
+      timeout: 60s
+      retries: 60
+
+    ports:
+      - 9092:9092
+
+  init-kafka:
+    image: "bitnami/kafka:3.3.1"
+    working_dir: /opt/bitnami/kafka/bin
+    entrypoint: /bin/bash
+    depends_on:
+      kafka:
+        condition: service_healthy
+    command: |
+      kafka-topics.sh --create --if-not-exists --topic callback-topic --replication-factor=1 --partitions=3 --bootstrap-server kafka:9092
+
+  services:
+    depends_on:
+      kafka:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      KAFKAJS_NO_PARTITIONER_WARNING: "1"
+    develop:
+      watch:
+        - path: .
+          action: rebuild
+          ignore:
+            - node_modules
+            - README.md
+            - docker-compose.yml
+  restate:
+    image: "restatedev/restate:1.1.2"
+    environment:
+      RESTATE_INGRESS__KAFKA_CLUSTERS: '[{name="main", brokers=["PLAINTEXT://kafka:9092"]}]'
+    ports:
+      - 9070:9070
+      - 8080:8080
