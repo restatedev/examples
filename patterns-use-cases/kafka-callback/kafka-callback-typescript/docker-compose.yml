@@ -54,6 +54,13 @@ services:
     image: "restatedev/restate:1.1.2"
     environment:
       RESTATE_INGRESS__KAFKA_CLUSTERS: '[{name="main", brokers=["PLAINTEXT://kafka:9092"]}]'
+    healthcheck:
+      interval: 2s
+      timeout: 60s
+      retries: 10
+      test: |
+        which curl > /dev/null || (apt-get update && apt-get install -y curl)
+        curl --silent --fail 127.0.0.1:9070/health
     ports:
       - 9070:9070
       - 8080:8080
