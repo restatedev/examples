@@ -14,8 +14,8 @@
     "test": "DEBUG=testcontainers,testcontainers:exec,testcontainers:containers jest --maxWorkers=1 --detectOpenHandles"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.3.0",
-    "@restatedev/restate-sdk-clients": "^1.3.0"
+    "@restatedev/restate-sdk": "^1.3.2",
+    "@restatedev/restate-sdk-clients": "^1.3.2"
   },
   "devDependencies": {
     "@types/jest": "^29.4.0",
