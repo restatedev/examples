@@ -63,12 +63,13 @@ challenges.
 
 ### Kotlin
 
-| Type       | Name / Link                                                             |
-|------------|-------------------------------------------------------------------------|
-| Templates  | [Template using Gradle](templates/kotlin-gradle)                        |
-| Basics     | [Durable Execution, Event-processing, Virtual Objects](basics/basics-kotlin) |
-| Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-kotlin)                          |
-| End-to-End | [Food Ordering App](end-to-end-applications/kotlin/food-ordering)       |
+| Type       | Name / Link                                                                                     |
+|------------|-------------------------------------------------------------------------------------------------|
+| Templates  | [Template using Gradle](templates/kotlin-gradle)                                                |
+| Basics     | [Durable Execution, Event-processing, Virtual Objects](basics/basics-kotlin)                    |
+| Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-kotlin)                                                  |
+| End-to-End | [Food Ordering App](end-to-end-applications/kotlin/food-ordering)                               |
+| End-to-End | [Todos Kotlin Multiplatform + Android app](end-to-end-applications/kotlin/kmp-android-todo-app) |
 
 
 ### Python
