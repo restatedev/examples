@@ -8,6 +8,7 @@ Common tasks and patterns implemented with Restate:
 - **[Webhook Callbacks](README.md#webhook-callbacks)**: Point webhook callbacks to a Restate handler for durable event processing. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/webhookcallbacks/webhook_callback_router.ts)
 - **[Database Interaction Patterns](README.md#database-interaction-patterns)**: Recommended approaches for reading from and writing to databases using Restate handlers. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/database/main.ts)
 - **[Convert Sync Tasks to Async](README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/syncasync/client.ts)
+- **[Batching](README.md#batching)**: Group RPCs into batches of a particular size, subject to a max wait time [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/batching/batcher.ts)
 - **[Payments signals (Advanced)](README.md#payment-signals)**: Combining fast synchronous responses and slow async callbacks for payments, with Stripe. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/signalspayments/payment_service.ts)
 
 #### Orchestration patterns
@@ -33,7 +34,7 @@ First, install the dependencies:
 
 ```shell
 npm install
-``` 
+```
 
 ## Durable RPC, Idempotency & Concurrency
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/durablerpc/express_app.ts)
@@ -72,7 +73,7 @@ This will give us `false` because this product is already reserved, so we can't 
 However, if we run the first request again with same reservation ID, we will get `true` again:
 ```shell
 curl -X POST localhost:5050/reserve/product1/reservation1
-``` 
+```
 Restate deduplicated the request (with the reservation ID as idempotency key) and returned the first response.
 
 </details>
@@ -200,7 +201,35 @@ Run the upload client with a userId: `npx tsx ./src/syncasync/client.ts`
 This will submit an upload workflow to the data upload service.
 The workflow will run only once per ID, so you need to provide a new ID for each run.
 
-Have a look at the logs to see how the execution switches from synchronously waiting to the response to requesting an email:
+Have a look at the logs to see how the execution switches from synchronously waiting to the response to requesting an email.
+
+</details>
+
+## Batching
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/batching/batcher.ts)
+
+This example shows how to group events into batches, subject to a maximum 'linger' period after which undersized batches will be sent.
+
+A client submits items to the `receive` handler of the `batcher` object, which adds them to its state.
+If the number of items hits a configured limit (in this case 10), the batch will be sent off to its real destination,
+the `batchReceiver` object. If an expiration timer fires before the batch size is reached, an undersized batch is sent.
+
+<details>
+<summary><strong>Running the example</strong></summary>
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `npx tsx watch ./src/batching/batcher.ts`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+Submit some work to be batched:
+```shell
+# add one item
+curl localhost:8080/batcher/myKey/receive -H 'content-type: application/json' -d '123'
+# add lots
+for i in $(seq 1 31); do curl localhost:8080/batcher/myKey/receive -H 'content-type: application/json' -d "$i"; done
+```
+
+Have a look at the service logs to see how your messages are grouped together into batches.
 
 </details>
 
@@ -297,7 +326,7 @@ Note that the compensating actions need to be idempotent.
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the service: `npx tsx watch ./src/sagas/booking_workflow.ts`
-3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080` 
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 Have a look at the logs to see how the compensations run in case of a terminal error.
 
@@ -478,16 +507,16 @@ restate kv get payments my-payment-id
 Service  payments
 Key      my-payment-id
 
-KEY      VALUE                 
-payment  {                     
+KEY      VALUE
+payment  {
 "accountId": "abc",
-"amountCents": 100  
-}                     
+"amountCents": 100
+}
 status   "CANCELLED"
 ```
 
 </details>
-</details> 
+</details>
 
 ## Scheduling Tasks
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/schedulingtasks/payment_reminders.ts)
@@ -706,24 +735,24 @@ You can see how the state was enriched by the initial RPC event and the subseque
 ```
 🤖 State:
 ―――――――――
-                          
- Service  package-tracker 
- Key      package123       
 
- KEY           VALUE                                            
- package-info  {                                                
-                  "finalDestination": "Bridge 6, Amsterdam",  
-                  "locations": [                                 
-                    {                                            
-                      "location": "Pinetree Road 5, Paris",      
-                      "timestamp": "2024-10-10 13:00"            
-                    },                                            
-                    {                                            
-                      "location": "Mountain Road 155, Brussels", 
-                      "timestamp": "2024-10-10 14:00"            
-                    }                                            
-                  ]                                              
-                }  
+ Service  package-tracker
+ Key      package123
+
+ KEY           VALUE
+ package-info  {
+                  "finalDestination": "Bridge 6, Amsterdam",
+                  "locations": [
+                    {
+                      "location": "Pinetree Road 5, Paris",
+                      "timestamp": "2024-10-10 13:00"
+                    },
+                    {
+                      "location": "Mountain Road 155, Brussels",
+                      "timestamp": "2024-10-10 14:00"
+                    }
+                  ]
+                }
 ```
 
 </details>
@@ -798,7 +827,7 @@ The Durable Promises are a simple application implemented on top of Restate, mak
 use of Restate's Virtual Objects. You can use this simple implementation and add it
 to your application or infra as a self-contained piece.
 
-### Running the example 
+### Running the example
 
 * Start Restate in one shell: `restate-server`
 * Start the Durable Promises implementation in another shell: `npx tsx watch ./src/promiseasaservice/dp/runner.ts 9080`
@@ -810,14 +839,14 @@ because this here is only an example/playground, not a production setup._
 You can now await and resolve promises from different processes at different times.
 With via simple HTTP calls (see above) or the TypeScript API.
 
-You can start the bundled examples via 
+You can start the bundled examples via
 - `npx tsx ./src/promiseasaservice/1_example.ts`
 - `npx tsx ./src/promiseasaservice/2_example_process.ts`
 - `npx tsx ./src/promiseasaservice/3_example_parallel_processes.ts`
 - `npx tsx ./src/promiseasaservice/4_example.ts`,
 optionally passing `[promise-id] [restateUri]` as parameters.
 
-</details> 
+</details>
 
 ## Priority queue
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/priorityqueue)

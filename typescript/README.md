@@ -23,6 +23,7 @@ Common tasks and patterns implemented with Restate:
 - **[Webhook Callbacks](patterns-use-cases/README.md#webhook-callbacks)**: Point webhook callbacks to a Restate handler for durable event processing. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/src/webhookcallbacks/webhook_callback_router.ts)
 - **[Database Interaction Patterns](patterns-use-cases/README.md#database-interaction-patterns)**: Recommended approaches for reading from and writing to databases using Restate handlers. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/src/database/main.ts)
 - **[Convert Sync Tasks to Async](patterns-use-cases/README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/src/syncasync/client.ts)
+- **[Batching](patterns-use-cases/README.md#batching)**: Group RPCs into batches of a particular size, subject to a max wait time [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/src/batching/batcher.ts)
 - **[Payments Signals (Advanced)](patterns-use-cases/README.md#payment-signals)**: Combining fast synchronous responses and slow async callbacks for payments, with Stripe. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/src/signalspayments/payment_service.ts)
 
 #### Orchestration patterns
@@ -65,7 +66,7 @@ Complete applications built with Restate:
 Starter templates for new projects:
 
 - **[Node Template](templates/node)**
-- **[Bun Template](templates/bun)** 
+- **[Bun Template](templates/bun)**
 - **[CloudFlare Workers Template](templates/cloudflare-worker)**
 - **[Deno Template](templates/deno)**
 - **[Next.js Template](templates/nextjs)**
@@ -75,6 +76,3 @@ Starter templates for new projects:
 Step-by-step guides to learn Restate:
 
 - **[Tour of Restate](tutorials/tour-of-restate-typescript)**: An introduction to the SDK features as described in the [documentation](https://docs.restate.dev/get_started/tour).
-
-
-
