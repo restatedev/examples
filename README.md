@@ -55,11 +55,11 @@ challenges.
 | Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-java)                                                   |
 | Use Cases  | [Payment Service](patterns-use-cases/payment-state-machine/payment-state-machine-java/)  |
 | Use Cases  | [Async Tasks - Payments](patterns-use-cases/async-signals-payment/async-signals-payment-java/) |
-| Patterns   | [Java - Spring - Spring JPA - Restate example ](patterns-use-cases/integrations/java-spring)
+| Patterns   | [Spring & Spring JPA](patterns-use-cases/integrations/java-spring)
 | End-to-End | [Food Ordering App](end-to-end-applications/java/food-ordering)                                |
 | Tutorial   | [Tour of Restate](tutorials/tour-of-restate-java/)                                             |
-| Templates  | [Template using Gradle](templates/java-gradle)                                                 |
-| Templates  | [Template using Maven](templates/java-maven)                                                   |
+| Templates  | [Gradle Template](templates/java-gradle)                                                 |
+| Templates  | [Maven Template](templates/java-maven)                                                   |
 
 ### Kotlin
 
