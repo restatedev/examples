@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">RestateTodoDemo</string>
+    <string name="todo_input_bar_hint">Write your todo</string>
+</resources>
