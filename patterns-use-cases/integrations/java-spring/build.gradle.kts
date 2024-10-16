@@ -9,7 +9,7 @@ plugins {
 group = "dev.restate.examples"
 version = "0.0.1-SNAPSHOT"
 
-val restateVersion = "1.1.0"
+val restateVersion = "1.1.1"
 
 java {
 	toolchain {
