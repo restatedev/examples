@@ -8,7 +8,7 @@ repositories {
   mavenCentral()
 }
 
-val restateVersion = "1.1.0"
+val restateVersion = "1.1.1"
 
 dependencies {
   annotationProcessor("dev.restate:sdk-api-gen:$restateVersion")
