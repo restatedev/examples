@@ -9,7 +9,7 @@
     "app-dev": "ts-node-dev --watch ./src --transpile-only ./src/payment_handler.ts"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.3.2",
+    "@restatedev/restate-sdk": "^1.3.3",
     "stripe": "^14.15.0"
   },
   "devDependencies": {
