@@ -1,4 +1,4 @@
-import { Context, endpoint, service } from "@restatedev/restate-sdk/fetch";
+import { Context, endpoint, service } from "@restatedev/restate-sdk-cloudflare-workers/fetch";
 
 // Template of a Restate service and handler
 //
