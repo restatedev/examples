@@ -37,14 +37,15 @@ async function prepareRestateTestContainer(
     restateServerPort: number
 ): Promise<StartedTestContainer> {
     const restateContainer = new GenericContainer(
-        "docker.io/restatedev/restate:1.1.2"
+        "docker.io/restatedev/restate:1.1"
     )
         // Expose ports
         .withExposedPorts(8080, 9070)
         // Wait start on health checks
         .withWaitStrategy(
             Wait.forAll([
-                Wait.forHttp("/health", 9070),
+                Wait.forHttp("/restate/health", 8080),
+                Wait.forHttp("/health", 9070)
             ])
         );
 
