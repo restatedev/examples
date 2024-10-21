@@ -19,8 +19,10 @@ bump_ts_sdk $PROJECT_ROOT/templates/typescript
 bump_ts_sdk $PROJECT_ROOT/templates/typescript-testing
 bump_ts_sdk_clients $PROJECT_ROOT/templates/typescript-testing
 bump_ts_sdk $PROJECT_ROOT/templates/typescript-lambda-cdk
-bump_ts_sdk $PROJECT_ROOT/templates/cloudflare-worker
 bump_ts_sdk $PROJECT_ROOT/templates/bun
+
+# Cloudflare workers has a different module
+npm --prefix $PROJECT_ROOT/templates/cloudflare-worker install @restatedev/restate-sdk-cloudflare-workers@^$NEW_VERSION
 
 # deno bump - it doesn't use a package.json, only import strings
 # -i works differently in gnu sed and mac (bsd) sed - best avoided

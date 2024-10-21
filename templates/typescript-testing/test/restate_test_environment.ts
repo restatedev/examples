@@ -37,7 +37,7 @@ async function prepareRestateTestContainer(
     restateServerPort: number
 ): Promise<StartedTestContainer> {
     const restateContainer = new GenericContainer(
-        "docker.io/restatedev/restate:1.0.1"
+        "docker.io/restatedev/restate:1.1.2"
     )
         // Expose ports
         .withExposedPorts(8080, 9070)
