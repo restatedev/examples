@@ -51,15 +51,17 @@ challenges.
 
 | Type       | Name / Link                                                                                    |
 |------------|------------------------------------------------------------------------------------------------|
+| Templates  | [Maven Template](templates/java-maven)                                                         |
+| Templates  | [Maven - Spring Boot Template](templates/java-maven-spring-boot)                               |
+| Templates  | [Maven - Quarkus Template](templates/java-maven-quarkus)                                       |
+| Templates  | [Gradle Template](templates/java-gradle)                                                       |
 | Basics     | [Durable Execution, Event-processing, Virtual Objects](basics/basics-java)                     |
 | Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-java)                                                   |
-| Use Cases  | [Payment Service](patterns-use-cases/payment-state-machine/payment-state-machine-java/)  |
+| Use Cases  | [Payment Service](patterns-use-cases/payment-state-machine/payment-state-machine-java/)        |
 | Use Cases  | [Async Tasks - Payments](patterns-use-cases/async-signals-payment/async-signals-payment-java/) |
-| Patterns   | [Spring & Spring JPA](patterns-use-cases/integrations/java-spring)
+| Patterns   | [Spring & Spring JPA](patterns-use-cases/integrations/java-spring)                             |                        
 | End-to-End | [Food Ordering App](end-to-end-applications/java/food-ordering)                                |
 | Tutorial   | [Tour of Restate](tutorials/tour-of-restate-java/)                                             |
-| Templates  | [Gradle Template](templates/java-gradle)                                                 |
-| Templates  | [Maven Template](templates/java-maven)                                                   |
 
 ### Kotlin
 
