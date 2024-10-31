@@ -20,6 +20,7 @@
   "devDependencies": {
     "@types/jest": "^29.4.0",
     "@types/node": "^20.14.2",
+    "apache-arrow": "^18.0.0",
     "esbuild": "^0.21.5",
     "testcontainers": "^10.4.0",
     "ts-jest": "^29.0.5",

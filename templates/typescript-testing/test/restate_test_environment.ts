@@ -6,6 +6,7 @@ import {
     TestContainers,
     Wait,
 } from "testcontainers";
+import { tableFromIPC } from "apache-arrow";
 import * as http2 from "http2";
 import * as net from "net";
 
@@ -107,6 +108,68 @@ export class RestateTestEnvironment {
         return `http://${this.startedRestateContainer.getHost()}:${this.startedRestateContainer.getMappedPort(
             9070
         )}`;
+    }
+
+    public async setState(
+      service: restate.VirtualObjectDefinition<any, any> | restate.WorkflowDefinition<any, any>,
+      key: string, 
+      newState: {[key: string]: any}) {
+      const res = await fetch(
+          `${this.adminAPIBaseUrl()}/services/${service.name}/state`,
+          {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                  object_key: key,
+                  // the endpoint expects a map of key -> bytes as JSON array of numbers
+                  new_state: Object.fromEntries(Object.entries(newState).map(([key, value]) => {
+                    const valueJSON = new TextEncoder().encode(JSON.stringify(value))
+                    
+                    return [key, Array.from(valueJSON)]
+                  })),
+              }),
+          }
+      );
+
+      if (!res.ok) {
+          const badResponse = await res.text();
+          throw new Error(
+              `Error ${res.status} during modify state: ${badResponse}`
+          );
+      }
+    }
+
+    public async getState(
+      service: restate.VirtualObjectDefinition<any, any> | restate.WorkflowDefinition<any, any>,
+      key: string
+    ): Promise<{[key: string]: any}> {
+      const res = await fetch(
+          `${this.adminAPIBaseUrl()}/query`,
+          {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                  query: `SELECT key, value from state where service_name = '${service.name}' and service_key = '${key}';`,
+              }),
+          }
+      );
+
+      if (!res.ok) {
+          const badResponse = await res.text();
+          throw new Error(
+              `Error ${res.status} during read state: ${badResponse}`
+          );
+      }
+
+      const table = (await tableFromIPC(res)).toArray() as { key: string, value: Uint8Array }[];
+      
+      return Object.fromEntries(table.map(({key, value}) => {
+        return [key, JSON.parse(new TextDecoder().decode(value))]
+      }))
     }
 
     public async stop() {
