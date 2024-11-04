@@ -16,6 +16,6 @@ restate
     restate.service({
       name: "Greeter",
       handlers: { greet },
-    })
+    }),
   )
   .listen(9080);
