@@ -81,7 +81,7 @@ export async function tryApplyPermission(
   const { permissionKey, setting } = permission;
   maybeCrash(0.3); // sometimes infra goes away
 
-  if (setting !== "blocked") {
+  if (setting !== "block") {
     applicationError(
       0.4,
       `Could not apply permission ${permissionKey}:${setting} for user ${userId} due to a conflict.`

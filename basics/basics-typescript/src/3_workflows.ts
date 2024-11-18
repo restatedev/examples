@@ -29,7 +29,6 @@ const myWorkflow = restate.workflow({
   handlers: {
     run: async (ctx: restate.WorkflowContext, params: { name: string; email: string }) => {
       const {name, email} = params;
-      const userId = ctx.key;
 
       // publish state, for the world to see our progress
       ctx.set("stage", "Creating User");
@@ -41,7 +40,7 @@ const myWorkflow = restate.workflow({
 
       // send the email with the verification secret
       const secret = ctx.rand.uuidv4();
-      ctx.run(() => sendEmailWithLink({email, secret}));
+      await ctx.run(() => sendEmailWithLink({email, secret}));
 
       try {
         // the promise here is resolved or rejected by the additional workflow methods below
@@ -83,7 +82,12 @@ export type WorkflowApi = typeof myWorkflow;
 // ---------- ⬆️⬆️ deploy this as a container, lambda, etc. ⬆️⬆️ ----------
 
 // start it via an HTTP call.
-// `curl restate:8080/usersignup/signup-userid1/run/send --json '{ "name": "Bob", "email": "bob@builder.com" }'
+// curl localhost:8080/usersignup/signup-userid1/run/send --json '{ "name": "Bob", "email": "bob@builder.com" }'
+//
+// Resolve the email link via:
+// curl localhost:8080/usersignup/signup-userid1/verifyEmail
+// Abort the email verification via:
+// curl localhost:8080/usersignup/signup-userid1/abortVerification
 
 // or programmatically
 async function signupUser(userId: string, name: string, email: string) {

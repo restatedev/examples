@@ -46,7 +46,7 @@ const userUpdates = restate.object({
         // The other events for this Virtual Object / key are queued.
         // Events for other keys are processed concurrently.
         // The sleep suspends the function (e.g., when running on FaaS).
-        ctx.sleep(5_000);
+        await ctx.sleep(5_000);
         userId = await ctx.run(() => updateUserProfile(profile));
       }
 
