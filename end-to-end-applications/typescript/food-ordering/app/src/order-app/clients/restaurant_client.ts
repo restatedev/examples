@@ -16,31 +16,14 @@ const RESTAURANT_ENDPOINT =
 const RESTAURANT_TOKEN = process.env.RESTAURANT_TOKEN;
 
 export interface RestaurantClient {
-    create(orderId: string, cb: string): Promise<void>;
-    cancel(orderId: string, cb: string): Promise<void>;
-    prepare(orderId: string, cb: string): Promise<void>;
+    prepare(orderId: string): Promise<void>;
 }
 
 class RestaurantClientImpl implements RestaurantClient {
-    async create(orderId: string, cb: string) {
-        await this.send(orderId, cb, "create");
-    }
-
-    async cancel(orderId: string, cb: string) {
-        await this.send(orderId, cb, "cancel");
-    }
-
-    async prepare(orderId: string, cb: string) {
-        await this.send(orderId, cb, "prepare");
-    }
-
-    async send(orderId: string, cb: string, path: string) {
+    async prepare(orderId: string) {
         await axios.post(
-            `${RESTAURANT_ENDPOINT}/${path}`,
-            {
-                cb,
-                orderId,
-            },
+            `${RESTAURANT_ENDPOINT}/prepare`,
+            { orderId },
             {
                 headers: {
                     "Content-Type": "application/json",

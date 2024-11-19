@@ -25,49 +25,24 @@ const app = express();
 const port = 5050;
 app.use(express.json());
 
-app.post("/create", (req: Request, res: Response) => {
-    console.info(`${logPrefix()} Creating order ${req.body.orderId}`);
-    res.sendStatus(200);
-
-    setTimeout(async () => {
-        console.info(`${logPrefix()}  Order ${req.body.orderId} accepted`);
-        console.info(`${logPrefix()}  Order ${req.body.orderId} created`);
-        await resolveCb(req.body.cb, true);
-    }, 50);
-});
-
 app.post("/prepare", (req: Request, res: Response) => {
+    const orderId = req.body.orderId
     console.info(
-        `${logPrefix()}  Started preparation of order ${
-            req.body.orderId
-        }; expected duration: 5 seconds`
+        `${logPrefix()} Started preparation of order ${orderId}; expected duration: 5 seconds`
     );
     res.sendStatus(200);
 
     setTimeout(async () => {
         console.info(
-            `${logPrefix()}  Order ${
-                req.body.orderId
-            } prepared and ready for shipping`
+            `${logPrefix()} Order ${orderId} prepared and ready for shipping`
         );
-        await resolveCb(req.body.cb);
+        await resolveCb(orderId);
     }, 5000);
 });
 
-app.post("/cancel", (req: Request, res: Response) => {
-    console.info(`${logPrefix()}  Cancelling order ${req.body.orderId}`);
-    res.sendStatus(200);
-
-    setTimeout(async () => {
-        console.info(`${logPrefix}  Order ${req.body.orderId} cancelled`);
-        await resolveCb(req.body.cb);
-    }, 50);
-});
-
-async function resolveCb(cb: string, payload?: boolean) {
+async function resolveCb(orderId: string) {
     await axios.post(
-      `${RESTATE_RUNTIME_ENDPOINT}/restate/a/${cb}/resolve`,
-      payload ?? {},
+      `${RESTATE_RUNTIME_ENDPOINT}/order-workflow/${orderId}/finishedPreparation`,
       {
         headers: {
           "Content-Type": "application/json",

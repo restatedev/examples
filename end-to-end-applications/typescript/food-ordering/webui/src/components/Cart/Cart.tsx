@@ -79,7 +79,7 @@ const Cart = () => {
     };
 
     const request = generateJsonReq();
-   
+
     const flow = async () => {
       closeCart();
       const checkedOutStatus = { checked_out: true };
@@ -88,7 +88,7 @@ const Cart = () => {
       console.info(request);
       await sendRequestToRestate({
         service: 'order-workflow',
-        method: 'create',
+        method: 'run',
         key: user!.user_id,
         data: JSON.stringify(request),
         bg: true,

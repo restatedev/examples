@@ -12,7 +12,7 @@
 import { object, ObjectContext, TerminalError } from "@restatedev/restate-sdk";
 import { DeliveryRequest, DriverStatus, Location } from "../types/types";
 
-import type { DriverDeliveryMatcher } from "../matcher/api";
+import type { DriverDeliveryMatcher } from "../driver_delivery_matcher/api";
 import type { DeliveryManager } from "../delivery_manager/api";
 
 /**
@@ -65,7 +65,7 @@ export default object({
 
       ctx
         .objectSendClient(DeliveryManagerObject, assignedDelivery.deliveryId)
-        .notifyDeliveryPickup(assignedDelivery.deliveryId);
+        .notifyDeliveryPickup();
     },
 
     // Called by driver's mobile app after delivery success.
@@ -79,7 +79,7 @@ export default object({
 
       ctx
         .objectSendClient(DeliveryManagerObject, assignedDelivery.deliveryId)
-        .notifyDeliveryDelivered(assignedDelivery.deliveryId);
+        .notifyDeliveryDelivered();
 
       ctx.set(DRIVER_STATUS, DriverStatus.IDLE);
     },
