@@ -1,0 +1,51 @@
+{
+  "name": "@restatedev/example-ecommerce-store-react-shopping-cart",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": "14.17.3"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk-clients": "^1.4.0",
+    "axios": "^0.26.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-scripts": "^5.0.0",
+    "react-spinners": "^0.13.8",
+    "react-twitter-widgets": "^1.11.0",
+    "styled-components": "^5.3.3",
+    "typescript": "^4.6.3",
+    "unique-names-generator": "^4.7.1",
+    "uuid": "^8.3.2"
+  },
+  "proxy": "http://localhost:3000/",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "format": "prettier --write \"**/*.+(ts|tsx|js|json|css)\""
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.2",
+    "@testing-library/react": "^13.0.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.4.1",
+    "@types/node": "^16.11.25",
+    "@types/react": "^17.0.43",
+    "@types/react-dom": "^17.0.14",
+    "@types/styled-components": "^5.1.23",
+    "@types/uuid": "^8.3.4",
+    "prettier": "^2.5.1"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
