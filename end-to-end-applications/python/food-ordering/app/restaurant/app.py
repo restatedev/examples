@@ -29,22 +29,18 @@ def prepare_order():
     print(f"{log_prefix()} Started preparation of order {order_id}; expected duration: 5 seconds", flush=True)
     response = jsonify({}), 200
 
-    # run this in the asyncio background
-    Thread(target=asyncio.run, args=(resolve_cb(order_id),)).start()
-
-    print("Responding", flush=True)
+    resolve_cb(order_id)
     return response
 
 
-async def resolve_cb(order_id):
-    await asyncio.sleep(5)
+def resolve_cb(order_id):
     print(f"{log_prefix()} Order {order_id} prepared and ready for shipping", flush=True)
     headers = {
         "Content-Type": "application/json",
     }
     if RESTATE_TOKEN:
         headers["Authorization"] = f"Bearer {RESTATE_TOKEN}"
-    requests.post(f"{RESTATE_RUNTIME_ENDPOINT}/order-workflow/{order_id}/finishedPreparation", headers=headers)
+    requests.post(f"{RESTATE_RUNTIME_ENDPOINT}/order-workflow/{order_id}/finishedPreparation/send?delay=5s", headers=headers)
 
 
 def log_prefix():
