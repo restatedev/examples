@@ -52,9 +52,9 @@ const greeterObject = restate.object({
 
 // you can call this now through http directly the following way
 
-example1: `curl localhost:8080/greeter/mary/greet   -H 'content-type: application/json' -d '{ "greeting" : "Hi" }'`;
-example2: `curl localhost:8080/greeter/barack/greet   -H 'content-type: application/json' -d '{"greeting" : "Hello" }'`;
-example3: `curl localhost:8080/greeter/mary/ungreet -H 'content-type: application/json' -d '{}'`;
+// example1: `curl localhost:8080/greeter/mary/greet -H 'content-type: application/json' -d '{ "greeting" : "Hi" }'`;
+// example2: `curl localhost:8080/greeter/barack/greet -H 'content-type: application/json' -d '{"greeting" : "Hello" }'`;
+// example3: `curl localhost:8080/greeter/mary/ungreet -H 'content-type: application/json' -d '{}'`;
 
 // --------------------------------- deploying --------------------------------
 
