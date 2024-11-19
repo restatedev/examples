@@ -79,6 +79,8 @@ challenges.
 | Type      | Name / Link                                         |
 |-----------|-----------------------------------------------------|
 | Templates | [Python Template](templates/python)                 |
+| Basics    | [Durable Execution, Event-processing, Virtual Objects](basics/basics-python) |
+| End-to-End | [Food Ordering App](end-to-end-applications/python/food-ordering) |
 | Tutorial  | [Tour of Restate](tutorials/tour-of-restate-python) |
 
 ### Go
