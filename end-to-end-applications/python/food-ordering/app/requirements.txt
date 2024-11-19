@@ -1,0 +1,5 @@
+hypercorn
+restate_sdk==0.4.1
+flask
+requests
+kafka-python
