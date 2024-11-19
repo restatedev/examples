@@ -43,3 +43,4 @@ create_release_zip end-to-end-applications/java/food-ordering java-food-ordering
 create_release_zip end-to-end-applications/kotlin/food-ordering kotlin-food-ordering
 create_release_zip end-to-end-applications/typescript/food-ordering typescript-food-ordering
 create_release_zip end-to-end-applications/typescript/ai-image-workflows typescript-ai-image-workflows
+create_release_zip end-to-end-applications/python/food-ordering python-food-ordering
