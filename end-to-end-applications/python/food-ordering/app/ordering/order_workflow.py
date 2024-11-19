@@ -52,7 +52,6 @@ async def run(ctx: WorkflowContext, order: Order):
     ctx.set("status", Status.SCHEDULING_DELIVERY)
 
     delivery_id = await ctx.run("delivery ID", lambda: str(uuid.uuid4()))
-
     ctx.object_send(delivery_manager.start, delivery_id, arg=order)
 
     await ctx.promise("driver_selected").value()
