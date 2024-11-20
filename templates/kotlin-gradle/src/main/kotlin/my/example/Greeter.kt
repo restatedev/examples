@@ -4,18 +4,22 @@ import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Service
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
 import dev.restate.sdk.kotlin.Context
+import dev.restate.sdk.kotlin.runBlock
+import kotlin.time.Duration.Companion.seconds
 
-/**
- * Template of a Restate service and handler
- * Have a look at the Kotlin QuickStart to learn how to run this: https://docs.restate.dev/get_started/quickstart?sdk=kotlin
- */
 @Service
 class Greeter {
 
   @Handler
-  suspend fun greet(ctx: Context, greeting: String): String {
+  suspend fun greet(ctx: Context, name: String): String {
+    // Durably execute a set of steps; resilient against failures
+    val greetingId = ctx.random().nextUUID().toString()
+    ctx.runBlock { sendNotification(greetingId, name) }
+    ctx.sleep(1.seconds)
+    ctx.runBlock { sendReminder(greetingId) }
 
-    return greeting
+    // Respond to caller
+    return "You said hi to $name!";
   }
 }
 
