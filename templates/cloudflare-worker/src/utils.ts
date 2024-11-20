@@ -3,7 +3,7 @@
 
 export function sendNotification(greetingId: string, name: string) {
   if (Math.random() < 0.5) {
-    // 30% chance of failure
+    // 50% chance of failure
     console.error(`Failed to send notification: ${greetingId} - ${name}`);
     throw new Error(`Failed to send notification ${greetingId} - ${name}`);
   }
@@ -12,7 +12,7 @@ export function sendNotification(greetingId: string, name: string) {
 
 export function sendReminder(greetingId: string) {
   if (Math.random() < 0.5) {
-    // 30% chance of failure
+    // 50% chance of failure
     console.error(`Failed to send reminder: ${greetingId}`);
     throw new Error(`Failed to send reminder: ${greetingId}`);
   }
