@@ -28,8 +28,8 @@ export default object({
       // if we have deliveries already waiting, assign those
       const pendingDeliveries = await ctx.get<PendingDelivery[]>(
         PENDING_DELIVERIES
-      );
-      if (pendingDeliveries && pendingDeliveries.length > 0) {
+      ) ?? [];
+      if (pendingDeliveries.length > 0) {
         const nextDelivery = pendingDeliveries.shift()!;
         ctx.set(PENDING_DELIVERIES, pendingDeliveries);
 
@@ -51,8 +51,8 @@ export default object({
       request: PendingDelivery
     ) => {
       // if a driver is available, assign the delivery right away
-      const availableDrivers = await ctx.get<string[]>(AVAILABLE_DRIVERS);
-      if (availableDrivers && availableDrivers.length > 0) {
+      const availableDrivers = await ctx.get<string[]>(AVAILABLE_DRIVERS) ?? [];
+      if (availableDrivers.length > 0) {
         // Remove driver from the pool
         const nextAvailableDriver = availableDrivers.shift()!;
         ctx.set(AVAILABLE_DRIVERS, availableDrivers);
