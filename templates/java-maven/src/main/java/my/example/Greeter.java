@@ -25,7 +25,7 @@ public class Greeter {
 
   @Handler
   public String greet(Context ctx, String greeting) {
-    return greeting;
+    return "Hello " + greeting;
   }
 
   public static void main(String[] args) {
