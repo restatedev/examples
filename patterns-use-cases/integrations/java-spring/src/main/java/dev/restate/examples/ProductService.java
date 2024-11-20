@@ -8,16 +8,20 @@ import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.Serde;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.serde.jackson.JacksonSerdes;
+import dev.restate.sdk.springboot.RestateVirtualObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component
-@VirtualObject
+@RestateVirtualObject
 public class ProductService {
 
-  @Autowired private ProductRepository productRepository;
+  private static final Serde<Product> productSerde = JacksonSerdes.of(Product.class);
 
-  private Serde<Product> productSerde = JacksonSerdes.of(Product.class);
+  private final ProductRepository productRepository;
+
+  public ProductService(ProductRepository productRepository) {
+    this.productRepository = productRepository;
+  }
 
   @Handler
   public Product getProductInformation(ObjectContext ctx) {

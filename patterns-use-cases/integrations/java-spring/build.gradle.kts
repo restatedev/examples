@@ -9,7 +9,7 @@ plugins {
 group = "dev.restate.examples"
 version = "0.0.1-SNAPSHOT"
 
-val restateVersion = "1.1.1"
+val restateVersion = "1.2.0"
 
 java {
 	toolchain {
@@ -31,15 +31,13 @@ dependencies {
 	implementation("org.springframework.boot", "spring-boot-starter-data-jpa")
 
 	// Restate SDK
-	implementation("dev.restate:sdk-api:$restateVersion")
-	implementation("dev.restate:sdk-http-vertx:$restateVersion")
-	// To use Jackson to read/write state entries (optional)
+	implementation("dev.restate:sdk-spring-boot-starter:$restateVersion")
 	implementation("dev.restate:sdk-serde-jackson:$restateVersion")
 
 	implementation("org.postgresql", "postgresql")
 
 	// Logging (optional)
-	implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+	implementation("org.apache.logging.log4j:log4j-core:2.24.1")
 }
 
 // Set main class

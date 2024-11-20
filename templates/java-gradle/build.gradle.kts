@@ -9,7 +9,7 @@ repositories {
   mavenCentral()
 }
 
-val restateVersion = "1.1.1"
+val restateVersion = "1.2.0"
 
 dependencies {
   annotationProcessor("dev.restate:sdk-api-gen:$restateVersion")
@@ -21,10 +21,18 @@ dependencies {
   implementation("dev.restate:sdk-serde-jackson:$restateVersion")
 
   // Logging (optional)
-  implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+  implementation("org.apache.logging.log4j:log4j-core:2.24.1")
+
+  testImplementation(platform("org.junit:junit-bom:5.11.3"))
+  testImplementation("org.junit.jupiter:junit-jupiter")
+  testImplementation("dev.restate:sdk-testing:$restateVersion")
 }
 
 // Set main class
 application {
   mainClass.set("my.example.Greeter")
+}
+
+tasks.named<Test>("test") {
+  useJUnitPlatform()
 }

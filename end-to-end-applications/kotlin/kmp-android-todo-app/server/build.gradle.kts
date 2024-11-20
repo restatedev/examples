@@ -11,7 +11,7 @@ version = "1.0.0"
 val restateVersion = "1.1.0"
 
 kotlin {
-    jvmToolchain(11)
+    jvmToolchain(17)
 }
 
 dependencies {
@@ -24,7 +24,7 @@ dependencies {
     implementation("dev.restate:sdk-api-kotlin:$restateVersion")
     implementation("dev.restate:sdk-http-vertx:$restateVersion")
 
-    implementation("org.apache.logging.log4j:log4j-core:2.23.0")
+    implementation("org.apache.logging.log4j:log4j-core:2.24.1")
 }
 
 application {

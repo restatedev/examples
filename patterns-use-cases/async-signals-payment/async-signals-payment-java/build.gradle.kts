@@ -8,7 +8,7 @@ repositories {
   mavenCentral()
 }
 
-val restateVersion = "1.1.1"
+val restateVersion = "1.2.0"
 
 dependencies {
   annotationProcessor("dev.restate:sdk-api-gen:$restateVersion")
@@ -31,7 +31,7 @@ dependencies {
   implementation("com.google.code.gson:gson:2.10.1")
 
   // Logging (optional)
-  implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+  implementation("org.apache.logging.log4j:log4j-core:2.24.1")
 }
 
 // Set main class

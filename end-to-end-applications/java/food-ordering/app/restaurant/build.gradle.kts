@@ -10,7 +10,7 @@ repositories {
     mavenCentral()
 }
 
-val restateVersion = "1.1.1"
+val restateVersion = "1.2.0"
 
 dependencies {
     // Kafka
@@ -24,7 +24,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
 
     // Logging (optional)
-    implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+    implementation("org.apache.logging.log4j:log4j-core:2.24.1")
 }
 
 

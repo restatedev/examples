@@ -13,16 +13,13 @@ package com.example.restatestarter;
 
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
-import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.springboot.RestateService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 /**
  * Template of a Restate service and handler.
  */
-@Component
-@Service
+@RestateService
 public class Greeter {
 
   @Value("${greetingPrefix}")
