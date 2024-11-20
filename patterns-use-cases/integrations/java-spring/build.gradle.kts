@@ -31,9 +31,7 @@ dependencies {
 	implementation("org.springframework.boot", "spring-boot-starter-data-jpa")
 
 	// Restate SDK
-	implementation("dev.restate:sdk-api:$restateVersion")
-	implementation("dev.restate:sdk-http-vertx:$restateVersion")
-	// To use Jackson to read/write state entries (optional)
+	implementation("dev.restate:sdk-spring-boot-starter:$restateVersion")
 	implementation("dev.restate:sdk-serde-jackson:$restateVersion")
 
 	implementation("org.postgresql", "postgresql")
