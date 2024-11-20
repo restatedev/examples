@@ -1,21 +1,23 @@
 import * as restate from "@restatedev/restate-sdk";
+import { sendNotification, sendReminder } from "./utils";
 
-// Template of a Restate service and handler
-//
-// Have a look at the TS QuickStart to learn how to run this: https://docs.restate.dev/get_started/quickstart?sdk=ts
-//
-
-const greet = async (ctx: restate.Context, greeting: string) => {
-  return `${greeting}!`;
-};
-
-// Create the Restate server to accept requests
 restate
   .endpoint()
   .bind(
     restate.service({
       name: "Greeter",
-      handlers: { greet },
+      handlers: {
+        greet: async (ctx: restate.Context, name: string) => {
+          // Durably execute a set of steps; resilient against failures
+          const greetingId = ctx.rand.uuidv4();
+          await ctx.run(() => sendNotification(greetingId, name));
+          await ctx.sleep(1000);
+          await ctx.run(() => sendReminder(greetingId));
+
+          // Respond to caller
+          return `You said hi to ${name}!`;
+        },
+      },
     }),
   )
   .listen(9080);
