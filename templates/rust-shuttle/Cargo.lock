@@ -1470,6 +1470,7 @@ version = "0.0.1"
 dependencies = [
  "hyper 1.4.1",
  "hyper-util",
+ "rand",
  "restate-sdk",
  "shuttle-runtime",
  "tokio",

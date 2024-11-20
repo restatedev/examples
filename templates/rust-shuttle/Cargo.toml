@@ -10,3 +10,4 @@ shuttle-runtime = "0.47.0"
 hyper = { version = "1.4", features = ["http1", "server"] }
 hyper-util = { version = "0.1.7", features = ["http1", "server", "server-graceful"] }
 tracing = "0.1"
+rand = "0.8.5"

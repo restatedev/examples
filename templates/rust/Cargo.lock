@@ -828,6 +828,7 @@ dependencies = [
 name = "restate-example"
 version = "0.0.1"
 dependencies = [
+ "rand",
  "restate-sdk",
  "tokio",
  "tracing-subscriber",

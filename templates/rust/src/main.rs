@@ -1,4 +1,8 @@
+mod utils;
+
 use restate_sdk::prelude::*;
+use std::time::Duration;
+use utils::{send_notification, send_reminder};
 
 #[restate_sdk::service]
 trait Greeter {
@@ -8,7 +12,20 @@ trait Greeter {
 struct GreeterImpl;
 
 impl Greeter for GreeterImpl {
-    async fn greet(&self, _: Context<'_>, name: String) -> HandlerResult<String> {
+    async fn greet(&self, mut ctx: Context<'_>, name: String) -> HandlerResult<String> {
+        // Durably execute a set of steps; resilient against failures
+        let greeting_id = ctx.rand_uuid().to_string();
+        ctx.run(|| async {
+            send_notification(&greeting_id, &name);
+            Ok(())
+        }).await?;
+        ctx.sleep(Duration::from_millis(1000)).await?;
+        ctx.run(|| async {
+            send_reminder(&greeting_id);
+            Ok(())
+        }).await?;
+
+        // Respond to caller
         Ok(format!("Greetings {name}"))
     }
 }
