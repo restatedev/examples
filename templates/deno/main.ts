@@ -1,5 +1,5 @@
 import * as restate from "npm:@restatedev/restate-sdk@^1.4.0/fetch";
-import { sendNotification, sendReminder } from "./utils";
+import { sendNotification, sendReminder } from "./utils.ts";
 
 const handler = restate
   .endpoint()

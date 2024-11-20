@@ -15,7 +15,7 @@ restate
           await ctx.run(() => sendReminder(greetingId));
 
           // Respond to caller
-          return `You said hi to ${name} !`;
+          return `You said hi to ${name}!`;
         },
       },
     }),
