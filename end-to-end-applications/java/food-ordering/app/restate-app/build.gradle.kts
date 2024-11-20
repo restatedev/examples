@@ -31,7 +31,7 @@ dependencies {
     implementation("org.apache.kafka:kafka-clients:3.6.1")
 
     // Logging (optional)
-    implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+    implementation("org.apache.logging.log4j:log4j-core:2.24.1")
 }
 
 // Set main class

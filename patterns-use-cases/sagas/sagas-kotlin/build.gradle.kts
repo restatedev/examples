@@ -22,10 +22,10 @@ dependencies {
   implementation("dev.restate:sdk-http-vertx:$restateVersion")
 
   // Logging (optional)
-  implementation("org.apache.logging.log4j:log4j-core:2.23.0")
+  implementation("org.apache.logging.log4j:log4j-core:2.24.1")
 
   // Kotlinx serialization (optional)
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 }
 
 // Setup Java/Kotlin compiler target

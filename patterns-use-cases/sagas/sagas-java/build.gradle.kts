@@ -21,5 +21,5 @@ dependencies {
   implementation("dev.restate:sdk-serde-jackson:$restateVersion")
 
   // Logging (optional)
-  implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+  implementation("org.apache.logging.log4j:log4j-core:2.24.1")
 }
