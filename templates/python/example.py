@@ -15,7 +15,7 @@ import restate
 
 from utils import send_notification, send_reminder
 
-greeter = Service("greeter")
+greeter = Service("Greeter")
 
 
 @greeter.handler()
