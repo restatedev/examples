@@ -44,6 +44,17 @@
             <artifactId>sdk-spring-boot-starter</artifactId>
             <version>${restate.version}</version>
         </dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>dev.restate</groupId>
+			<artifactId>sdk-testing</artifactId>
+			<version>${restate.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>

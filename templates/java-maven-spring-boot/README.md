@@ -9,5 +9,5 @@ Have a look at the [Java Quickstart guide](https://docs.restate.dev/get_started/
 To start the service, simply run:
 
 ```shell
-$ mvn spring-boot:run
+$ mvn compile spring-boot:run
 ```
