@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk-cloudflare-workers/fetch";
-import { sendNotification, sendReminder } from "./utils.ts";
+import { sendNotification, sendReminder } from "./utils.js";
 
 export default restate
   .endpoint()
