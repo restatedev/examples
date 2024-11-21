@@ -53,21 +53,27 @@ export type Location = {
     lat: number,
 }
 
-export type LocationTimestamp = {
-    long: number,
-    lat: number,
-    timestamp: number
-}
-
 export const DEMO_REGION = "San Jose (CA)";
 
-export type OrderAndPromise = {
-    order: Order,
-    promise: string
+export type DeliveryInformation = {
+    orderId: string,
+    restaurantId: string,
+    restaurantLocation: Location,
+    customerLocation: Location,
+    orderPickedUp: boolean
+}
+
+export type DeliveryState = {
+    currentDelivery: DeliveryRequest,
+    orderPickedUp: boolean
 }
 
 export enum DriverStatus {
     IDLE = "IDLE",
     WAITING_FOR_WORK = "WAITING_FOR_WORK",
     DELIVERING = "DELIVERING"
+}
+
+export type PendingDelivery = {
+    promiseId: string;
 }

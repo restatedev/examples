@@ -17,7 +17,7 @@ kotlin {
 
     jvm()
 
-    jvmToolchain(11)
+    jvmToolchain(17)
     
     sourceSets {
         commonMain.dependencies {

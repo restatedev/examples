@@ -14,7 +14,7 @@ import * as geo from "../utils/geo";
 import {DEMO_REGION, Location, DeliveryState} from "../types/types";
 import { getPublisher } from "../clients/kafka_publisher";
 import {updateLocation} from "./driver_mobile_app_sim_utils";
-import type {DriverDigitalTwin } from "../twin/api";
+import type {DriverDigitalTwin } from "../driver_digital_twin/api";
 
 /**
  * !!!SHOULD BE AN EXTERNAL APP ON THE DRIVER's PHONE!!! Simulated driver with application that
@@ -51,7 +51,7 @@ const mobileAppObject =  object({
 
     const location = await ctx.run(() => geo.randomLocation());
     ctx.set(CURRENT_LOCATION, location);
-    await kafkaPublisher.send(ctx.key, location);
+    await ctx.run(() =>kafkaPublisher.send(ctx.key, location));
 
     ctx.objectSendClient(TwinObject, ctx.key).setDriverAvailable(DEMO_REGION);
     ctx.objectSendClient(Self, ctx.key).pollForWork();
@@ -70,7 +70,7 @@ const mobileAppObject =  object({
     }
     ctx.set(ASSIGNED_DELIVERY, delivery);
 
-    ctx.objectSendClient(Self, ctx.key, {delay: POLL_INTERVAL}).move();
+    ctx.objectSendClient(Self, ctx.key, {delay: MOVE_INTERVAL}).move();
   },
 
   move: async (ctx: ObjectContext) => {
@@ -84,7 +84,7 @@ const mobileAppObject =  object({
     const { newLocation, arrived } = updateLocation(currentLocation, nextTarget);
 
     ctx.set(CURRENT_LOCATION, newLocation);
-    await kafkaPublisher.send(ctx.key, currentLocation);
+    await ctx.run(() => kafkaPublisher.send(ctx.key, currentLocation));
 
     if (arrived) {
       if (assignedDelivery.orderPickedUp) {

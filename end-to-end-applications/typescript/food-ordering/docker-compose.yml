@@ -57,16 +57,6 @@ services:
       - RESTAURANT_ENDPOINT=http://restaurant_pos:5050
       - KAFKA_BOOTSTRAP_SERVERS=broker:29092
 
-  delivery_app:
-    container_name: delivery_app
-    build:
-      context: ./app
-      dockerfile: Dockerfile-delivery
-    environment:
-      - RESTATE_DEBUG_LOGGING=INVOKE
-      - RESTAURANT_ENDPOINT=http://restaurant_pos:5050
-      - KAFKA_BOOTSTRAP_SERVERS=broker:29092
-
   restaurant_pos:
     container_name: restaurant_pos
     build:
@@ -79,7 +69,6 @@ services:
     image: docker.io/restatedev/restate
     depends_on:
       - order_app
-      - delivery_app
       - restaurant_pos
       - broker
       - jaeger
@@ -97,12 +86,10 @@ services:
     depends_on:
       - runtime
       - order_app
-      - delivery_app
     restart: "no"
     entrypoint: ["sh", "-c", "sleep 5 && 
     apk add --no-cache bash jq curl &&
     curl -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://order_app:9080\"}' &&
-    curl -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://delivery_app:9081\"}' &&
     sleep 3 && 
     curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/driver-updates\", \"sink\":\"service://driver-digital-twin/handleDriverLocationUpdateEvent\" }' &&
     curl -X POST -H 'content-type: application/json' runtime:8080/driver-mobile-app/driver-01/startDriver -d '{}' &&
