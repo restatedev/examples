@@ -8,3 +8,4 @@ restate-sdk = "0.3"
 tokio = { version = "1", features = ["full"] }
 tracing-subscriber = "0.3"
 rand = "0.8.5"
+anyhow = "1.0.86"
