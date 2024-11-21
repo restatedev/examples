@@ -9,6 +9,7 @@ import (
 type Greeter struct{}
 
 func (Greeter) Greet(ctx restate.Context, name string) (string, error) {
+    //  Durably execute a set of steps; resilient against failures
 	greetingId := restate.Rand(ctx).UUID().String()
 
 	if _, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
@@ -27,5 +28,6 @@ func (Greeter) Greet(ctx restate.Context, name string) (string, error) {
 		return "", err
 	}
 
+    // Respond to caller
 	return "You said hi to " + name + "!", nil
 }
