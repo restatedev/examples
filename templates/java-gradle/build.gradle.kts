@@ -36,3 +36,9 @@ application {
 tasks.named<Test>("test") {
   useJUnitPlatform()
 }
+
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(17))
+  }
+}

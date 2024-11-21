@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(
     classes = Greeter.class,
-    properties = {"greetingPrefix=Ciao "})
+    properties = {"greetingPrefix=ciao"})
 @RestateTest
 public class GreeterTest {
 
@@ -30,6 +30,6 @@ public class GreeterTest {
   void greet(@RestateClient Client ingressClient) {
     var client = GreeterClient.fromClient(ingressClient);
 
-    assertThat(client.greet("Francesco")).isEqualTo("Ciao Francesco");
+    assertThat(client.greet("Francesco")).isEqualTo("You said ciao to Francesco!");
   }
 }

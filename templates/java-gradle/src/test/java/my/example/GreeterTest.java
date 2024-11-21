@@ -29,6 +29,6 @@ class GreeterTest {
     var client = GreeterClient.fromClient(ingressClient);
 
     String response = client.greet("Francesco");
-    assertEquals(response, "Hello Francesco");
+    assertEquals(response, "You said hi to Francesco!");
   }
 }

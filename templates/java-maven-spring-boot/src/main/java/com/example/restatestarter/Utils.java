@@ -1,4 +1,4 @@
-package my.example;
+package com.example.restatestarter;
 
 // You can remove this file.
 // It's only purpose is providing stubs for the template.
