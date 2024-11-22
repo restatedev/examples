@@ -1468,8 +1468,10 @@ dependencies = [
 name = "restate-shuttle-example"
 version = "0.0.1"
 dependencies = [
+ "anyhow",
  "hyper 1.4.1",
  "hyper-util",
+ "rand",
  "restate-sdk",
  "shuttle-runtime",
  "tokio",

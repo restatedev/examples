@@ -1,20 +1,27 @@
-import { Context, endpoint, service } from "@restatedev/restate-sdk/fetch";
+import * as restate from "@restatedev/restate-sdk/fetch";
+import {sendNotification, sendReminder} from "./utils";
 
-// Template of a Restate service and handler
-//
-// Have a look at the TS QuickStart: https://docs.restate.dev/get_started/quickstart?sdk=ts
-//
+const handler = restate
+  .endpoint()
+  .bind(
+    restate.service({
+      name: "Greeter",
+      handlers: {
+        greet: async (ctx: restate.Context, name: string) => {
 
-const greeter = service({
-  name: "Greeter",
-  handlers: {
-    greet: async (ctx: Context, greeting: string) => {
-      return `${greeting}!`;
-    },
-  },
-});
+            // Durably execute a set of steps; resilient against failures
+          const greetingId = ctx.rand.uuidv4();
+          await ctx.run(() => sendNotification(greetingId, name));
+          await ctx.sleep(1000);
+          await ctx.run(() => sendReminder(greetingId));
 
-const handler = endpoint().bind(greeter).handler();
+          // Respond to caller
+          return `You said hi to ${name}!`;
+        },
+      },
+    }),
+  )
+  .handler();
 
 const server = Bun.serve({
   port: 9080,
