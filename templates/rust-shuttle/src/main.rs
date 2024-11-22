@@ -1,12 +1,11 @@
-use std::time::Duration;
-use restate_sdk::prelude::*;
-
 // Restate shuttle integration
 mod restate_shuttle;
 mod utils;
 
+use restate_sdk::prelude::*;
 use restate_shuttle::RestateShuttleEndpoint;
 use utils::{send_notification, send_reminder};
+use std::time::Duration;
 
 #[restate_sdk::service]
 trait Greeter {

@@ -10,9 +10,6 @@ import java.time.Duration;
 import static com.example.restatestarter.Utils.sendNotification;
 import static com.example.restatestarter.Utils.sendReminder;
 
-/**
- * Template of a Restate service and handler.
- */
 @RestateService
 public class Greeter {
 
