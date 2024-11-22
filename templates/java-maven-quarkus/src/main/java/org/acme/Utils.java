@@ -1,4 +1,4 @@
-package my.example;
+package org.acme;
 
 // You can remove this file.
 // It's only purpose is providing stubs for the template.
