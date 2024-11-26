@@ -1,6 +1,5 @@
 # Go Lambda (CDK) example
 
-
 Sample project deploying a Go-based Restate service to AWS Lambda using the AWS Cloud Development Kit (CDK).
 The stack uses the Restate CDK constructs library to register the service with a Restate Cloud environment.
 
