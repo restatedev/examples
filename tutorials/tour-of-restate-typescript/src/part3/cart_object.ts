@@ -44,7 +44,7 @@ export const cartObject = restate.object({
       }
 
       const success = await ctx.serviceClient(CheckoutService)
-          .handle({userId: ctx.key, tickets: tickets});
+          .handle({userId: ctx.key, tickets});
 
       if (success) {
         // withClass highlight-line
