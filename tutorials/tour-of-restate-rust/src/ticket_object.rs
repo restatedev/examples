@@ -15,7 +15,9 @@ const STATUS: &str = "status";
 
 impl TicketObject for TicketObjectImpl {
     async fn reserve(&self, ctx: ObjectContext<'_>) -> Result<bool, HandlerError> {
-        let status: TicketStatus = ctx.get::<Json<TicketStatus>>(STATUS).await?
+        let status: TicketStatus = ctx
+            .get::<Json<TicketStatus>>(STATUS)
+            .await?
             .unwrap_or(Json(TicketStatus::Available))
             .into_inner();
 
@@ -24,34 +26,32 @@ impl TicketObject for TicketObjectImpl {
                 ctx.set(STATUS, Json(TicketStatus::Reserved));
                 Ok(true)
             }
-            TicketStatus::Reserved | TicketStatus::Sold => Ok(false)
+            TicketStatus::Reserved | TicketStatus::Sold => Ok(false),
         }
     }
 
     async fn unreserve(&self, ctx: ObjectContext<'_>) -> Result<(), HandlerError> {
-        let status: TicketStatus = ctx.get::<Json<TicketStatus>>(STATUS).await?
+        let status: TicketStatus = ctx
+            .get::<Json<TicketStatus>>(STATUS)
+            .await?
             .unwrap_or(Json(TicketStatus::Available))
             .into_inner();
 
-        match status {
-            TicketStatus::Reserved => {
-                ctx.clear(STATUS);
-            }
-            _ => {}
+        if let TicketStatus::Reserved = status {
+            ctx.clear(STATUS);
         }
         Ok(())
     }
 
     async fn mark_as_sold(&self, ctx: ObjectContext<'_>) -> Result<(), HandlerError> {
-        let status: TicketStatus = ctx.get::<Json<TicketStatus>>(STATUS).await?
+        let status: TicketStatus = ctx
+            .get::<Json<TicketStatus>>(STATUS)
+            .await?
             .unwrap_or(Json(TicketStatus::Available))
             .into_inner();
 
-        match status {
-            TicketStatus::Reserved => {
-                ctx.set(STATUS, Json(TicketStatus::Sold));
-            }
-            _ => {}
+        if let TicketStatus::Reserved = status {
+            ctx.set(STATUS, Json(TicketStatus::Sold));
         }
         Ok(())
     }

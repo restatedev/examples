@@ -14,10 +14,14 @@ async fn main() {
     HttpServer::new(
         Endpoint::builder()
             .bind(cart_object::CartObject::serve(cart_object::CartObjectImpl))
-            .bind(checkout_service::CheckoutService::serve(checkout_service::CheckoutServiceImpl))
-            .bind(ticket_object::TicketObject::serve(ticket_object::TicketObjectImpl))
+            .bind(checkout_service::CheckoutService::serve(
+                checkout_service::CheckoutServiceImpl,
+            ))
+            .bind(ticket_object::TicketObject::serve(
+                ticket_object::TicketObjectImpl,
+            ))
             .build(),
     )
-        .listen_and_serve("0.0.0.0:9080".parse().unwrap())
-        .await;
+    .listen_and_serve("0.0.0.0:9080".parse().unwrap())
+    .await;
 }

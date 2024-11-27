@@ -6,12 +6,12 @@
 // You can find a copy of the license in the file LICENSE
 // in the root directory of this repository or package or at
 // https://github.com/restatedev/examples/
-use std::sync::Arc;
-use std::sync::atomic::{AtomicI32, Ordering};
 use restate_sdk::errors::HandlerError;
+use std::sync::atomic::{AtomicI32, Ordering};
+use std::sync::Arc;
 
-pub struct PaymentClient{
-    attempts: Arc<AtomicI32>
+pub struct PaymentClient {
+    attempts: Arc<AtomicI32>,
 }
 
 impl PaymentClient {
@@ -30,7 +30,11 @@ impl PaymentClient {
         Ok(true)
     }
 
-    pub async fn failing_call(&self, idempotency_key: &str, amount: f64) -> Result<bool, HandlerError> {
+    pub async fn failing_call(
+        &self,
+        idempotency_key: &str,
+        amount: f64,
+    ) -> Result<bool, HandlerError> {
         let attempt = self.attempts.load(Ordering::SeqCst);
         if attempt >= 2 {
             println!(
@@ -47,5 +51,11 @@ impl PaymentClient {
             self.attempts.store(attempt + 1, Ordering::SeqCst);
             Err(HandlerError::from("Payment call failed".to_string()))
         }
+    }
+}
+
+impl Default for PaymentClient {
+    fn default() -> Self {
+        Self::new()
     }
 }
