@@ -1,7 +1,6 @@
 use restate_sdk::prelude::*;
 use serde::{Deserialize, Serialize};
 use crate::auxiliary::email_client::EmailClient;
-use crate::auxiliary::payment_client;
 use crate::auxiliary::payment_client::PaymentClient;
 
 #[derive(Serialize, Deserialize)]

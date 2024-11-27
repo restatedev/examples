@@ -8,6 +8,7 @@
 // https://github.com/restatedev/examples/
 use std::sync::Arc;
 use std::sync::atomic::{AtomicI32, Ordering};
+use restate_sdk::errors::HandlerError;
 
 pub struct PaymentClient{
     attempts: Arc<AtomicI32>
@@ -20,7 +21,7 @@ impl PaymentClient {
         }
     }
 
-    pub async fn call(&self, idempotency_key: &str, amount: f64) -> Result<bool, String> {
+    pub async fn call(&self, idempotency_key: &str, amount: f64) -> Result<bool, HandlerError> {
         println!(
             "Payment call succeeded for idempotency key {} and amount {}",
             idempotency_key, amount
@@ -29,7 +30,7 @@ impl PaymentClient {
         Ok(true)
     }
 
-    pub async fn failing_call(&self, idempotency_key: &str, amount: f64) -> Result<bool, String> {
+    pub async fn failing_call(&self, idempotency_key: &str, amount: f64) -> Result<bool, HandlerError> {
         let attempt = self.attempts.load(Ordering::SeqCst);
         if attempt >= 2 {
             println!(
@@ -44,7 +45,7 @@ impl PaymentClient {
                 idempotency_key, amount
             );
             self.attempts.store(attempt + 1, Ordering::SeqCst);
-            Err("Payment call failed".to_string())
+            Err(HandlerError::from("Payment call failed".to_string()))
         }
     }
 }

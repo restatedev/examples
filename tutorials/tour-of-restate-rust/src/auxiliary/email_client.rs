@@ -6,8 +6,7 @@
 // You can find a copy of the license in the file LICENSE
 // in the root directory of this repository or package or at
 // https://github.com/restatedev/examples/
-use std::sync::Arc;
-use std::sync::atomic::{AtomicI32, Ordering};
+use restate_sdk::errors::HandlerError;
 
 pub struct EmailClient;
 
@@ -16,15 +15,15 @@ impl EmailClient {
         EmailClient
     }
 
-    pub async fn notify_user_of_payment_success(&self, user_id: &str) -> bool {
+    pub async fn notify_user_of_payment_success(&self, user_id: &str) -> Result<bool, HandlerError> {
         println!("Notifying user {} of payment success", user_id);
         // send the email
-        true
+        Ok(true)
     }
 
-    pub async fn notify_user_of_payment_failure(&self, user_id: &str) -> bool {
+    pub async fn notify_user_of_payment_failure(&self, user_id: &str) -> Result<bool, HandlerError> {
         println!("Notifying user {} of payment failure", user_id);
         // send the email
-        false
+        Ok(false)
     }
 }

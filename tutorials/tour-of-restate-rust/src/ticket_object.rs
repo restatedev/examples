@@ -5,6 +5,7 @@ use restate_sdk::prelude::*;
 pub(crate) trait TicketObject {
     async fn reserve() -> Result<bool, HandlerError>;
     async fn unreserve() -> Result<(), HandlerError>;
+    #[name = "markAsSold"]
     async fn mark_as_sold() -> Result<(), HandlerError>;
 }
 

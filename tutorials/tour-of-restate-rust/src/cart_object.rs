@@ -1,14 +1,15 @@
 use std::time::Duration;
 use restate_sdk::prelude::*;
-use tracing_subscriber::fmt::format;
 use crate::checkout_service::{CheckoutRequest, CheckoutServiceClient};
 use crate::ticket_object::TicketObjectClient;
 
 #[restate_sdk::object]
 pub(crate) trait CartObject {
+    #[name = "addTicket"]
     async fn add_ticket(ticket_id: String) -> Result<bool, HandlerError>;
     async fn checkout() -> Result<bool, HandlerError>;
-    async fn expire_ticket(ticket_id: String) -> Result<String, HandlerError>;
+    #[name = "expireTicket"]
+    async fn expire_ticket(ticket_id: String) -> Result<(), HandlerError>;
 }
 
 pub struct CartObjectImpl;
@@ -17,7 +18,7 @@ const TICKETS: &str = "ticket";
 
 impl CartObject for CartObjectImpl {
     async fn add_ticket(&self, ctx: ObjectContext<'_>, ticket_id: String) -> Result<bool, HandlerError> {
-        let reservation_success = ctx.object_client::<TicketObjectClient>(ticket_id)
+        let reservation_success = ctx.object_client::<TicketObjectClient>(ticket_id.clone())
             .reserve().call().await?;
 
         if reservation_success {
@@ -34,14 +35,14 @@ impl CartObject for CartObjectImpl {
         Ok(reservation_success)
     }
 
-    async fn checkout(&self, ctx: ObjectContext)-> Result<bool, HandlerError> {
+    async fn checkout(&self, ctx: ObjectContext<'_>)-> Result<bool, HandlerError> {
         let tickets = ctx.get::<Json<Vec<String>>>(TICKETS).await?
             .unwrap_or_default().into_inner();
 
         let success = ctx.service_client::<CheckoutServiceClient>().handle(Json(CheckoutRequest {
             user_id: ctx.key().parse()?,
             tickets: tickets.clone(),
-        })).await?;
+        })).call().await?;
 
         if success {
             for ticket_id in tickets {
@@ -54,7 +55,7 @@ impl CartObject for CartObjectImpl {
         Ok(success)
     }
 
-    async fn expire_ticket(&self, ctx: ObjectContext, ticket_id: String) -> Result<(), HandlerError> {
+    async fn expire_ticket(&self, ctx: ObjectContext<'_>, ticket_id: String) -> Result<(), HandlerError> {
         let mut tickets = ctx.get::<Json<Vec<String>>>(TICKETS).await?
             .unwrap_or_default().into_inner();
 
