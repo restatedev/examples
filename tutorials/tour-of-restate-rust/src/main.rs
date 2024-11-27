@@ -5,6 +5,9 @@ mod ticket_object;
 pub mod auxiliary;
 
 use restate_sdk::prelude::*;
+use crate::cart_object::CartObject;
+use crate::checkout_service::CheckoutService;
+use crate::ticket_object::TicketObject;
 
 #[tokio::main]
 async fn main() {
@@ -13,13 +16,9 @@ async fn main() {
 
     HttpServer::new(
         Endpoint::builder()
-            .bind(cart_object::CartObject::serve(cart_object::CartObjectImpl))
-            .bind(checkout_service::CheckoutService::serve(
-                checkout_service::CheckoutServiceImpl,
-            ))
-            .bind(ticket_object::TicketObject::serve(
-                ticket_object::TicketObjectImpl,
-            ))
+            .bind(cart_object::CartObjectImpl.serve())
+            .bind(checkout_service::CheckoutServiceImpl.serve())
+            .bind(ticket_object::TicketObjectImpl.serve())
             .build(),
     )
     .listen_and_serve("0.0.0.0:9080".parse().unwrap())
