@@ -40,10 +40,10 @@ export const cartObject = restate.object({
       }
 
       const success = await ctx.serviceClient(CheckoutService)
-          .handle({userId: ctx.key, tickets: ["seat2B"]});
+          .handle({userId: ctx.key, tickets});
 
       if (success) {
-        // withClass(1:3) highlight-line
+        // !mark(1:3)
         for (const ticketId of tickets) {
           ctx.objectSendClient(TicketObject, ticketId).markAsSold();
         }

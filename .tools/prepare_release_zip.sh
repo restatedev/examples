@@ -36,6 +36,7 @@ create_release_zip tutorials/tour-of-restate-go go-tour-of-restate
 create_release_zip tutorials/tour-of-restate-java java-tour-of-restate
 create_release_zip tutorials/tour-of-restate-typescript typescript-tour-of-restate
 create_release_zip tutorials/tour-of-restate-python python-tour-of-restate
+create_release_zip tutorials/tour-of-restate-rust rust-tour-of-restate
 
 create_release_zip patterns-use-cases/payment-state-machine/payment-state-machine-typescript typescript-payment-state-machine
 

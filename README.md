@@ -97,6 +97,7 @@ challenges.
 |-----------|------------------------------------------------------|
 | Templates | [Rust Template](templates/rust)                      |
 | Templates | [Rust - Shuttle.rs Template](templates/rust-shuttle) |
+| Tutorial  | [Tour of Restate](tutorials/tour-of-restate-rust)    |
 
 ## Joining the community
 
