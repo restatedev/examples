@@ -16,6 +16,7 @@ async def greet(ctx: Context, req: GreetingRequest) -> Greeting:
     await ctx.sleep(timedelta(seconds=1))
     await ctx.run("send reminder", lambda: send_reminder(greeting_id))
 
+    ctx.ge
     # Respond to caller
     return Greeting(message=f"You said hi to {req.name}!")
 
