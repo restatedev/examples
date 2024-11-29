@@ -21,7 +21,7 @@ export const cartObject = restate.object({
       const reservationSuccess = await ctx.objectClient(TicketObject, ticketId).reserve();
 
       if (reservationSuccess) {
-        // withClass(1:3) highlight-line
+        // !mark(1:3)
         const tickets = (await ctx.get<string[]>("tickets")) ?? [];
         tickets.push(ticketId);
         ctx.set("tickets", tickets);
@@ -36,7 +36,7 @@ export const cartObject = restate.object({
 
     // <start_checkout>
     async checkout(ctx: restate.ObjectContext) {
-      // withClass(1:5) highlight-line
+      // !mark(1:5)
       const tickets = (await ctx.get<string[]>("tickets")) ?? [];
 
       if (tickets.length === 0) {
@@ -47,7 +47,7 @@ export const cartObject = restate.object({
           .handle({userId: ctx.key, tickets});
 
       if (success) {
-        // withClass highlight-line
+        // !mark
         ctx.clear("tickets");
       }
 

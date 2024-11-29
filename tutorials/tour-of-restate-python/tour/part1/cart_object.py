@@ -19,7 +19,7 @@ cart = VirtualObject("CartObject")
 # <start_add_ticket>
 @cart.handler("addTicket")
 async def add_ticket(ctx: ObjectContext, ticket_id: str) -> bool:
-    # withClass highlight-line
+    # !mark
     reserved = await ctx.object_call(reserve, key=ticket_id, arg=None)
 
     return reserved
@@ -31,7 +31,7 @@ async def add_ticket(ctx: ObjectContext, ticket_id: str) -> bool:
 # <start_checkout>
 @cart.handler()
 async def checkout(ctx: ObjectContext) -> bool:
-    # withClass(1:2) highlight-line
+    # !mark(1:2)
     success = await ctx.service_call(handle, arg={'user_id': ctx.key(),
                                                   'tickets': ["seat2B"]})
 
@@ -42,6 +42,6 @@ async def checkout(ctx: ObjectContext) -> bool:
 # <start_expire_ticket>
 @cart.handler("expireTicket")
 async def expire_ticket(ctx: ObjectContext, ticket_id: str):
-    # withClass highlight-line
+    # !mark
     ctx.object_send(unreserve, key=ticket_id, arg=None)
 # <end_expire_ticket>

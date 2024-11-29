@@ -16,7 +16,6 @@ export const checkoutService = restate.service({
   name: "CheckoutService",
   handlers: {
     async handle(ctx: restate.Context, request: { userId: string; tickets: string[] }){
-      console.info("Hello")
       return true;
     },
   }

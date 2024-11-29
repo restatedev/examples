@@ -24,7 +24,7 @@ async def add_ticket(ctx: ObjectContext, ticket_id: str) -> bool:
     reserved = await ctx.object_call(reserve, key=ticket_id, arg=None)
 
     if reserved:
-        # withClass highlight-line
+        # !mark
         ctx.object_send(expire_ticket, key=ctx.key(), arg=ticket_id, send_delay=timedelta(minutes=15))
 
     return reserved
@@ -34,7 +34,7 @@ async def add_ticket(ctx: ObjectContext, ticket_id: str) -> bool:
 # <start_checkout>
 @cart.handler()
 async def checkout(ctx: ObjectContext) -> bool:
-    # withClass(1:2) highlight-line
+    # !mark(1:2)
     success = await ctx.service_call(handle, arg={'user_id': ctx.key(),
                                                   'tickets': ["seat2B"]})
 

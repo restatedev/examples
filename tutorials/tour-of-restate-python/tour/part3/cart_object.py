@@ -24,7 +24,7 @@ async def add_ticket(ctx: ObjectContext, ticket_id: str) -> bool:
     reserved = await ctx.object_call(reserve, key=ticket_id, arg=None)
 
     if reserved:
-        # withClass(1:3) highlight-line
+        # !mark(1:3)
         tickets = await ctx.get("tickets") or []
         tickets.append(ticket_id)
         ctx.set("tickets", tickets)
@@ -38,10 +38,10 @@ async def add_ticket(ctx: ObjectContext, ticket_id: str) -> bool:
 # <start_checkout>
 @cart.handler()
 async def checkout(ctx: ObjectContext) -> bool:
-    # withClass highlight-line
+    # !mark
     tickets = await ctx.get("tickets") or []
 
-    # withClass(1:2) highlight-line
+    # !mark(1:2)
     if len(tickets) == 0:
         return False
 
@@ -49,7 +49,7 @@ async def checkout(ctx: ObjectContext) -> bool:
                                                   'tickets': tickets})
 
     if success:
-        # withClass(1:2) highlight-line
+        # !mark(1:2)
         for ticket in tickets:
             ctx.object_send(mark_as_sold, key=ticket, arg=None)
 

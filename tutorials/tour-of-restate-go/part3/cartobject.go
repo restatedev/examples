@@ -11,14 +11,14 @@ type CartObject struct{}
 
 // <start_add_ticket>
 func (CartObject) AddTicket(ctx restate.ObjectContext, ticketId string) (bool, error) {
-	// withClass highlight-line
+	// !mark
 	reservationSuccess, err := restate.Object[bool](ctx, "TicketObject", ticketId, "Reserve").Request(restate.Void{})
 	if err != nil {
 		return false, err
 	}
 
 	if reservationSuccess {
-		// withClass(1:6) highlight-line
+		// !mark(1:6)
 		tickets, err := restate.Get[[]string](ctx, "tickets")
 		if err != nil {
 			return false, err
@@ -36,7 +36,7 @@ func (CartObject) AddTicket(ctx restate.ObjectContext, ticketId string) (bool, e
 
 // <start_checkout>
 func (CartObject) Checkout(ctx restate.ObjectContext) (bool, error) {
-	// withClass(1:4) highlight-line
+	// !mark(1:4)
 	tickets, err := restate.Get[[]string](ctx, "tickets")
 	if err != nil || len(tickets) == 0 {
 		return false, err
@@ -49,7 +49,7 @@ func (CartObject) Checkout(ctx restate.ObjectContext) (bool, error) {
 	}
 
 	if success {
-		// withClass highlight-line
+		// !mark
 		restate.Clear(ctx, "tickets")
 	}
 

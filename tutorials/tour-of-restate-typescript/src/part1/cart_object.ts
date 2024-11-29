@@ -18,7 +18,7 @@ export const cartObject = restate.object({
   handlers: {
     // <start_add_ticket>
     async addTicket(ctx: restate.ObjectContext, ticketId: string) {
-      // withClass highlight-line
+      // !mark
       const reservationSuccess = await ctx.objectClient(TicketObject, ticketId).reserve();
 
       return true;
@@ -27,7 +27,7 @@ export const cartObject = restate.object({
 
     // <start_checkout>
     async checkout(ctx: restate.ObjectContext) {
-      // withClass(1:2) highlight-line
+      // !mark(1:2)
       const success = await ctx.serviceClient(CheckoutService)
           .handle({userId: ctx.key, tickets: ["seat2B"]});
 
@@ -37,7 +37,7 @@ export const cartObject = restate.object({
 
     // <start_expire_ticket>
     async expireTicket(ctx: restate.ObjectContext, ticketId: string) {
-      // withClass highlight-line
+      // !mark
       ctx.objectSendClient(TicketObject, ticketId).unreserve();
     },
     // <end_expire_ticket>
