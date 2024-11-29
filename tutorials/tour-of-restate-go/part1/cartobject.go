@@ -6,7 +6,7 @@ type CartObject struct{}
 
 // <start_add_ticket>
 func (CartObject) AddTicket(ctx restate.ObjectContext, ticketId string) (bool, error) {
-	// withClass highlight-line
+	// !mark
 	reservationSuccess, err := restate.Object[bool](ctx, "TicketObject", ticketId, "Reserve").Request(restate.Void{})
 	if err != nil {
 		return false, err
@@ -19,7 +19,7 @@ func (CartObject) AddTicket(ctx restate.ObjectContext, ticketId string) (bool, e
 
 // <start_checkout>
 func (CartObject) Checkout(ctx restate.ObjectContext) (bool, error) {
-	// withClass(1:2) highlight-line
+	// !mark(1:2)
 	success, err := restate.Service[bool](ctx, "CheckoutService", "Handle").
 		Request(CheckoutRequest{UserId: restate.Key(ctx), Tickets: []string{"seat2B"}})
 	if err != nil {
@@ -33,7 +33,7 @@ func (CartObject) Checkout(ctx restate.ObjectContext) (bool, error) {
 
 // <start_expire_ticket>
 func (CartObject) ExpireTicket(ctx restate.ObjectContext, ticketId string) error {
-	// withClass highlight-line
+	// !mark
 	restate.ObjectSend(ctx, "TicketObject", ticketId, "Unreserve").Send(restate.Void{})
 
 	return nil

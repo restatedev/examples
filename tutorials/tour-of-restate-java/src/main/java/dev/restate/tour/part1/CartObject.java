@@ -24,7 +24,7 @@ public class CartObject {
     // <start_add_ticket>
     @Handler
     public boolean addTicket(ObjectContext ctx, String ticketId) {
-        // withClass highlight-line
+        // !mark
         boolean reservationSuccess = TicketObjectClient.fromContext(ctx, ticketId).reserve().await();
 
         return true;
@@ -34,7 +34,7 @@ public class CartObject {
     // <start_expire_ticket>
     @Handler
     public void expireTicket(ObjectContext ctx, String ticketId) {
-        // withClass highlight-line
+        // !mark
         TicketObjectClient.fromContext(ctx, ticketId).send().unreserve();
     }
     // <end_expire_ticket>
@@ -42,7 +42,7 @@ public class CartObject {
     // <start_checkout>
     @Handler
     public boolean checkout(ObjectContext ctx) {
-        // withClass(1:3) highlight-line
+        // !mark(1:3)
         boolean checkoutSuccess = CheckoutServiceClient.fromContext(ctx)
                 .handle(new CheckoutRequest("Mary", Set.of("seat2B")))
                 .await();

@@ -43,7 +43,7 @@ func (CartObject) Checkout(ctx restate.ObjectContext) (bool, error) {
 	}
 
 	if success {
-		// withClass(1:3) highlight-line
+		// !mark(1:3)
 		for _, ticketId := range tickets {
 			restate.ObjectSend(ctx, "TicketObject", ticketId, "MarkAsSold").Send(restate.Void{})
 		}
