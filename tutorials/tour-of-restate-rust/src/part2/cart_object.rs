@@ -17,6 +17,7 @@ pub struct CartObjectImpl;
 const TICKETS: &str = "ticket";
 
 impl CartObject for CartObjectImpl {
+    // <start_add_ticket>
     async fn add_ticket(
         &self,
         ctx: ObjectContext<'_>,
@@ -44,7 +45,9 @@ impl CartObject for CartObjectImpl {
 
         Ok(reservation_success)
     }
+    // <end_add_ticket>
 
+    // <start_checkout>
     async fn checkout(&self, ctx: ObjectContext<'_>) -> Result<bool, HandlerError> {
         let tickets = ctx
             .get::<Json<Vec<String>>>(TICKETS)
@@ -72,7 +75,9 @@ impl CartObject for CartObjectImpl {
 
         Ok(success)
     }
+    // <end_checkout>
 
+    // <start_expire_ticket>
     async fn expire_ticket(
         &self,
         ctx: ObjectContext<'_>,
@@ -95,4 +100,5 @@ impl CartObject for CartObjectImpl {
 
         Ok(())
     }
+    // <end_expire_ticket>
 }

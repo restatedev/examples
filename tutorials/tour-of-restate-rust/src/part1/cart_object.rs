@@ -17,82 +17,51 @@ pub struct CartObjectImpl;
 const TICKETS: &str = "ticket";
 
 impl CartObject for CartObjectImpl {
+    // <start_add_ticket>
     async fn add_ticket(
         &self,
         ctx: ObjectContext<'_>,
         ticket_id: String,
     ) -> Result<bool, HandlerError> {
+        // !mark(1:5)
         let reservation_success = ctx
             .object_client::<TicketObjectClient>(ticket_id.clone())
             .reserve()
             .call()
             .await?;
 
-        if reservation_success {
-            let mut tickets = ctx
-                .get::<Json<Vec<String>>>(TICKETS)
-                .await?
-                .unwrap_or_default()
-                .into_inner();
-            tickets.push(ticket_id.clone());
-            ctx.set(TICKETS, Json(tickets));
-
-            ctx.object_client::<CartObjectClient>(ctx.key())
-                .expire_ticket(ticket_id.clone())
-                .send_with_delay(Duration::from_millis(15 * 60 * 1000));
-        }
-
-        Ok(reservation_success)
+        Ok(true)
     }
+    // <end_add_ticket>
 
+    // <start_checkout>
     async fn checkout(&self, ctx: ObjectContext<'_>) -> Result<bool, HandlerError> {
-        let tickets = ctx
-            .get::<Json<Vec<String>>>(TICKETS)
-            .await?
-            .unwrap_or_default()
-            .into_inner();
-
+        // !mark(1:8)
         let success = ctx
             .service_client::<CheckoutServiceClient>()
             .handle(Json(CheckoutRequest {
                 user_id: ctx.key().parse()?,
-                tickets: tickets.clone(),
+                tickets: vec!(String::from("seat2B")),
             }))
             .call()
             .await?;
 
-        if success {
-            for ticket_id in tickets {
-                ctx.object_client::<TicketObjectClient>(ticket_id)
-                    .mark_as_sold()
-                    .send();
-            }
-            ctx.clear(TICKETS);
-        }
-
         Ok(success)
     }
+    // <end_checkout>
 
+    // <start_expire_ticket>
     async fn expire_ticket(
         &self,
         ctx: ObjectContext<'_>,
         ticket_id: String,
     ) -> Result<(), HandlerError> {
-        let mut tickets = ctx
-            .get::<Json<Vec<String>>>(TICKETS)
-            .await?
-            .unwrap_or_default()
-            .into_inner();
-
-        if let Some(ticket_index) = tickets.iter().position(|ticket| ticket == &ticket_id) {
-            tickets.remove(ticket_index);
-            ctx.set(TICKETS, Json(tickets));
-
-            ctx.object_client::<TicketObjectClient>(ticket_id)
-                .unreserve()
-                .send();
-        }
+        // !mark(1:3)
+        ctx.object_client::<TicketObjectClient>(ticket_id)
+            .unreserve()
+            .send();
 
         Ok(())
     }
+    // <end_expire_ticket>
 }

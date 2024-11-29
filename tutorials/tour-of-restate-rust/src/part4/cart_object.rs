@@ -45,12 +45,17 @@ impl CartObject for CartObjectImpl {
         Ok(reservation_success)
     }
 
+    // <start_checkout>
     async fn checkout(&self, ctx: ObjectContext<'_>) -> Result<bool, HandlerError> {
         let tickets = ctx
             .get::<Json<Vec<String>>>(TICKETS)
             .await?
             .unwrap_or_default()
             .into_inner();
+
+        if (tickets.is_empty()) {
+            return Ok(false);
+        }
 
         let success = ctx
             .service_client::<CheckoutServiceClient>()
@@ -62,6 +67,7 @@ impl CartObject for CartObjectImpl {
             .await?;
 
         if success {
+            // !mark(1:5)
             for ticket_id in tickets {
                 ctx.object_client::<TicketObjectClient>(ticket_id)
                     .mark_as_sold()
@@ -72,6 +78,7 @@ impl CartObject for CartObjectImpl {
 
         Ok(success)
     }
+    // <end_checkout>
 
     async fn expire_ticket(
         &self,

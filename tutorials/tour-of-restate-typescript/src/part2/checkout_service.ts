@@ -11,7 +11,6 @@
 
 import * as restate from "@restatedev/restate-sdk";
 
-// <start_checkout>
 export const checkoutService = restate.service({
   name: "CheckoutService",
   handlers: {
@@ -20,6 +19,5 @@ export const checkoutService = restate.service({
     },
   }
 });
-// <end_checkout>
 
 export const CheckoutService: typeof checkoutService = { name: "CheckoutService"};

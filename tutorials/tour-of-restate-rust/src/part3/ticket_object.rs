@@ -14,6 +14,7 @@ pub struct TicketObjectImpl;
 const STATUS: &str = "status";
 
 impl TicketObject for TicketObjectImpl {
+    // <start_reserve>
     async fn reserve(&self, ctx: ObjectContext<'_>) -> Result<bool, HandlerError> {
         let status: TicketStatus = ctx
             .get::<Json<TicketStatus>>(STATUS)
@@ -21,15 +22,16 @@ impl TicketObject for TicketObjectImpl {
             .unwrap_or(Json(TicketStatus::Available))
             .into_inner();
 
-        match status {
-            TicketStatus::Available => {
-                ctx.set(STATUS, Json(TicketStatus::Reserved));
-                Ok(true)
-            }
-            TicketStatus::Reserved | TicketStatus::Sold => Ok(false),
+        if let TicketStatus::Available = status {
+            ctx.set(STATUS, Json(TicketStatus::Reserved));
+            Ok(true)
+        } else {
+            Ok(false)
         }
     }
+    // <end_reserve>
 
+    // <start_unreserve>
     async fn unreserve(&self, ctx: ObjectContext<'_>) -> Result<(), HandlerError> {
         let status: TicketStatus = ctx
             .get::<Json<TicketStatus>>(STATUS)
@@ -42,7 +44,9 @@ impl TicketObject for TicketObjectImpl {
         }
         Ok(())
     }
+    // <end_unreserve>
 
+    // <start_mark_as_sold>
     async fn mark_as_sold(&self, ctx: ObjectContext<'_>) -> Result<(), HandlerError> {
         let status: TicketStatus = ctx
             .get::<Json<TicketStatus>>(STATUS)
@@ -55,4 +59,5 @@ impl TicketObject for TicketObjectImpl {
         }
         Ok(())
     }
+    // <end_mark_as_sold>
 }

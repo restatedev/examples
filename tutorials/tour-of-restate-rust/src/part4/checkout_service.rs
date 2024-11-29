@@ -18,6 +18,7 @@ pub(crate) trait CheckoutService {
 pub struct CheckoutServiceImpl;
 
 impl CheckoutService for CheckoutServiceImpl {
+    // <start_checkout>
     async fn handle(
         &self,
         mut ctx: Context<'_>,
@@ -42,4 +43,5 @@ impl CheckoutService for CheckoutServiceImpl {
         }
         Ok(success)
     }
+    // <end_checkout>
 }

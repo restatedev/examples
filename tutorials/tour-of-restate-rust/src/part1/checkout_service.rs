@@ -17,29 +17,14 @@ pub(crate) trait CheckoutService {
 
 pub struct CheckoutServiceImpl;
 
+// <start_checkout>
 impl CheckoutService for CheckoutServiceImpl {
     async fn handle(
         &self,
         mut ctx: Context<'_>,
         Json(CheckoutRequest { user_id, tickets }): Json<CheckoutRequest>,
     ) -> Result<bool, HandlerError> {
-        let total_price = tickets.len() as f64 * 40.0;
-
-        let idempotency_key = ctx.rand_uuid().to_string();
-
-        let pay_client = PaymentClient::new();
-        let success = ctx
-            .run(|| pay_client.call(&idempotency_key, total_price))
-            .await?;
-
-        let email_client = EmailClient::new();
-        if success {
-            ctx.run(|| email_client.notify_user_of_payment_success(&user_id))
-                .await?;
-        } else {
-            ctx.run(|| email_client.notify_user_of_payment_failure(&user_id))
-                .await?;
-        }
-        Ok(success)
+        Ok(true)
     }
 }
+// <end_checkout>
