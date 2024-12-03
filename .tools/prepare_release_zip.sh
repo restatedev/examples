@@ -21,6 +21,7 @@ create_release_zip templates/java-maven java-hello-world-maven
 create_release_zip templates/java-maven-spring-boot java-hello-world-maven-spring-boot
 create_release_zip templates/java-maven-quarkus java-hello-world-maven-quarkus
 create_release_zip templates/kotlin-gradle kotlin-hello-world-gradle
+create_release_zip templates/kotlin-gradle-spring-boot kotlin-hello-world-gradle-spring-boot
 create_release_zip templates/typescript typescript-hello-world
 create_release_zip templates/bun typescript-bun-hello-world
 create_release_zip templates/cloudflare-worker typescript-cloudflare-worker-hello-world
