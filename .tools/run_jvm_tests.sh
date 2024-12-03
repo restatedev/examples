@@ -11,6 +11,7 @@ pushd $PROJECT_ROOT/templates/java-maven-quarkus && mvn verify && popd
 pushd $PROJECT_ROOT/templates/java-maven-spring-boot && mvn verify && popd
 pushd $PROJECT_ROOT/templates/kotlin-gradle && ./gradlew --console=plain check && popd
 pushd $PROJECT_ROOT/templates/kotlin-gradle-lambda-cdk/lambda && ./gradlew --console=plain check && popd
+pushd $PROJECT_ROOT/templates/kotlin-gradle-spring-boot && ./gradlew --console=plain check && popd
 
 pushd $PROJECT_ROOT/basics/basics-java && ./gradlew --console=plain check && popd
 pushd $PROJECT_ROOT/basics/basics-kotlin && ./gradlew --console=plain check && popd

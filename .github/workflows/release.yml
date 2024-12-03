@@ -29,6 +29,7 @@ jobs:
             java-hello-world-maven-quarkus.zip
             java-hello-world-maven-spring-boot.zip
             kotlin-hello-world-gradle.zip
+            kotlin-hello-world-gradle-spring-boot.zip
             typescript-hello-world.zip
             typescript-hello-world-lambda-cdk.zip
             typescript-bun-hello-world.zip
