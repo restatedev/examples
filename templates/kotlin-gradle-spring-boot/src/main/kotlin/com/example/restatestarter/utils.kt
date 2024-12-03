@@ -1,5 +1,3 @@
-package my.example
-
 fun sendNotification(greetingId: String, name: String) {
     if (Math.random() < 0.5) { // 50% chance of failure
         println("👻 Failed to send notification: $greetingId - $name")
