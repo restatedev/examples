@@ -1,5 +1,3 @@
-use crate::auxiliary::email_client::EmailClient;
-use crate::auxiliary::payment_client::PaymentClient;
 use restate_sdk::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -20,8 +18,8 @@ pub struct CheckoutServiceImpl;
 impl CheckoutService for CheckoutServiceImpl {
     async fn handle(
         &self,
-        mut ctx: Context<'_>,
-        Json(CheckoutRequest { user_id, tickets }): Json<CheckoutRequest>,
+        _ctx: Context<'_>,
+        Json(CheckoutRequest { user_id: _, tickets: _ }): Json<CheckoutRequest>,
     ) -> Result<bool, HandlerError> {
         Ok(true)
     }

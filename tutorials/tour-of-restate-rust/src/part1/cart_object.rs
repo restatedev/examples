@@ -1,7 +1,6 @@
 use crate::checkout_service::{CheckoutRequest, CheckoutServiceClient};
 use crate::ticket_object::TicketObjectClient;
 use restate_sdk::prelude::*;
-use std::time::Duration;
 
 #[restate_sdk::object]
 pub(crate) trait CartObject {
@@ -14,8 +13,6 @@ pub(crate) trait CartObject {
 
 pub struct CartObjectImpl;
 
-const TICKETS: &str = "ticket";
-
 impl CartObject for CartObjectImpl {
     // <start_add_ticket>
     async fn add_ticket(
@@ -24,7 +21,7 @@ impl CartObject for CartObjectImpl {
         ticket_id: String,
     ) -> Result<bool, HandlerError> {
         // !mark(1:5)
-        let reservation_success = ctx
+        let _reservation_success = ctx
             .object_client::<TicketObjectClient>(ticket_id.clone())
             .reserve()
             .call()

@@ -6,6 +6,7 @@
 // You can find a copy of the license in the file LICENSE
 // in the root directory of this repository or package or at
 // https://github.com/restatedev/examples/
+#![allow(unused)]
 use restate_sdk::errors::HandlerError;
 use std::sync::atomic::{AtomicI32, Ordering};
 use std::sync::Arc;
