@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use crate::auxiliary::email_client::EmailClient;
 use crate::auxiliary::payment_client::PaymentClient;
 use restate_sdk::prelude::*;
@@ -7,7 +8,7 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub(crate) struct CheckoutRequest {
     pub(crate) user_id: String,
-    pub(crate) tickets: Vec<String>,
+    pub(crate) tickets: HashSet<String>,
 }
 
 #[restate_sdk::service]
@@ -30,15 +31,14 @@ impl CheckoutService for CheckoutServiceImpl {
 
         let pay_client = PaymentClient::new();
         let success = ctx
-            .run(|| pay_client.call(&idempotency_key, total_price))
+            .run(|| PaymentClient.call(&idempotency_key, total_price))
             .await?;
 
-        let email_client = EmailClient::new();
         if success {
-            ctx.run(|| email_client.notify_user_of_payment_success(&user_id))
+            ctx.run(|| EmailClient.notify_user_of_payment_success(&user_id))
                 .await?;
         } else {
-            ctx.run(|| email_client.notify_user_of_payment_failure(&user_id))
+            ctx.run(|| EmailClient.notify_user_of_payment_failure(&user_id))
                 .await?;
         }
         Ok(success)

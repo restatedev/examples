@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use restate_sdk::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -5,7 +6,7 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub(crate) struct CheckoutRequest {
     pub(crate) user_id: String,
-    pub(crate) tickets: Vec<String>,
+    pub(crate) tickets: HashSet<String>,
 }
 
 #[restate_sdk::service]

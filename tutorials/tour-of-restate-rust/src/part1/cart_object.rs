@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use crate::checkout_service::{CheckoutRequest, CheckoutServiceClient};
 use crate::ticket_object::TicketObjectClient;
 use restate_sdk::prelude::*;
@@ -38,7 +39,7 @@ impl CartObject for CartObjectImpl {
             .service_client::<CheckoutServiceClient>()
             .handle(Json(CheckoutRequest {
                 user_id: ctx.key().parse()?,
-                tickets: vec!(String::from("seat2B")),
+                tickets: HashSet::from([String::from("seat2B")]),
             }))
             .call()
             .await?;

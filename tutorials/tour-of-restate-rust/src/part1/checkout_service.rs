@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use restate_sdk::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -5,9 +6,10 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub(crate) struct CheckoutRequest {
     pub(crate) user_id: String,
-    pub(crate) tickets: Vec<String>,
+    pub(crate) tickets: HashSet<String>,
 }
 
+// <start_checkout>
 #[restate_sdk::service]
 pub(crate) trait CheckoutService {
     async fn handle(request: Json<CheckoutRequest>) -> Result<bool, HandlerError>;
@@ -15,7 +17,6 @@ pub(crate) trait CheckoutService {
 
 pub struct CheckoutServiceImpl;
 
-// <start_checkout>
 impl CheckoutService for CheckoutServiceImpl {
     async fn handle(
         &self,

@@ -7,36 +7,26 @@
 // in the root directory of this repository or package or at
 // https://github.com/restatedev/examples/
 #![allow(unused)]
+
+use log::info;
 use restate_sdk::errors::HandlerError;
 
 pub struct EmailClient;
 
 impl EmailClient {
-    pub fn new() -> Self {
-        EmailClient
-    }
-
     pub async fn notify_user_of_payment_success(
-        &self,
         user_id: &str,
     ) -> Result<bool, HandlerError> {
-        println!("Notifying user {} of payment success", user_id);
+        info!("Notifying user {} of payment success", user_id);
         // send the email
         Ok(true)
     }
 
     pub async fn notify_user_of_payment_failure(
-        &self,
         user_id: &str,
     ) -> Result<bool, HandlerError> {
-        println!("Notifying user {} of payment failure", user_id);
+        info!("Notifying user {} of payment failure", user_id);
         // send the email
         Ok(false)
-    }
-}
-
-impl Default for EmailClient {
-    fn default() -> Self {
-        Self::new()
     }
 }

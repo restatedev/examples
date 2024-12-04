@@ -11,19 +11,17 @@ pub(crate) trait TicketObject {
 
 pub struct TicketObjectImpl;
 
-const STATUS: &str = "status";
-
 impl TicketObject for TicketObjectImpl {
     // <start_reserve>
     async fn reserve(&self, ctx: ObjectContext<'_>) -> Result<bool, HandlerError> {
         let status: TicketStatus = ctx
-            .get::<Json<TicketStatus>>(STATUS)
+            .get::<Json<TicketStatus>>("status")
             .await?
             .unwrap_or(Json(TicketStatus::Available))
             .into_inner();
 
         if let TicketStatus::Available = status {
-            ctx.set(STATUS, Json(TicketStatus::Reserved));
+            ctx.set("status", Json(TicketStatus::Reserved));
             Ok(true)
         } else {
             Ok(false)
@@ -34,13 +32,13 @@ impl TicketObject for TicketObjectImpl {
     // <start_unreserve>
     async fn unreserve(&self, ctx: ObjectContext<'_>) -> Result<(), HandlerError> {
         let status: TicketStatus = ctx
-            .get::<Json<TicketStatus>>(STATUS)
+            .get::<Json<TicketStatus>>("status")
             .await?
             .unwrap_or(Json(TicketStatus::Available))
             .into_inner();
 
         if let TicketStatus::Reserved = status {
-            ctx.clear(STATUS);
+            ctx.clear("status");
         }
         Ok(())
     }
@@ -49,13 +47,13 @@ impl TicketObject for TicketObjectImpl {
     // <start_mark_as_sold>
     async fn mark_as_sold(&self, ctx: ObjectContext<'_>) -> Result<(), HandlerError> {
         let status: TicketStatus = ctx
-            .get::<Json<TicketStatus>>(STATUS)
+            .get::<Json<TicketStatus>>("status")
             .await?
             .unwrap_or(Json(TicketStatus::Available))
             .into_inner();
 
         if let TicketStatus::Reserved = status {
-            ctx.set(STATUS, Json(TicketStatus::Sold));
+            ctx.set("status", Json(TicketStatus::Sold));
         }
         Ok(())
     }

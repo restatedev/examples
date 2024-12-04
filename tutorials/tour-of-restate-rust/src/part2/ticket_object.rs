@@ -11,8 +11,6 @@ pub(crate) trait TicketObject {
 
 pub struct TicketObjectImpl;
 
-const STATUS: &str = "status";
-
 impl TicketObject for TicketObjectImpl {
     async fn reserve(&self, ctx: ObjectContext<'_>) -> Result<bool, HandlerError> {
         Ok(true)

@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+use std::hash::Hash;
 use crate::checkout_service::{CheckoutRequest, CheckoutServiceClient};
 use crate::ticket_object::TicketObjectClient;
 use restate_sdk::prelude::*;
@@ -14,8 +16,6 @@ pub(crate) trait CartObject {
 
 pub struct CartObjectImpl;
 
-const TICKETS: &str = "ticket";
-
 impl CartObject for CartObjectImpl {
     async fn add_ticket(
         &self,
@@ -30,12 +30,12 @@ impl CartObject for CartObjectImpl {
 
         if reservation_success {
             let mut tickets = ctx
-                .get::<Json<Vec<String>>>(TICKETS)
+                .get::<Json<HashSet<String>>>("tickets")
                 .await?
                 .unwrap_or_default()
                 .into_inner();
-            tickets.push(ticket_id.clone());
-            ctx.set(TICKETS, Json(tickets));
+            tickets.insert(ticket_id.clone());
+            ctx.set("tickets", Json(tickets));
 
             ctx.object_client::<CartObjectClient>(ctx.key())
                 .expire_ticket(ticket_id.clone())
@@ -48,12 +48,12 @@ impl CartObject for CartObjectImpl {
     // <start_checkout>
     async fn checkout(&self, ctx: ObjectContext<'_>) -> Result<bool, HandlerError> {
         let tickets = ctx
-            .get::<Json<Vec<String>>>(TICKETS)
+            .get::<Json<HashSet<String>>>("tickets")
             .await?
             .unwrap_or_default()
             .into_inner();
 
-        if (tickets.is_empty()) {
+        if tickets.is_empty() {
             return Ok(false);
         }
 
@@ -73,7 +73,7 @@ impl CartObject for CartObjectImpl {
                     .mark_as_sold()
                     .send();
             }
-            ctx.clear(TICKETS);
+            ctx.clear("tickets");
         }
 
         Ok(success)
@@ -86,14 +86,13 @@ impl CartObject for CartObjectImpl {
         ticket_id: String,
     ) -> Result<(), HandlerError> {
         let mut tickets = ctx
-            .get::<Json<Vec<String>>>(TICKETS)
+            .get::<Json<HashSet<String>>>("tickets")
             .await?
             .unwrap_or_default()
             .into_inner();
 
-        if let Some(ticket_index) = tickets.iter().position(|ticket| ticket == &ticket_id) {
-            tickets.remove(ticket_index);
-            ctx.set(TICKETS, Json(tickets));
+        if tickets.remove(&ticket_id) {
+            ctx.set("tickets", Json(tickets));
 
             ctx.object_client::<TicketObjectClient>(ticket_id)
                 .unreserve()

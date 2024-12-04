@@ -14,8 +14,6 @@ pub(crate) trait CartObject {
 
 pub struct CartObjectImpl;
 
-const TICKETS: &str = "ticket";
-
 impl CartObject for CartObjectImpl {
     // <start_add_ticket>
     async fn add_ticket(
@@ -30,13 +28,14 @@ impl CartObject for CartObjectImpl {
             .await?;
 
         if reservation_success {
+            // !mark(1:7)
             let mut tickets = ctx
-                .get::<Json<Vec<String>>>(TICKETS)
+                .get::<Json<HashSet<String>>>("tickets")
                 .await?
                 .unwrap_or_default()
                 .into_inner();
             tickets.push(ticket_id.clone());
-            ctx.set(TICKETS, Json(tickets));
+            ctx.set("tickets", Json(tickets));
 
             ctx.object_client::<CartObjectClient>(ctx.key())
                 .expire_ticket(ticket_id.clone())
@@ -51,12 +50,12 @@ impl CartObject for CartObjectImpl {
     async fn checkout(&self, ctx: ObjectContext<'_>) -> Result<bool, HandlerError> {
         // !mark(1:9)
         let tickets = ctx
-            .get::<Json<Vec<String>>>(TICKETS)
+            .get::<Json<HashSet<String>>>("tickets")
             .await?
             .unwrap_or_default()
             .into_inner();
 
-        if (tickets.is_empty()) {
+        if tickets.is_empty() {
             return Ok(false);
         }
 
@@ -71,7 +70,7 @@ impl CartObject for CartObjectImpl {
 
         if success {
             // !mark
-            ctx.clear(TICKETS);
+            ctx.clear("tickets");
         }
 
         Ok(success)
@@ -85,14 +84,13 @@ impl CartObject for CartObjectImpl {
         ticket_id: String,
     ) -> Result<(), HandlerError> {
         let mut tickets = ctx
-            .get::<Json<Vec<String>>>(TICKETS)
+            .get::<Json<HashSet<String>>>("tickets")
             .await?
             .unwrap_or_default()
             .into_inner();
 
-        if let Some(ticket_index) = tickets.iter().position(|ticket| ticket == &ticket_id) {
-            tickets.remove(ticket_index);
-            ctx.set(TICKETS, Json(tickets));
+        if tickets.remove(&ticket_id) {
+            ctx.set("tickets", Json(tickets));
 
             ctx.object_client::<TicketObjectClient>(ticket_id)
                 .unreserve()
