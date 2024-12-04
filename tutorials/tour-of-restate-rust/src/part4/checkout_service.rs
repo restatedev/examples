@@ -31,14 +31,14 @@ impl CheckoutService for CheckoutServiceImpl {
 
         let pay_client = PaymentClient::new();
         let success = ctx
-            .run(|| PaymentClient.call(&idempotency_key, total_price))
+            .run(|| pay_client.call(&idempotency_key, total_price))
             .await?;
 
         if success {
-            ctx.run(|| EmailClient.notify_user_of_payment_success(&user_id))
+            ctx.run(|| EmailClient::notify_user_of_payment_success(&user_id))
                 .await?;
         } else {
-            ctx.run(|| EmailClient.notify_user_of_payment_failure(&user_id))
+            ctx.run(|| EmailClient::notify_user_of_payment_failure(&user_id))
                 .await?;
         }
         Ok(success)

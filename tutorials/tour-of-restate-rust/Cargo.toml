@@ -20,12 +20,12 @@ path = "src/part1/main.rs"
 
 [[bin]]
 name = "part2"
-path = "src/part1/main.rs"
+path = "src/part2/main.rs"
 
 [[bin]]
 name = "part3"
-path = "src/part1/main.rs"
+path = "src/part3/main.rs"
 
 [[bin]]
 name = "part4"
-path = "src/part1/main.rs"
+path = "src/part4/main.rs"

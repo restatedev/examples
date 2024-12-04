@@ -1,5 +1,4 @@
 use std::collections::HashSet;
-use std::hash::Hash;
 use crate::checkout_service::{CheckoutRequest, CheckoutServiceClient};
 use crate::ticket_object::TicketObjectClient;
 use restate_sdk::prelude::*;
