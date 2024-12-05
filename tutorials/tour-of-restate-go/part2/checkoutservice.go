@@ -2,7 +2,6 @@ package main
 
 import restate "github.com/restatedev/sdk-go"
 
-// <start_checkout>
 type CheckoutService struct{}
 
 type CheckoutRequest struct {
@@ -13,5 +12,3 @@ type CheckoutRequest struct {
 func (CheckoutService) Handle(ctx restate.Context, request CheckoutRequest) (bool, error) {
 	return true, nil
 }
-
-// <end_checkout>

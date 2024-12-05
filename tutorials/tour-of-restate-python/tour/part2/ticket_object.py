@@ -14,22 +14,16 @@ from restate.object import VirtualObject
 ticket = VirtualObject("TicketObject")
 
 
-# <start_reserve>
 @ticket.handler()
 async def reserve(ctx: ObjectContext) -> bool:
     return True
-# <end_reserve>
 
 
-# <start_unreserve>
 @ticket.handler()
 async def unreserve(ctx: ObjectContext):
     return
-# <end_unreserve>
 
 
-# <start_mark_as_sold>
 @ticket.handler("markAsSold")
 async def mark_as_sold(ctx: ObjectContext):
     return
-# <end_mark_as_sold>

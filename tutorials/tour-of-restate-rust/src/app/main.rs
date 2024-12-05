@@ -2,12 +2,13 @@ mod cart_object;
 mod checkout_service;
 mod ticket_object;
 
-pub mod auxiliary;
-
 use restate_sdk::prelude::*;
 use crate::cart_object::CartObject;
 use crate::checkout_service::CheckoutService;
 use crate::ticket_object::TicketObject;
+
+#[path="../auxiliary/mod.rs"]
+mod auxiliary;
 
 #[tokio::main]
 async fn main() {

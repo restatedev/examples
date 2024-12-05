@@ -26,8 +26,6 @@ email_client = EmailClient()
 checkout = Service("CheckoutService")
 
 
-# <start_checkout>
 @checkout.handler()
 async def handle(ctx: ObjectContext, order: Order) -> bool:
     return True
-# <end_checkout>
