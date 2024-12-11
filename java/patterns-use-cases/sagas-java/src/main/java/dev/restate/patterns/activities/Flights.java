@@ -14,21 +14,21 @@ public class Flights {
 
   @Handler
   public String reserve(Context ctx, FlightBookingRequest request) {
-    // this should implement the communication with the rental
+    // this should implement the communication with the flight
     // provider's APIs
     // just return a mock random id representing the reservation
-    return "car-" + UUID.randomUUID().toString();
+    return "flight-" + UUID.randomUUID().toString();
   }
 
   @Handler
   public void confirm(Context ctx, String flightBookingId) {
-    // this should implement the communication with the rental
+    // this should implement the communication with the flight
     // provider's APIs
   }
 
   @Handler
   public void cancel(Context ctx, String flightBookingId) {
-    // this should implement the communication with the rental
+    // this should implement the communication with the flight
     // provider's APIs
   }
 }

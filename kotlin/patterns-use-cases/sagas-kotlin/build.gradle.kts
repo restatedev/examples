@@ -31,6 +31,9 @@ dependencies {
 // Setup Java/Kotlin compiler target
 java {
   toolchain {
-    languageVersion.set(JavaLanguageVersion.of(11))
+    languageVersion.set(JavaLanguageVersion.of(17))
   }
 }
+
+// Set main class
+application { mainClass.set("dev.restate.patterns.BookingWorkflow") }

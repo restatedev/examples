@@ -1,11 +1,18 @@
 package dev.restate.patterns
 
-import dev.restate.sdk.annotation.Handler
-import dev.restate.sdk.annotation.Service
-import dev.restate.sdk.annotation.VirtualObject
+import dev.restate.patterns.activities.CarRentalBookingRequest
+import dev.restate.patterns.activities.CarRentals
+import dev.restate.patterns.activities.CarRentalsClient
+import dev.restate.patterns.activities.FlightBookingRequest
+import dev.restate.patterns.activities.Flights
+import dev.restate.patterns.activities.FlightsClient
+import dev.restate.patterns.activities.Payment
+import dev.restate.patterns.activities.PaymentClient
+import dev.restate.patterns.activities.PaymentRequest
+import dev.restate.sdk.annotation.Workflow
 import dev.restate.sdk.common.TerminalException
-import dev.restate.sdk.kotlin.Context
-import dev.restate.sdk.kotlin.ObjectContext
+import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
+import dev.restate.sdk.kotlin.WorkflowContext
 import kotlinx.serialization.Serializable
 
 //
@@ -37,31 +44,31 @@ import kotlinx.serialization.Serializable
  * until it completes. Moreover, an invocation failure and an invocation cancellation are handled
  * in the exact same way by the caller.
  */
-@VirtualObject
-class Travels {
+@Workflow
+public class BookingWorkflow {
 
-    @Handler
-    suspend fun reserve(ctx: ObjectContext, request: TravelBookingRequest) {
-        val flightsService = FlightsClient.fromContext(ctx)
-        val carRentalsService = CarRentalsClient.fromContext(ctx)
-        val paymentService = PaymentClient.fromContext(ctx)
+    @Workflow
+    suspend fun run(ctx: WorkflowContext, request: TravelBookingRequest) {
 
         // Create a list of compensations to run in case of a failure or cancellation.
         val compensations: MutableList<suspend () -> Unit> = mutableListOf()
 
         try {
+            val flightsService = FlightsClient.fromContext(ctx)
             val flightBookingId = flightsService
                 .reserve(FlightBookingRequest(request.destination))
                 .await()
             // Register the compensation to undo the flight reservation.
             compensations.add { flightsService.cancel(flightBookingId).await() }
 
+            val carRentalsService = CarRentalsClient.fromContext(ctx)
             val carRentalBookingId = carRentalsService
                     .reserve(CarRentalBookingRequest(request.car))
                     .await()
             // Register the compensation to undo the car rental reservation.
             compensations.add { carRentalsService.cancel(carRentalBookingId).await() }
 
+            val paymentService = PaymentClient.fromContext(ctx)
             val paymentId = paymentService
                 .process(PaymentRequest(request.card))
                 .await()
@@ -82,46 +89,12 @@ class Travels {
     }
 }
 
-// --- Interfaces for Flights, CarRental and Payment components
-
-@Serializable
-data class FlightBookingRequest(val destination: String)
-
-@Service
-interface Flights {
-    @Handler
-    fun reserve(context: Context, request: FlightBookingRequest): String
-
-    @Handler
-    fun confirm(context: Context, flightBookingId: String)
-
-    @Handler
-    fun cancel(context: Context, flightBookingId: String)
-}
-
-@Serializable
-data class CarRentalBookingRequest(val car: String)
-
-@Service
-interface CarRentals {
-    @Handler
-    fun reserve(context: Context, request: CarRentalBookingRequest): String
-
-    @Handler
-    fun confirm(context: Context, carRentalBookingId: String)
-
-    @Handler
-    fun cancel(context: Context, carRentalBookingId: String)
-}
-
-@Serializable
-data class PaymentRequest(val card: String)
-
-@Service
-interface Payment {
-    @Handler
-    fun process(context: Context, request: PaymentRequest): String
-
-    @Handler
-    fun refund(context: Context, paymentId: String)
+fun main() {
+    RestateHttpEndpointBuilder
+        .builder()
+        .bind(BookingWorkflow())
+        .bind(Flights())
+        .bind(CarRentals())
+        .bind(Payment())
+        .buildAndListen()
 }
