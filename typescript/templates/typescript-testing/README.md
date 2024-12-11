@@ -2,7 +2,7 @@
 
 This example shows how to use [Test Containers](https://testcontainers.com/) to test a Restate application.
 
-Have a look at the [TypeScript Quickstart guide](https://docs.restate.dev/get_started/quickstart?sdk=ts) for more information on how to use this project.
+Have a look at the [TypeScript Testing documentation](https://docs.restate.dev/develop/ts/testing) for more information on how to use this project.
 
 You can run the tests with:
 

@@ -15,14 +15,12 @@
   },
   "dependencies": {
     "@restatedev/restate-sdk": "^1.4.0",
-    "@restatedev/restate-sdk-clients": "^1.4.0"
+    "@restatedev/restate-sdk-testcontainers": "^1.4.0"
   },
   "devDependencies": {
     "@types/jest": "^29.4.0",
     "@types/node": "^20.14.2",
-    "apache-arrow": "^18.0.0",
     "esbuild": "^0.21.5",
-    "testcontainers": "^10.4.0",
     "ts-jest": "^29.0.5",
     "tsx": "^4.19.2",
     "typescript": "^5.4.5"
