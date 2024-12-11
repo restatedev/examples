@@ -7,45 +7,77 @@
 A collection of examples that illustrate how to use Restate to solve common application
 challenges.
 
-* **[Use Cases and Patterns](patterns-use-cases):** Small specific use cases, like webhooks,
-  workflows, asynchronous task queuing.
-
-* **[Basics](basics):** Small examples highlighting the basic building blocks, like
-  durable execution or virtual objects.
-
-* **[End-to-End Applications](end-to-end-applications):** Runnable demo applications that consist
-  of many components, e.g., a food ordering app, or an e-commerce site.
-  Typically packaged as a docker compose setup.
-
-* **[Tutorials](tutorials):** A step-by-step guide that builds an application and introduces
-  the Restate concepts on the way.
-
-* **[Templates](templates):** Project templates for various languages and build systems.
+* **[Templates](#templates):** Project templates for various languages, build systems and runtimes.
   Simple 'Hello World!' examples in a proper build setup that you can use if you want to start
   a brand new project for a service or lambda that will be invoked through Restate.
 
+* **Basics:** Small examples highlighting the basic building blocks, like
+  durable execution or virtual objects.
+ 
+* **Use Cases and Patterns:** Small specific use cases, like webhooks,
+  workflows, asynchronous task queuing.
 
-## Examples by Language
+* **Integrations:** Examples of integrating Restate with other popular tools, technologies, and libraries.
 
-### TypeScript
+* **End-to-End Applications:** Runnable demo applications that consist
+  of many components, e.g., a food ordering app, or an e-commerce site.
+  Typically packaged as a docker compose setup.
 
+* **Tutorials:** A step-by-step guide that builds an application and introduces
+  the Restate concepts on the way.
+
+[![TypeScript](https://skillicons.dev/icons?i=ts)](typescript)
+[![Java](https://skillicons.dev/icons?i=java)](java)
+[![Rust](https://skillicons.dev/icons?i=rust)](rust)
+[![Python](https://skillicons.dev/icons?i=python)](python)
+[![Go](https://skillicons.dev/icons?i=go)](go)
+[![Kotlin](https://skillicons.dev/icons?i=kotlin)](kotlin)
+
+
+## Example catalog
+
+### Templates
+| Type       | Name / Link                                                                                        |
+|------------|----------------------------------------------------------------------------------------------------|
+| Templates  | [Restate Node/TS Template](templates/typescript)                                                     |
+| Templates  | [Restate Bun/TS Template](templates/bun)                                                             |
+| Templates  | [Restate CloudFlare Workers/TS Template](templates/cloudflare-workers)                               |
+| Templates  | [Restate Deno/TS Template](templates/deno)                                                           |
+
+### Basics
 | Type       | Name / Link                                                                                        |
 |------------|----------------------------------------------------------------------------------------------------|
 | Basics     | [Workflows, Durable Execution, Event-processing, Virtual Objects](basics/basics-typescript)        |
+
+
+### Use Cases and Patterns
+| Type       | Name / Link                                                                                        |
+|------------|----------------------------------------------------------------------------------------------------|
 | Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-typescript)                                                 |
 | Use Cases  | [Durable Promises](patterns-use-cases/durable-promises/durable-promises-typescript)                |
 | Use Cases  | [State Machines](patterns-use-cases/state-machines/state-machines-typescript/)                     |
 | Use Cases  | [Payment Service](patterns-use-cases/payment-state-machine/payment-state-machine-typescript/)      |
 | Use Cases  | [Async Tasks - Payments](patterns-use-cases/async-signals-payment/async-signals-payment-typescript/) |
+
+### Integrations
+| Type       | Name / Link                                                                                        |
+|------------|-----------------------------|
+
+### End-to-End Applications
+| Type       | Name / Link                                                                                        |
+|------------|----------------------------------------------------------------------------------------------------|
 | End-to-End | [Food Ordering App](end-to-end-applications/typescript/food-ordering)                              |
 | End-to-End | [AI Image Processing Workflow](end-to-end-applications/typescript/ai-image-workflows)              |
 | End-to-End | [LLM-powered Chat Bot / Task Agent](end-to-end-applications/typescript/chat-bot)                     |
-| Tutorial   | [Tour of Restate](tutorials/tour-of-restate-typescript)                                            |
-| Templates  | [Restate Node/TS Template](templates/typescript)                                                     |
-| Templates  | [Restate Bun/TS Template](templates/bun)                                                             |
-| Templates  | [Restate CloudFlare Workers/TS Template](templates/cloudflare-workers)                               |
-| Templates  | [Restate Deno/TS Template](templates/deno)                                                           |
-| Templates  | [Testing Restate app with Test Containers](templates/typescript-testing)                           |
+
+
+
+### Tutorials
+| Type       | Name / Link                                                |
+|------------|------------------------------------------------------------|
+| Tutorial   | [TS Tour of Restate](tutorials/tour-of-restate-typescript) |
+
+
 
 ### Java
 

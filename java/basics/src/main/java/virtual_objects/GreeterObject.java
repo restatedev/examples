@@ -32,7 +32,7 @@ import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 public class GreeterObject {
 
     private static final StateKey<Integer> COUNT =
-            StateKey.of("available-drivers", JsonSerdes.INT);
+            StateKey.of("count", JsonSerdes.INT);
 
     @Handler
     public String greet(ObjectContext ctx, String greeting) {
