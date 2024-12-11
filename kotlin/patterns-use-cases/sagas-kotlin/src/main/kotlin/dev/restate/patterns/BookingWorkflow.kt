@@ -45,7 +45,7 @@ import kotlinx.serialization.Serializable
  * in the exact same way by the caller.
  */
 @Workflow
-public class BookingWorkflow {
+class BookingWorkflow {
 
     @Workflow
     suspend fun run(ctx: WorkflowContext, request: TravelBookingRequest) {
@@ -54,6 +54,7 @@ public class BookingWorkflow {
         val compensations: MutableList<suspend () -> Unit> = mutableListOf()
 
         try {
+            // 1. Reserve the flights and let Restate remember the reservation ID
             val flightsService = FlightsClient.fromContext(ctx)
             val flightBookingId = flightsService
                 .reserve(FlightBookingRequest(request.destination))
@@ -61,6 +62,7 @@ public class BookingWorkflow {
             // Register the compensation to undo the flight reservation.
             compensations.add { flightsService.cancel(flightBookingId).await() }
 
+            // 2. Reserve the car and let Restate remember the reservation ID
             val carRentalsService = CarRentalsClient.fromContext(ctx)
             val carRentalBookingId = carRentalsService
                     .reserve(CarRentalBookingRequest(request.car))
@@ -68,6 +70,8 @@ public class BookingWorkflow {
             // Register the compensation to undo the car rental reservation.
             compensations.add { carRentalsService.cancel(carRentalBookingId).await() }
 
+            // 3. Call the payment service to make the payment and let Restate remember
+            // the payment ID
             val paymentService = PaymentClient.fromContext(ctx)
             val paymentId = paymentService
                 .process(PaymentRequest(request.card))
@@ -75,7 +79,7 @@ public class BookingWorkflow {
             // Register the compensation to undo the payment.
             compensations.add { paymentService.refund(paymentId).await() }
 
-            // Confirm flight and car rental after payment done
+            // 4. Confirm flight and car rental after payment done
             flightsService.confirm(flightBookingId).await()
             carRentalsService.confirm(carRentalBookingId).await()
         } catch (e: TerminalException) {
@@ -84,7 +88,7 @@ public class BookingWorkflow {
                 it()
             }
 
-            throw TerminalException("Failed to reserve the trip: ${e.message}")
+            throw TerminalException("Failed to reserve the trip: ${e.message}. Ran ${compensations.size} compensations.")
         }
     }
 }
