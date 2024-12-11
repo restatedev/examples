@@ -37,138 +37,89 @@ challenges.
 ## Example catalog
 
 ### Templates
-| Type       | Name / Link                                                                                        |
-|------------|----------------------------------------------------------------------------------------------------|
-| Templates  | [Restate Node/TS Template](templates/typescript)                                                     |
-| Templates  | [Restate Bun/TS Template](templates/bun)                                                             |
-| Templates  | [Restate CloudFlare Workers/TS Template](templates/cloudflare-workers)                               |
-| Templates  | [Restate Deno/TS Template](templates/deno)                                                           |
+| Name / Link                                                              |
+|--------------------------------------------------------------------------|
+| [TypeScript - Node Template](templates/typescript)                       |
+| [TypeScript - Bun Template](templates/bun)                               |
+| [TypeScript - CloudFlare Workers Template](templates/cloudflare-workers) |
+| [TypeScript - Deno Template](templates/deno)                             |
+| [Java - Maven Template](templates/java-maven)                            |
+| [Java - Maven - Spring Boot Template](templates/java-maven-spring-boot)  |
+| [Java - Maven - Quarkus Template](templates/java-maven-quarkus)          |
+| [Java - Gradle Template](templates/java-gradle)                          |
+| [Python Template](templates/python)                                      |
+| [Kotlin Template using Gradle](templates/kotlin-gradle)                  |
+| [Go Template](templates/go)                                              |
+| [Rust Template](templates/rust)                                          |
+| [Rust - Shuttle.rs Template](templates/rust-shuttle)                     |
 
 ### Basics
-| Type       | Name / Link                                                                                        |
-|------------|----------------------------------------------------------------------------------------------------|
-| Basics     | [Workflows, Durable Execution, Event-processing, Virtual Objects](basics/basics-typescript)        |
+| Name                         | Language / Link                                                                                                            | Description                                                                                          |
+|------------------------------|----------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|
+| Services - Durable Execution | [TS](basics/basics-typescript), [Java](basics/basics-java), [Python](basics/basics-python), [Kotlin](basics/basics-kotlin) | Making code resilient to failures via automatic retries and recovery of previously finished actions. |
+| Virtual Objects              | [TS](basics/basics-typescript), [Java](basics/basics-java), [Python](basics/basics-python), [Kotlin](basics/basics-kotlin) | Stateful objects to manage durable, consistent state.                                                |
+| Workflows                    | [TS](basics/basics-typescript), [Java](basics/basics-java), [Python](basics/basics-python), [Kotlin](basics/basics-kotlin) |                                                                                                      |
 
 
 ### Use Cases and Patterns
-| Type       | Name / Link                                                                                        |
-|------------|----------------------------------------------------------------------------------------------------|
-| Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-typescript)                                                 |
-| Use Cases  | [Durable Promises](patterns-use-cases/durable-promises/durable-promises-typescript)                |
-| Use Cases  | [State Machines](patterns-use-cases/state-machines/state-machines-typescript/)                     |
-| Use Cases  | [Payment Service](patterns-use-cases/payment-state-machine/payment-state-machine-typescript/)      |
-| Use Cases  | [Async Tasks - Payments](patterns-use-cases/async-signals-payment/async-signals-payment-typescript/) |
+| Name                   | Language / Link                                                                                                                                                | Description |
+|------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| Sagas                  | [TS](patterns-use-cases/sagas/sagas-typescript), [Java](patterns-use-cases/sagas/sagas-java), [Kotlin](patterns-use-cases/sagas/sagas-kotlin)                  |
+| Durable Promises       | [TS](patterns-use-cases/durable-promises/durable-promises-typescript)                                                                                          |
+| State Machines         | [TS](patterns-use-cases/state-machines/state-machines-typescript/)                                                                                             |
+| Payment Service        | [TS](patterns-use-cases/payment-state-machine/payment-state-machine-typescript/), [Java](patterns-use-cases/payment-state-machine/payment-state-machine-java/) |
+| Async Tasks - Payments | [TS](patterns-use-cases/async-signals-payment/async-signals-payment-typescript/), [Java](patterns-use-cases/async-signals-payment/async-signals-payment-java/) |
 
 ### Integrations
-| Type       | Name / Link                                                                                        |
-|------------|-----------------------------|
+| Name / Link                                                               | Description |
+|---------------------------------------------------------------------------|-------------|
+| [Java - Spring & Spring JPA](patterns-use-cases/integrations/java-spring) |             |
+| [Go + Knative](tutorials/knative-go)                                      |
+
 
 ### End-to-End Applications
-| Type       | Name / Link                                                                                        |
-|------------|----------------------------------------------------------------------------------------------------|
-| End-to-End | [Food Ordering App](end-to-end-applications/typescript/food-ordering)                              |
-| End-to-End | [AI Image Processing Workflow](end-to-end-applications/typescript/ai-image-workflows)              |
-| End-to-End | [LLM-powered Chat Bot / Task Agent](end-to-end-applications/typescript/chat-bot)                     |
-
+| Name                                    | Language / Link                                                                                                                                                                                                            | Description |
+|-----------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| Food Ordering App                       | [TS](end-to-end-applications/typescript/food-ordering), [Java](end-to-end-applications/java/food-ordering), [Kotlin](end-to-end-applications/kotlin/food-ordering), [Python](end-to-end-applications/python/food-ordering) |             |
+| AI Image Processing Workflow            | [TS](end-to-end-applications/typescript/ai-image-workflows)                                                                                                                                                                |             |
+| LLM-powered Chat Bot / Task Agent       | [TS](end-to-end-applications/typescript/chat-bot)                                                                                                                                                                          |             |
+| Todo app Kotlin Multiplatform + Android | [Kotlin](end-to-end-applications/kotlin/kmp-android-todo-app)                                                                                                                                                              |             |
 
 
 ### Tutorials
-| Type       | Name / Link                                                |
-|------------|------------------------------------------------------------|
-| Tutorial   | [TS Tour of Restate](tutorials/tour-of-restate-typescript) |
+| Name            | Language / Link                                                                                                                                                                                             | Description |
+|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| Tour of Restate | [TS](tutorials/tour-of-restate-typescript), [Java](tutorials/tour-of-restate-java/), [Kotlin](tutorials/tour-of-restate-python), [Rust](tutorials/tour-of-restate-rust), [Go](tutorials/tour-of-restate-go) |             |
 
-
-
-### Java
-
-| Type       | Name / Link                                                                                    |
-|------------|------------------------------------------------------------------------------------------------|
-| Templates  | [Maven Template](templates/java-maven)                                                         |
-| Templates  | [Maven - Spring Boot Template](templates/java-maven-spring-boot)                               |
-| Templates  | [Maven - Quarkus Template](templates/java-maven-quarkus)                                       |
-| Templates  | [Gradle Template](templates/java-gradle)                                                       |
-| Basics     | [Durable Execution, Event-processing, Virtual Objects](basics/basics-java)                     |
-| Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-java)                                                   |
-| Use Cases  | [Payment Service](patterns-use-cases/payment-state-machine/payment-state-machine-java/)        |
-| Use Cases  | [Async Tasks - Payments](patterns-use-cases/async-signals-payment/async-signals-payment-java/) |
-| Patterns   | [Spring & Spring JPA](patterns-use-cases/integrations/java-spring)                             |                        
-| End-to-End | [Food Ordering App](end-to-end-applications/java/food-ordering)                                |
-| Tutorial   | [Tour of Restate](tutorials/tour-of-restate-java/)                                             |
-
-### Kotlin
-
-| Type       | Name / Link                                                                                     |
-|------------|-------------------------------------------------------------------------------------------------|
-| Templates  | [Template using Gradle](templates/kotlin-gradle)                                                |
-| Basics     | [Durable Execution, Event-processing, Virtual Objects](basics/basics-kotlin)                    |
-| Use Cases  | [Sagas](patterns-use-cases/sagas/sagas-kotlin)                                                  |
-| End-to-End | [Food Ordering App](end-to-end-applications/kotlin/food-ordering)                               |
-| End-to-End | [Todos Kotlin Multiplatform + Android app](end-to-end-applications/kotlin/kmp-android-todo-app) |
-
-
-### Python
-
-| Type      | Name / Link                                         |
-|-----------|-----------------------------------------------------|
-| Templates | [Python Template](templates/python)                 |
-| Basics    | [Durable Execution, Event-processing, Virtual Objects](basics/basics-python) |
-| End-to-End | [Food Ordering App](end-to-end-applications/python/food-ordering) |
-| Tutorial  | [Tour of Restate](tutorials/tour-of-restate-python) |
-
-### Go
-
-| Type      | Name / Link                                     |
-|-----------|-------------------------------------------------|
-| Templates | [Go Template](templates/go)                     |
-| Tutorial  | [Tour of Restate](tutorials/tour-of-restate-go) |
-| Tutorial  | [Restate + Knative](tutorials/knative-go)       |
-
-### Rust
-
-| Type      | Name / Link                                          |
-|-----------|------------------------------------------------------|
-| Templates | [Rust Template](templates/rust)                      |
-| Templates | [Rust - Shuttle.rs Template](templates/rust-shuttle) |
-| Tutorial  | [Tour of Restate](tutorials/tour-of-restate-rust)    |
 
 ## Joining the community
 
-If you want to join the Restate community in order to stay up to date, then please join our [Discord](https://discord.gg/skW3AZ6uGd).
-The Discord server is also the perfect place for sharing your feedback with us, learning more about Restate and connect with others!
+If you want to join the Restate community in order to stay up to date, then please join our [Discord](https://discord.gg/skW3AZ6uGd) or [Slack](https://join.slack.com/t/restatecommunity/shared_invite/zt-2v9gl005c-WBpr167o5XJZI1l7HWKImA).
+This is also the perfect place for sharing your feedback with us, learning more about Restate and connect with others!
 
 ## Running the examples
 
-Some examples are just illustrations of code, but many are runnable. Their READMEs generally explain
+Some examples are just illustrations of code, but many are runnable. Their READMEs explain
 how to get them running. Here are the general steps:
 
 ### (1) Starting the Restate Server
 
-Examples that run individually typically need a running Restate Server instance.
+To run an example locally, you need a running Restate Server instance.
 Some examples can be run with Docker Compose. Those already bring their own Restate server instance.
 
-You can launch Restate in a number of ways, including using the [Restate Cloud](https://restate.dev/get-restate-cloud/)
-service. See [Get Restate](https://restate.dev/get-restate/) for all options to run Restate. Here is a short-list
-of options to run Restate Server locally.
-
-Install and run the `restate-server` binary:
-  - Download from https://github.com/restatedev/restate/releases
-  - Install with Homebrew: `brew install restatedev/tap/restate-server`
-  - Install with _npm_: `npm install --global @restatedev/restate-server@latest`
-  - Run in Docker: `docker run --name restate_dev --rm -p 8080:8080 -p 9070:9070 -p 9071:9071 --add-host=host.docker.internal:host-gateway docker.io/restatedev/restate:latest`
-
+To install the Restate Server and CLI, have a look at the [installation instructions in the documentation](https://docs.restate.dev/develop/local_dev#running-restate-server--cli-locally).
 
 ### (2) Register the examples at Restate Server
 
 The service endpoints need to be registered in Restate, so that Restate will proxy their function calls and
 do its magic. Once both server and example are running, register the example:
 
-* Via the [CLI](https://docs.restate.dev/operate/cli): `restate deployments register localhost:9080`
+* Via the [CLI](https://docs.restate.dev/develop/local_dev): `restate deployments register localhost:9080`
 * Via `curl localhost:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://localhost:9080"}'`
 
 **Important** When running Restate with Docker, use `host.docker.internal` instead of `localhost` in the URIs above.
 
-----
-----
+---
 
 ## Adding Examples and Releasing (for Restate developers/contributors)
 
