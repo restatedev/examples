@@ -11,48 +11,51 @@ pub(crate) trait TicketObject {
 
 pub struct TicketObjectImpl;
 
-const STATUS: &str = "status";
-
 impl TicketObject for TicketObjectImpl {
+    // <start_reserve>
     async fn reserve(&self, ctx: ObjectContext<'_>) -> Result<bool, HandlerError> {
         let status: TicketStatus = ctx
-            .get::<Json<TicketStatus>>(STATUS)
+            .get::<Json<TicketStatus>>("status")
             .await?
             .unwrap_or(Json(TicketStatus::Available))
             .into_inner();
 
-        match status {
-            TicketStatus::Available => {
-                ctx.set(STATUS, Json(TicketStatus::Reserved));
-                Ok(true)
-            }
-            TicketStatus::Reserved | TicketStatus::Sold => Ok(false),
+        if let TicketStatus::Available = status {
+            ctx.set("status", Json(TicketStatus::Reserved));
+            Ok(true)
+        } else {
+            Ok(false)
         }
     }
+    // <end_reserve>
 
+    // <start_unreserve>
     async fn unreserve(&self, ctx: ObjectContext<'_>) -> Result<(), HandlerError> {
         let status: TicketStatus = ctx
-            .get::<Json<TicketStatus>>(STATUS)
+            .get::<Json<TicketStatus>>("status")
             .await?
             .unwrap_or(Json(TicketStatus::Available))
             .into_inner();
 
         if let TicketStatus::Reserved = status {
-            ctx.clear(STATUS);
+            ctx.clear("status");
         }
         Ok(())
     }
+    // <end_unreserve>
 
+    // <start_mark_as_sold>
     async fn mark_as_sold(&self, ctx: ObjectContext<'_>) -> Result<(), HandlerError> {
         let status: TicketStatus = ctx
-            .get::<Json<TicketStatus>>(STATUS)
+            .get::<Json<TicketStatus>>("status")
             .await?
             .unwrap_or(Json(TicketStatus::Available))
             .into_inner();
 
         if let TicketStatus::Reserved = status {
-            ctx.set(STATUS, Json(TicketStatus::Sold));
+            ctx.set("status", Json(TicketStatus::Sold));
         }
         Ok(())
     }
+    // <end_mark_as_sold>
 }
