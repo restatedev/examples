@@ -55,6 +55,7 @@ restate
             // On TerminalError, Restate runs compensations without retrying.
             // On other errors, Restate does not run compensations but retries from the last successful operation.
             if (err instanceof restate.TerminalError) {
+              console.error(">>> Terminal error occurred. Running compensations.");
               for (const compensation of compensations.reverse()) {
                 await ctx.run(compensation);
               }

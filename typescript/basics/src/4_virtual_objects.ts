@@ -52,7 +52,14 @@ restate.endpoint().bind(greeterObject).listen(9080);
 /*
 Check the README to learn how to run Restate.
 Then, invoke handlers via HTTP:
+
   curl localhost:8080/greeter/mary/greet -H 'content-type: application/json' -d '{ "greeting" : "Hi" }'
+  --> "Hi mary for the 1-th time."
+
   curl localhost:8080/greeter/barack/greet -H 'content-type: application/json' -d '{"greeting" : "Hello" }'
+  --> "Hello barack for the 1-th time."
+
   curl localhost:8080/greeter/mary/ungreet -H 'content-type: application/json' -d '{}'
+  --> "Dear mary, taking one greeting back: 0."
+
 */

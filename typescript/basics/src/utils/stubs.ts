@@ -39,10 +39,10 @@ export function createSubscription(
   userId: string,
   subscription: string,
 ): string {
-  console.log(`>>> Creating subscription ${subscription} for user ${userId}`);
   maybeCrash(0.3);
+  console.log(`>>> Creating subscription ${subscription} for user ${userId}`);
 
-  if (Math.random() < 0.3) {
+  if (Math.random() < 0.5) {
     return "ALREADY_EXISTS";
   }
 

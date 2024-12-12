@@ -58,13 +58,13 @@ restate.endpoint().bind(myWorkflow).listen();
 /*
 Check the README to learn how to run Restate.
 - Then, submit the workflow via HTTP:
-  curl localhost:8080/usersignup/userid1/run/send --json '{ "name": "Bob", "email": "bob@builder.com" }'
+  curl localhost:8080/usersignup/userid1/run/send -H 'content-type: application/json' -d '{ "name": "Bob", "email": "bob@builder.com" }'
 
 - Resolve the email link via:
-  curl localhost:8080/usersignup/userid1/verifyEmail
+  curl localhost:8080/usersignup/userid1/verifyEmail -H 'content-type: application/json' -d '{ "secret": "xxx"}'
 
-- Abort the email verification via:
-  curl localhost:8080/usersignup/userid1/abortVerification
+- Attach back to the workflow to get the result:
+  curl localhost:8080/restate/workflow/usersignup/userid1/attach
 */
 
 // or programmatically
