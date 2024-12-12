@@ -25,16 +25,14 @@ const greeterObject = restate.object({
   handlers: {
     greet: async (
       ctx: restate.ObjectContext,
-      request: { greeting?: string },
+      req: { greeting: string },
     ) => {
-      const greeting = request?.greeting ?? "Hello";
-
       // Access the state attached to this object (this 'name')
       // State access and updates are exclusive and consistent with the invocations
       let count = (await ctx.get<number>("count")) ?? 0;
       count++;
       ctx.set("count", count);
-      return `${greeting} ${ctx.key} for the ${count}-th time.`;
+      return `${req.greeting} ${ctx.key} for the ${count}-th time.`;
     },
 
     ungreet: async (ctx: restate.ObjectContext) => {
