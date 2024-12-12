@@ -14,7 +14,7 @@ import {
 //  - Restate tracks the progress of execution, and prevents re-execution of completed work on retries
 //  - Regular code and control flow, no custom DSLs
 //
-// For example, update multiple downstream systems in a single transaction.
+// For example, you can use this to update multiple downstream systems in a single transaction.
 // The example implements a service that creates a recurring payment and multiple subscriptions for movie services.
 
 // Implement an HTTP endpoint to serve your services.
