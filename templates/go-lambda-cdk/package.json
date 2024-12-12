@@ -1,0 +1,34 @@
+{
+  "name": "go-lambda-cdk",
+  "version": "0.1.0",
+  "bin": {
+    "go-lambda-cdk": "bin/go-lambda-cdk.js"
+  },
+  "scripts": {
+    "lint": "eslint --ignore-path .eslintignore --ext .ts .",
+    "build": "npm run build-lambda && npm run build-cdk",
+    "build-lambda": "cd lambda && ./gradlew build",
+    "build-cdk": "cdk synth",
+    "watch": "tsc -w",
+    "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
+    "verify": "npm run format -- --check && npm run lint && npm run build",
+    "deploy": "npm run build && cdk deploy",
+    "destroy": "npx cdk destroy"
+  },
+  "devDependencies": {
+    "@restatedev/restate-cdk": "^1.1.0-rc.1",
+    "@types/node": "22.5.2",
+    "@typescript-eslint/eslint-plugin": "^8.3.0",
+    "aws-cdk": "^2.155.0",
+    "esbuild": "^0.23.1",
+    "prettier": "^3.3.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-lambda-go-alpha": "^2.171.0-alpha.0",
+    "aws-cdk-lib": "^2.155.0",
+    "constructs": "^10.3.0",
+    "source-map-support": "^0.5.21"
+  }
+}
