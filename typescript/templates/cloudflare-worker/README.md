@@ -3,7 +3,7 @@
 Sample project configuration of a Restate service using the TypeScript SDK and
 Cloudflare Workers.
 
-Have a look at the [TypeScript Quickstart guide](https://docs.restate.dev/get_started/quickstart?sdk=ts) for more information about the SDK.
+Have a look at the [TypeScript Quickstart guide](https://docs.restate.dev/get_started/quickstart?sdk=ts) for more information about this template.
 
 You can run locally with `npm run dev` and register to Restate with
 `restate dep add http://localhost:9080 --use-http1.1`. `--use-http1.1` is needed

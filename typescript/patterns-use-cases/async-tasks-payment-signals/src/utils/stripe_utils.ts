@@ -49,7 +49,7 @@ export async function createPaymentIntent(request: {
   paymentMethodId: string;
   amount: number;
   idempotencyKey: string;
-  webhookPromiseId: string;
+  intentWebhookId: string;
   delayedStatus?: boolean;
 }): Promise<Stripe.PaymentIntent> {
   const requestOptions = {
@@ -66,7 +66,7 @@ export async function createPaymentIntent(request: {
         confirmation_method: "automatic",
         return_url: "https://restate.dev/", // some random URL
         metadata: {
-          restate_callback_id: request.webhookPromiseId,
+          restate_callback_id: request.intentWebhookId,
         },
       },
       requestOptions

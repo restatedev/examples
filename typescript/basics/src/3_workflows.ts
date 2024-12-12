@@ -18,7 +18,7 @@ import { createUserEntry, sendEmailWithLink } from "./utils/stubs";
 //  - Additional methods interact with the workflow.
 // Each workflow instance has a unique ID and runs only once (to success or failure).
 //
-const myWorkflow = restate.workflow({
+const singupWorkflow = restate.workflow({
   name: "usersignup",
   handlers: {
     // --- The workflow logic ---
@@ -50,9 +50,9 @@ const myWorkflow = restate.workflow({
   },
 });
 
-export type SignupApi = typeof myWorkflow;
+export type SignupApi = typeof singupWorkflow;
 
-restate.endpoint().bind(myWorkflow).listen();
+restate.endpoint().bind(singupWorkflow).listen(9080);
 // or .handler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
 
 /*
