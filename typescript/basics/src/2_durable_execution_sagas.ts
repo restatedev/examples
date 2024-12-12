@@ -24,38 +24,26 @@ restate
         add: async (ctx: restate.Context, req: SubscriptionRequest) => {
           const { userId, creditCard, subscriptions } = req;
 
-          // We will add the undo actions to this list
           const compensations = [];
           try {
             const paymentId = ctx.rand.uuidv4();
             // Register compensating actions for steps that need to be undone in case of a terminal error
             compensations.push(() => removeRecurringPayment(paymentId));
-            const { success } = await ctx.run(() =>
-              createRecurringPayment(userId, creditCard, paymentId),
+            const res = await ctx.run(() =>
+              createRecurringPayment(creditCard, paymentId),
             );
-            if (!success) {
+            if (!res.success) {
               return;
             }
 
             for (const subscription of subscriptions) {
-              // Register compensating actions for the subscriptions, to run in case of a terminal error
-              compensations.push(() =>
-                removeSubscription(userId, subscription),
-              );
-              const result = await ctx.run(() =>
-                createSubscription(userId, subscription),
-              );
-              // If the subscription already exists, then revert the payment and other subscriptions
-              // and surface the error to the user
-              if (result == "ALREADY_EXISTS") {
-                throw new restate.TerminalError("Duplicate subscription");
-              }
+              compensations.push(() => removeSubscription(userId, subscription));
+              await ctx.run(() => createSubscription(userId, subscription));
             }
           } catch (err) {
             // On TerminalError, Restate runs compensations without retrying.
             // On other errors, Restate does not run compensations but retries from the last successful operation.
             if (err instanceof restate.TerminalError) {
-              console.error(">>> Terminal error occurred. Running compensations.");
               for (const compensation of compensations.reverse()) {
                 await ctx.run(compensation);
               }

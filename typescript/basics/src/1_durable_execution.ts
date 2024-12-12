@@ -31,20 +31,17 @@ restate
           // Parameters are durable across retries
           const { userId, creditCard, subscriptions } = req;
 
-          // 1. Generate an idempotency key
-          // This value is retained after a failure
-          const paymentId = ctx.rand.uuidv4();
+          // Recoverable after failures
+          const stableIdempotencyKey = ctx.rand.uuidv4();
 
-          // 2. Create a recurring payment via API call
           // Retried in case of timeouts, API downtime, etc.
           const { success } = await ctx.run(() =>
-            createRecurringPayment(userId, creditCard, paymentId),
+            createRecurringPayment(creditCard, stableIdempotencyKey),
           );
           if (!success) {
             return;
           }
 
-          // 3. Create subscriptions via API calls
           // Persists successful subscriptions and skip them on retries
           for (const subscription of subscriptions) {
             await ctx.run(() => createSubscription(userId, subscription));

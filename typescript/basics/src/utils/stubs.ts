@@ -9,6 +9,8 @@
  * https://github.com/restatedev/examples/blob/main/LICENSE
  */
 
+import * as restate from "@restatedev/restate-sdk";
+
 /**
  * Utility to let the service crash with a probability to show how the system recovers.
  */
@@ -43,7 +45,8 @@ export function createSubscription(
   console.log(`>>> Creating subscription ${subscription} for user ${userId}`);
 
   if (Math.random() < 0.5) {
-    return "ALREADY_EXISTS";
+    console.error("Duplicate subscription.");
+    throw new restate.TerminalError("Duplicate subscription");
   }
 
   return "SUCCESS";
@@ -53,7 +56,6 @@ export function createSubscription(
  * Simulates calling a payment API, with a random probability of API downtime.
  */
 export function createRecurringPayment(
-  userId: string,
   creditCard: string,
   paymentId: any,
 ): { success: boolean } {

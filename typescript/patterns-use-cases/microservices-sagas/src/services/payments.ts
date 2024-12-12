@@ -15,7 +15,7 @@ export const payments = {
     return "payment_id";
   },
 
-  refund: async (request: { tripID: string; paymentId: string }) => {
+  refund: async (request: { paymentId: string }) => {
     // refund the payment
   },
 };
