@@ -11,7 +11,6 @@
 
 import * as restate from "@restatedev/restate-sdk";
 
-//
 // Virtual Objects hold K/V state and have methods to interact with the object.
 // An object is identified by a unique id - only one object exists per id.
 //
@@ -21,7 +20,6 @@ import * as restate from "@restatedev/restate-sdk";
 //
 // Virtual Objects are _Stateful Serverless_ constructs.
 //
-
 const greeterObject = restate.object({
   name: "greeter",
   handlers: {
@@ -50,19 +48,13 @@ const greeterObject = restate.object({
   },
 });
 
-// you can call this now through http directly the following way
+restate.endpoint().bind(greeterObject).listen(9080);
+// or .handler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
 
-// example1: `curl localhost:8080/greeter/mary/greet -H 'content-type: application/json' -d '{ "greeting" : "Hi" }'`;
-// example2: `curl localhost:8080/greeter/barack/greet -H 'content-type: application/json' -d '{"greeting" : "Hello" }'`;
-// example3: `curl localhost:8080/greeter/mary/ungreet -H 'content-type: application/json' -d '{}'`;
-
-// --------------------------------- deploying --------------------------------
-
-const serve = restate.endpoint().bind(greeterObject);
-
-serve.listen(9080);
-// or serve.http2Handler();
-// or serve.handler() from "@restatedev/restate-sdk/lambda" or "@restatedev/restate-sdk/fetch"
-// or ...
-
-// See README for details on how to start and connect to Restate.
+/*
+Check the README to learn how to run Restate.
+Then, invoke handlers via HTTP:
+  curl localhost:8080/greeter/mary/greet -H 'content-type: application/json' -d '{ "greeting" : "Hi" }'
+  curl localhost:8080/greeter/barack/greet -H 'content-type: application/json' -d '{"greeting" : "Hello" }'
+  curl localhost:8080/greeter/mary/ungreet -H 'content-type: application/json' -d '{}'
+*/

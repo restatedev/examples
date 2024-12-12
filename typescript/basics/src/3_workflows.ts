@@ -24,14 +24,17 @@ const myWorkflow = restate.workflow({
   name: "usersignup",
   handlers: {
     // --- The workflow logic ---
-    run: async (ctx: restate.WorkflowContext, params: { name: string; email: string }) => {
-      const {name, email} = params;
+    run: async (
+      ctx: restate.WorkflowContext,
+      params: { name: string; email: string },
+    ) => {
+      const { name, email } = params;
       // You can use all the standard durable execution features here
-      await ctx.run(() => createUserEntry({name, email}));
+      await ctx.run(() => createUserEntry({ name, email }));
 
       // Send the email with the verification secret
       const secret = ctx.rand.uuidv4();
-      await ctx.run(() => sendEmailWithLink({email, secret}));
+      await ctx.run(() => sendEmailWithLink({ email, secret }));
 
       // The promise here is resolved or rejected by the additional workflow methods below
       const clickSecret = await ctx.promise<string>("email-link");
@@ -39,30 +42,40 @@ const myWorkflow = restate.workflow({
     },
 
     // --- Other handlers interact with the workflow via queries and signals ---
-    verifyEmail: async (ctx: restate.WorkflowSharedContext, request: { secret: string }) => {
+    verifyEmail: async (
+      ctx: restate.WorkflowSharedContext,
+      request: { secret: string },
+    ) => {
       // send data to the workflow via a durable promise
       await ctx.promise<string>("email-link").resolve(request.secret);
     },
-  }
+  },
 });
 
 export type SignupApi = typeof myWorkflow;
 
 restate.endpoint().bind(myWorkflow).listen();
-// ---------- ⬆️⬆️ deploy this as a container, lambda, etc. ⬆️⬆️ ----------
+// or .handler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
 
-// Submit the workflow via HTTP:
-// curl localhost:8080/usersignup/userid1/run/send --json '{ "name": "Bob", "email": "bob@builder.com" }'
-//
-// Resolve the email link via:
-// curl localhost:8080/usersignup/userid1/verifyEmail
-// Abort the email verification via:
-// curl localhost:8080/usersignup/userid1/abortVerification
+/*
+Check the README to learn how to run Restate.
+- Then, submit the workflow via HTTP:
+  curl localhost:8080/usersignup/userid1/run/send --json '{ "name": "Bob", "email": "bob@builder.com" }'
+
+- Resolve the email link via:
+  curl localhost:8080/usersignup/userid1/verifyEmail
+
+- Abort the email verification via:
+  curl localhost:8080/usersignup/userid1/abortVerification
+*/
 
 // or programmatically
 async function signupUser(userId: string, name: string, email: string) {
   const rs = restateClients.connect({ url: "http://restate:8080" });
-  const workflowClient = rs.workflowClient<SignupApi>({ name: "usersignup" }, userId);
+  const workflowClient = rs.workflowClient<SignupApi>(
+    { name: "usersignup" },
+    userId,
+  );
   const response = await workflowClient.workflowSubmit({ name, email });
 
   if (response.status != "Accepted") {
@@ -75,7 +88,10 @@ async function signupUser(userId: string, name: string, email: string) {
 // interact with the workflow  from any other code
 async function verifyEmail(userId: string, emailSecret: string) {
   const rs = restateClients.connect({ url: "http://restate:8080" });
-  const workflowClient = rs.workflowClient<SignupApi>({ name: "usersignup" }, userId);
+  const workflowClient = rs.workflowClient<SignupApi>(
+    { name: "usersignup" },
+    userId,
+  );
 
   await workflowClient.verifyEmail({ secret: emailSecret });
 }

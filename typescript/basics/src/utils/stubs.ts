@@ -26,12 +26,19 @@ export function maybeCrash(probability: number = 0.5): void {
   }
 }
 
-export type SubscriptionRequest = { userId: string; creditCard: string; subscriptions: string[] }
+export type SubscriptionRequest = {
+  userId: string;
+  creditCard: string;
+  subscriptions: string[];
+};
 
 /**
  * Simulates calling a subscription API, with a random probability of API downtime.
  */
-export function createSubscription(userId: string, subscription: string): string {
+export function createSubscription(
+  userId: string,
+  subscription: string,
+): string {
   console.log(`>>> Creating subscription ${subscription} for user ${userId}`);
   maybeCrash(0.3);
 
@@ -45,10 +52,14 @@ export function createSubscription(userId: string, subscription: string): string
 /**
  * Simulates calling a payment API, with a random probability of API downtime.
  */
-export function createRecurringPayment(userId: string, creditCard: string, paymentId: any): {success: boolean} {
+export function createRecurringPayment(
+  userId: string,
+  creditCard: string,
+  paymentId: any,
+): { success: boolean } {
   maybeCrash(0.3);
   console.log(`>>> Creating recurring payment ${paymentId} for user ${userId}`);
-  return {success: true}
+  return { success: true };
 }
 
 export function removeRecurringPayment(paymentId: any) {
@@ -60,5 +71,8 @@ export function removeSubscription(userId: string, subscription: string) {
 }
 
 // Stubs for 3_workflows.ts
-export async function createUserEntry(entry: { name: string, email: string }) {}
-export async function sendEmailWithLink(details: { email: string; secret: string }) {}
+export async function createUserEntry(entry: { name: string; email: string }) {}
+export async function sendEmailWithLink(details: {
+  email: string;
+  secret: string;
+}) {}
