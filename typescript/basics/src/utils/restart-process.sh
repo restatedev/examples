@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# This script will restart a process every time it exits
+# This is purely to demonstrate restarts in the scope of this example.
+# Do not use this for your own projects.
 process=$1
 
 if [ -z "$process" ]; then

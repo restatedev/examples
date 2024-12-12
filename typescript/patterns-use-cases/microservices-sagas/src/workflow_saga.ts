@@ -29,7 +29,7 @@ import { payments } from "./services/payments";
 //  operations, like `ctx.run()` or rpc/messaging.
 
 export default async (ctx: restate.Context, tripID: string) => {
-  // create an compensation stack
+  // create a list of undo actions
   const compensations = [];
   try {
     //

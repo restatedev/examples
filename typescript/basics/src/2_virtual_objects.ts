@@ -12,10 +12,10 @@
 import * as restate from "@restatedev/restate-sdk";
 
 //
-// Virtual Objects hold state and have methods to interact with the object.
+// Virtual Objects hold K/V state and have methods to interact with the object.
 // An object is identified by a unique id - only one object exists per id.
 //
-// Virtual Objects have their state locally accessible without requiring any database
+// Virtual Objects have their K/V state locally accessible without requiring any database
 // connection or lookup. State is exclusive, and atomically committed with the
 // method execution.
 //

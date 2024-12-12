@@ -1,89 +1,56 @@
-/*
- * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
- *
- * This file is part of the Restate Examples for the Node.js/TypeScript SDK,
- * which is released under the MIT license.
- *
- * You can find a copy of the license in the file LICENSE
- * in the root directory of this repository or package or at
- * https://github.com/restatedev/examples/blob/main/LICENSE
- */
-
 import * as restate from "@restatedev/restate-sdk";
-import {
-  UpdateRequest,
-  applyUserRole,
-  applyPermission,
-} from "./utils/example_stubs";
-
-// This is an example of the benefits of Durable Execution.
-// Durable Execution ensures code runs to the end, even in the presence of
-// failures. This is particularly useful for code that updates different systems and needs to
-// make sure all updates are applied:
-//
-//  - Failures are automatically retried, unless they are explicitly labeled
-//    as terminal errors
-//  - Restate tracks execution progress in a journal.
-//    Work that has already been completed is not repeated during retries.
-//    Instead, the previously completed journal entries are replayed.
-//    This ensures that stable deterministic values are used during execution.
-//  - Durable executed functions use the regular code and control flow,
-//    no custom DSLs
-//
-
-async function applyRoleUpdate(ctx: restate.Context, update: UpdateRequest) {
-  // parameters are durable across retries
-  const { userId, role, permissions } = update;
-
-  // Apply a change to one system (e.g., DB upsert, API call, ...).
-  // The side effect persists the result with a consensus method so
-  // any later code relies on a deterministic result.
-  const success = await ctx.run(() => applyUserRole(userId, role));
-  if (!success) {
-    return;
-  }
-
-  // Loop over the permission settings and apply them.
-  // Each operation through the Restate context is journaled
-  // and recovery restores results of previous operations from the journal
-  // without re-executing them.
-  for (const permission of permissions) {
-    await ctx.run(() => applyPermission(userId, permission));
-  }
-}
-
-// ---------------------------- deploying / running ---------------------------
 import { service } from "@restatedev/restate-sdk";
+import {
+  SubscriptionRequest,
+  createRecurringPayment,
+  createSubscription
+} from "./utils/stubs";
 
-const serve = restate.endpoint().bind(
+// Restate ensures code runs to completion despite failures:
+//  - Automatic retries
+//  - Restate tracks the progress of execution, and prevents re-execution of completed work on retries
+//  - Regular code and control flow, no custom DSLs
+//
+// For example, update multiple downstream systems in a single transaction:
+restate.endpoint().bind(
   service({
-    name: "roleUpdate",
-    handlers: { applyRoleUpdate },
+    name: "SubscriptionService",
+    // Restate persists HTTP requests to this handler and manages execution.
+    handlers: { add: async (ctx: restate.Context, req: SubscriptionRequest) => {
+        // parameters are durable across retries
+        const { userId, creditCard, subscriptions } = req;
+
+        // 1. Generate an idempotency key
+        // This value is retained after a failure
+        const paymentId = ctx.rand.uuidv4();
+
+        // 2. Create a recurring payment via API call
+        // Retried in case of timeouts, API downtime, etc.
+        const { success } = await ctx.run(() => createRecurringPayment(userId, creditCard, paymentId));
+        if (!success) {
+          return;
+        }
+
+        // 3. Create subscriptions via API calls
+        // Persists successful subscriptions and skip them on retries
+        for (const subscription of subscriptions) {
+          await ctx.run(() => createSubscription(userId, subscription));
+        }
+      }
+    },
   }),
-);
+).listen(9080);
+// or .handler() to run on Lambda, Deno, Bun or Cloudflare Workers
 
-serve.listen(9080);
-// or serve.http2Handler();
-// or serve.handler() from "@restatedev/restate-sdk/lambda" or "@restatedev/restate-sdk/fetch"
-// or ...
-
-//
-// See README for details on how to start and connect Restate.
-//
-// When invoking this function (see below for sample request), it will apply all
-// role and permission changes, regardless of crashes.
-// You will see all lines of the type "Applied permission remove:allow for user Sam Beckett"
-// in the log, across all retries. You will also see that re-tries will not re-execute
-// previously completed actions again, so each line occurs only once.
 /*
-curl localhost:8080/roleUpdate/applyRoleUpdate -H 'content-type: application/json' -d \
+Invoke this function and see in the log how it recovers.
+Each action (e.g. "created recurring payment") is only logged once across all retries.
+Retries did not re-execute the successful operations.
+
+curl localhost:8080/SubscriptionService/add -H 'content-type: application/json' -d \
 '{
     "userId": "Sam Beckett",
-    "role": { "roleKey": "content-manager", "roleDescription": "Add/remove documents" },
-    "permissions" : [
-      { "permissionKey": "add", "setting": "allow" },
-      { "permissionKey": "remove", "setting": "allow" },
-      { "permissionKey": "share", "setting": "block" }
-    ]
+    "creditCard": "1234-5678-9012-3456",
+    "subscriptions" : ["Netflix", "Disney+", "HBO Max"]
 }'
 */
