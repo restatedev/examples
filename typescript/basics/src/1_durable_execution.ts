@@ -6,7 +6,10 @@ import {
   createSubscription,
 } from "./utils/stubs";
 
-// Restate ensures code runs to completion despite failures:
+// Restate lets you implement resilient applications.
+// Applications consist of services with handlers/functions that can be called over HTTP or Kafka.
+//
+// Restate ensures handler code runs to completion despite failures:
 //  - Automatic retries
 //  - Restate tracks the progress of execution, and prevents re-execution of completed work on retries
 //  - Regular code and control flow, no custom DSLs
