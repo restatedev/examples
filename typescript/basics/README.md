@@ -31,10 +31,6 @@ about how they work and how they can be run.
   update various downstream systems with durable event handlers, event-delaying,
   in a strict-per-key order.
 
-* **[Stateful Event-processing](src/6_events_state.ts):** Populating state from
-  events and making is queryable via RPC handlers.
-
-
 ### Running the examples
 
 1. Make sure you have installed the dependencies: `npm install`.

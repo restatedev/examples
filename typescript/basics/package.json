@@ -13,7 +13,6 @@
     "example-3": "ts-node-dev --transpile-only src/3_workflows.ts",
     "example-4": "ts-node-dev --transpile-only src/4_virtual_objects.ts",
     "example-5": "ts-node-dev --transpile-only src/5_events_processing.ts",
-    "example-6": "ts-node-dev --transpile-only src/6_events_state.ts"
   },
   "dependencies": {
     "@restatedev/restate-sdk": "^1.4.0",
