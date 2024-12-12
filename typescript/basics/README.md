@@ -36,8 +36,8 @@ about how they work and how they can be run.
 3. Start the relevant example:
    - `npm run example-1` for the Durable Execution example
    - `npm run example-2` for the Durable Execution with Sagas example
-   - `npm run example-3` for the Virtual Objects example
-   - `npm run example-4` for the Workflows example
+   - `npm run example-3` for the Workflows example
+   - `npm run example-4` for the Virtual Objects example
 
 4. Register the example at Restate server by calling
    `npx restate -y deployment register --force "localhost:9080"`.
