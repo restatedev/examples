@@ -9,15 +9,15 @@ about how they work and how they can be run.
 
 ### Examples
 
-* **[Basic Durable Execution:](src/1_durable_execution.ts):** Running code cleanly
+* **[Durable Execution](src/1_durable_execution.ts):** Running code cleanly
   to the end in the presence of failures. Automatic retries and recovery of previously
-  finished actions. The example applies a series of updates and permission setting changes
-  to user's profile.
+  finished actions. The example applies creates a subscription to movie streaming services
+  by first creating a recurring payment and then adding the subscriptions.
 
-* **[Durable Execution with Compensations](src/2_durable_execution_compensation.ts):**
-  Reliably compensating / undoing previous actions upon unrecoverable errors halfway
-  through multi-step change. This is the same example as above, extended for cases where
-  a part of the change cannot be applied (conflict) and everything has to roll back.
+* **[Durable Execution with Sagas](src/2_durable_execution_sagas.ts):**
+  Reliably undo completed actions when there is an unrecoverable error halfway through. 
+  This example extends the previous one to handle cases where
+  a subscription cannot be added (conflict) and everything has to roll back.
 
 * **[Workflows](src/3_workflows.ts):** Workflows are durable execution tasks that can
   be submitted and awaited. They have an identity and can be signaled and queried
@@ -33,13 +33,17 @@ about how they work and how they can be run.
 
 2. Start Restate Server in a separate shell: `npx restate-server`
 
-3. Start the relevant example, i.e., `npm run example-1` for the first example.
+3. Start the relevant example:
+   - `npm run example-1` for the Durable Execution example
+   - `npm run example-2` for the Durable Execution with Sagas example
+   - `npm run example-3` for the Virtual Objects example
+   - `npm run example-4` for the Workflows example
 
 4. Register the example at Restate server by calling
    `npx restate -y deployment register --force "localhost:9080"`.
 
    _Note: the '--force' flag here is to circumvent all checks related to graceful upgrades, because it is only a playground, not a production setup._
 
-5. Check the comments in the example for how to interact with the example.
+5. Check the comments in the example for how to send requests to the example.
 
 **NOTE:** When you get an error of the type `{"code":"not_found","message":"Service 'greeter' not found. ...}`, then you forgot step (4) for that example.
