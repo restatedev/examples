@@ -12,7 +12,8 @@ import * as restate from "@restatedev/restate-sdk";
 import { ObjectContext, TerminalError } from "@restatedev/restate-sdk";
 
 // Package tracking system:
-// Digital twin representing a package in delivery with real-time location updates
+// Digital twin representing a package in delivery with real-time location updates.
+// Handlers get called over HTTP or Kafka.
 const packageTracker = restate.object({
     name: "package-tracker",
     handlers: {

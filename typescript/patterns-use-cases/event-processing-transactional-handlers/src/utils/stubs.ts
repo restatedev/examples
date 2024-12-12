@@ -12,29 +12,29 @@
 import { TerminalError } from "@restatedev/restate-sdk";
 
 export type UserUpdate = {
-  profile: string;
-  permissions: string;
-  resources: string;
+    profile: string;
+    permissions: string;
+    resources: string;
 };
 
 export const NOT_READY = "NOT_READY";
 
 export async function updateUserProfile(profile: string, token?: string): Promise<string> {
-  return Math.random() < 0.8 ? NOT_READY : profile + "-id";
+    return Math.random() < 0.8 ? NOT_READY : profile + "-id";
 }
 export async function setupUserPermissions(
-  id: string,
-  permissions: string,
-  token?: string
+    id: string,
+    permissions: string,
+    token?: string
 ): Promise<string> {
-  return permissions;
+    return permissions;
 }
 export async function provisionResources(user: string, role: string, resources: string) {}
 
 export function verifyEvent(request: UserUpdate): UserUpdate {
-  if (request?.profile && request?.permissions && request?.resources) {
-    return request;
-  } else {
-    throw new TerminalError("Incomplete event");
-  }
+    if (request?.profile && request?.permissions && request?.resources) {
+        return request;
+    } else {
+        throw new TerminalError("Incomplete event");
+    }
 }

@@ -27,10 +27,6 @@ about how they work and how they can be run.
 * **[Virtual Objects](src/4_virtual_objects.ts):** Stateful serverless objects
   to manage durable consistent state and state-manipulating logic.
 
-* **[Kafka Event-processing](src/5_events_processing.ts):** Processing events to
-  update various downstream systems with durable event handlers, event-delaying,
-  in a strict-per-key order.
-
 ### Running the examples
 
 1. Make sure you have installed the dependencies: `npm install`.
