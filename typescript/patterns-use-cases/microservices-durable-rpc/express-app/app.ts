@@ -20,8 +20,7 @@ app.post("/reserve/:productId/:reservationId", async (req: Request, res: Respons
         Opts.from({ idempotencyKey: reservationId })
     );
 
-    console.log("Reservation result", reservation);
-    return res.json(reservation);
+    res.json({ reserved: reservation});
 });
 
 app.listen(5000, () => {
