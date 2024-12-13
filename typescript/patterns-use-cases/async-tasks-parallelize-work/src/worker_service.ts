@@ -34,7 +34,6 @@ const workerService = restate.service({
         runSubtask: async (ctx: Context, subtask: SubTask) => {
             // Processing logic goes here ...
             // Can be moved to a separate service to scale independently
-            console.info
         },
     },
 });

@@ -25,13 +25,13 @@ const packageTracker = restate.object({
 
         // Connected to a Kafka topic for real-time location updates
         updateLocation: async (ctx: ObjectContext, locationUpdate: LocationUpdate) => {
-            const packageInfo = await ctx.get<PackageInfo>("package");
+            const packageInfo = await ctx.get<PackageInfo>("details");
             if (!packageInfo) {
-                throw new TerminalError("Package not found");
+                throw new TerminalError(`Package ${ctx.key} not found`);
             }
 
             // Update the package details in the state
-            packageInfo.locations.push(locationUpdate);
+            (packageInfo.locations ??= []).push(locationUpdate);
             ctx.set("details", packageInfo);
         },
 
@@ -51,9 +51,8 @@ curl localhost:8080/package-tracker/package123/getPackageInfo
 */
 
 type PackageInfo = {
-    id: string;
     finalDestination: string;
-    locations: LocationUpdate[];
+    locations?: LocationUpdate[];
 };
 
 type LocationUpdate = {
