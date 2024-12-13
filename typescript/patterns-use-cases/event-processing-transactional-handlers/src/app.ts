@@ -11,12 +11,8 @@
 
 import * as restate from "@restatedev/restate-sdk";
 import {
-    NOT_READY,
-    UserUpdate,
-    provisionResources,
-    setupUserPermissions,
-    updateUserProfile,
-    verifyEvent,
+    createPost, getPostStatus, PENDING,
+    SocialMediaPost, updateUserFeed,
 } from "./utils/stubs";
 
 //
@@ -28,37 +24,32 @@ import {
 //  - Ability to delay events when the downstream systems are busy, without blocking
 //    entire partitions.
 //
-
-const userUpdates = restate.object({
-    name: "userUpdates",
+const userFeed = restate.object({
+    name: "userFeed",
     handlers: {
         /*
          * The Kafka key routes events to the correct Virtual Object.
          * Events with the same key are processed one after the other.
          */
-        updateUserEvent: async (ctx: restate.ObjectContext, event: UserUpdate) => {
-            const { profile, permissions, resources } = verifyEvent(event);
+        processPost: async (ctx: restate.ObjectContext, post: SocialMediaPost) => {
+            const userId = ctx.key
 
-            // Event handlers can use all Durable Execution features of Restate
-            let userId = await ctx.run(() => updateUserProfile(profile));
-            while (userId === NOT_READY) {
-                // Delay the processing by sleeping (handler suspends when on FaaS).
-                // This only blocks other events for this user id (Virtual Object), not for the other users.
+            let { postId, status } = await ctx.run(() => createPost(userId, post));
+            while (status === PENDING) {
+                // Delay processing until content moderation is complete (handler suspends when on FaaS).
+                // This only blocks other posts for this user (Virtual Object), not for other users.
                 await ctx.sleep(5_000);
-                userId = await ctx.run(() => updateUserProfile(profile));
+                status = await ctx.run(() => getPostStatus(postId));
             }
 
-            const roleId = await ctx.run(() =>
-                setupUserPermissions(userId, permissions)
-            );
-            await ctx.run(() => provisionResources(userId, roleId, resources));
+            await ctx.run(() => updateUserFeed(userId, postId));
         },
     },
 });
 
-restate.endpoint().bind(userUpdates).listen();
+restate.endpoint().bind(userFeed).listen();
 
 // Update users via Kafka or by calling the endpoint over HTTP:
 /*
-curl localhost:8080/userUpdates/userid1/updateUserEvent --json '{"profile": "dev", "permissions": "all", "resources": "all"}'
+curl localhost:8080/userFeed/userid1/processPost --json '{"content": "Hi! This is my first post!", "metadata": "public"}'
 */

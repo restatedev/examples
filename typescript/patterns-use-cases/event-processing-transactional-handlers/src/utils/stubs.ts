@@ -9,36 +9,27 @@
  * https://github.com/restatedev/examples/blob/main/LICENSE
  */
 
-import { TerminalError } from "@restatedev/restate-sdk";
+import {randomUUID} from "node:crypto";
 
-export type UserUpdate = {
-    profile: string;
-    permissions: string;
-    resources: string;
+export type SocialMediaPost = {
+    content: string;
+    metadata: string;
 };
 
-export const NOT_READY = "NOT_READY";
+export const PENDING = "PENDING";
+export const DONE = "DONE";
 
-export async function updateUserProfile(profile: string, token?: string): Promise<string> {
-    console.info(`Updating profile: ${profile}`);
-    return Math.random() < 0.8 ? NOT_READY : profile + "-id";
-}
-export async function setupUserPermissions(
-    id: string,
-    permissions: string,
-    token?: string
-): Promise<string> {
-    console.info(`Setting permissions for user: ${id}`);
-    return permissions;
-}
-export async function provisionResources(user: string, role: string, resources: string) {
-    console.info(`Provisioning resources for user: ${user}`);
+export async function createPost(userId: string, post: SocialMediaPost): Promise<{ postId: string, status: string }> {
+    const postId = randomUUID().toString();
+    console.info(`Created post ${postId} for user ${userId}`);
+    return {postId, status: PENDING}
 }
 
-export function verifyEvent(request: UserUpdate): UserUpdate {
-    if (request?.profile && request?.permissions && request?.resources) {
-        return request;
-    } else {
-        throw new TerminalError("Incomplete event");
-    }
+export async function getPostStatus(postId: string): Promise<string> {
+    console.info(`Retrieving post status for: ${postId}`);
+    return Math.random() < 0.8 ? PENDING : DONE;
+}
+
+export async function updateUserFeed(user: string, postId: string) {
+    console.info(`Updating the user feed for user ${user} and post ${postId}`);
 }
