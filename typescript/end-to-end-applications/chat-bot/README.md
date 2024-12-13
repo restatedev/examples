@@ -8,7 +8,7 @@ like reminders or watching flight prices. The video below (click the image) has 
  <img src="http://img.youtube.com/vi/qsmoHmNUXNg/mqdefault.jpg" alt="Watch the video" width="240" height="180" border="10" />
 </a>
 
-## Browing the example
+## Browsing the example
 
 The core chatbot logic is in [chat.ts](./src/chat.ts). This uses Restate's Virtual Objects to
 have a chat session per user, with history and active tasks easily maintained in the object state.
