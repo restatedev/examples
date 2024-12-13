@@ -21,13 +21,18 @@ export const DONE = "DONE";
 
 export async function createPost(userId: string, post: SocialMediaPost): Promise<{ postId: string, status: string }> {
     const postId = randomUUID().toString();
-    console.info(`Created post ${postId} for user ${userId}`);
+    console.info(`Created post ${postId} for user ${userId} with content: ${post.content}`);
     return {postId, status: PENDING}
 }
 
 export async function getPostStatus(postId: string): Promise<string> {
-    console.info(`Retrieving post status for: ${postId}`);
-    return Math.random() < 0.8 ? PENDING : DONE;
+    if (Math.random() < 0.8) {
+        console.info(`Content moderation for post ${postId} is still pending... Will check again in 5 seconds`);
+        return PENDING;
+    } else {
+        console.info(`Content moderation for post ${postId} is done`);
+        return DONE;
+    }
 }
 
 export async function updateUserFeed(user: string, postId: string) {
