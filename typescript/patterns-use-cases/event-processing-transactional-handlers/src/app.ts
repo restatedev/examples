@@ -43,8 +43,7 @@ const userUpdates = restate.object({
             let userId = await ctx.run(() => updateUserProfile(profile));
             while (userId === NOT_READY) {
                 // Delay the processing by sleeping (handler suspends when on FaaS).
-                // Other events for this Virtual Object / key are queued.
-                // Events for other keys are processed concurrently.
+                // This only blocks other events for this user id (Virtual Object), not for the other users.
                 await ctx.sleep(5_000);
                 userId = await ctx.run(() => updateUserProfile(profile));
             }

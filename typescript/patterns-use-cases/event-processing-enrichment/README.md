@@ -41,7 +41,7 @@ curl localhost:8080/package-tracker/package1/registerPackage \
   -H 'content-type: application/json' -d '{"finalDestination": "Bridge 6, Amsterdam"}'
 ```
 
-2. Start a Kafka producer and send some messages to update the location of the package on the `package-location-updates` topic:
+2. Start a Kafka producer and publish some messages to update the location of the package on the `package-location-updates` topic:
 ```shell
 docker exec -it broker kafka-console-producer --bootstrap-server broker:29092 --topic package-location-updates --property parse.key=true --property key.separator=:
 ```

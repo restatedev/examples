@@ -20,6 +20,7 @@ export type UserUpdate = {
 export const NOT_READY = "NOT_READY";
 
 export async function updateUserProfile(profile: string, token?: string): Promise<string> {
+    console.info(`Updating profile: ${profile}`);
     return Math.random() < 0.8 ? NOT_READY : profile + "-id";
 }
 export async function setupUserPermissions(
@@ -27,9 +28,12 @@ export async function setupUserPermissions(
     permissions: string,
     token?: string
 ): Promise<string> {
+    console.info(`Setting permissions for user: ${id}`);
     return permissions;
 }
-export async function provisionResources(user: string, role: string, resources: string) {}
+export async function provisionResources(user: string, role: string, resources: string) {
+    console.info(`Provisioning resources for user: ${user}`);
+}
 
 export function verifyEvent(request: UserUpdate): UserUpdate {
     if (request?.profile && request?.permissions && request?.resources) {
