@@ -57,7 +57,7 @@ func (t *userObject) Activate(ctx restate.ObjectContext) error {
 	}
 
 	// Store the activated status
-	restate.Set(ctx, "activated", false)
+	restate.Set(ctx, "activated", true)
 
 	return nil
 }
