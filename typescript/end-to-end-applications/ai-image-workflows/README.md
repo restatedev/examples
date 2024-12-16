@@ -13,17 +13,11 @@ The workflow can contain steps that call different image processing services:
 ![](dynamic_workflow_executor.png)
 
 
-**Note:** For simplicity, this example stores images locally in the shared locally accessible
-folder `generated-images`. In a real deployment, this would need to be a shared storage, like S3.
-
+**Note:** For simplicity, this example stores images locally in the folder `generated-images`. 
 
 The example deploys each of the possible steps (generation, transformation) as
 a separate service, and then has a workflow service call them as specified in the
-workflow definition. The workflow uses Restate's RPC-style event-based messaging
-to communicate with the implementing services, resulting in some great properties, like
-reliable call, decoupled of availability, independent scalability, and the ability for the
-workflow to suspend while the steps are running.
-
+workflow definition.
 
 ## Download the example
 
@@ -33,43 +27,108 @@ You can clone the example repository (`git clone https://github.com/restatedev/e
 
 - **Zip archive:** https://github.com/restatedev/examples/releases/latest/download/typescript-ai-image-workflows.zip
 
-
 ## Running the example
 
-### Deploy the services 
+1. Install the dependencies: `npm install`.
 
-Install the dependencies
+2. Start Restate Server in a separate shell: `npx restate-server`
+
+3. Start the workflow and image transformation services: `npm run app-dev`
+
+4. Register the example at Restate server by calling
+   `npx restate -y deployment register "localhost:9080"`.
+
+## Demo scenario
+
+Here is list of example workflow execution requests that you can send to the workflow executor:
+
+### Example workflow
+Puppeteer screenshot -> rotate -> blur:
+
 ```shell
-npm install 
+curl localhost:8080/image-processing-workflow/user123-wf1/run -H 'content-type: application/json' -d '[{"action":"puppeteer","parameters":{"url":"https://restate.dev"}},{"action":"rotate","parameters":{"angle":90}},{"action":"blur","parameters":{"blur":5}}]'
 ```
 
-Run puppeteer service:
+Have a look at the `generated-images` folder to see the end result.
+
+### Retrieving state
+You can retrieve the workflow state via the `getStatus` handler or via the CLI.
+For example for id `user123-wf1`, do:
+
 ```shell
-npm run puppeteer-service
+curl localhost:8080/image-processing-workflow/user123-wf1/getStatus
+```
+Result:
+```
+{
+  "status": "Finished",
+  "imgName": "70ba2af9-a5d7-4790-9647-d324d6322d6f",
+  "output": [
+    {
+      "msg": "[Took screenshot of website with url: https://restate.dev]"
+    },
+    {
+      "msg": "[Rotated image with angle: 90]"
+    },
+    {
+      "msg": "[Blurred image with strength param 5]"
+    }
+  ]
+}
 ```
 
-Run transformers service:
+
+or with the CLI
+
 ```shell
-npm run transformers-service
+npx restate kv get image-processing-workflow user123-wf1
+```
+```shell
+🤖 State:
+―――――――――
+                                    
+ Service  image-processing-workflow 
+ Key      user123-wf18              
+
+ KEY     VALUE                                                               
+ status  {                                                                   
+           "imgName": "d587b7dd-915e-4a02-8be5-2a6db9833796",                
+           "output": [                                                       
+             {                                                               
+         "msg": "[Took screenshot of website with url: https://restate.dev]" 
+             },                                                              
+             {                                                               
+               "msg": "[Rotated image with angle: 90]"                       
+             },                                                              
+             {                                                               
+               "msg": "[Blurred image with strength param 5]"                
+             }                                                               
+           ],                                                                
+           "status": "Finished"                                              
+         }  
 ```
 
-Run stable diffusion service:
+### More complex workflows
+
+Try more complex workflows, and have a look at the end result.
+
+- Puppeteer screenshot -> blur -> rotate -> rotate -> rotate -> rotate:
+
 ```shell
-npm run stable-diffusion-service
+curl localhost:8080/image-processing-workflow/user123-wf2/run -H 'content-type: application/json' -d '[{"action":"puppeteer","parameters":{"url":"https://restate.dev"}},{"action":"blur","parameters":{"blur":5}}, {"action":"rotate","parameters":{"angle":90}}, {"action":"rotate","parameters":{"angle":90}}, {"action":"rotate","parameters":{"angle":90}}, {"action":"rotate","parameters":{"angle":90}}]' 
 ```
 
-Run workflow service:
+- Invalid workflow definition (no image source is defined):
+
 ```shell
-npm run workflow-service
+curl localhost:8080/image-processing-workflow/user123-wf2/run -H 'content-type: application/json' -d '[{"action":"invalid","parameters":{"angle":90}},{"action":"blur","parameters":{"blur":5}}]}'
 ```
 
-Now [launch the Restate Server](../../../README.md#1-starting-the-restate-server) and [register the services](../../../README.md#2-register-the-examples-at-restate-server).
 
-Make sure you register all four services with the following ports: `9080`, `9081`, `9082` and `9083`.
+### OPTIONAL: With Stable Diffusion
 
-### OPTIONAL: Install and run stable diffusion server
-
-**Note:** You can run this demo without Stable Diffusion. In that case, you cannot use workflow steps that call Stable Diffusion.
+[Stable Diffusion](https://github.com/CompVis/stable-diffusion) is a text-to-image model that can generate and transform images based on a prompt.
+We can add a workflow step that invokes the Stable Diffusion service to generate images and then transform them based on a prompt.
 
 Install stable diffusion:
 
@@ -94,61 +153,27 @@ For Linux installations, you may have to use the following options, in case you 
 `export COMMANDLINE_ARGS="--skip-torch-cuda-test --precision full --no-half"`
 
 
-## Example workflow execution requests
-
-Here is  list of example workflow execution requests that you can send to the workflow executor:
-
-Puppeteer screenshot -> rotate -> blur:
-
-```shell
-curl localhost:8080/workflow-executor/execute -H 'idempotency-key: user123-wf1' -H 'content-type: application/json' -d '{"id":"user123-wf1","steps":[{"service":"puppeteer-service","parameters":{"url":"https://restate.dev"}},{"service":"rotate-img-service","parameters":{"angle":90}},{"service":"blur-img-service","parameters":{"blur":5}}]}'
-```
-
-**NOTE: ** We use the [idempotent invoke feature](https://docs.restate.dev/operate/invocation#invoke-a-handler-idempotently) (`-H 'idempotency-key: user123-wf1'`).
-This means that if you send the same request again, the workflow executor will not execute the workflow again, but instead return the result of the previous execution. This can be used for deduplicating multiple requests for the same workflow execution in case of infrastructure failures.
-
-The setup also contains a workflow status service which tracks the status of all workflow exeuctions.
-You can retrieve the workflow status for id `user123-wf1` by doing:
-
-```shell
-curl localhost:8080/workflow-status/user123-wf1/get
-```
-
-Puppeteer screenshot -> stable diffusion -> rotate -> blur:
-
-```shell
-curl localhost:8080/workflow-executor/execute -H 'idempotency-key: user123-wf2' -H 'content-type: application/json' -d '{"id":"user123-wf2","steps":[{"service":"puppeteer-service","parameters":{"url":"https://restate.dev"}},{"service":"stable-diffusion-transformer","parameters":{"prompt":"Change the colors to black background and pink font", "steps":25}},{"service":"rotate-img-service","parameters":{"angle":90}},{"service":"blur-img-service","parameters":{"blur":5}}]}'
-```
-
 Stable diffusion generation (15 steps) -> rotate -> blur:
 
 ```shell
-curl localhost:8080/workflow-executor/execute -H 'idempotency-key: user123-wf3' -H 'content-type: application/json' -d '{"id":"user123-wf3","steps":[{"service":"stable-diffusion-generator","parameters":{"prompt":"A sunny beach", "steps":15}},{"service":"rotate-img-service","parameters":{"angle":90}},{"service":"blur-img-service","parameters":{"blur":5}}]}'
+curl localhost:8080/image-processing-workflow/user234-wf1/run -H 'content-type: application/json' -d '[{"action":"stable-diffusion-generator","parameters":{"prompt":"A sunny beach", "steps":15}},{"action":"rotate","parameters":{"angle":90}},{"action":"blur","parameters":{"blur":5}}]'
 ```
 
 Stable diffusion generation (1 step) -> stable diffusion transformation (1 step) -> rotate -> blur:
 
 ```shell
-curl localhost:8080/workflow-executor/execute -H 'idempotency-key: user123-wf4' -H 'content-type: application/json' -d '{"id":"user123-wf4","steps":[{"service":"stable-diffusion-generator","parameters":{"prompt":"A sunny beach", "steps":1}},{"service":"stable-diffusion-transformer","parameters":{"prompt":"Make it snow on this sunny beach image", "steps":1}},{"service":"rotate-img-service","parameters":{"angle":90}},{"service":"blur-img-service","parameters":{"blur":5}}]}'
+curl localhost:8080/image-processing-workflow/user234-wf2run -H 'content-type: application/json' -d '[{"action":"stable-diffusion-generator","parameters":{"prompt":"A sunny beach", "steps":1}},{"action":"stable-diffusion-transformer","parameters":{"prompt":"Make it snow on this sunny beach image", "steps":1}},{"action":"rotate","parameters":{"angle":90}},{"action":"blur","parameters":{"blur":5}}]'
 ```
 
 Stable diffusion generation (15 steps) -> stable diffusion transformation (15 steps) -> rotate -> blur:
 
 ```shell
-curl localhost:8080/workflow-executor/execute -H 'idempotency-key: user123-wf5' -H 'content-type: application/json' -d '{"id":"user123-wf5","steps":[{"service":"stable-diffusion-generator","parameters":{"prompt":"A sunny beach", "steps":15}},{"service":"stable-diffusion-transformer","parameters":{"prompt":"Make it snow on this sunny beach image", "steps":15}},{"service":"rotate-img-service","parameters":{"angle":90}},{"service":"blur-img-service","parameters":{"blur":5}}]}'
+curl localhost:8080/image-processing-workflow/user234-wf3/run -H 'content-type: application/json' -d '[{"action":"stable-diffusion-generator","parameters":{"prompt":"A sunny beach", "steps":15}},{"action":"stable-diffusion-transformer","parameters":{"prompt":"Make it snow on this sunny beach image", "steps":15}},{"action":"rotate","parameters":{"angle":90}},{"action":"blur","parameters":{"blur":5}}]'
 ```
 
-
-Puppeteer screenshot -> blur -> rotate -> rotate -> rotate -> rotate:
+Puppeteer screenshot -> stable diffusion -> rotate -> blur:
 
 ```shell
-curl localhost:8080/workflow-executor/execute -H 'idempotency-key: user123-wf6' -H 'content-type: application/json' -d '{"id":"user123-wf6","steps":[{"service":"puppeteer-service","parameters":{"url":"https://restate.dev"}},{"service":"blur-img-service","parameters":{"blur":5}}, {"service":"rotate-img-service","parameters":{"angle":90}}, {"service":"rotate-img-service","parameters":{"angle":90}}, {"service":"rotate-img-service","parameters":{"angle":90}}, {"service":"rotate-img-service","parameters":{"angle":90}}]}' 
+curl localhost:8080/image-processing-workflow/user123-wf5/run -H 'content-type: application/json' -d '[{"action":"puppeteer","parameters":{"url":"https://restate.dev"}},{"action":"stable-diffusion-transformer","parameters":{"prompt":"Change the colors to black background and pink font", "steps":25}},{"action":"rotate","parameters":{"angle":90}},{"action":"blur","parameters":{"blur":5}}]'
 ```
-
-Invalid workflow definition (no image source is defined):
-
-```shell
-curl localhost:8080/workflow-executor/execute -H 'content-type: application/json' -d '{"id":"invalid","steps":[{"service":"rotate-img-service","parameters":{"angle":90}},{"service":"blur-img-service","parameters":{"blur":5}}]}'
-```
-
 

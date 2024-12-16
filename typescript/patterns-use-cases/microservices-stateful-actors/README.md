@@ -25,7 +25,7 @@ avoiding accidental state corruption and concurrency issues.
 
 2. Start Restate Server in a separate shell: `npx restate-server`
 
-3. Start the data upload service: `npm run example`
+3. Start the service: `npm run example`
    (Use `npm run example-crash` to use the variant that crashes the process and restarts, to see the state recovery happen).
  
 4. Register the example at Restate server by calling
