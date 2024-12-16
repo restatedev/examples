@@ -1,26 +1,22 @@
-/*
- * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
- *
- * This file is part of the Restate examples,
- * which is released under the MIT license.
- *
- * You can find a copy of the license in the file LICENSE
- * in the root directory of this repository or package or at
- * https://github.com/restatedev/examples/
- */
+import * as restate from "@restatedev/restate-sdk";
 
-export const cars = { 
-    reserve: async (tripId: string) => {
-      // make a car reservation under an ID
-      return "car__booking_id";
-    },
+export const cars = restate.service({
+    name: "cars",
+    handlers: {
+        reserve: async (ctx: restate.Context, tripId: string) => {
+            const carBooking = ctx.rand.uuidv4();
+            console.info(`Car ${carBooking} reserved for trip ${tripId}`);
+            return carBooking;
+        },
 
-    confirm: async (tripId: string, bookingId: string) => {
-      // confirm the previous reservation
-    },
+        confirm: async (ctx: restate.Context, req: {tripId: string, carBooking: string}) => {
+            console.info(`Car ${req.carBooking} confirmed for trip ${req.tripId}`);
+        },
 
-    cancel: async (tripId: string, bookingId: string) => {
-      // cancel previous reservation
-    },
-};
+        cancel: async (ctx: restate.Context, req: {tripId: string, carBooking: string}) => {
+            console.info(`Car ${req.carBooking} cancelled for trip ${req.tripId}`);
+        },
+    }
+});
 
+export type CarService = typeof cars;

@@ -1,4 +1,4 @@
-# Priority queue
+# Pattern: Priority queue
 
 An example of implementing your own priority queue using Restate state and
 awakeables.

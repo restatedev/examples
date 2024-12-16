@@ -1,25 +1,22 @@
-/*
- * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
- *
- * This file is part of the Restate examples,
- * which is released under the MIT license.
- *
- * You can find a copy of the license in the file LICENSE
- * in the root directory of this repository or package or at
- * https://github.com/restatedev/examples/
- */
+import * as restate from "@restatedev/restate-sdk";
 
-export const flights = {
-  reserve: async (tripId: string) => {
-    // reserve flight
-    return "flight_id";
-  },
+export const flights = restate.service({
+    name: "flights",
+    handlers: {
+      reserve: async (ctx: restate.Context, tripId: string) => {
+        const flightBooking = ctx.rand.uuidv4();
+        console.info(`Flight ${flightBooking} reserved for trip ${tripId}`);
+        return flightBooking;
+      },
 
-  confirm: async (tripId: string, bookingId: string) => {
-    // confirm flight
-  },
+      confirm: async (ctx: restate.Context, req: {tripId: string, flightBooking: string}) => {
+        console.info(`Flight ${req.flightBooking} confirmed for trip ${req.tripId}`);
+      },
 
-  cancel: async (tripId: string, bookingId: string) => {
-    // cancel booking event
-  },
-};
+      cancel: async (ctx: restate.Context, req: {tripId: string, flightBooking: string}) => {
+        console.info(`Flight ${req.flightBooking} cancelled for trip ${req.tripId}`);
+      },
+    }
+});
+
+export type FlightsService = typeof flights;

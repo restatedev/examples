@@ -4,13 +4,16 @@
   "description": "A Restate example showing the SAGAs pattern for workflows",
   "type": "commonjs",
   "scripts": {
-    "build": "tsc --noEmitOnError"
+    "build": "tsc --noEmitOnError",
+    "app": "node ./dist/booking_workflow.js",
+    "app-dev": "tsx watch ./src/booking_workflow.ts"
   },
   "dependencies": {
     "@restatedev/restate-sdk": "^1.4.0"
   },
   "devDependencies": {
     "@types/node": "^20.12.7",
-    "typescript": "^5.0.2"
+    "typescript": "^5.0.2",
+    "tsx": "^4.19.2"
   }
 }

@@ -1,14 +1,3 @@
-/*
- * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
- *
- * This file is part of the Restate Examples for the Node.js/TypeScript SDK,
- * which is released under the MIT license.
- *
- * You can find a copy of the license in the file LICENSE
- * in the root directory of this repository or package or at
- * https://github.com/restatedev/examples/blob/main/LICENSE
- */
-
 import * as restate from "@restatedev/restate-sdk";
 
 /**
@@ -62,14 +51,6 @@ export function createRecurringPayment(
   maybeCrash(0.3);
   console.log(`>>> Creating recurring payment ${paymentId} for user ${userId}`);
   return { success: true };
-}
-
-export function removeRecurringPayment(paymentId: any) {
-  console.log(`>>> Removing recurring payment ${paymentId}`);
-}
-
-export function removeSubscription(userId: string, subscription: string) {
-  console.log(`>>> Removing subscription ${subscription} for user ${userId}`);
 }
 
 // Stubs for 3_workflows.ts

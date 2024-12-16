@@ -3,8 +3,8 @@
 import * as restate from "@restatedev/restate-sdk";
 import { Context } from "@restatedev/restate-sdk";
 
-const asyncTaskService = restate.service({
-  name: "taskWorker",
+const asyncTaskWorker = restate.service({
+  name: "asyncTaskWorker",
   handlers: {
     runTask: async (ctx: Context, params: TaskOpts) => {
       return someHeavyWork(params);
@@ -12,9 +12,9 @@ const asyncTaskService = restate.service({
   },
 });
 
-export type AsyncTaskService = typeof asyncTaskService;
+export type AsyncTaskWorker = typeof asyncTaskWorker;
 
-restate.endpoint().bind(asyncTaskService).listen(9080);
+restate.endpoint().bind(asyncTaskWorker).listen(9080);
 
 
 // ----------------------- Stubs to please the compiler -----------------------

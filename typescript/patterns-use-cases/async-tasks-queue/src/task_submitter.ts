@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk-clients";
-import { AsyncTaskService, TaskOpts } from "./async_task_service";
+import { AsyncTaskWorker, TaskOpts } from "./async_task_worker";
 import {SendOpts} from "@restatedev/restate-sdk-clients";
 
 /*
@@ -21,7 +21,7 @@ async function submitAndAwaitTask(task: TaskOpts) {
   // submit the task; similar to publishing a message to a queue
   // Restate ensures the task is executed exactly once
   const taskHandle = await restateClient
-    .serviceSendClient<AsyncTaskService>({ name: "taskWorker" })
+    .serviceSendClient<AsyncTaskWorker>({ name: "taskWorker" })
     .runTask(
       task,
       // use a stable uuid as an idempotency key
@@ -36,4 +36,5 @@ async function submitAndAwaitTask(task: TaskOpts) {
 async function attachToTaskFromOtherProcess(taskHandle: string) {
   const restateClient = restate.connect({ url: RESTATE_URL });
   const result = await restateClient.result<string>(JSON.parse(taskHandle));
+  // Alternatively, you can submit the same send request with the same idempotency key to latch onto the task
 }

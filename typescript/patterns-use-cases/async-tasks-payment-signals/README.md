@@ -14,7 +14,7 @@ like during periodic charging of a subscription.
 And because we have a durable execution system that suspends and resumes state
 and promises, we can actually combine this into a single reliably promise/async-function.
 
-### Running the Example
+## Running the Example
 
 This example works end-to-end with Stripe. You need a Stripe account to run it.
 If you want to run everything locally, you also need a tool like _ngrok_ to forward

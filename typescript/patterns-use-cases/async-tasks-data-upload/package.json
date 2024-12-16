@@ -6,9 +6,6 @@
   "type": "commonjs",
   "scripts": {
     "build": "tsc --noEmitOnError",
-    "prebundle": "rm -rf dist",
-    "bundle": "esbuild src/app.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
-    "postbundle": "cd dist && zip -r index.zip index.js*",
     "app": "node ./dist/data_upload_service.js",
     "app-dev": "tsx watch ./src/data_upload_service.ts",
     "client": "tsx ./src/client.ts"
