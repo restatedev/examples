@@ -14,24 +14,20 @@ Learn the key concepts of Restate:
 
 Common tasks and patterns implemented with Restate:
 
-| Use case / Name                                                                      | Difficulty   | Description                                                                                                 |
-|--------------------------------------------------------------------------------------|--------------|-------------------------------------------------------------------------------------------------------------|
-| **Microservices**:                                                                   |              |                                                                                                             |
-| [Durable RPC](patterns-use-cases/microservices-durable-rpc)                          | Basic        | Restate persists requests and makes sure they execute exactly-once.                                         |
-| [Sagas](patterns-use-cases/microservices-sagas)                                      | Basic        | Preserve consistency by tracking undo actions and running them when code fails halfway through.             |
-| [Stateful Actors](patterns-use-cases/microservices-stateful-actors)                  | Basic        | State machine with a set of transitions, built as a Restate Virtual Object for automatic state persistence. |
-| [Payment state machines](patterns-use-cases/microservices-payment-state-machines)    | Advanced     | State machine example that tracks a payment process, ensuring consistent processing and cancellations.      |
-| **Async tasks**:                                                                     |              |                                                                                                             |
-| [(Delayed) Task Queue](patterns-use-cases/async-tasks-queue)                         | Basic        | Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.          |
-| [Parallelizing work](patterns-use-cases/async-tasks-parallelize-work)                | Intermediate | Execute a list of tasks in parallel and then gather their result.                                           |
-| [Slow async data upload](patterns-use-cases/async-tasks-data-upload)                 | Intermediate | Kick of a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long.    |
-| [Payments: async signals processing](patterns-use-cases/async-tasks-payment-signals) | Advanced     | Handling async payment callbacks for slow payments, with Stripe.                                            |
-| **Event processing**:                                                                |              |                                                                                                             |
-| [Transactional handlers](patterns-use-cases/event-processing-transactional-handlers) | Basic        | Processing events (from Kafka) to update various downstream systems in a transactional way.                 |
-| [Enriching streams](patterns-use-cases/event-processing-enrichment)                  | Intermediate | Stateful functions/actors connected to Kafka and callable over RPC.                                         |
-| **Patterns**:                                                                        |              |                                                                                                             |
-| [Durable Promises](patterns-use-cases/pattern-durable-promises)                      | Advanced     | Implementation of Promises/Futures that are durable across processes and failures.                          |
-| [Priority Queue](patterns-use-cases/pattern-priority-queue)                          | Advanced     | Example of implementing a priority queue to manage task execution order.                                    |
+| Category         | Use case / Name                                                                      | Difficulty   | Description                                                                                                 |
+|------------------|--------------------------------------------------------------------------------------|--------------|-------------------------------------------------------------------------------------------------------------|
+| Microservices    | [Durable RPC](patterns-use-cases/microservices-durable-rpc)                          | Basic        | Restate persists requests and makes sure they execute exactly-once.                                         |
+| Microservices    | [Sagas](patterns-use-cases/microservices-sagas)                                      | Basic        | Preserve consistency by tracking undo actions and running them when code fails halfway through.             |
+| Microservices    | [Stateful Actors](patterns-use-cases/microservices-stateful-actors)                  | Basic        | State machine with a set of transitions, built as a Restate Virtual Object for automatic state persistence. |
+| Microservices    | [Payment state machines](patterns-use-cases/microservices-payment-state-machines)    | Advanced     | State machine example that tracks a payment process, ensuring consistent processing and cancellations.      |
+| Async tasks      | [(Delayed) Task Queue](patterns-use-cases/async-tasks-queue)                         | Basic        | Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.          |
+| Async tasks      | [Parallelizing work](patterns-use-cases/async-tasks-parallelize-work)                | Intermediate | Execute a list of tasks in parallel and then gather their result.                                           |
+| Async tasks      | [Slow async data upload](patterns-use-cases/async-tasks-data-upload)                 | Intermediate | Kick of a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long.    |
+| Async tasks      | [Payments: async signals processing](patterns-use-cases/async-tasks-payment-signals) | Advanced     | Handling async payment callbacks for slow payments, with Stripe.                                            |
+| Event processing | [Transactional handlers](patterns-use-cases/event-processing-transactional-handlers) | Basic        | Processing events (from Kafka) to update various downstream systems in a transactional way.                 |
+| Event processing | [Enriching streams](patterns-use-cases/event-processing-enrichment)                  | Intermediate | Stateful functions/actors connected to Kafka and callable over RPC.                                         |
+| Patterns         | [Durable Promises](patterns-use-cases/pattern-durable-promises)                      | Advanced     | Implementation of Promises/Futures that are durable across processes and failures.                          |
+| Patterns         | [Priority Queue](patterns-use-cases/pattern-priority-queue)                          | Advanced     | Example of implementing a priority queue to manage task execution order.                                    |
 
 ## Integrations
 
