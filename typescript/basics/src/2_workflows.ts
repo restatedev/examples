@@ -1,14 +1,3 @@
-/*
- * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
- *
- * This file is part of the Restate Examples for the Node.js/TypeScript SDK,
- * which is released under the MIT license.
- *
- * You can find a copy of the license in the file LICENSE
- * in the root directory of this repository or package or at
- * https://github.com/restatedev/examples/blob/main/LICENSE
- */
-
 import * as restate from "@restatedev/restate-sdk";
 import * as restateClients from "@restatedev/restate-sdk-clients";
 import { createUserEntry, sendEmailWithLink } from "./utils/stubs";
@@ -24,27 +13,30 @@ const signupWorkflow = restate.workflow({
     // --- The workflow logic ---
     run: async (
       ctx: restate.WorkflowContext,
-      params: { name: string; email: string },
+      user: { name: string; email: string },
     ) => {
-      const { name, email } = params;
-      // You can use all the standard durable execution features here
-      await ctx.run(() => createUserEntry({ name, email }));
+      // workflow ID = user ID; workflow runs once per user
+      const userId = ctx.key;
 
-      // Send the email with the verification secret
+      // Durably executed action; write to other system
+      await ctx.run(() => createUserEntry(user));
+
+      // Send the email with the verification link
       const secret = ctx.rand.uuidv4();
-      await ctx.run(() => sendEmailWithLink({ email, secret }));
+      await ctx.run(() => sendEmailWithLink({ userId, user, secret }));
 
-      // The promise here is resolved or rejected by the additional workflow methods below
+      // Wait until user clicked email verification link
+      // Promise gets resolved or rejected by the other handlers
       const clickSecret = await ctx.promise<string>("email-link");
       return clickSecret === secret;
     },
 
     // --- Other handlers interact with the workflow via queries and signals ---
-    verifyEmail: async (
+    click: async (
       ctx: restate.WorkflowSharedContext,
       request: { secret: string },
     ) => {
-      // send data to the workflow via a durable promise
+      // Send data to the workflow via a durable promise
       await ctx.promise<string>("email-link").resolve(request.secret);
     },
   },
@@ -61,7 +53,7 @@ Check the README to learn how to run Restate.
   curl localhost:8080/usersignup/userid1/run/send -H 'content-type: application/json' -d '{ "name": "Bob", "email": "bob@builder.com" }'
 
 - Resolve the email link via:
-  curl localhost:8080/usersignup/userid1/verifyEmail -H 'content-type: application/json' -d '{ "secret": "xxx"}'
+  curl localhost:8080/usersignup/userid1/click -H 'content-type: application/json' -d '{ "secret": "xxx"}'
 
 - Attach back to the workflow to get the result:
   curl localhost:8080/restate/workflow/usersignup/userid1/attach
@@ -91,5 +83,5 @@ async function verifyEmail(userId: string, emailSecret: string) {
     userId,
   );
 
-  await workflowClient.verifyEmail({ secret: emailSecret });
+  await workflowClient.click({ secret: emailSecret });
 }

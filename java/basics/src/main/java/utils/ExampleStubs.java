@@ -1,82 +1,55 @@
-/*
- * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
- *
- * This file is part of the Restate Examples
- * which is released under the MIT license.
- *
- * You can find a copy of the license in the file LICENSE
- * in the root directory of this repository or package or at
- * https://github.com/restatedev/examples/blob/main/LICENSE
- */
 package utils;
 
+import dev.restate.sdk.common.TerminalException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static utils.FailureStubs.applicationError;
-import static utils.FailureStubs.maybeCrash;
-
 public class ExampleStubs {
-
     private static final Logger logger = LogManager.getLogger(ExampleStubs.class);
+    private static final boolean killProcess = System.getenv("CRASH_PROCESS") != null;
 
-    public static boolean applyUserRole(String userId, UserRole role) {
-        maybeCrash(0.3);
-        logger.info(String.format(">>> Applying role %s to user %s", role, userId));
-        return true;
-    }
+    public static void maybeCrash(double probability) {
+        if (Math.random() < probability) {
+            logger.error("A failure happened!");
 
-    public static void applyPermission(String userId, Permission permission) {
-        maybeCrash(0.2);
-        logger.info(String.format(">>> Applying permission %s:%s for user %s",
-                permission.getPermissionKey(),
-                permission.getSetting(),
-                userId));
-    }
-
-    public static UserRole getCurrentRole(String userId){
-        return new UserRole("viewer", "User cannot do much");
-    }
-
-    public static void tryApplyUserRole(String userId, UserRole role) {
-        maybeCrash(0.3);
-
-        if(!role.getRoleKey().equals("viewer")){
-            applicationError(0.3, "Role " + role.getRoleKey() + " is not possible for user " + userId);
+            if (killProcess) {
+                logger.error("--- CRASHING THE PROCESS ---");
+                System.exit(1);
+            } else {
+                throw new RuntimeException("A failure happened!");
+            }
         }
-        logger.error(String.format(">>> Applying role %s to user %s", role, userId));
     }
 
-    public static Permission tryApplyPermission(String userId, Permission permission){
-        maybeCrash(0.3);
-
-        if(!permission.getSetting().equals("blocked")) {
-            applicationError(0.4,
-                    "Could not apply permission " + permission.getPermissionKey() +
-                            ":" + permission.getSetting() + " for user" + userId + " due to a conflict."
-                    );
+    public static void applicationError(Double probability, String message){
+        if(Math.random() < probability){
+            logger.error("Action failed: " + message);
+            throw new TerminalException(message);
         }
-        logger.info(String.format(">>> Applying permission %s:%s for user %s",
-                permission.getPermissionKey(),
-                permission.getSetting(),
-                userId));
-
-        return new Permission(permission.getPermissionKey(), "blocked");
     }
 
-    public static String updateUserProfile(String profile) {
-        return Math.random() < 0.8 ? "NOT_READY" : profile + "-id";
+    public static String createSubscription(String userId, String subscription, String paymentRef) {
+        maybeCrash(0.3);
+        logger.info(">>> Creating subscription {} for user {} with payment reference {}", subscription, userId, paymentRef);
+        applicationError(0.3, "Duplicate subscription.");
+        
+        return "SUCCESS";
     }
 
-    public static String setUserPermissions(String userId, String permissions) {
-        return permissions;
+    public static String createRecurringPayment(String creditCard, String paymentId) {
+        maybeCrash(0.3);
+        logger.info(">>> Creating recurring payment {}", paymentId);
+        return "payment-reference";
     }
-
-    public static void provisionResources(String userId, String role, String resources){}
 
     public static void createUserEntry(User user){
-
+        logger.info(">>> Creating user entry for {}", user.name());
     }
-    public static void sendEmailWithLink(String email, String secret){
+
+    public static void sendEmailWithLink(String userId, User user, String secret){
+        logger.info(">>> Sending email with secret {} to user {}", secret, user.name());
+        logger.info("To simulate a user clicking the link, run the following command: \n " +
+                "curl localhost:8080/usersignup/{}/click -H 'content-type: application/json' -d '{ \"secret\": \"{}\"}'`);",
+                userId, secret);
     }
 }

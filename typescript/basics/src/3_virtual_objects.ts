@@ -7,7 +7,7 @@ import * as restate from "@restatedev/restate-sdk";
 // connection or lookup. State is exclusive, and atomically committed with the
 // method execution.
 //
-// Virtual Objects are _Stateful Serverless_ constructs.
+// Virtual Objects are Stateful (Serverless) constructs.
 //
 const greeterObject = restate.object({
   name: "greeter",

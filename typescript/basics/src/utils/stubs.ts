@@ -29,10 +29,10 @@ export type SubscriptionRequest = {
 export function createSubscription(
   userId: string,
   subscription: string,
+  paymentRef: string,
 ): string {
   maybeCrash(0.3);
-  console.log(`>>> Creating subscription ${subscription} for user ${userId}`);
-
+  console.log(`>>> Creating subscription ${subscription} for user ${userId} with payment ${paymentRef}`);
   if (Math.random() < 0.5) {
     console.error("Duplicate subscription.");
     throw new restate.TerminalError("Duplicate subscription");
@@ -47,15 +47,22 @@ export function createSubscription(
 export function createRecurringPayment(
   creditCard: string,
   paymentId: any,
-): { success: boolean } {
+): string {
   maybeCrash(0.3);
-  console.log(`>>> Creating recurring payment ${paymentId} for user ${userId}`);
-  return { success: true };
+  console.log(`>>> Creating recurring payment ${paymentId}`);
+  return "payment-reference";
 }
 
 // Stubs for 3_workflows.ts
-export async function createUserEntry(entry: { name: string; email: string }) {}
-export async function sendEmailWithLink(details: {
-  email: string;
+export async function createUserEntry(entry: { name: string; email: string }) {
+    console.log(`Creating user entry for ${entry.name}`);
+}
+export async function sendEmailWithLink(req: {
+  userId: string,
+  user: {name: string, email: string};
   secret: string;
-}) {}
+}) {
+    console.info(`Sending email to ${req.user.email} with secret ${req.secret}. \n 
+    To simulate a user clicking the link, run the following command: \n 
+    curl localhost:8080/usersignup/${req.userId}/click -H 'content-type: application/json' -d '{ "secret": "${req.secret}"}'`);
+}

@@ -14,12 +14,12 @@ about how they work and how they can be run.
   finished actions. The example applies creates a subscription to movie streaming services
   by first creating a recurring payment and then adding the subscriptions.
 
-* **[Workflows](src/3_workflows.ts):** Workflows are durable execution tasks that can
+* **[Workflows](src/2_workflows.ts):** Workflows are durable execution tasks that can
   be submitted and awaited. They have an identity and can be signaled and queried
   through durable promises. The example is a user-signup flow that takes multiple
   operations, including verifying the email address. 
 
-* **[Virtual Objects](src/4_virtual_objects.ts):** Stateful serverless objects
+* **[Virtual Objects](src/3_virtual_objects.ts):** Stateful serverless objects
   to manage durable consistent state and state-manipulating logic.
 
 ### Running the examples

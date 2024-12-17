@@ -7,52 +7,43 @@ import {
 } from "./utils/stubs";
 
 // Restate lets you implement resilient applications.
-// Applications consist of services with handlers/functions that can be called over HTTP or Kafka.
-//
 // Restate ensures handler code runs to completion despite failures:
 //  - Automatic retries
 //  - Restate tracks the progress of execution, and prevents re-execution of completed work on retries
 //  - Regular code and control flow, no custom DSLs
-//
-// For example, you can use this to update multiple downstream systems in a single transaction.
-// The example implements a service that creates a recurring payment and multiple subscriptions for movie services.
 
-// Implement an HTTP endpoint to serve your services.
+// Applications consist of services with handlers that can be called over HTTP or Kafka.
+const subscriptionService = restate.service({
+    name: "SubscriptionService",
+    // Handlers can be called over HTTP at http://restate:8080/ServiceName/handlerName
+    // Restate persists HTTP requests to this handler and manages execution.
+    handlers: {
+        add: async (ctx: restate.Context, req: SubscriptionRequest) => {
+            // Stable idempotency key: Restate persists the result of
+            // all `ctx` actions and recovers them after failures
+            const paymentId = ctx.rand.uuidv4();
+
+            // Retried in case of timeouts, API downtime, etc.
+            const payRef = await ctx.run(() =>
+                createRecurringPayment(req.creditCard, paymentId)
+            );
+
+            // Persists successful subscriptions and skip them on retries
+            for (const subscription of req.subscriptions) {
+                await ctx.run(() =>
+                    createSubscription(req.userId, subscription, payRef)
+                );
+            }
+        },
+    },
+})
+
+// Create an HTTP endpoint to serve your services on port 9080
+// or use .handler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
 restate
   .endpoint()
-  .bind(
-    // Bind services to the endpoint
-    service({
-      name: "SubscriptionService",
-      // Handlers can be called over HTTP at http://restate:8080/ServiceName/handlerName
-      // Restate persists HTTP requests to this handler and manages execution.
-      handlers: {
-        add: async (ctx: restate.Context, req: SubscriptionRequest) => {
-          // Parameters are durable across retries
-          const { userId, creditCard, subscriptions } = req;
-
-          // Recoverable after failures
-          const stableIdempotencyKey = ctx.rand.uuidv4();
-
-          // Retried in case of timeouts, API downtime, etc.
-          const { success } = await ctx.run(() =>
-            createRecurringPayment(creditCard, stableIdempotencyKey),
-          );
-          if (!success) {
-            return;
-          }
-
-          // Persists successful subscriptions and skip them on retries
-          for (const subscription of subscriptions) {
-            await ctx.run(() => createSubscription(userId, subscription));
-          }
-        },
-      },
-    }),
-  )
+  .bind(subscriptionService)
   .listen(9080);
-// serve the handlers in a long-running process on port 9080
-// or use .handler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
 
 /*
 Check the README to learn how to run Restate.
