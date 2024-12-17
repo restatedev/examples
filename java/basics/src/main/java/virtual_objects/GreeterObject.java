@@ -66,13 +66,13 @@ public class GreeterObject {
 Check the README to learn how to run Restate.
 Then, invoke handlers via HTTP:
 
-  curl localhost:8080/GreeterObject/mary/greet -H 'content-type: application/json' -d '{ "greeting" : "Hi" }'
+  curl localhost:8080/GreeterObject/mary/greet -H 'content-type: application/json' -d '"Hi"'
   --> "Hi mary for the 1-th time."
 
-  curl localhost:8080/GreeterObject/barack/greet -H 'content-type: application/json' -d '{"greeting" : "Hello" }'
+  curl localhost:8080/GreeterObject/barack/greet -H 'content-type: application/json' -d '"Hello"'
   --> "Hello barack for the 1-th time."
 
-  curl localhost:8080/GreeterObject/mary/ungreet -H 'content-type: application/json' -d '{}'
+  curl -X POST localhost:8080/GreeterObject/mary/ungreet
   --> "Dear mary, taking one greeting back: 0."
 
 */

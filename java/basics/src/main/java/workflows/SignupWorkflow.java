@@ -78,11 +78,11 @@ public class SignupWorkflow {
 /*
 Check the README to learn how to run Restate.
 - Then, submit the workflow via HTTP:
-  curl localhost:8080/usersignup/userid1/run/send -H 'content-type: application/json' -d '{ "name": "Bob", "email": "bob@builder.com" }'
+  curl localhost:8080/SignupWorkflow/userid1/run/send -H 'content-type: application/json' -d '{ "name": "Bob", "email": "bob@builder.com" }'
 
 - Resolve the email link via:
-  curl localhost:8080/usersignup/userid1/click -H 'content-type: application/json' -d '{ "secret": "xxx"}'
+  curl localhost:8080/SignupWorkflow/userid1/click -H 'content-type: application/json' -d '{ "secret": "xxx"}'
 
 - Attach back to the workflow to get the result:
-  curl localhost:8080/restate/workflow/usersignup/userid1/attach
+  curl localhost:8080/restate/workflow/SignupWorkflow/userid1/attach
 */

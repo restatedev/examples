@@ -21,18 +21,9 @@ public class ExampleStubs {
         }
     }
 
-    public static void applicationError(Double probability, String message){
-        if(Math.random() < probability){
-            logger.error("Action failed: " + message);
-            throw new TerminalException(message);
-        }
-    }
-
     public static String createSubscription(String userId, String subscription, String paymentRef) {
         maybeCrash(0.3);
         logger.info(">>> Creating subscription {} for user {} with payment reference {}", subscription, userId, paymentRef);
-        applicationError(0.3, "Duplicate subscription.");
-        
         return "SUCCESS";
     }
 
@@ -49,7 +40,7 @@ public class ExampleStubs {
     public static void sendEmailWithLink(String userId, User user, String secret){
         logger.info(">>> Sending email with secret {} to user {}", secret, user.name());
         logger.info("To simulate a user clicking the link, run the following command: \n " +
-                "curl localhost:8080/usersignup/{}/click -H 'content-type: application/json' -d '{ \"secret\": \"{}\"}'`);",
+                "curl localhost:8080/SignupWorkflow/{}/click -H 'content-type: application/json' -d '\"{}\"'",
                 userId, secret);
     }
 }

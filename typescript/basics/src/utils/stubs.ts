@@ -33,11 +33,6 @@ export function createSubscription(
 ): string {
   maybeCrash(0.3);
   console.log(`>>> Creating subscription ${subscription} for user ${userId} with payment ${paymentRef}`);
-  if (Math.random() < 0.5) {
-    console.error("Duplicate subscription.");
-    throw new restate.TerminalError("Duplicate subscription");
-  }
-
   return "SUCCESS";
 }
 
