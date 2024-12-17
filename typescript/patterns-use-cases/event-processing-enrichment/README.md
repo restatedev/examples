@@ -18,7 +18,7 @@ The Package Tracker Virtual Object tracks the package details and its location h
 
 3. Start Restate Server with the Kafka broker configuration in a separate shell: `npx restate-server --config-file restate.toml`
 
-4. Start the data upload service: `npm run app-dev`
+4. Start the service: `npm run app-dev`
 
 5. Register the example at Restate server by calling
    `npx restate -y deployment register "localhost:9080"`.
@@ -65,18 +65,18 @@ You can see how the state was enriched by the initial RPC event and the subseque
  Service  package-tracker 
  Key      package1        
 
- KEY      VALUE                                            
- details  {                                                
-            "finalDestination": "Bridge 6, Amsterdam",  
-            "locations": [                                 
-              {                                            
-                "location": "Pinetree Road 5, Paris",      
-                "timestamp": "2024-10-10 13:00"            
-              },                                            
-              {                                            
-                "location": "Mountain Road 155, Brussels", 
-                "timestamp": "2024-10-10 14:00"            
-              }                                            
-            ]                                              
-          }  
+ KEY           VALUE                                            
+ package-info  {                                                
+                  "finalDestination": "Bridge 6, Amsterdam",  
+                  "locations": [                                 
+                    {                                            
+                      "location": "Pinetree Road 5, Paris",      
+                      "timestamp": "2024-10-10 13:00"            
+                    },                                            
+                    {                                            
+                      "location": "Mountain Road 155, Brussels", 
+                      "timestamp": "2024-10-10 14:00"            
+                    }                                            
+                  ]                                              
+                }  
 ```

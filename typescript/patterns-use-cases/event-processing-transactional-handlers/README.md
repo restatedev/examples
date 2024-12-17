@@ -17,7 +17,7 @@ Processing events (from Kafka) to update various downstream systems.
 
 3. Start Restate Server with the Kafka broker configuration in a separate shell: `npx restate-server --config-file restate.toml`
 
-4. Start the data upload service: `npm run app-dev`
+4. Start the service: `npm run app-dev`
 
 5. Register the example at Restate server by calling `npx restate -y deployment register "localhost:9080"`.
 
@@ -68,7 +68,7 @@ As you see, slow events do not block other slow events.
 Restate effectively created a queue per user ID.
 
 The handler creates the social media post and waits for content moderation to finish.
-If the moderation takes long, and there is an infrastructure crash, then Restate will not recreate the post but will recover the post ID and will continue waiting for moderation to finish.
-You can try it out by killing Restate or the service halfway through processing a post.
-The retries and timers are tracked and managed resiliently by Restate.
+If the moderation takes long, and there is an infrastructure crash, then Restate will trigger a retry.
+The handler will fast-forward to where it was, will recover the post ID and will continue waiting for moderation to finish.
 
+You can try it out by killing Restate or the service halfway through processing a post.

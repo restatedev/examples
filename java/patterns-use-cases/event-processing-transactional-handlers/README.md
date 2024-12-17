@@ -74,7 +74,7 @@ As you see, slow events do not block other slow events.
 Restate effectively created a queue per user ID.
 
 The handler creates the social media post and waits for content moderation to finish.
-If the moderation takes long, and there is an infrastructure crash, then Restate will not recreate the post but will recover the post ID and will continue waiting for moderation to finish.
-You can try it out by killing Restate or the service halfway through processing a post.
-The retries and timers are tracked and managed resiliently by Restate.
+If the moderation takes long, and there is an infrastructure crash, then Restate will trigger a retry. 
+The handler will fast-forward to where it was, will recover the post ID and will continue waiting for moderation to finish.
 
+You can try it out by killing Restate or the service halfway through processing a post.

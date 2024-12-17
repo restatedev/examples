@@ -18,7 +18,7 @@ operations, like `ctx.run()` or RPC/messaging.
 
 2. Start Restate Server in a separate shell: `npx restate-server`
 
-3. Start the data upload service: `npm run app-dev`
+3. Start the service: `npm run app-dev`
 
 4. Register the example at Restate server by calling
    `npx restate -y deployment register "localhost:9080"`.
