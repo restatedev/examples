@@ -5,7 +5,7 @@ import {
 } from "./utils/stubs";
 
 //
-// Processing events (from Kafka) to update various downstream systems.
+// Processing events (from Kafka) to update various downstream systems
 //  - Journaling actions in Restate and driving retries from Restate, recovering
 //    partial progress
 //  - Preserving the order-per-key, but otherwise allowing high-fanout, because
@@ -23,12 +23,11 @@ const userFeed = restate.object({
         processPost: async (ctx: restate.ObjectContext, post: SocialMediaPost) => {
             const userId = ctx.key
 
-            let { postId, status } = await ctx.run(() => createPost(userId, post));
-            while (status === PENDING) {
+            const postId = await ctx.run(() => createPost(userId, post));
+            while ((await ctx.run(() => getPostStatus(postId))) === PENDING) {
                 // Delay processing until content moderation is complete (handler suspends when on FaaS).
                 // This only blocks other posts for this user (Virtual Object), not for other users.
                 await ctx.sleep(5_000);
-                status = await ctx.run(() => getPostStatus(postId));
             }
 
             await ctx.run(() => updateUserFeed(userId, postId));

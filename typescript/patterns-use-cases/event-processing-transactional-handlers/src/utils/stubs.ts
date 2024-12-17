@@ -19,10 +19,10 @@ export type SocialMediaPost = {
 export const PENDING = "PENDING";
 export const DONE = "DONE";
 
-export async function createPost(userId: string, post: SocialMediaPost): Promise<{ postId: string, status: string }> {
+export async function createPost(userId: string, post: SocialMediaPost): Promise<string> {
     const postId = randomUUID().toString();
     console.info(`Created post ${postId} for user ${userId} with content: ${post.content}`);
-    return {postId, status: PENDING}
+    return postId
 }
 
 export async function getPostStatus(postId: string): Promise<string> {
@@ -36,5 +36,5 @@ export async function getPostStatus(postId: string): Promise<string> {
 }
 
 export async function updateUserFeed(user: string, postId: string) {
-    console.info(`Updating the user feed for user ${user} and post ${postId}`);
+    console.info(`Updating the user feed for user ${user} with post ${postId}`);
 }

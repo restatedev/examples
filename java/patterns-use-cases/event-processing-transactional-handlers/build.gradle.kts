@@ -30,7 +30,7 @@ dependencies {
 
 // Set main class
 application {
-  mainClass.set("my.example.Greeter")
+  mainClass.set("my.example.UserFeed")
 }
 
 tasks.named<Test>("test") {
