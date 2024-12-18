@@ -1,4 +1,4 @@
-# Combining Sync and Async (Webhook) Responses from Stripe
+# Async Tasks: Payment Signals - Combining Sync and Async (Webhook) Responses from Stripe
 
 This example issues a payment request to Stripe.
 When calling Stripe, the result often comes synchronously as a response API call.

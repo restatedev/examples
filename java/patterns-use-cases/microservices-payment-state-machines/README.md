@@ -1,4 +1,4 @@
-# Simple Payment State Machine
+# Microservices: Payment State Machine
 
 This example shows how to build a reliable payment state machine.
 
