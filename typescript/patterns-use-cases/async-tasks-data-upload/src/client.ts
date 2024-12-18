@@ -12,7 +12,8 @@ const restateClient = restate.connect({ url: RESTATE_URL });
 async function uploadData(user: { id: string, email: string }) {
   console.info(`Start upload for ${user.id}`)
 
-  const uploadClient = restateClient.workflowClient<DataUploadService>({ name: "dataUploader" }, user.id);
+  const uploadClient = restateClient
+      .workflowClient<DataUploadService>({ name: "dataUploader" }, user.id);
   await uploadClient.workflowSubmit();
 
   let uploadUrl;
