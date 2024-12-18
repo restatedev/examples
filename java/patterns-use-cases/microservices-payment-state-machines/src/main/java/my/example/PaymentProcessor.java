@@ -1,14 +1,3 @@
-/*
- * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
- *
- * This file is part of the Restate examples,
- * which is released under the MIT license.
- *
- * You can find a copy of the license in the file LICENSE
- * in the root directory of this repository or package or at
- * https://github.com/restatedev/examples/
- */
-
 package my.example;
 
 import static my.example.types.PaymentStatus.*;
@@ -24,13 +13,13 @@ import my.example.types.Payment;
 import my.example.types.PaymentStatus;
 import my.example.types.Result;
 
-/**
+/*
  * A service that processes the payment requests.
  *
- * <p>This is implemented as a virtual object to ensure that only one concurrent request can happen
+ * This is implemented as a virtual object to ensure that only one concurrent request can happen
  * per payment-id. Requests are queued and processed sequentially per id.
  *
- * <p>Methods can be called multiple times with the same payment-id, but payment will be executed
+ * Methods can be called multiple times with the same payment-id, but payment will be executed
  * only once. If a 'cancelPayment' is called for an id, the payment will either be undone, or
  * blocked from being made in the future, depending on whether the cancel call comes before or after
  * the 'makePayment' call.

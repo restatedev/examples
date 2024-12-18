@@ -12,6 +12,8 @@
 package dev.restate.patterns;
 
 import dev.restate.patterns.activities.*;
+import dev.restate.patterns.clients.PaymentClient;
+import dev.restate.patterns.types.BookingRequest;
 import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.common.TerminalException;
@@ -20,91 +22,60 @@ import java.util.ArrayList;
 import java.util.List;
 
 //
-// SAGAs / Compensations
-//
 // An example of a trip reservation workflow, using the SAGAs pattern to
 // undo previous steps in case of an error.
 //
-// Durable Execution's guarantee to run code to the end in the presence
+// The durable execution's guarantee to run code to the end in the presence
 // of failures, and to deterministically recover previous steps from the
-// journal, makes SAGAs easy.
+// journal, makes sagas easy.
 // Every step pushes a compensation action (an undo operation) to a stack.
 // in the case of an error, those operations are run.
 //
-// The main requirement is that steps are implemented as journalled
-// operations, like `ctx.run()` or RPC calls/messages executed
-// through the Restate Context.
+// The main requirement is that steps are implemented as journaled
+// operations, like `ctx.run()` or rpc/messaging.
 //
-
-/**
- * Trip reservation workflow which has been instrumented with compensations. The workflow tries to
- * reserve the flight and the car rental before it processes the payment. If at any point one of
- * the calls fails or gets cancelled, then the trip reservation workflow will undo all
- * successfully completed steps by running the compensations.
- *
- * <p>Note: that the compensation logic is purely implemented in the user code and runs durably
- * until it completes. Moreover, an invocation failure and an invocation cancellation are handled
- * in the exact same way by the caller.
- */
+// Note: that the compensation logic is purely implemented in the user code
+// and runs durably until it completes.
 @Workflow
 public class BookingWorkflow {
 
-  // The workflow parameters, like the car and flight to book, the
-  // payment details (card/token, amount, ...)
-  public record TravelBookingRequest( /* car, flights, payment info, ... */ ) { }
-
   @Workflow
-  public void run(WorkflowContext context, TravelBookingRequest request) throws TerminalException {
-    // Create a list of compensations to run in case of a failure or cancellation.
-    final List<Runnable> compensations = new ArrayList<>();
+  public void run(WorkflowContext ctx, BookingRequest req) throws TerminalException {
+    // create a list of undo actions
+    List<Runnable> compensations = new ArrayList<>();
 
     try {
-      // Reserve the flights and let Restate remember the reservation ID
-      final var flightsRpcClient = FlightsClient.fromContext(context);
-      final String flightReservationId =
-          flightsRpcClient
-              .reserve(new Flights.FlightBookingRequest(request))
-              .await();
-      // Register the compensation to undo the flight reservation.
-      compensations.add(() -> flightsRpcClient.cancel(flightReservationId).await());
+      // Reserve the flights; Restate remembers the reservation ID
+      var flightsRpcClient = FlightsClient.fromContext(ctx);
+      String flightBookingId = flightsRpcClient.reserve(req.flights()).await();
+      // Register the undo action for the flight reservation.
+      compensations.add(() -> flightsRpcClient.cancel(flightBookingId).await());
 
-      // Reserve the car and let Restate remember the reservation ID
-      final var carRentalRpcClient = CarRentalsClient.fromContext(context);
-      final String carReservationId =
-          carRentalRpcClient
-              .reserve(new CarRentals.CarRentalRequest(request))
-              .await();
-      // Register the compensation to undo the car rental reservation.
-      compensations.add(() -> carRentalRpcClient.cancel(carReservationId).await());
+      // Reserve the car; Restate remembers the reservation ID
+      var carRentalRpcClient = CarRentalsClient.fromContext(ctx);
+      String carBookingId = carRentalRpcClient.reserve(req.car()).await();
+      // Register the undo action for the car rental.
+      compensations.add(() -> carRentalRpcClient.cancel(carBookingId).await());
 
-      // call the payment service to make the payment and let Restate remember
-      // the payment ID
-      final var paymentRpcClient = PaymentClient.fromContext(context);
-      final String paymentId =
-          paymentRpcClient
-              .process(new Payment.PaymentRequest(request))
-              .await();
-      // Register the compensation to undo the payment.
-      compensations.add(() -> paymentRpcClient.refund(paymentId).await());
+      // Charge the payment; Generate a payment ID and store it in Restate
+      String paymentId = ctx.random().nextUUID().toString();
+      // Register the payment refund using the paymentId
+      compensations.add(() -> ctx.run(() -> PaymentClient.refund(paymentId)));
+      // Do the payment using the paymentId as idempotency key
+      ctx.run(() -> PaymentClient.charge(req.paymentInfo(), paymentId));
 
-      // confirm the reserved flight / rental
-      // failures here will still trigger the SAGA compensations
-      flightsRpcClient.confirm(flightReservationId).await();
-      carRentalRpcClient.confirm(carReservationId).await();
+      // confirm the flight and car reservations
+      flightsRpcClient.confirm(flightBookingId).await();
+      carRentalRpcClient.confirm(carBookingId).await();
 
     } catch (TerminalException e) {
-
-      // Run the compensations
+      // undo all the steps up to this point by running the compensations
       for (Runnable compensation : compensations) {
         compensation.run();
       }
 
       // rethrow error to fail this workflow
-      throw new TerminalException(
-          e.getCode(),
-          String.format(
-              "Failed to reserve the trip: %s. Ran %d compensations.",
-              e.getMessage(), compensations.size()));
+      throw e;
     }
   }
 }

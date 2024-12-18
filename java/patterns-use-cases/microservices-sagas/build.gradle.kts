@@ -1,5 +1,3 @@
-import java.net.URI
-
 plugins {
   java
   application
@@ -22,4 +20,14 @@ dependencies {
 
   // Logging (optional)
   implementation("org.apache.logging.log4j:log4j-core:2.24.1")
+}
+
+application {
+  mainClass.set("dev.restate.patterns.AppMain")
+}
+
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(17))
+  }
 }

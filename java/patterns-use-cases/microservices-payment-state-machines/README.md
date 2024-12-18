@@ -30,7 +30,7 @@ Build and start the example
 ./gradlew run
 ```
 
-Register the services: `restate dep reg localhost:9080`
+Register the services: `restate deployments register localhost:9080`
 
 Make some requests:
 
@@ -45,3 +45,22 @@ Make some requests:
   ```shell
   curl -X POST localhost:8080/PaymentProcessor/some-string-id/cancelPayment
   ```
+  
+- Have a look at the state:
+```shell
+restate kv get PaymentProcessor some-string-id
+```
+```
+🤖 State:
+―――――――――
+                           
+ Service  PaymentProcessor 
+ Key      some-string-id   
+
+ KEY      VALUE                 
+ payment  {                     
+            "accountId": "abc", 
+            "amountCents": 100  
+          }                     
+ status   "CANCELLED"
+```
