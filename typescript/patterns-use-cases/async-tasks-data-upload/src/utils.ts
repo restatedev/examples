@@ -29,6 +29,6 @@ export async function uploadData(target: URL) {
     );
 }
 
-export async function sendEmail(url: URL, email: string) {
+export async function sendEmail(email: string, url: URL) {
     console.info(` >>> Sending email to '${email}' with URL ${url}`);
 }
