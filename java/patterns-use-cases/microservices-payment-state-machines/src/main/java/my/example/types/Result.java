@@ -22,4 +22,13 @@ public class Result {
   public boolean isSuccess() {
     return success;
   }
+
+  public String getReason() {
+    return reason;
+  }
+
+  @Override
+  public String toString() {
+    return "Result{" + "success=" + success + ", reason='" + reason + '\'' + '}';
+  }
 }
