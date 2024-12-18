@@ -38,6 +38,6 @@ public class UserFeed {
     public static void main(String[] args) {
         RestateHttpEndpointBuilder.builder()
                 .bind(new UserFeed())
-                .buildAndListen(9080);
+                .buildAndListen();
     }
 }
