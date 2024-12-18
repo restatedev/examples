@@ -23,7 +23,14 @@ The workflow will run only once per ID, so you need to provide a new ID for each
 
 5. Have a look at the logs to see how the execution switches from synchronously waiting to the response to requesting an email:
 
-Fast upload:
+**Fast upload:**
+
+Client logs:
+```
+2024-12-18 15:02:34 INFO   my.example.UploadClient - Uploading data for user someone212
+2024-12-18 15:02:36 INFO   my.example.UploadClient - Fast upload... URL was https://s3-eu-central-1.amazonaws.com/257587941/
+```
+Workflow logs:
 ```
 2024-12-18 15:02:34 INFO  [DataUploadService/run][inv_17cZwACLnO7f5m1BjN7SKoQpuyycCmWwnv] dev.restate.sdk.core.InvocationStateMachine - Start invocation
 2024-12-18 15:02:34 INFO  [DataUploadService/run][inv_17cZwACLnO7f5m1BjN7SKoQpuyycCmWwnv] my.example.utils.DataOperations - Creating bucket with URL https://s3-eu-central-1.amazonaws.com/257587941/
@@ -31,7 +38,15 @@ Fast upload:
 2024-12-18 15:02:36 INFO  [DataUploadService/run][inv_17cZwACLnO7f5m1BjN7SKoQpuyycCmWwnv] dev.restate.sdk.core.InvocationStateMachine - End invocation
 ```
 
-Slow upload:
+**Slow upload**:
+
+Client logs:
+```
+2024-12-18 15:02:41 INFO   my.example.UploadClient - Uploading data for user someone2122
+2024-12-18 15:02:46 INFO   my.example.UploadClient - Slow upload... Mail the link later
+```
+
+Workflow logs:
 ```
 2024-12-18 15:02:41 INFO  [DataUploadService/run][inv_1koakM2GXxcN2Co3aM3pSrQJokiqnyR7MJ] dev.restate.sdk.core.InvocationStateMachine - Start invocation
 2024-12-18 15:02:41 INFO  [DataUploadService/run][inv_1koakM2GXxcN2Co3aM3pSrQJokiqnyR7MJ] my.example.utils.DataOperations - Creating bucket with URL https://s3-eu-central-1.amazonaws.com/493004051/
