@@ -5,8 +5,6 @@ import dev.restate.sdk.client.CallRequestOptions;
 import dev.restate.sdk.client.Client;
 import dev.restate.sdk.client.SendResponse;
 
-import java.time.Duration;
-
 /*
  * Restate is as a sophisticated task queue, with extra features like:
  * - delaying execution and reliable timers
@@ -22,7 +20,7 @@ public class TaskSubmitter {
     private static final String RESTATE_URL = "http://localhost:8080";
     private static final Client restateClient = Client.connect(RESTATE_URL);
 
-    public void submitAndAwaitTasks(AsyncTaskService.TaskOpts taskOpts) {
+    public void submitAndAwaitTasks(AsyncTaskWorker.TaskOpts taskOpts) {
 
         // submit the task; similar to publishing a message to a queue
         // Restate ensures the task is executed exactly once

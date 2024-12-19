@@ -8,7 +8,7 @@ Common tasks and patterns implemented with Restate:
 | Microservices    | Sagas | [code](src/main/java/my/example/sagas/BookingWorkflow.java)                 | [README](#microservices-sagas)                                                                 | Basic        | Preserve consistency by tracking undo actions and running them when code fails halfway through.             |
 | Microservices    | Stateful Actors | [code](src/main/java/my/example/statefulactors/MachineOperator.java)        | [README](#microservices-stateful-actors)                                                       | Basic                          | State machine with a set of transitions, built as a Restate Virtual Object for automatic state persistence. |
 | Microservices    | Payment state machines | [code](src/main/java/my/example/statemachinepayments/PaymentProcessor.java) | [README](#microservices-payment-state-machine)                                                 | Advanced                       | State machine example that tracks a payment process, ensuring consistent processing and cancellations.      |
-| Async tasks      | (Delayed) Task Queue | [code](src/main/java/my/example/queue/TaskSubmitter)                        | [README](#async-tasks-delayed-tasks-queue)                                                     | Basic                          | Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.          |
+| Async tasks      | (Delayed) Task Queue | [code](src/main/java/my/example/queue/TaskSubmitter.java)                   | [README](#async-tasks-delayed-tasks-queue)                                                     | Basic                          | Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.          |
 | Async tasks      | Parallelizing work | [code](src/main/java/my/example/parallelizework/FanOutWorker.java)          | [README](#async-tasks-parallelizing-work)                                                      | Intermediate                   | Execute a list of tasks in parallel and then gather their result.                                           |
 | Async tasks      | Slow async data upload | [code](src/main/java/my/example/dataupload/UploadClient.java)               | [README](#async-tasks-async-data-upload)                                                       | Intermediate                   | Kick of a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long.    |
 | Async tasks      | Payments: async signals | [code](src/main/java/my/example/signalspayments/PaymentService.java)        | [README](#async-tasks-payment-signals---combining-sync-and-async-webhook-responses-from-stripe) | Advanced                       | Handling async payment callbacks for slow payments, with Stripe.                                            |
@@ -24,8 +24,8 @@ This example shows an example of:
 The example shows how you can programmatically submit a requests to a Restate service.
 Every request gets processed durably, and deduplicated based on the idempotency key.
 
-The example shows a client that receives product reservation requests and forwards them to the product service.
-The [Product service](restate-app/app.ts) is a Restate service that durably processes the reservation requests and deduplicates them.
+The example shows a [client](src/main/java/my/example/durablerpc/MyClient.java) that receives product reservation requests and forwards them to the product service.
+The [Product service](src/main/java/my/example/durablerpc/ProductService.java) is a Restate service that durably processes the reservation requests and deduplicates them.
 Each product can be reserved only once.
 
 ## Microservices: Sagas
@@ -258,18 +258,18 @@ restate kv get PaymentProcessor some-string-id
 Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.
 
 Files to look at:
-- [Task Submitter](src/task_submitter.ts): schedules tasks via send requests with and idempotency key.
+- [Task Submitter](src/main/java/my/example/queue/TaskSubmitter.java): schedules tasks via send requests with and idempotency key.
     - The **send requests** put the tasks in Restate's queue. The task submitter does not wait for the task response.
     - The **idempotency key** in the header is used by Restate to deduplicate requests.
     - If a delay is set, the task will be executed later and Restate will track the timer durably, like a **delayed task queue**.
-- [Async Task Worker](src/async_task_worker.ts): gets invoked by Restate for each task in the queue.
+- [Async Task Worker](src/main/java/my/example/queue/AsyncTaskWorker.java): gets invoked by Restate for each task in the queue.
 
 ## Async Tasks: Parallelizing work
 
 This example shows how to use the Restate SDK to **execute a list of tasks in parallel and then gather their result**.
 Also known as fan-out, fan-in.
 
-The example implements a [worker service](src/worker_service.ts), that takes a task as input.
+The example implements a [worker service](src/main/java/my/example/parallelizework/FanOutWorker.java), that takes a task as input.
 It then splits the task into subtasks, executes them in parallel, and then gathers the results.
 
 Restate guarantees and manages the execution of all the subtasks across failures.
@@ -279,9 +279,9 @@ You can run this on FaaS infrastructure, like AWS Lambda, and it will scale auto
 
 This example shows how to use the Restate SDK to **kick of a synchronous task and turn it into an asynchronous one if it takes too long**.
 
-The example implements a [data upload service](src/main/java/my/example/DataUploadService.java), that creates a bucket, uploads data to it, and then returns the URL.
+The example implements a [data upload service](src/main/java/my/example/dataupload/DataUploadService.java), that creates a bucket, uploads data to it, and then returns the URL.
 
-The [upload client](src/main/java/my/example/UploadClient.java) does a synchronous request to upload the file, and the server will respond with the URL.
+The [upload client](src/main/java/my/example/dataupload/UploadClient.java) does a synchronous request to upload the file, and the server will respond with the URL.
 
 If the upload takes too long, however, the client asks the upload service to send the URL later in an email.
 
@@ -364,7 +364,7 @@ webhooks to your local machine.
    with test data, not make real payments. Good enough for this example.
 
 5. In the Stripe UI, go to "Developers" -> "API Keys" and copy the _secret key_ (`sk_test_...`).
-   Add it to the [StripeUtils.java](./src/main/java/my/example/utils/StripeUtils.java) file. Because this is a dev-only
+   Add it to the [StripeUtils.java](src/main/java/my/example/signalspayment/utils/StripeUtils.java) file. Because this is a dev-only
    API key, it supports only test data, so it isn't super sensitive.
 
 6. Run launch _ngrok_: Get a free account and download the binary, or launch a docker container.
@@ -377,7 +377,7 @@ webhooks to your local machine.
    public URL + `/PaymentService/processWebhook` as the webhook URL (you need to update this whenever you stop/start ngrok).
    Example: `https://<some random numbers>.ngrok-free.app/PaymentService/processWebhooks`
 
-8. Put the webhook secret (`whsec_...`) to the [StripeUtils.java](./src/main/java/my/example/utils/StripeUtils.java) file.
+8. Put the webhook secret (`whsec_...`) to the [StripeUtils.java](src/main/java/my/example/signalspayment/StripeUtils.java) file.
 
 Use as test data `pm_card_visa` for a successful payment and `pm_card_visa_chargeDeclined` for a declined payment.
 Because the test data rarely triggers an async response, this example's tools can mimic that

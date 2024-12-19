@@ -6,7 +6,7 @@ import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
 @Service
-public class AsyncTaskService {
+public class AsyncTaskWorker {
 
     public record TaskOpts(String key, String taskName, String payload) {}
 
@@ -20,6 +20,6 @@ public class AsyncTaskService {
     }
 
     public static void main(String[] args) {
-         RestateHttpEndpointBuilder.builder().bind(new AsyncTaskService()).buildAndListen();
+         RestateHttpEndpointBuilder.builder().bind(new AsyncTaskWorker()).buildAndListen();
     }
 }
