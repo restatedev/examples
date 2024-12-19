@@ -292,7 +292,7 @@ If the upload takes too long, however, the client asks the upload service to sen
 
 ### Demo scenario
 
-Run the upload client with a userId: `./gradlew -PmainClass=my.example.UploadClient run --args="someone21"`
+Run the upload client with a userId: `./gradlew -PmainClass=my.example.dataupload.UploadClient run --args="someone21"`
 
 This will submit an upload workflow to the data upload service.
 The workflow will run only once per ID, so you need to provide a new ID for each run.
@@ -396,7 +396,7 @@ A few notes:
   like: ` -H 'idempotency-key: my-id-token'`
 * The webhook setup with ngrok is not trivial and can easily be wrong. You might end up with
   some payments waiting for the webhooks. You can use the CLI to cancel them:
-  `npx restate inv list` and `npx restate inv cancel <invocation_id>`.
+  `restate inv list` and `restate inv cancel <invocation_id>`.
 * Here is an opportunity for the SAGAs pattern to cancel payments in that case.
 
 ## Event Processing: Transactional Handlers with Durable Side Effects and Timers
@@ -534,14 +534,14 @@ package1:{"timestamp": "2024-10-10 14:00", "location": "Mountain Road 155, Bruss
 ```shell
 curl localhost:8080/PackageTracker/package1/getPackageInfo
 ```
-or via the CLI: `npx restate kv get package-tracker package1`
+or via the CLI: `restate kv get PackageTracker package1`
 
 You can see how the state was enriched by the initial RPC event and the subsequent Kafka events:
 ```
 🤖 State:
 ―――――――――
                           
- Service  package-tracker 
+ Service  PackageTracker 
  Key      package1        
 
  KEY           VALUE                                            

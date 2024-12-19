@@ -25,7 +25,7 @@ public class TaskSubmitter {
         // submit the task; similar to publishing a message to a queue
         // Restate ensures the task is executed exactly once
         SendResponse handle =
-                AsyncTaskServiceClient.fromClient(restateClient)
+                AsyncTaskWorkerClient.fromClient(restateClient)
                         // optionally add a delay to execute the task later
                         .send(/*Duration.ofDays(1)*/)
                         .runTask(

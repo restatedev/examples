@@ -34,6 +34,6 @@ public class DataUploadService {
   }
 
   public static void main(String[] args) {
-     RestateHttpEndpointBuilder.builder().bind(new DataUploadService()).buildAndListen(9082);
+     RestateHttpEndpointBuilder.builder().bind(new DataUploadService()).buildAndListen();
   }
 }

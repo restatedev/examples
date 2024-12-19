@@ -49,7 +49,7 @@ public class PackageTracker {
     public static void main(String[] args) {
         RestateHttpEndpointBuilder.builder()
                 .bind(new PackageTracker())
-                .buildAndListen(9081);
+                .buildAndListen();
     }
 }
 
