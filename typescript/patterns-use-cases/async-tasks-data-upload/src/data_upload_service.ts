@@ -20,7 +20,7 @@ const dataUploadService = restate.workflow({
       ctx: WorkflowSharedContext,
       req: { email: string }
     ) => {
-      console.info(">>> Slow upload: client requested to be notified via email.")
+      console.info("Slow upload: client requested to be notified via email.")
       const url = await ctx.promise<URL>("url");
       await ctx.run(() => sendEmail(req.email, url));
     },
