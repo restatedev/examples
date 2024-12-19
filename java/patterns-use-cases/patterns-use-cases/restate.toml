@@ -1,3 +1,0 @@
-[[ingress.kafka-clusters]]
-name = "my-cluster"
-brokers = ["PLAINTEXT://localhost:9092"]
