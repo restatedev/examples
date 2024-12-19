@@ -1,4 +1,4 @@
-# Consistent State Machines
+# Microservices: Stateful Actors
 
 This example implements a State Machine with a Virtual Object.
 
@@ -35,32 +35,32 @@ avoiding accidental state corruption and concurrency issues.
 
 Invoke the state machine transitions like
 ```shell
-curl localhost:8080/machine/my-machine/setUp -H 'content-type: application/json' -d '' 
+curl -X POST localhost:8080/machineOperator/my-machine/setUp
 ```
 
 To illustrate the concurrency safety here, send multiple requests without waiting on
 results and see how they play out sequentially per object (state machine).
 Copy all the curl command lines below and paste them to the terminal together.
 You will see both from the later results (in the terminal with the curl commands) and in
-the log of the NodeJS process that the requests queue per object key and safely execute
+the log of the service that the requests queue per object key and safely execute
 unaffected by crashes and recoveries.
 
 ```shell
-(curl localhost:8080/machineManagement/a/setUp    -H 'content-type: application/json' -d '' &)
-(curl localhost:8080/machineManagement/a/tearDown -H 'content-type: application/json' -d '' &)
-(curl localhost:8080/machineManagement/b/setUp    -H 'content-type: application/json' -d '' &)
-(curl localhost:8080/machineManagement/b/setUp    -H 'content-type: application/json' -d '' &)
-(curl localhost:8080/machineManagement/b/tearDown -H 'content-type: application/json' -d '' &)
+(curl localhost:8080/machineOperator/a/setUp    -H 'content-type: application/json' -d '' &)
+(curl localhost:8080/machineOperator/a/tearDown -H 'content-type: application/json' -d '' &)
+(curl localhost:8080/machineOperator/b/setUp    -H 'content-type: application/json' -d '' &)
+(curl localhost:8080/machineOperator/b/setUp    -H 'content-type: application/json' -d '' &)
+(curl localhost:8080/machineOperator/b/tearDown -H 'content-type: application/json' -d '' &)
 echo "executing..."
 ```
 
 For example: 
 ```shell
-[restate] [machineManagement/tearDown][inv_1dceKvwtEc2n6bPpPFDDO6fD33NASbYjxD][2024-12-16T10:54:16.747Z] INFO:  Beginning transition of a to DOWN
-[restate] [machineManagement/setUp][inv_174rq2A9bm3T0SlwFGpDxhm7YmCFe98hNf][2024-12-16T10:54:16.750Z] INFO:  Beginning transition of b to UP
-[restate] [machineManagement/tearDown][inv_1dceKvwtEc2n6bPpPFDDO6fD33NASbYjxD][2024-12-16T10:54:21.757Z] INFO:  Done transitioning a to DOWN
-[restate] [machineManagement/setUp][inv_174rq2A9bm3T0SlwFGpDxhm7YmCFe98hNf][2024-12-16T10:54:21.758Z] INFO:  Done transitioning b to UP
-[restate] [machineManagement/tearDown][inv_174rq2A9bm3T57Pp4C02QnpcQoPPf2PdbX][2024-12-16T10:54:21.765Z] INFO:  Beginning transition of b to DOWN
+[restate] [machineOperator/tearDown][inv_1dceKvwtEc2n6bPpPFDDO6fD33NASbYjxD][2024-12-16T10:54:16.747Z] INFO:  Beginning transition of a to DOWN
+[restate] [machineOperator/setUp][inv_174rq2A9bm3T0SlwFGpDxhm7YmCFe98hNf][2024-12-16T10:54:16.750Z] INFO:  Beginning transition of b to UP
+[restate] [machineOperator/tearDown][inv_1dceKvwtEc2n6bPpPFDDO6fD33NASbYjxD][2024-12-16T10:54:21.757Z] INFO:  Done transitioning a to DOWN
+[restate] [machineOperator/setUp][inv_174rq2A9bm3T0SlwFGpDxhm7YmCFe98hNf][2024-12-16T10:54:21.758Z] INFO:  Done transitioning b to UP
+[restate] [machineOperator/tearDown][inv_174rq2A9bm3T57Pp4C02QnpcQoPPf2PdbX][2024-12-16T10:54:21.765Z] INFO:  Beginning transition of b to DOWN
 A failure happened!
 --- CRASHING THE PROCESS ---
 
@@ -70,6 +70,6 @@ A failure happened!
 [INFO] 11:54:23 ts-node-dev ver. 2.0.0 (using ts-node ver. 10.9.2, typescript ver. 5.7.2)
 [restate] [2024-12-16T10:54:23.208Z] INFO:  Listening on 9080...
 [restate] [2024-12-16T10:54:23.209Z] WARN:  Accepting requests without validating request signatures; handler access must be restricted
-[restate] [machineManagement/tearDown][inv_174rq2A9bm3T57Pp4C02QnpcQoPPf2PdbX][2024-12-16T10:54:23.519Z] INFO:  Beginning transition of b to DOWN
-[restate] [machineManagement/tearDown][inv_174rq2A9bm3T57Pp4C02QnpcQoPPf2PdbX][2024-12-16T10:54:28.529Z] INFO:  Done transitioning b to DOWN
+[restate] [machineOperator/tearDown][inv_174rq2A9bm3T57Pp4C02QnpcQoPPf2PdbX][2024-12-16T10:54:23.519Z] INFO:  Beginning transition of b to DOWN
+[restate] [machineOperator/tearDown][inv_174rq2A9bm3T57Pp4C02QnpcQoPPf2PdbX][2024-12-16T10:54:28.529Z] INFO:  Done transitioning b to DOWN
 ```

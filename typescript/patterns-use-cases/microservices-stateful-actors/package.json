@@ -8,7 +8,7 @@
   "email": "code@restate.dev",
   "scripts": {
     "build": "tsc --noEmitOnError",
-    "example": "RESTATE_DEBUG_LOGGING=OFF ts-node-dev --transpile-only src/machine_management.ts",
+    "example": "RESTATE_DEBUG_LOGGING=OFF ts-node-dev --transpile-only src/machine_operator.ts",
     "example-crash": "CRASH_PROCESS=true ./src/utils/restart-process.sh 'npm run example'"
   },
   "dependencies": {

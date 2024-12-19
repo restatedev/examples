@@ -35,7 +35,11 @@ dependencies {
 
 // Set main class
 application {
-  mainClass.set("my.example.FanOutWorker")
+  if (project.hasProperty("mainClass")) {
+    mainClass.set(project.property("mainClass") as String)
+  } else {
+    mainClass.set("my.example.dataupload.DataUploadService")
+  }
 }
 
 tasks.withType<JavaCompile> {

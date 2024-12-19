@@ -1,24 +1,19 @@
 # Java Patterns and Use Cases
 
-
 Common tasks and patterns implemented with Restate:
 
-| Category         | Use case / Name                                                                      | Difficulty  | Description                                                                                                 |
-|------------------|--------------------------------------------------------------------------------------|-------------|-------------------------------------------------------------------------------------------------------------|
-| Microservices    | Durable RPC: [code](src/java/my/example/durablerpc)                                  | Basic       | Restate persists requests and makes sure they execute exactly-once.                                         |
-| Microservices    | Sagas: [code](src/java/my/example/sagas)                                             | Basic       | Preserve consistency by tracking undo actions and running them when code fails halfway through.             |
-| Microservices    | [Stateful Actors](patterns-use-cases/microservices-stateful-actors)                  | Basic       | State machine with a set of transitions, built as a Restate Virtual Object for automatic state persistence. |
-| Microservices    | [Payment state machines](patterns-use-cases/microservices-payment-state-machines)    | Advanced    | State machine example that tracks a payment process, ensuring consistent processing and cancellations.      |
-| Async tasks      | [(Delayed) Task Queue](patterns-use-cases/async-tasks-queue)                         | Basic       | Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.          |
-| Async tasks      | [Parallelizing work](patterns-use-cases/async-tasks-parallelize-work)                | Intermediate | Execute a list of tasks in parallel and then gather their result.                                           |
-| Async tasks      | [Slow async data upload](patterns-use-cases/async-tasks-data-upload)                 | Intermediate | Kick of a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long.    |
-| Async tasks      | [Payments: async signals processing](patterns-use-cases/async-tasks-payment-signals) | Advanced    | Handling async payment callbacks for slow payments, with Stripe.                                            |
-| Event processing | [Transactional handlers](patterns-use-cases/event-processing-transactional-handlers) | Basic       | Processing events (from Kafka) to update various downstream systems in a transactional way.                 |
-| Event processing | [Enriching streams](patterns-use-cases/event-processing-enrichment)                  | Basic       | Stateful functions/actors connected to Kafka and callable over RPC.                                         |
-| Patterns         | [Durable Promises](patterns-use-cases/pattern-durable-promises)                      | Advanced    | Implementation of Promises/Futures that are durable across processes and failures.                          |
-| Patterns         | [Priority Queue](patterns-use-cases/pattern-priority-queue)                          | Advanced    | Example of implementing a priority queue to manage task execution order.                                    |
-
-
+| Category         | Use case / Name                          |                                                       |                                                                                                 | Difficulty  | Description                                                                                                 |
+|------------------|------------------------------------------|-------------------------------------------------------|-------------------------------------------------------------------------------------------------|-------------|-------------------------------------------------------------------------------------------------------------|
+| Microservices    | Durable RPC | [code](src/main/java/my/example/durablerpc) | [README](#microservices-durable-rpc)                                                            | Basic        | Restate persists requests and makes sure they execute exactly-once.                                         |
+| Microservices    | Sagas | [code](src/main/java/my/example/sagas) | [README](#microservices-sagas)                                                                  | Basic        | Preserve consistency by tracking undo actions and running them when code fails halfway through.             |
+| Microservices    | Stateful Actors | [code](src/main/java/my/example/statefulactors) | [README](#microservices-stateful-actors)                                                        | Basic                          | State machine with a set of transitions, built as a Restate Virtual Object for automatic state persistence. |
+| Microservices    | Payment state machines | [code](src/main/java/my/example/statemachinepayments) | [README](#microservices-payment-state-machine)                                                  | Advanced                       | State machine example that tracks a payment process, ensuring consistent processing and cancellations.      |
+| Async tasks      | (Delayed) Task Queue | [code](src/main/java/my/example/queue) | [README](#async-tasks-delayed-tasks-queue)                                                      | Basic                          | Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.          |
+| Async tasks      | Parallelizing work | [code](src/main/java/my/example/parallelizework) | [README](#async-tasks-parallelizing-work3)                                                      | Intermediate                   | Execute a list of tasks in parallel and then gather their result.                                           |
+| Async tasks      | Slow async data upload | [code](src/main/java/my/example/dataupload) | [README](#async-tasks-async-data-upload)                                                        | Intermediate                   | Kick of a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long.    |
+| Async tasks      | Payments: async signals | [code](src/main/java/my/example/signalspayments) | [README](#async-tasks-payment-signals---combining-sync-and-async-webhook-responses-from-stripe) | Advanced                       | Handling async payment callbacks for slow payments, with Stripe.                                            |
+| Event processing | Transactional handlers | [code](src/main/java/my/example/eventtransactions) | [README](#event-processing-transactional-handlers-with-durable-side-effects-and-timers)         | Basic                          | Processing events (from Kafka) to update various downstream systems in a transactional way.                 |
+| Event processing | Enriching streams | [code](src/main/java/my/example/eventenrichment) | [README](#event-processing-event-enrichment)                                                    | Basic                          | Stateful functions/actors connected to Kafka and callable over RPC.                                         |
 
 ## Microservices: Durable RPC
 
@@ -107,6 +102,96 @@ dev.restate.sdk.common.TerminalException: Payment could not be accepted!
 ... rest of trace ...
 ```
 
+## Microservices: Stateful Actors
+
+This example implements a State Machine with a Virtual Object.
+
+* The object holds the state of the state machine and defines the methods
+  to transition between the states.
+* The object's unique id identifies the state machine. Many parallel state
+  machines exist, but only state machine (object) exists per id.
+
+* The _single-writer-per-key_ characteristic of virtual objects ensures
+  that one state transition per state machine is in progress at a time.
+  Additional transitions are enqueued for that object, while a transition
+  for a machine is still in progress.
+* The state machine behaves like a **virtual stateful actor**.
+
+* The state machine transitions (object methods) themselves run with
+  _durable execution_, so they recover with all partial progress
+  and intermediate state.
+
+What you get by this are _linearized interactions_ with your state machine,
+avoiding accidental state corruption and concurrency issues.
+
+### Running the example
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `./gradlew -PmainClass=my.example.statefulactors.MachineOperator run`
+3. Register the services: `restate -y deployments register localhost:9080`
+
+### Demo scenario
+
+Invoke the state machine transitions like
+```shell
+curl -X POST localhost:8080/MachineOperator/my-machine/setUp
+```
+
+To illustrate the concurrency safety here, send multiple requests without waiting on
+results and see how they play out sequentially per object (state machine).
+Copy all the curl command lines below and paste them to the terminal together.
+You will see both from the later results (in the terminal with the curl commands) and in
+the log of the service that the requests queue per object key and safely execute
+unaffected by crashes and recoveries.
+
+```shell
+(curl -X POST localhost:8080/MachineOperator/a/setUp &)
+(curl -X POST localhost:8080/MachineOperator/a/tearDown &)
+(curl -X POST localhost:8080/MachineOperator/b/setUp &)
+(curl -X POST localhost:8080/MachineOperator/b/setUp &)
+(curl -X POST localhost:8080/MachineOperator/b/tearDown &)
+echo "executing..."
+```
+
+For example:
+```shell
+2024-12-19 09:12:22 INFO  [MachineOperator/setUp][inv_1dceKvwtEc2n5doRPWFKzl2mKeGSpwxxO9] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2024-12-19 09:12:22 INFO  [MachineOperator/setUp][inv_174rq2A9bm3T30Ad4teHAPrb0QzkrcjlGV] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2024-12-19 09:12:22 INFO  [MachineOperator/setUp][inv_1dceKvwtEc2n5doRPWFKzl2mKeGSpwxxO9] my.example.statefulactors.utils.MachineOperations - a beginning transition to UP
+2024-12-19 09:12:22 INFO  [MachineOperator/setUp][inv_174rq2A9bm3T30Ad4teHAPrb0QzkrcjlGV] my.example.statefulactors.utils.MachineOperations - b beginning transition to UP
+2024-12-19 09:12:27 INFO  [MachineOperator/setUp][inv_174rq2A9bm3T30Ad4teHAPrb0QzkrcjlGV] my.example.statefulactors.utils.MachineOperations - b is now running
+2024-12-19 09:12:27 INFO  [MachineOperator/setUp][inv_1dceKvwtEc2n5doRPWFKzl2mKeGSpwxxO9] my.example.statefulactors.utils.MachineOperations - a is now running
+2024-12-19 09:12:27 INFO  [MachineOperator/setUp][inv_1dceKvwtEc2n5doRPWFKzl2mKeGSpwxxO9] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2024-12-19 09:12:27 INFO  [MachineOperator/setUp][inv_174rq2A9bm3T30Ad4teHAPrb0QzkrcjlGV] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2024-12-19 09:12:27 INFO  [MachineOperator/tearDown][inv_1dceKvwtEc2n2EW92WkrNSTF5E4UMjYAJX] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2024-12-19 09:12:27 INFO  [MachineOperator/setUp][inv_174rq2A9bm3T0AjO2JedeGnkGYK7Uvtnod] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2024-12-19 09:12:27 INFO  [MachineOperator/tearDown][inv_1dceKvwtEc2n2EW92WkrNSTF5E4UMjYAJX] my.example.statefulactors.utils.MachineOperations - a beginning transition to down
+2024-12-19 09:12:27 INFO  [MachineOperator/setUp][inv_174rq2A9bm3T0AjO2JedeGnkGYK7Uvtnod] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2024-12-19 09:12:27 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2024-12-19 09:12:27 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] my.example.statefulactors.utils.MachineOperations - b beginning transition to down
+2024-12-19 09:12:27 ERROR [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] my.example.statefulactors.utils.MachineOperations - A failure happened!
+2024-12-19 09:12:27 WARN  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] dev.restate.sdk.core.ResolvedEndpointHandlerImpl - Error when processing the invocation
+java.lang.RuntimeException: A failure happened!
+...rest of trace...
+2024-12-19 09:12:27 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2024-12-19 09:12:27 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] my.example.statefulactors.utils.MachineOperations - b beginning transition to down
+2024-12-19 09:12:27 ERROR [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] my.example.statefulactors.utils.MachineOperations - A failure happened!
+2024-12-19 09:12:27 WARN  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] dev.restate.sdk.core.ResolvedEndpointHandlerImpl - Error when processing the invocation
+java.lang.RuntimeException: A failure happened!
+...rest of trace...
+2024-12-19 09:12:27 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2024-12-19 09:12:27 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] my.example.statefulactors.utils.MachineOperations - b beginning transition to down
+2024-12-19 09:12:27 ERROR [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] my.example.statefulactors.utils.MachineOperations - A failure happened!
+2024-12-19 09:12:27 WARN  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] dev.restate.sdk.core.ResolvedEndpointHandlerImpl - Error when processing the invocation
+java.lang.RuntimeException: A failure happened!
+...rest of trace...
+2024-12-19 09:12:27 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2024-12-19 09:12:27 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] my.example.statefulactors.utils.MachineOperations - b beginning transition to down
+2024-12-19 09:12:32 INFO  [MachineOperator/tearDown][inv_1dceKvwtEc2n2EW92WkrNSTF5E4UMjYAJX] my.example.statefulactors.utils.MachineOperations - a is now down
+2024-12-19 09:12:32 INFO  [MachineOperator/tearDown][inv_1dceKvwtEc2n2EW92WkrNSTF5E4UMjYAJX] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2024-12-19 09:12:32 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] my.example.statefulactors.utils.MachineOperations - b is now down
+2024-12-19 09:12:32 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] dev.restate.sdk.core.InvocationStateMachine - End invocation
+```
+
 ## Microservices: Payment State Machine
 
 This example shows how to build a reliable payment state machine.
@@ -179,6 +264,17 @@ Files to look at:
     - If a delay is set, the task will be executed later and Restate will track the timer durably, like a **delayed task queue**.
 - [Async Task Worker](src/async_task_worker.ts): gets invoked by Restate for each task in the queue.
 
+## Async Tasks: Parallelizing work
+
+This example shows how to use the Restate SDK to **execute a list of tasks in parallel and then gather their result**.
+Also known as fan-out, fan-in.
+
+The example implements a [worker service](src/worker_service.ts), that takes a task as input.
+It then splits the task into subtasks, executes them in parallel, and then gathers the results.
+
+Restate guarantees and manages the execution of all the subtasks across failures.
+You can run this on FaaS infrastructure, like AWS Lambda, and it will scale automatically.
+
 ## Async Tasks: Async Data Upload
 
 This example shows how to use the Restate SDK to **kick of a synchronous task and turn it into an asynchronous one if it takes too long**.
@@ -194,7 +290,7 @@ If the upload takes too long, however, the client asks the upload service to sen
 2. Start the service: `./gradlew -PmainClass=my.example.dataupload.DataUploadService run`
 3. Register the services: `restate -y deployments register localhost:9080`
 
-## Demo scenario
+### Demo scenario
 
 Run the upload client with a userId: `./gradlew -PmainClass=my.example.UploadClient run --args="someone21"`
 
@@ -303,8 +399,7 @@ A few notes:
   `npx restate inv list` and `npx restate inv cancel <invocation_id>`.
 * Here is an opportunity for the SAGAs pattern to cancel payments in that case.
 
-
-## Event Processing Example: Transactional Handlers with Durable Side Effects and Timers
+## Event Processing: Transactional Handlers with Durable Side Effects and Timers
 
 Processing events (from Kafka) to update various downstream systems.
 - Durable side effects with retries and recovery of partial progress
@@ -384,8 +479,7 @@ The handler will fast-forward to where it was, will recover the post ID and will
 
 You can try it out by killing Restate or the service halfway through processing a post.
 
-
-## Event Processing Example: Event Enrichment
+## Event Processing: Event Enrichment
 
 This example shows an example of:
 - **Event enrichment** over different sources: RPC and Kafka

@@ -12,8 +12,8 @@ import {bringUpMachine, Status, tearDownMachine} from "./utils/utils";
 //   Additional transitions are enqueued for that object, while a transition
 //   for a machine is still in progress.
 
-const machineManagement = restate.object({
-  name: "machineManagement",
+const machineOperator = restate.object({
+  name: "machineOperator",
   handlers: {
     setUp: async (ctx: restate.ObjectContext) => {
       const machineId = ctx.key;
@@ -48,4 +48,4 @@ const machineManagement = restate.object({
   },
 });
 
-restate.endpoint().bind(machineManagement).listen(9080);
+restate.endpoint().bind(machineOperator).listen(9080);
