@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import {bringUpMachine, State, tearDownMachine} from "./utils/utils";
+import {bringUpMachine, Status, tearDownMachine} from "./utils/utils";
 
 // This is a State Machine implemented with a Virtual Object
 //
@@ -19,36 +19,31 @@ const machineManagement = restate.object({
       const machineId = ctx.key;
 
       // Ignore duplicate calls to 'setUp'
-      const state = await ctx.get<State>("state");
-      if (state === State.UP) {
+      const status = await ctx.get<Status>("status");
+      if (status === Status.UP) {
         return `${machineId} is already up, so nothing to do`;
       }
 
       // Bringing up a machine is a slow process that frequently crashes
-      ctx.console.info(`Beginning transition of ${machineId} to UP`);
       await bringUpMachine(ctx, machineId);
+      ctx.set("status", Status.UP);
 
-      ctx.console.info(`Done transitioning ${machineId} to UP`);
-      ctx.set("state", State.UP);
       return `${machineId} is now up`;
     },
 
     tearDown: async (ctx: restate.ObjectContext) => {
       const machineId = ctx.key;
 
-      const state = await ctx.get<State>("state");
-      if (state !== State.UP) {
-        ctx.console.info(`${machineId} is not UP, cannot tear down`);
-        return `${machineId} is not yet UP`;
+      const status = await ctx.get<Status>("status");
+      if (status !== Status.UP) {
+        return `${machineId} is not up, cannot tear down`;
       }
 
       // Tearing down a machine is a slow process that frequently crashes
-      ctx.console.info(`Beginning transition of ${machineId} to DOWN`);
       await tearDownMachine(ctx, machineId);
+      ctx.set("status", Status.DOWN);
 
-      ctx.console.info(`Done transitioning ${machineId} to DOWN`);
-      ctx.set("state", State.DOWN);
-      return `${machineId} is now DOWN`;
+      return `${machineId} is now down`;
     },
   },
 });

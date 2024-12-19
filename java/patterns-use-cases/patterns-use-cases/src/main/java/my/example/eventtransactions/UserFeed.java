@@ -1,4 +1,4 @@
-package my.example;
+package my.example.eventtransactions;
 
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
@@ -8,7 +8,7 @@ import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 import java.time.Duration;
 
 import static dev.restate.sdk.JsonSerdes.STRING;
-import static my.example.utils.Stubs.*;
+import static my.example.eventtransactions.utils.Stubs.*;
 
 // Implement transactional event handlers:
 // e.g. update various downstream systems via API calls

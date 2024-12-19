@@ -1,15 +1,4 @@
-/*
- * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
- *
- * This file is part of the Restate examples,
- * which is released under the MIT license.
- *
- * You can find a copy of the license in the file LICENSE
- * in the root directory of this repository or package or at
- * https://github.com/restatedev/examples/
- */
-
-package my.example;
+package my.example.signalspayments;
 
 import com.stripe.model.Event;
 import com.stripe.model.PaymentIntent;
@@ -23,8 +12,8 @@ import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.common.Serde;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
-import my.example.utils.PaymentUtils;
-import my.example.utils.StripeUtils;
+import my.example.signalspayments.utils.PaymentUtils;
+import my.example.signalspayments.utils.StripeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -72,11 +61,11 @@ public class PaymentService {
             () -> {
               // create payment intent
               return stripe.createPaymentIntent(
-                  request.getPaymentMethodId(),
-                  request.getAmount(),
+                  request.paymentMethodId(),
+                  request.amount(),
                   idempotencyKey,
                   webhookPromise.id(),
-                  request.isDelayed());
+                  request.delayedStatus());
             });
 
     if (!paymentIntent.getStatus().equals("processing")) {

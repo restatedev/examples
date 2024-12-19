@@ -25,8 +25,8 @@ async function submitAndAwaitTask(task: TaskOpts) {
     .runTask(
       task,
       // use a stable uuid as an idempotency key
-      // optionally, execute the task later via SendOpts.from({ delay: 1000 })
-      SendOpts.from({ idempotencyKey: task.id })
+      // optionally, execute the task later by adding a delay
+      SendOpts.from({ idempotencyKey: task.id, /*delay: 1000*/ })
     );
 
   // await the task's result

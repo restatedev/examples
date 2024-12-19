@@ -1,19 +1,7 @@
-/*
- * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
- *
- * This file is part of the Restate examples,
- * which is released under the MIT license.
- *
- * You can find a copy of the license in the file LICENSE
- * in the root directory of this repository or package or at
- * https://github.com/restatedev/examples/
- */
+package my.example.sagas;
 
-package dev.restate.patterns;
-
-import dev.restate.patterns.activities.*;
-import dev.restate.patterns.clients.PaymentClient;
-import dev.restate.patterns.types.BookingRequest;
+import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import my.example.sagas.activities.*;
 import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.common.TerminalException;
