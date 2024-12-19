@@ -57,22 +57,22 @@ docker compose rm
 
 ### Inspecting state and ongoing invocations
 
-Restate has a psql interface to query the state of the system.
-
 If you buy some products via the webUI, you can see how the order workflow is executed by querying the state of the order status service:
 ```shell
-watch -n 1 'psql -h localhost -p 9071 -c "select component, component_key, key, value_utf8 from state s where s.component='"'"'OrderStatusService'"'"';"'
-```
-
-Or have a look at the state of all the services, except for the driver simulator:
-```shell
-watch -n 1 'psql -h localhost -p 9071 -c "select component, component_key, key, value_utf8 from state s where s.component not in ('"'"'DriverMobileAppSimulator'"'"');"'
+restate kv get OrderWorkflow
 ```
 
 Or you can check the state of the ongoing invocations via:
 ```shell
-watch -n 1 'psql -h localhost -p 9071 -c "select component, handler, component_key, id, status, invoked_by_component, invoked_by_id from sys_invocation_status;"'
+restate invocations list
 ```
+
+```shell
+restate invocations describe <invocation_id>
+```
+
+Restate has a psql interface to query the state of the system, via `restate sql <query>`.
+Have a look at the introspection documentation to learn more.
 
 ## Exploring the demo
 

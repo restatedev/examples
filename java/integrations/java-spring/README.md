@@ -1,9 +1,7 @@
 # Restate with Java, Spring, and Spring JPA
 
-This example shows how to use Restate together with Spring. 
+This example shows how to use Restate together with Spring and Spring JPA. 
 The example implements a product service which sits in front of a Postgres database and reads and writes to it with Spring JPA. 
-
-You can use this example as a template for getting started with Restate and Spring.
 
 ## Running the example
 
