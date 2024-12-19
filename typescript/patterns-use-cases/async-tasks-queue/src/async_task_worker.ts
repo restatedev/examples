@@ -1,5 +1,3 @@
-// --------------- define async task logic as a service handler ---------------
-
 import * as restate from "@restatedev/restate-sdk";
 import { Context } from "@restatedev/restate-sdk";
 

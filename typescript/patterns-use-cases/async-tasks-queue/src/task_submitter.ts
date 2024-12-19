@@ -2,16 +2,6 @@ import * as restate from "@restatedev/restate-sdk-clients";
 import { AsyncTaskWorker, TaskOpts } from "./async_task_worker";
 import {SendOpts} from "@restatedev/restate-sdk-clients";
 
-/*
- * Restate is as a sophisticated task queue, with extra features like:
- * - delaying execution and reliable timers
- * - stateful tasks
- * - queues per key (>< per partition; slow tasks for a key don't block others)
- * - retries and recovery upon failures
- *
- * Every handler in Restate is executed asynchronously and can be treated
- * as a reliable asynchronous task.
- */
 
 const RESTATE_URL = "http://localhost:8080";
 

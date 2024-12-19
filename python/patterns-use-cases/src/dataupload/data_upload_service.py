@@ -1,17 +1,10 @@
 import restate
 import logging
 from restate import WorkflowContext, WorkflowSharedContext, Workflow
-from typing import TypedDict
 
 from src.dataupload.utils import upload_data, create_s3_bucket, send_email
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(process)d] [%(levelname)s] - %(message)s')
-
-
-class DataPrepService(TypedDict):
-    name: str
-    handlers: dict
-
 
 data_upload_service = Workflow("DataUploadService")
 
