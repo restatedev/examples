@@ -65,7 +65,7 @@ Note that the compensating action needs to be idempotent.
 
 ### Running this example
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `./gradlew -PmainClass=my.example.sagas.BookingWorkflow run`
+2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/sagas/booking_workflow:app`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080` 
 
 ### Demo scenario
@@ -74,17 +74,17 @@ Have a look at the logs to see how the compensations run in case of a terminal e
 
 Start the workflow:
 ```shell
-curl -X POST localhost:8080/BookingWorkflow/trip12883/run -H 'content-type: application/json' -d '{
+curl -X POST localhost:8080/BookingWorkflow/trip123/run -H 'content-type: application/json' -d '{
   "flights": {
-    "flightId": "12345",
-    "passengerName": "John Doe"
+    "flight_id": "12345",
+    "passenger_name": "John Doe"
   },
   "car": {
-    "pickupLocation": "Airport",
-    "rentalDate": "2024-12-16"
+    "pickup_location": "Airport",
+    "rental_date": "2024-12-16"
   },
-  "paymentInfo": {
-    "cardNumber": "4111111111111111",
+  "payment_info": {
+    "card_number": "4111111111111111",
     "amount": 1500
   }
 }'
@@ -92,24 +92,12 @@ curl -X POST localhost:8080/BookingWorkflow/trip12883/run -H 'content-type: appl
 
 Have a look at the logs to see the cancellations of the flight and car booking in case of a terminal error:
 ```shell
-2024-12-18 11:35:48 INFO  [BookingWorkflow/run][inv_12ogPnVefk1c3clc9wNhEa4pMxxRh9IRyx] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-18 11:35:49 INFO  [Flights/reserve][inv_1ccelXW8IxuW6QpLWQu9ykt5aMAqRTl7pL] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-18 11:35:49 INFO  [Flights/reserve][inv_1ccelXW8IxuW6QpLWQu9ykt5aMAqRTl7pL] dev.restate.patterns.activities.Flights - Flight reservation created with id: 35ab7c68-6f32-48f6-adb9-a2a74076f4df
-2024-12-18 11:35:49 INFO  [Flights/reserve][inv_1ccelXW8IxuW6QpLWQu9ykt5aMAqRTl7pL] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-12-18 11:35:49 INFO  [CarRentals/reserve][inv_13cgaqr4XecK2ztj72BfVPuscdL1SJwMCZ] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-18 11:35:49 INFO  [CarRentals/reserve][inv_13cgaqr4XecK2ztj72BfVPuscdL1SJwMCZ] dev.restate.patterns.activities.CarRentals - Car rental reservation created with id: c103022e-9dda-4a34-a6ef-0c95d2911b2c
-2024-12-18 11:35:49 INFO  [CarRentals/reserve][inv_13cgaqr4XecK2ztj72BfVPuscdL1SJwMCZ] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-12-18 11:35:49 ERROR [BookingWorkflow/run][inv_12ogPnVefk1c3clc9wNhEa4pMxxRh9IRyx] dev.restate.patterns.clients.PaymentClient - This payment should never be accepted! Aborting booking.
-2024-12-18 11:35:49 INFO  [Flights/cancel][inv_19STR0U1v5Xo5W2UsYS3rhZEI02VGDVJM5] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-18 11:35:49 INFO  [Flights/cancel][inv_19STR0U1v5Xo5W2UsYS3rhZEI02VGDVJM5] dev.restate.patterns.activities.Flights - Flight reservation cancelled with id: 35ab7c68-6f32-48f6-adb9-a2a74076f4df
-2024-12-18 11:35:49 INFO  [Flights/cancel][inv_19STR0U1v5Xo5W2UsYS3rhZEI02VGDVJM5] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-12-18 11:35:49 INFO  [CarRentals/cancel][inv_14PS98BWOeNn1zw3yn2RqJ0wSp7V5sEJMd] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-18 11:35:49 INFO  [CarRentals/cancel][inv_14PS98BWOeNn1zw3yn2RqJ0wSp7V5sEJMd] dev.restate.patterns.activities.CarRentals - Car rental reservation cancelled with id: c103022e-9dda-4a34-a6ef-0c95d2911b2c
-2024-12-18 11:35:49 INFO  [CarRentals/cancel][inv_14PS98BWOeNn1zw3yn2RqJ0wSp7V5sEJMd] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-12-18 11:35:49 INFO  [BookingWorkflow/run][inv_12ogPnVefk1c3clc9wNhEa4pMxxRh9IRyx] dev.restate.patterns.clients.PaymentClient - Refunding payment with id: 1a640cda-bd5f-9751-b6b9-274817549b58
-2024-12-18 11:35:49 WARN  [BookingWorkflow/run][inv_12ogPnVefk1c3clc9wNhEa4pMxxRh9IRyx] dev.restate.sdk.core.ResolvedEndpointHandlerImpl - Error when processing the invocation
-dev.restate.sdk.common.TerminalException: Payment could not be accepted!
-... rest of trace ...
+[2024-12-19 18:04:01,179] [706007] [INFO] - Flight reservation created with id: 84873f15-1ad6-4899-9c81-0060b35f3755
+[2024-12-19 18:04:01,184] [706007] [INFO] - Car rental reservation created with id: 246301f9-cca7-4d4d-9ef9-49cc0ccc627e
+[2024-12-19 18:04:01,188] [706007] [ERROR] - This payment should never be accepted! Aborting booking.
+[2024-12-19 18:04:01,189] [706007] [INFO] - Payment 90e88cb5-5ace-427c-a85a-aa3bcb4f2796 refunded
+[2024-12-19 18:04:01,193] [706007] [INFO] - Car rental reservation cancelled with id: 246301f9-cca7-4d4d-9ef9-49cc0ccc627e
+[2024-12-19 18:04:01,198] [706007] [INFO] - Flight reservation cancelled with id: 84873f15-1ad6-4899-9c81-0060b35f3755
 ```
 
 ## Microservices: Stateful Actors
