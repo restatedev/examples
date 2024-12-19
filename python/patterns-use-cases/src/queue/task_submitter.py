@@ -1,5 +1,4 @@
 import argparse
-import json
 import requests
 from async_task_worker import TaskOpts
 

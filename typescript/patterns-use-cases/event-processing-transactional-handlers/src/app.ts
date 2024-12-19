@@ -24,9 +24,10 @@ const userFeed = restate.object({
             const userId = ctx.key
 
             const postId = await ctx.run(() => createPost(userId, post));
+
+            // Delay processing until content moderation is complete (handler suspends when on FaaS).
+            // This only blocks other posts for this user (Virtual Object), not for other users.
             while ((await ctx.run(() => getPostStatus(postId))) === PENDING) {
-                // Delay processing until content moderation is complete (handler suspends when on FaaS).
-                // This only blocks other posts for this user (Virtual Object), not for other users.
                 await ctx.sleep(5_000);
             }
 

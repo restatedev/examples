@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(process)d] [%(levelname)s] - %(message)s')
 
+
 class User(BaseModel):
     id: str
     email: str

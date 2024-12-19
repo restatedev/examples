@@ -452,7 +452,7 @@ Processing events (from Kafka) to update various downstream systems.
 
 2. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) with the Kafka broker configuration in a separate shell: `restate-server --config-file restate.toml`
 
-3. Start the service: `./gradlew -PmainClass=my.example.eventtransactions.UserFeed run`
+3. Start the service: `python -m hypercorn --config hypercorn-config.toml src/eventtransactions/user_feed:app`
 
 4. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
@@ -484,26 +484,22 @@ Our Kafka broker only has a single partition so all these messages end up on the
 You can see in the logs how events for different users are processed in parallel, but events for the same user are processed sequentially:
 
 ```shell
-2024-12-17 18:07:43 INFO  [UserFeed/processPost][inv_13puWeoWJykN17cPZQm43rQZxiPr0qNmhP] my.example.utils.Stubs - Creating post 300dbd34-eae8-4875-8a71-c18b14e2aed7 for user userid1
-2024-12-17 18:07:43 INFO  [UserFeed/processPost][inv_13puWeoWJykN17cPZQm43rQZxiPr0qNmhP] my.example.utils.Stubs - Content moderation for post 300dbd34-eae8-4875-8a71-c18b14e2aed7 is still pending... Will check again in 5 seconds
-2024-12-17 18:07:46 INFO  [UserFeed/processPost][inv_1eZjTF0DbaEl3UzViEbqNPu6FZK4Y8KBAB] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-17 18:07:46 INFO  [UserFeed/processPost][inv_1eZjTF0DbaEl3UzViEbqNPu6FZK4Y8KBAB] my.example.utils.Stubs - Creating post 011443bb-a47d-43a0-8df4-d2c4ea50b3b8 for user userid2
-2024-12-17 18:07:46 INFO  [UserFeed/processPost][inv_1eZjTF0DbaEl3UzViEbqNPu6FZK4Y8KBAB] my.example.utils.Stubs - Content moderation for post 011443bb-a47d-43a0-8df4-d2c4ea50b3b8 is still pending... Will check again in 5 seconds
-2024-12-17 18:07:48 INFO  [UserFeed/processPost][inv_13puWeoWJykN17cPZQm43rQZxiPr0qNmhP] my.example.utils.Stubs - Content moderation for post 300dbd34-eae8-4875-8a71-c18b14e2aed7 is still pending... Will check again in 5 seconds
-2024-12-17 18:07:56 INFO  [UserFeed/processPost][inv_1eZjTF0DbaEl3UzViEbqNPu6FZK4Y8KBAB] my.example.utils.Stubs - Content moderation for post 011443bb-a47d-43a0-8df4-d2c4ea50b3b8 is done
-2024-12-17 18:07:56 INFO  [UserFeed/processPost][inv_1eZjTF0DbaEl3UzViEbqNPu6FZK4Y8KBAB] my.example.utils.Stubs - Updating user feed for user userid2 with post 011443bb-a47d-43a0-8df4-d2c4ea50b3b8
-2024-12-17 18:07:56 INFO  [UserFeed/processPost][inv_1eZjTF0DbaEl3UzViEbqNPu6FZK4Y8KBAB] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-12-17 18:07:58 INFO  [UserFeed/processPost][inv_13puWeoWJykN17cPZQm43rQZxiPr0qNmhP] my.example.utils.Stubs - Content moderation for post 300dbd34-eae8-4875-8a71-c18b14e2aed7 is still pending... Will check again in 5 seconds
-2024-12-17 18:09:03 INFO  [UserFeed/processPost][inv_13puWeoWJykN17cPZQm43rQZxiPr0qNmhP] my.example.utils.Stubs - Content moderation for post 300dbd34-eae8-4875-8a71-c18b14e2aed7 is still pending... Will check again in 5 seconds
-2024-12-17 18:09:08 INFO  [UserFeed/processPost][inv_13puWeoWJykN17cPZQm43rQZxiPr0qNmhP] my.example.utils.Stubs - Content moderation for post 300dbd34-eae8-4875-8a71-c18b14e2aed7 is done
-2024-12-17 18:09:08 INFO  [UserFeed/processPost][inv_13puWeoWJykN17cPZQm43rQZxiPr0qNmhP] my.example.utils.Stubs - Updating user feed for user userid1 with post 300dbd34-eae8-4875-8a71-c18b14e2aed7
-2024-12-17 18:09:08 INFO  [UserFeed/processPost][inv_13puWeoWJykN17cPZQm43rQZxiPr0qNmhP] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-12-17 18:09:08 INFO  [UserFeed/processPost][inv_13puWeoWJykN0lJ761afYGoczigaKJDzWh] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-17 18:09:08 INFO  [UserFeed/processPost][inv_13puWeoWJykN0lJ761afYGoczigaKJDzWh] my.example.utils.Stubs - Creating post 738f0f12-8191-4702-bf49-59e1604ee799 for user userid1
-2024-12-17 18:09:08 INFO  [UserFeed/processPost][inv_13puWeoWJykN0lJ761afYGoczigaKJDzWh] my.example.utils.Stubs - Content moderation for post 738f0f12-8191-4702-bf49-59e1604ee799 is still pending... Will check again in 5 seconds
-2024-12-17 18:09:48 INFO  [UserFeed/processPost][inv_13puWeoWJykN0lJ761afYGoczigaKJDzWh] my.example.utils.Stubs - Content moderation for post 738f0f12-8191-4702-bf49-59e1604ee799 is done
-2024-12-17 18:09:48 INFO  [UserFeed/processPost][inv_13puWeoWJykN0lJ761afYGoczigaKJDzWh] my.example.utils.Stubs - Updating user feed for user userid1 with post 738f0f12-8191-4702-bf49-59e1604ee799
-2024-12-17 18:09:48 INFO  [UserFeed/processPost][inv_13puWeoWJykN0lJ761afYGoczigaKJDzWh] dev.restate.sdk.core.InvocationStateMachine - End invocation
+[2024-12-19 16:32:22,550] [694674] [INFO] - Created post d91524b2-843c-4bce-8bfa-662b75f4ad45 for user userid1 with content: Hi! This is my first post!
+[2024-12-19 16:32:22,551] [694674] [INFO] - Content moderation for post d91524b2-843c-4bce-8bfa-662b75f4ad45 is still pending... Will check again in 5 seconds
+[2024-12-19 16:32:24,720] [694678] [INFO] - Created post 56d5b415-65f5-4e24-9eb4-5565936e1426 for user userid2 with content: Hi! This is my first post!
+[2024-12-19 16:32:24,722] [694678] [INFO] - Content moderation for post 56d5b415-65f5-4e24-9eb4-5565936e1426 is still pending... Will check again in 5 seconds
+[2024-12-19 16:32:29,734] [694678] [INFO] - Content moderation for post 56d5b415-65f5-4e24-9eb4-5565936e1426 is still pending... Will check again in 5 seconds
+[2024-12-19 16:32:32,571] [694674] [INFO] - Content moderation for post d91524b2-843c-4bce-8bfa-662b75f4ad45 is done
+[2024-12-19 16:32:32,572] [694674] [INFO] - Updating the user feed for user userid1 with post d91524b2-843c-4bce-8bfa-662b75f4ad45
+[2024-12-19 16:32:32,575] [694674] [INFO] - Created post b5b4a544-1b9d-4459-a3db-d4805853bb7f for user userid1 with content: Hi! This is my second post!
+[2024-12-19 16:32:32,576] [694674] [INFO] - Content moderation for post b5b4a544-1b9d-4459-a3db-d4805853bb7f is still pending... Will check again in 5 seconds
+[2024-12-19 16:32:37,587] [694674] [INFO] - Content moderation for post b5b4a544-1b9d-4459-a3db-d4805853bb7f is done
+[2024-12-19 16:32:37,588] [694674] [INFO] - Updating the user feed for user userid1 with post b5b4a544-1b9d-4459-a3db-d4805853bb7f
+[2024-12-19 16:32:39,760] [694678] [INFO] - Content moderation for post 56d5b415-65f5-4e24-9eb4-5565936e1426 is still pending... Will check again in 5 seconds
+[2024-12-19 16:32:44,770] [694678] [INFO] - Content moderation for post 56d5b415-65f5-4e24-9eb4-5565936e1426 is still pending... Will check again in 5 seconds
+[2024-12-19 16:33:59,900] [694678] [INFO] - Content moderation for post 56d5b415-65f5-4e24-9eb4-5565936e1426 is still pending... Will check again in 5 seconds
+[2024-12-19 16:34:04,909] [694678] [INFO] - Content moderation for post 56d5b415-65f5-4e24-9eb4-5565936e1426 is done
+[2024-12-19 16:34:04,911] [694678] [INFO] - Updating the user feed for user userid2 with post 56d5b415-65f5-4e24-9eb4-5565936e1426
 ```
 
 As you see, slow events do not block other slow events.
@@ -533,16 +529,16 @@ The Package Tracker Virtual Object tracks the package details and its location h
 
 2. Start Restate Server with the Kafka broker configuration in a separate shell: `restate-server --config-file restate.toml`
 
-3. Start the service: `./gradlew -PmainClass=my.example.eventenrichment.PackageTracker run`
+3. Start the service: `python -m hypercorn --config hypercorn-config.toml src/eventenrichment/package_tracker:app`
 
 4. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
-5. Let Restate subscribe to the Kafka topic `package-location-updates` and invoke `PackageTracker/updateLocation` on each message.
+5. Let Restate subscribe to the Kafka topic `package-location-updates` and invoke `package-tracker/updateLocation` on each message.
 ```shell
 curl localhost:9070/subscriptions -H 'content-type: application/json' \
 -d '{
     "source": "kafka://my-cluster/package-location-updates",
-    "sink": "service://PackageTracker/updateLocation",
+    "sink": "service://package-tracker/updateLocation",
     "options": {"auto.offset.reset": "earliest"}
 }'
 ```
@@ -551,8 +547,8 @@ curl localhost:9070/subscriptions -H 'content-type: application/json' \
 
 1. Register a new package via the RPC handler:
 ```shell
-curl localhost:8080/PackageTracker/package1/registerPackage \
-  -H 'content-type: application/json' -d '{"finalDestination": "Bridge 6, Amsterdam"}'
+curl localhost:8080/package-tracker/package1/registerPackage \
+  -H 'content-type: application/json' -d '{"final_destination": "Bridge 6, Amsterdam"}'
 ```
 
 2. Start a Kafka producer and publish some messages to update the location of the package on the `package-location-updates` topic:
@@ -567,7 +563,7 @@ package1:{"timestamp": "2024-10-10 14:00", "location": "Mountain Road 155, Bruss
 
 3. Query the package location via the RPC handler:
 ```shell
-curl localhost:8080/PackageTracker/package1/getPackageInfo
+curl localhost:8080/package-tracker/package1/getPackageInfo
 ```
 or via the CLI: `restate kv get PackageTracker package1`
 
