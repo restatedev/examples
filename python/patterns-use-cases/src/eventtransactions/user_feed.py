@@ -2,7 +2,7 @@ import restate
 from restate import VirtualObject, ObjectContext
 from datetime import timedelta
 
-from src.eventtransactions.utils import create_post, get_post_status, update_user_feed, SocialMediaPost
+from src.eventtransactions.utils import create_post, get_post_status, update_user_feed, SocialMediaPost, Status
 
 # Processing events (from Kafka) to update various downstream systems
 #  - Journaling actions in Restate and driving retries from Restate, recovering
@@ -25,7 +25,7 @@ async def process_post(ctx: ObjectContext, post: SocialMediaPost):
 
     # Delay processing until content moderation is complete (handler suspends when on FaaS).
     # This only blocks other posts for this user (Virtual Object), not for other users.
-    while await ctx.run("post status", lambda: get_post_status(post_id)) == "PENDING":
+    while await ctx.run("post status", lambda: get_post_status(post_id)) == Status.PENDING:
         await ctx.sleep(timedelta(seconds=5))
 
     await ctx.run("update feed", lambda: update_user_feed(user_id, post_id))

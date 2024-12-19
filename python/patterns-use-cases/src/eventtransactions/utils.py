@@ -10,8 +10,10 @@ class SocialMediaPost(BaseModel):
     metadata: str
 
 
-PENDING = "PENDING"
-DONE = "DONE"
+class Status:
+    PENDING = "PENDING"
+    DONE = "DONE"
+
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(process)d] [%(levelname)s] - %(message)s')
 

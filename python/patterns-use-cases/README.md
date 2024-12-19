@@ -136,14 +136,14 @@ avoiding accidental state corruption and concurrency issues.
 
 ### Running the example
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `./gradlew -PmainClass=my.example.statefulactors.MachineOperator run`
+2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/statefulactors/machine_operator:app`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 ### Demo scenario
 
 Invoke the state machine transitions like
 ```shell
-curl -X POST localhost:8080/MachineOperator/my-machine/setUp
+curl -X POST localhost:8080/machine-operator/my-machine/setUp
 ```
 
 To illustrate the concurrency safety here, send multiple requests without waiting on
@@ -154,52 +154,36 @@ the log of the service that the requests queue per object key and safely execute
 unaffected by crashes and recoveries.
 
 ```shell
-(curl -X POST localhost:8080/MachineOperator/a/setUp &)
-(curl -X POST localhost:8080/MachineOperator/a/tearDown &)
-(curl -X POST localhost:8080/MachineOperator/b/setUp &)
-(curl -X POST localhost:8080/MachineOperator/b/setUp &)
-(curl -X POST localhost:8080/MachineOperator/b/tearDown &)
+(curl -X POST localhost:8080/machine-operator/a/setUp &)
+(curl -X POST localhost:8080/machine-operator/a/tearDown &)
+(curl -X POST localhost:8080/machine-operator/b/setUp &)
+(curl -X POST localhost:8080/machine-operator/b/setUp &)
+(curl -X POST localhost:8080/machine-operator/b/tearDown &)
 echo "executing..."
 ```
 
 For example:
 ```shell
-2024-12-19 09:12:22 INFO  [MachineOperator/setUp][inv_1dceKvwtEc2n5doRPWFKzl2mKeGSpwxxO9] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-19 09:12:22 INFO  [MachineOperator/setUp][inv_174rq2A9bm3T30Ad4teHAPrb0QzkrcjlGV] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-19 09:12:22 INFO  [MachineOperator/setUp][inv_1dceKvwtEc2n5doRPWFKzl2mKeGSpwxxO9] my.example.statefulactors.utils.MachineOperations - a beginning transition to UP
-2024-12-19 09:12:22 INFO  [MachineOperator/setUp][inv_174rq2A9bm3T30Ad4teHAPrb0QzkrcjlGV] my.example.statefulactors.utils.MachineOperations - b beginning transition to UP
-2024-12-19 09:12:27 INFO  [MachineOperator/setUp][inv_174rq2A9bm3T30Ad4teHAPrb0QzkrcjlGV] my.example.statefulactors.utils.MachineOperations - b is now running
-2024-12-19 09:12:27 INFO  [MachineOperator/setUp][inv_1dceKvwtEc2n5doRPWFKzl2mKeGSpwxxO9] my.example.statefulactors.utils.MachineOperations - a is now running
-2024-12-19 09:12:27 INFO  [MachineOperator/setUp][inv_1dceKvwtEc2n5doRPWFKzl2mKeGSpwxxO9] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-12-19 09:12:27 INFO  [MachineOperator/setUp][inv_174rq2A9bm3T30Ad4teHAPrb0QzkrcjlGV] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-12-19 09:12:27 INFO  [MachineOperator/tearDown][inv_1dceKvwtEc2n2EW92WkrNSTF5E4UMjYAJX] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-19 09:12:27 INFO  [MachineOperator/setUp][inv_174rq2A9bm3T0AjO2JedeGnkGYK7Uvtnod] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-19 09:12:27 INFO  [MachineOperator/tearDown][inv_1dceKvwtEc2n2EW92WkrNSTF5E4UMjYAJX] my.example.statefulactors.utils.MachineOperations - a beginning transition to down
-2024-12-19 09:12:27 INFO  [MachineOperator/setUp][inv_174rq2A9bm3T0AjO2JedeGnkGYK7Uvtnod] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-12-19 09:12:27 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-19 09:12:27 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] my.example.statefulactors.utils.MachineOperations - b beginning transition to down
-2024-12-19 09:12:27 ERROR [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] my.example.statefulactors.utils.MachineOperations - A failure happened!
-2024-12-19 09:12:27 WARN  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] dev.restate.sdk.core.ResolvedEndpointHandlerImpl - Error when processing the invocation
-java.lang.RuntimeException: A failure happened!
-...rest of trace...
-2024-12-19 09:12:27 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-19 09:12:27 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] my.example.statefulactors.utils.MachineOperations - b beginning transition to down
-2024-12-19 09:12:27 ERROR [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] my.example.statefulactors.utils.MachineOperations - A failure happened!
-2024-12-19 09:12:27 WARN  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] dev.restate.sdk.core.ResolvedEndpointHandlerImpl - Error when processing the invocation
-java.lang.RuntimeException: A failure happened!
-...rest of trace...
-2024-12-19 09:12:27 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-19 09:12:27 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] my.example.statefulactors.utils.MachineOperations - b beginning transition to down
-2024-12-19 09:12:27 ERROR [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] my.example.statefulactors.utils.MachineOperations - A failure happened!
-2024-12-19 09:12:27 WARN  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] dev.restate.sdk.core.ResolvedEndpointHandlerImpl - Error when processing the invocation
-java.lang.RuntimeException: A failure happened!
-...rest of trace...
-2024-12-19 09:12:27 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-19 09:12:27 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] my.example.statefulactors.utils.MachineOperations - b beginning transition to down
-2024-12-19 09:12:32 INFO  [MachineOperator/tearDown][inv_1dceKvwtEc2n2EW92WkrNSTF5E4UMjYAJX] my.example.statefulactors.utils.MachineOperations - a is now down
-2024-12-19 09:12:32 INFO  [MachineOperator/tearDown][inv_1dceKvwtEc2n2EW92WkrNSTF5E4UMjYAJX] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-12-19 09:12:32 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] my.example.statefulactors.utils.MachineOperations - b is now down
-2024-12-19 09:12:32 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] dev.restate.sdk.core.InvocationStateMachine - End invocation
+[2024-12-19 17:07:31,572] [698757] [INFO] - Beginning transition of a to up
+[2024-12-19 17:07:31,749] [698759] [INFO] - Beginning transition of b to up
+[2024-12-19 17:07:31,749] [698759] [ERROR] - A failure happened!
+... rest of trace ...
+Exception: A failure happened!
+[2024-12-19 17:07:31,809] [698759] [INFO] - Beginning transition of b to up
+[2024-12-19 17:07:31,809] [698759] [ERROR] - A failure happened!
+... rest of trace ...
+Exception: A failure happened!
+[2024-12-19 17:07:31,931] [698759] [INFO] - Beginning transition of b to up
+[2024-12-19 17:07:31,931] [698759] [ERROR] - A failure happened!
+... rest of trace ...
+Exception: A failure happened!
+[2024-12-19 17:07:32,183] [698759] [INFO] - Beginning transition of b to up
+[2024-12-19 17:07:36,581] [698757] [INFO] - Done transitioning a to up
+[2024-12-19 17:07:36,583] [698757] [INFO] - Beginning transition of a to down
+[2024-12-19 17:07:37,191] [698759] [INFO] - Done transitioning b to up
+[2024-12-19 17:07:37,195] [698759] [INFO] - Beginning transition of b to down
+[2024-12-19 17:07:41,592] [698757] [INFO] - Done transitioning a to down
+[2024-12-19 17:07:42,198] [698759] [INFO] - Done transitioning b to down
 ```
 
 ## Microservices: Payment State Machine
@@ -367,8 +351,6 @@ Workflow logs:
 ```
 
 You see the call to `resultAsEmail` after the upload took too long, and the sending of the email.
-
-
 
 ## Async Tasks: Payment Signals - Combining Sync and Async (Webhook) Responses from Stripe
 
