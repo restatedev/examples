@@ -56,7 +56,7 @@ Note that the compensating action needs to be idempotent.
 ### Running this example
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the service: `./gradlew -PmainClass=my.example.sagas.BookingWorkflow run`
-3. Register the services: `restate -y deployments register localhost:9080`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080` 
 
 ### Demo scenario
 
@@ -127,7 +127,7 @@ avoiding accidental state corruption and concurrency issues.
 ### Running the example
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the service: `./gradlew -PmainClass=my.example.statefulactors.MachineOperator run`
-3. Register the services: `restate -y deployments register localhost:9080`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 ### Demo scenario
 
@@ -217,7 +217,7 @@ and failures.
 ### Running this example
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the service: `./gradlew -PmainClass=my.example.statemachinepayments.AppMain run`
-3. Register the services: `restate -y deployments register localhost:9080`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 ### Demo scenario
 Send some requests:
@@ -288,7 +288,7 @@ If the upload takes too long, however, the client asks the upload service to sen
 ### Running the examples
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the service: `./gradlew -PmainClass=my.example.dataupload.DataUploadService run`
-3. Register the services: `restate -y deployments register localhost:9080`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 ### Demo scenario
 
@@ -358,7 +358,7 @@ webhooks to your local machine.
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the service: `./gradlew -PmainClass=my.example.signalspayments.PaymentService run`
-3. Register the services: `restate -y deployments register localhost:9080`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 4. Create a free Stripe test account. This requires no verification, but you can only work
    with test data, not make real payments. Good enough for this example.
@@ -418,7 +418,7 @@ Processing events (from Kafka) to update various downstream systems.
 
 3. Start the service: `./gradlew -PmainClass=my.example.eventtransactions.UserFeed run`
 
-4. Register the example at Restate server by calling `restate -y deployment register localhost:9080`.
+4. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 5. Let Restate subscribe to the Kafka topic `social-media-posts` and invoke `UserFeed/processPost` on each message.
 ```shell
@@ -499,8 +499,7 @@ The Package Tracker Virtual Object tracks the package details and its location h
 
 3. Start the service: `./gradlew -PmainClass=my.example.eventenrichment.PackageTracker run`
 
-4. Register the example at Restate server by calling
-   `restate -y deployment register localhost:9080`.
+4. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 5. Let Restate subscribe to the Kafka topic `package-location-updates` and invoke `PackageTracker/updateLocation` on each message.
 ```shell
