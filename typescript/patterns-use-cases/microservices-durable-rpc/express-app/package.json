@@ -1,0 +1,22 @@
+{
+  "name": "restate-ts-template",
+  "version": "0.0.1",
+  "description": "Durable RPC example",
+  "main": "app.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc --noEmitOnError",
+    "app": "tsx watch app.ts"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk-clients": "^1.4.0",
+    "express": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.2",
+    "esbuild": "^0.21.5",
+    "product-service": "file:../restate-app",
+    "tsx": "^4.19.2",
+    "typescript": "^5.4.5"
+  }
+}
