@@ -12,7 +12,7 @@ app.post("/reserve/:productId/:reservationId", async (req: Request, res: Respons
     const { productId, reservationId } = req.params;
 
     // Durable RPC call to the product service
-    // Restate registers the request and makes sure runs to completion exactly once
+    // Restate registers the request and makes sure it runs to completion exactly once
     const products = restateClient
         .objectClient<ProductService>({ name: "product" }, productId);
     const reservation = await products.reserve(

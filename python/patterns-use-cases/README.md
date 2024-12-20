@@ -34,9 +34,36 @@ This example shows an example of:
 The example shows how you can programmatically submit a requests to a Restate service.
 Every request gets processed durably, and deduplicated based on the idempotency key.
 
-The example shows a [client](src/main/java/my/example/durablerpc/MyClient.java) that receives product reservation requests and forwards them to the product service.
-The [Product service](src/main/java/my/example/durablerpc/ProductService.java) is a Restate service that durably processes the reservation requests and deduplicates them.
+The example shows a [client](src/durablerpc/client.py) that receives product reservation requests and forwards them to the product service.
+The [Product service](src/durablerpc/product_service.py) is a Restate service that durably processes the reservation requests and deduplicates them.
 Each product can be reserved only once.
+
+### Running the example
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/durablerpc/product_service:app`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080` 
+
+### Demo scenario
+
+Run the client to let it send a request to reserve a product:
+```shell
+python src/durablerpc/client.py product1 reservation1
+```
+
+This will give us `{"reserved":true}`.
+
+Let's change the reservation ID and run the request again:
+```shell
+python src/durablerpc/client.py product1 reservation2
+```
+
+This will give us `{"reserved":false}` because this product is already reserved, so we can't reserve it again.
+
+However, if we run the first request again with same reservation ID, we will get `{"reserved":true}` again:
+```shell
+python src/durablerpc/client.py product1 reservation1
+``` 
+Restate deduplicated the request and returned the first response.
 
 ## Microservices: Sagas
 

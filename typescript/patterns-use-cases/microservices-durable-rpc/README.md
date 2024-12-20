@@ -35,7 +35,7 @@ Let's change the reservation ID and run the request again:
 curl -X POST localhost:5000/reserve/product1/reservation2
 ```
 
-This will give us `{"reserved":false}` because this product is already reserved so we can't reserve it again.
+This will give us `{"reserved":false}` because this product is already reserved, so we can't reserve it again.
 
 However, if we run the first request again with same reservation ID, we will get `{"reserved":true}` again:
 ```shell
