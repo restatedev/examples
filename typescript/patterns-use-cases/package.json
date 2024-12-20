@@ -5,14 +5,10 @@
   "main": "app.js",
   "type": "commonjs",
   "scripts": {
-    "build": "tsc --noEmitOnError",
-    "app": "node ./dist/data_upload_service.js",
-    "app-dev": "tsx watch ./src/data_upload_service.ts",
-    "client": "tsx ./src/client.ts"
+    "build": "tsc --noEmitOnError"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.4.0",
-    "@restatedev/restate-sdk-clients": "^1.4.0"
+    "@restatedev/restate-sdk": "^1.4.0"
   },
   "devDependencies": {
     "@types/node": "^20.14.2",

@@ -7,7 +7,7 @@ import {aggregate, split, SubTask, Task} from "./utils";
  * Afterwards, you can collect the result by fanning in the partial results.
  * Durable Execution ensures that the fan-out and fan-in steps happen reliably exactly once.
  */
-const workerService = restate.service({
+const fanOutWorker = restate.service({
     name: "worker",
     handlers: {
         run: async (ctx: Context, task: Task) => {
@@ -20,7 +20,7 @@ const workerService = restate.service({
             const resultPromises = [];
             for (const subtask of subtasks) {
                 const subResultPromise = ctx
-                    .serviceClient(workerService)
+                    .serviceClient(fanOutWorker)
                     .runSubtask(subtask);
                 resultPromises.push(subResultPromise);
             }
@@ -38,4 +38,4 @@ const workerService = restate.service({
     },
 });
 
-export const handler = restate.endpoint().bind(workerService).handler();
+export const handler = restate.endpoint().bind(fanOutWorker).handler();

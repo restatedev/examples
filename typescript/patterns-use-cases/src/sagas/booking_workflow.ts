@@ -1,7 +1,7 @@
 import * as restate from "@restatedev/restate-sdk";
-import {flights, FlightsService} from "./services/flights";
-import {cars, CarService} from "./services/cars";
-import { paymentClient } from "./utils/payment_client";
+import {flights, FlightsService} from "./activities/flights";
+import {cars, CarService} from "./activities/cars";
+import { paymentClient } from "./activities/payment_client";
 
 type BookingRequest = {
   flights: { flightId: string, passengerName: string },
