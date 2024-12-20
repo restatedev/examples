@@ -225,8 +225,8 @@ and failures.
 
 ### Running this example
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `./gradlew -PmainClass=my.example.statemachinepayments.AppMain run`
-3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/statemachinepayments/payment_processor:app`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080` 
 
 ### Demo scenario
 Send some requests:
@@ -234,7 +234,7 @@ Send some requests:
 - Make a payment
   ```shell
   curl -X POST localhost:8080/PaymentProcessor/some-string-id/makePayment -H 'content-type: application/json' \
-   -d '{  "accountId": "abc", "amountCents": 100 }'
+   -d '{  "account_id": "abc", "amount_cents": 100 }'
   ```
 
 - Cancel a payment. The 'key' parameter is the idempotency token, there is no further request data.
@@ -256,8 +256,8 @@ restate kv get PaymentProcessor some-string-id
 
  KEY      VALUE                 
  payment  {                     
-            "accountId": "abc", 
-            "amountCents": 100  
+            "account_id": "abc", 
+            "amount_cents": 100  
           }                     
  status   "CANCELLED"
 ```
