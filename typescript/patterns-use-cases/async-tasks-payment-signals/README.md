@@ -23,7 +23,7 @@ webhooks to your local machine.
 1. Create a free Stripe test account. This requires no verification, but you can only work
    with test data, not make real payments. Good enough for this example.
 
-2. In the Stripe UI, go to "Developers" -> "API Keys" and copy the _secret key_ (`sk_test_...`).
+2. In the [Stripe UI](dashboard.stripe.com), go to ["Developers" -> "API Keys"](https://dashboard.stripe.com/test/apikeys) and copy the _secret key_ (`sk_test_...`).
    Add it to the [stripe_utils.ts](./src/utils/stripe_utils.ts) file. Because this is a dev-only
    API key and it supports only test data, it isn't super sensitive.
 
@@ -33,15 +33,18 @@ webhooks to your local machine.
 
 5. Connect the apps: `npx restate deployment register localhost:9080`
 
-6. Run launch _ngrok_: Get a free account and download the binary, or launch a docker container.
-   Make it forward http calls to local port 8080
-   - `NGROK_AUTHTOKEN=<your token> ngrok http 8080`
-   - or `docker run --rm -it -e NGROK_AUTHTOKEN=<your token> --network host ngrok/ngrok http 8080` (on Linux command).
-   Copy the public URL that ngrok shows you: `https://<some random numbers>.ngrok-free.app`
+6. Run launch _ngrok_:
+    1. [Get a free account](dashboard.ngrok.com)
+    2. [Copy your auth token](https://dashboard.ngrok.com/get-started/your-authtoken)
+    3. Download the binary, or launch a docker container. Make it forward HTTP calls to local port `8080`:
+        - `NGROK_AUTHTOKEN=<your token> ngrok http 8080`
+        - or `docker run --rm -it -e NGROK_AUTHTOKEN=<your token> --network host ngrok/ngrok http 8080` (on Linux command).
+          Copy the public URL that ngrok shows you: `https://<some random numbers>.ngrok-free.app`
 
-7. Go to the Stripe UI and create a webhook. Select all _"Payment Intent"_ event types. Put the ngrok
-   public URL + `/payments/processWebhook` as the webhook URL (you need to update this whenever you stop/start ngrok).
-   Example: `https://<some random numbers>.ngrok-free.app/payments/processWebhook`
+7. Go to the Stripe UI and [create a webhook](https://dashboard.stripe.com/test/webhooks)
+   - Put the ngrok public URL + `/payments/processWebhook` as the webhook URL (you need to update this whenever you stop/start ngrok).
+      Example: `https://<some random numbers>.ngrok-free.app/payments/processWebhook`
+   - Select all _"Payment Intent"_ event types.
 
 8. Put the webhook secret (`whsec_...`) to the [stripe_utils.ts](./src/utils/stripe_utils.ts) file.
 
