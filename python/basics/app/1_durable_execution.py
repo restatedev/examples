@@ -1,75 +1,55 @@
-#
-#  Copyright (c) 2023-2024 - Restate Software, Inc., Restate GmbH
-#
-#  This file is part of the Restate examples,
-#  which is released under the MIT license.
-#
-#  You can find a copy of the license in file LICENSE in the root
-#  directory of this repository or package, or at
-#  https:#github.com/restatedev/sdk-typescript/blob/main/LICENSE
-from typing import TypedDict
+import uuid
 
-from restate import Service, Context
 import restate
+from pydantic import BaseModel
+from restate import Service, Context
+from utils import create_recurring_payment, create_subscription
 
-from utils import apply_user_role, apply_permission, UpdateRequest
+# Restate lets you implement resilient applications.
+# Restate ensures handler code runs to completion despite failures:
+#  - Automatic retries
+#  - Restate tracks the progress of execution, and prevents re-execution of completed work on retries
+#  - Regular code and control flow, no custom DSLs
 
-role_update = Service("roleUpdate")
-
-
-# This is an example of the benefits of Durable Execution.
-# Durable Execution ensures code runs to the end, even in the presence of
-# failures. This is particularly useful for code that updates different systems and needs to
-# make sure all updates are applied:
-#
-#  - Failures are automatically retried, unless they are explicitly labeled
-#    as terminal errors
-#  - Restate tracks execution progress in a journal.
-#    Work that has already been completed is not repeated during retries.
-#    Instead, the previously completed journal entries are replayed.
-#    This ensures that stable deterministic values are used during execution.
-#  - Durable executed functions use the regular code and control flow,
-#    no custom DSLs
-#
-
-@role_update.handler(name="applyRoleUpdate")
-async def apply_role_update(ctx: Context, update: UpdateRequest):
-    # parameters are durable across retries
-    user_id, role, permissions = update["user_id"], update["role"], update["permissions"]
-
-    # Apply a change to one system (e.g., DB upsert, API call, ...).
-    # The side effect persists the result with a consensus method so
-    # any later code relies on a deterministic result.
-    success = await ctx.run("apply_user_role", lambda: apply_user_role(user_id, role))
-    if not success:
-        return
-
-    # Loop over the permission settings and apply them.
-    # Each operation through the Restate context is journaled
-    # and recovery restores results of previous operations from the journal
-    # without re-executing them.
-    for permission in permissions:
-        await ctx.run("apply_permission", lambda: apply_permission(user_id, permission))
+# Applications consist of services with handlers that can be called over HTTP or Kafka.
+subscription_service = Service("SubscriptionService")
 
 
-app = restate.app(services=[role_update])
+class SubscriptionRequest(BaseModel):
+    user_id: str
+    credit_card: str
+    subscriptions: list[str]
+
+
+@subscription_service.handler()
+async def add(ctx: Context, req: SubscriptionRequest):
+    # Stable idempotency key: Restate persists the result of
+    # all `ctx` actions and recovers them after failures
+    payment_id = await ctx.run("payment id", lambda: str(uuid.uuid4()))
+
+    # Retried in case of timeouts, API downtime, etc.
+    pay_ref = await ctx.run("recurring payment",
+                            lambda: create_recurring_payment(req.credit_card, payment_id))
+
+    # Persists successful subscriptions and skip them on retries
+    for subscription in req.subscriptions:
+        await ctx.run("subscription",
+                      lambda: create_subscription(req.user_id, subscription, pay_ref))
+
+
+# Create an HTTP endpoint to serve your services on port 9080
+# or use .handler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
+app = restate.app([subscription_service])
 
 #
-# See README for details on how to start and connect Restate.
+# Check the README to learn how to run Restate.
+# Then invoke this function and see in the log how it recovers.
+# Each action (e.g. "created recurring payment") is only logged once across all retries.
+# Retries did not re-execute the successful operations.
 #
-# When invoking this function (see below for sample request), it will apply all
-# role and permission changes, regardless of crashes.
-# You will see all lines of the type "Applied permission remove:allow for user Sam Beckett"
-# in the log, across all retries. You will also see that re-tries will not re-execute
-# previously completed actions again, so each line occurs only once.
-#
-# curl localhost:8080/roleUpdate/applyRoleUpdate -H 'content-type: application/json' -d \
+# curl localhost:8080/SubscriptionService/add -H 'content-type: application/json' -d \
 # '{
 #     "user_id": "Sam Beckett",
-#     "role": "content-manager",
-#     "permissions" : [
-#       { "permissionKey": "add", "setting": "allow" },
-#       { "permissionKey": "remove", "setting": "allow" },
-#       { "permissionKey": "share", "setting": "block" }
-#     ]
+#     "credit_card": "1234-5678-9012-3456",
+#     "subscriptions" : ["Netflix", "Disney+", "HBO Max"]
 # }'

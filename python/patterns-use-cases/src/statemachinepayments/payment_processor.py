@@ -2,6 +2,9 @@ import restate
 from pydantic import BaseModel
 from restate import VirtualObject, ObjectContext
 from datetime import timedelta
+
+from restate.serde import PydanticJsonSerde, Serde
+
 from accounts.accounts import account
 import accounts.accounts as account_service
 from src.statemachinepayments.types import Result
@@ -52,7 +55,7 @@ async def make_payment(ctx: ObjectContext, payment: Payment) -> Result:
     # caller may retry this (with the same payment-id), for the sake of this example
     if payment_result.success:
         ctx.set(STATUS, PaymentStatus.COMPLETED_SUCCESSFULLY)
-        ctx.set(PAYMENT, payment.model_dump())
+        ctx.set(PAYMENT, payment, serde=PydanticJsonSerde(Payment))
         ctx.object_send(expire, payment_id, send_delay=EXPIRY_TIMEOUT, arg=None)
 
     return payment_result
@@ -76,7 +79,7 @@ async def cancel_payment(ctx: ObjectContext):
         ctx.set(STATUS, PaymentStatus.CANCELED)
 
         # undo the payment
-        payment = Payment(**await ctx.get(PAYMENT))
+        payment = await ctx.get(PAYMENT, serde=PydanticJsonSerde(Payment))
         ctx.object_send(account_service.deposit, key=payment.account_id, arg=payment.amount_cents)
 
 

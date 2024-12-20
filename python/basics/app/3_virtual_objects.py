@@ -1,10 +1,6 @@
 import restate
 from restate import VirtualObject, ObjectContext
 
-greeter_object = VirtualObject("greeter")
-
-
-#
 # Virtual Objects hold state and have methods to interact with the object.
 # An object is identified by a unique id - only one object exists per id.
 #
@@ -13,7 +9,9 @@ greeter_object = VirtualObject("greeter")
 # method execution.
 #
 # Virtual Objects are _Stateful Serverless_ constructs.
-#
+greeter_object = VirtualObject("greeter")
+
+
 @greeter_object.handler()
 async def greet(ctx: ObjectContext, greeting: str) -> str:
     # Access the state attached to this object (this 'name')

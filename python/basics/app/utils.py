@@ -1,55 +1,7 @@
 import os
 import random
-from typing import TypedDict
 
-from restate import Context
-from restate.exceptions import TerminalError
-
-
-class Permission(TypedDict):
-    permissionKey: str
-    setting: str
-
-
-class UpdateRequest(TypedDict):
-    role: str
-    user_id: str
-    permissions: list[Permission]
-
-
-def apply_user_role(user_id, role) -> bool:
-    maybe_crash(0.3)
-    print(f"Applied {role} to user {user_id}")
-    return True
-
-
-def apply_permission(user_id, permission):
-    maybe_crash(0.2)
-    print(f"Applied permission {permission} to user {user_id}")
-
-
-def try_apply_user_role(user_id, role):
-    maybe_crash(0.3)
-
-    if role != "viewer":
-        application_error(0.3, f"Role {role} is not possible for user {user_id}")
-    print(f"Applied {role} to user {user_id}")
-
-
-def get_current_role(user_id):
-    # in this example, the previous role was always just 'viewer'
-    return "viewer"
-
-
-def try_apply_permission(user_id, permission):
-    maybe_crash(0.3)
-
-    if permission["setting"] != "blocked":
-        application_error(0.4, f"Could not apply {permission} for user {user_id} due to a conflict")
-    print(f"Applied permission {permission['permissionKey']} to user {user_id}")
-    return Permission(permissionKey=permission["permissionKey"], setting="blocked")
-
-
+# Utility to let the service crash with a probability to show how the system recovers.
 kill_process = bool(os.getenv("CRASH_PROCESS"))
 
 
@@ -58,38 +10,31 @@ def maybe_crash(probability: float = 0.5) -> None:
         print("A failure happened!")
         if kill_process:
             print("--- CRASHING THE PROCESS ---")
-            os.exit(1)
+            raise SystemExit(1)
         else:
             raise Exception("A failure happened!")
 
 
-def application_error(probability: float, message: str) -> None:
-    if random.random() < probability:
-        print(f"Action failed: {message}")
-        raise TerminalError(message)
+# Simulates calling a subscription API, with a random probability of API downtime.
+def create_subscription(user_id: str, subscription: str, _payment_ref: str) -> str:
+    maybe_crash(0.3)
+    print(f">>> Creating subscription {subscription} for user {user_id}")
+    return "SUCCESS"
 
 
-# =======================================================
-# Stubs for 3_workflows.py
-
-def create_user_entry(signup):
-    pass
-
-
-def send_email_with_link(param, secret):
-    pass
+# Simulates calling a payment API, with a random probability of API downtime.
+def create_recurring_payment(_credit_card: str, payment_id: str) -> str:
+    maybe_crash(0.3)
+    print(f">>> Creating recurring payment {payment_id}")
+    return "payment-reference"
 
 
-# =======================================================
-# Stubs for 5_events_processing.py
-
-def setup_user_permissions(user_id, permissions):
-    pass
+# Stubs for 2_workflows.py
+async def create_user_entry(user):
+    print(f"Creating user entry for {user}")
 
 
-def provision_resources(user_id, role_id, resources):
-    pass
-
-
-def update_user_profile(profile):
-    pass
+def send_email_with_link(user_id: str, email: str, secret: str):
+    print(f"Sending email to {email} with secret {secret}. \n"
+          f"To simulate a user clicking the link, run the following command: \n"
+          f"curl localhost:8080/usersignup/{user_id}/click -H 'content-type: application/json' -d '{{ \"secret\": \"{secret}\"}}'")

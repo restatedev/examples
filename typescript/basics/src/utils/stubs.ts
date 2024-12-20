@@ -1,5 +1,3 @@
-import * as restate from "@restatedev/restate-sdk";
-
 /**
  * Utility to let the service crash with a probability to show how the system recovers.
  */
@@ -29,10 +27,10 @@ export type SubscriptionRequest = {
 export function createSubscription(
   userId: string,
   subscription: string,
-  paymentRef: string,
+  _paymentRef: string,
 ): string {
   maybeCrash(0.3);
-  console.log(`>>> Creating subscription ${subscription} for user ${userId} with payment ${paymentRef}`);
+  console.log(`>>> Creating subscription ${subscription} for user ${userId}`);
   return "SUCCESS";
 }
 
@@ -40,7 +38,7 @@ export function createSubscription(
  * Simulates calling a payment API, with a random probability of API downtime.
  */
 export function createRecurringPayment(
-  creditCard: string,
+  _creditCard: string,
   paymentId: any,
 ): string {
   maybeCrash(0.3);
