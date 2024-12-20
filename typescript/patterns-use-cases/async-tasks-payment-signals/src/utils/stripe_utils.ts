@@ -104,3 +104,12 @@ export function ensureSuccess(status: string) {
   }
 }
 
+export function verifyPaymentRequest(request: any): void {
+  if (!request?.amount) {
+    throw new TerminalError("'amount' missing or zero in request");
+  }
+  if (!request?.paymentMethodId) {
+    throw new TerminalError("'paymentMethodId' missing in request");
+  }
+}
+

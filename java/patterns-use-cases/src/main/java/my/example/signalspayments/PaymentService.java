@@ -78,7 +78,7 @@ public class PaymentService {
     // We did not get the response on the synchronous path, talking to Stripe.
     // No worries, Stripe will let us know when it is done processing via a webhook.
     logger.info(
-        "Synchronous response for {} yielded 'processing', awaiting webhook call...",
+        "Payment intent for {} still 'processing', awaiting webhook call...",
         idempotencyKey);
 
     // We will now wait for the webhook call to complete this promise.

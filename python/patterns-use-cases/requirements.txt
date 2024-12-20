@@ -2,3 +2,4 @@ hypercorn
 restate_sdk==0.4.1
 pydantic
 requests
+stripe

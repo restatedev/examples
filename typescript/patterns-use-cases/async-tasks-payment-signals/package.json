@@ -13,8 +13,6 @@
     "stripe": "^14.15.0"
   },
   "devDependencies": {
-    "@restatedev/restate": "^1.1.0",
-    "@restatedev/restate-server": "^1.1.0",
     "@types/node": "^20.12.12",
     "ts-node-dev": "^1.1.1",
     "typescript": "^5.0.2"

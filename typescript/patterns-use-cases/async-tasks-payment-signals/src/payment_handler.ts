@@ -11,7 +11,7 @@
 
 import * as restate from "@restatedev/restate-sdk";
 import * as stripe_utils from "./utils/stripe_utils";
-import { verifyPaymentRequest } from "./utils/utils";
+import { verifyPaymentRequest } from "./utils/stripe_utils";
 import Stripe from "stripe";
 
 //
@@ -67,7 +67,7 @@ async function processPayment(ctx: restate.Context, request: PaymentRequest) {
   // We did not get the response on the synchronous path, talking to Stripe.
   // No worries, Stripe will let us know when it is done processing via a webhook.
   ctx.console.log(
-    `Synchronous response for ${idempotencyKey} yielded 'processing', awaiting webhook call...`
+    `Payment intent for ${idempotencyKey} still 'processing', awaiting webhook call...`
   );
 
   // We will now wait for the webhook call to complete this promise.
@@ -89,7 +89,6 @@ async function processWebhook(ctx: restate.Context) {
   }
 
   const paymentIntent = event.data.object as Stripe.PaymentIntent;
-  ctx.console.log(JSON.stringify(paymentIntent));
 
   const webhookPromise =
     paymentIntent.metadata[stripe_utils.RESTATE_CALLBACK_ID];
@@ -103,4 +102,4 @@ async function processWebhook(ctx: restate.Context) {
   return { received: true };
 }
 
-restate.endpoint().bind(restate.service({name: "payments", handlers: { processPayment, processWebhook }})).listen(9080);
+restate.endpoint().bind(restate.service({name: "payments", handlers: { processPayment, processWebhooks }})).listen(9080);

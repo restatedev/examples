@@ -46,7 +46,6 @@ async def run(ctx: restate.WorkflowContext, req: BookingRequest):
         # Reserve the flights and let Restate remember the reservation ID
         flight_booking_id = await ctx.service_call(flight_reserve, arg=req.flights)
         # Register the undo action for the flight reservation.
-
         compensations.append(lambda: ctx.service_call(flight_cancel, arg=flight_booking_id))
 
         # Reserve the car and let Restate remember the reservation ID
@@ -60,24 +59,22 @@ async def run(ctx: restate.WorkflowContext, req: BookingRequest):
         # Register the refund as a compensation, using the idempotency key
         async def refund():
             return await payment_client.refund(payment_id)
-
         compensations.append(lambda: ctx.run("refund", refund))
 
         # Do the payment using the idempotency key
         async def charge():
             return await payment_client.charge(req.payment_info, payment_id)
-
         await ctx.run("charge", charge)
 
-        # confirm the flight and car reservations
+        # Confirm the flight and car reservations
         await ctx.service_call(flight_confirm, arg=flight_booking_id)
         await ctx.service_call(car_rentals.confirm, arg=car_booking_id)
 
     except TerminalError as e:
-        # undo all the steps up to this point by running the compensations
+        # Undo all the steps up to this point by running the compensations
         for compensation in reversed(compensations):
             await compensation()
-        # rethrow error to fail this workflow
+        # Rethrow error to fail this workflow
         raise e
 
 

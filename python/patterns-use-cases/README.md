@@ -363,38 +363,70 @@ If you want to run everything locally, you also need a tool like _ngrok_ to forw
 webhooks to your local machine.
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `./gradlew -PmainClass=my.example.signalspayments.PaymentService run`
+2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/signalspayments/payment_service:app`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 4. Create a free Stripe test account. This requires no verification, but you can only work
    with test data, not make real payments. Good enough for this example.
 
-5. In the Stripe UI, go to "Developers" -> "API Keys" and copy the _secret key_ (`sk_test_...`).
-   Add it to the [StripeUtils.java](src/main/java/my/example/signalspayment/utils/StripeUtils.java) file. Because this is a dev-only
+5. In the [Stripe UI](dashboard.stripe.com), go to ["Developers" -> "API Keys"](https://dashboard.stripe.com/test/apikeys) and copy the _secret key_ (`sk_test_...`).
+   Add it to the [stripe_utils.py](src/signalspayments/stripe_utils.py) file. Because this is a dev-only
    API key, it supports only test data, so it isn't super sensitive.
 
-6. Run launch _ngrok_: Get a free account and download the binary, or launch a docker container.
-   Make it forward HTTP calls to local port `8080`
-    - `NGROK_AUTHTOKEN=<your token> ngrok http 8080`
-    - or `docker run --rm -it -e NGROK_AUTHTOKEN=<your token> --network host ngrok/ngrok http 8080` (on Linux command).
-      Copy the public URL that ngrok shows you: `https://<some random numbers>.ngrok-free.app`
+6. Run launch _ngrok_: 
+   1. [Get a free account](dashboard.ngrok.com)
+   2. [Copy your auth token](https://dashboard.ngrok.com/get-started/your-authtoken)
+   3. Download the binary, or launch a docker container. Make it forward HTTP calls to local port `8080`:
+       - `NGROK_AUTHTOKEN=<your token> ngrok http 8080`
+       - or `docker run --rm -it -e NGROK_AUTHTOKEN=<your token> --network host ngrok/ngrok http 8080` (on Linux command).
+         Copy the public URL that ngrok shows you: `https://<some random numbers>.ngrok-free.app`
 
-7. Go to the Stripe UI and create a webhook. Select all _"Payment Intent"_ event types. Put the ngrok
-   public URL + `/PaymentService/processWebhook` as the webhook URL (you need to update this whenever you stop/start ngrok).
-   Example: `https://<some random numbers>.ngrok-free.app/PaymentService/processWebhooks`
+7. Go to the Stripe UI and [create a webhook](https://dashboard.stripe.com/test/webhooks)
+   - Put the ngrok public URL + `/PaymentService/processWebhook` as the webhook URL (you need to update this whenever you stop/start ngrok).
+         Example: `https://<some random numbers>.ngrok-free.app/payments/processWebhook`
+   - Select all _"Payment Intent"_ event types. 
 
-8. Put the webhook secret (`whsec_...`) to the [StripeUtils.java](src/main/java/my/example/signalspayment/StripeUtils.java) file.
+8. Put the webhook secret (`whsec_...`) in the [stripe_utils.py](src/signalspayments/stripe_utils.py) file.
 
+### Demo scenario
 Use as test data `pm_card_visa` for a successful payment and `pm_card_visa_chargeDeclined` for a declined payment.
 Because the test data rarely triggers an async response, this example's tools can mimic that
 if you add `"delayedStatus": true` to the request.
 
 ```shell
-curl localhost:8080/PaymentService/processPayment -H 'content-type: application/json' -d '{
-        "paymentMethodId": "pm_card_visa",
+curl localhost:8080/payments/processPayment -H 'content-type: application/json' -d '{
+        "payment_method_id": "pm_card_visa",
         "amount": 109,
-        "delayedStatus": true
+        "delayed_status": true
 }'
+```
+
+You will see the synchronous response and the webhook call in the logs:
+```
+[2024-12-20 09:34:39,136] [716785] [INFO] - message='Request to Stripe api' method=post url=https://api.stripe.com/v1/payment_intents
+[2024-12-20 09:34:40,437] [716785] [INFO] - message='Stripe API response' path=https://api.stripe.com/v1/payment_intents response_code=200
+[2024-12-20 09:34:40,440] [716785] [INFO] - Payment intent for 6f8d16a5-d40c-4f9f-9c41-4da956ca795d still processing, awaiting webhook call...
+[2024-12-20 09:34:40,963] [716784] [INFO] - Received webhook call for payment intent {"id": "pi_3QY...", "object": "payment_intent", "amount": 109, "amount_capturable": 0, "amount_details": {"tip": {}}, "amount_received": 109, "application": null, "application_fee_amount": null, "automatic_payment_methods": {"allow_redirects": "always", "enabled": true}, "canceled_at": null, "cancellation_reason": null, "capture_method": "automatic_async", "client_secret": "pi_3QY1fPG04wQ4kt1o0i25MBMQ_secret_V2RtPZSeeEIPlhgSlhJSzGMtC", "confirmation_method": "automatic", "created": 1734683679, "currency": "usd", "customer": null, "description": null, "invoice": null, "last_payment_error": null, "latest_charge": "ch_3QY1fPG04wQ4kt1o0p1gkSGB", "livemode": false, "metadata": {"restate_callback_id": "prom_1yCmagFOb6zIBk-M0WZWJmZVdqmDZf0gSAAAAAQ"}, "next_action": null, "on_behalf_of": null, "payment_method": "pm_1QY1fPG04wQ4kt1obj7uoLzU", "payment_method_configuration_details": {"id": "pmc_1QY1S3G04wQ4kt1oD2XuBNNT", "parent": null}, "payment_method_options": {"card": {"installments": null, "mandate_options": null, "network": null, "request_three_d_secure": "automatic"}, "link": {"persistent_token": null}}, "payment_method_types": ["card", "link"], "processing": null, "receipt_email": null, "review": null, "setup_future_usage": null, "shipping": null, "source": null, "statement_descriptor": null, "statement_descriptor_suffix": null, "status": "succeeded", "transfer_data": null, "transfer_group": null}
+[2024-12-20 09:34:40,966] [716785] [INFO] - Webhook call for 6f8d16a5-d40c-4f9f-9c41-4da956ca795d received!
+[2024-12-20 09:34:40,976] [716781] [INFO] - Received webhook call for payment intent {"id": "pi_3QY...", "object": "payment_intent", "amount": 109, "amount_capturable": 0, "amount_details": {"tip": {}}, "amount_received": 0, "application": null, "application_fee_amount": null, "automatic_payment_methods": {"allow_redirects": "always", "enabled": true}, "canceled_at": null, "cancellation_reason": null, "capture_method": "automatic_async", "client_secret": "pi_3QY1fPG04wQ4kt1o0i25MBMQ_secret_V2RtPZSeeEIPlhgSlhJSzGMtC", "confirmation_method": "automatic", "created": 1734683679, "currency": "usd", "customer": null, "description": null, "invoice": null, "last_payment_error": null, "latest_charge": null, "livemode": false, "metadata": {"restate_callback_id": "prom_1yCmagFOb6zIBk-M0WZWJmZVdqmDZf0gSAAAAAQ"}, "next_action": null, "on_behalf_of": null, "payment_method": null, "payment_method_configuration_details": {"id": "pmc_1QY1S3G04wQ4kt1oD2XuBNNT", "parent": null}, "payment_method_options": {"card": {"installments": null, "mandate_options": null, "network": null, "request_three_d_secure": "automatic"}, "link": {"persistent_token": null}}, "payment_method_types": ["card", "link"], "processing": null, "receipt_email": null, "review": null, "setup_future_usage": null, "shipping": null, "source": null, "statement_descriptor": null, "statement_descriptor_suffix": null, "status": "requires_payment_method", "transfer_data": null, "transfer_group": null}
+```
+
+And for declined payments
+```shell
+curl localhost:8080/payments/processPayment -H 'content-type: application/json' -d '{
+        "payment_method_id": "pm_card_visa_chargeDeclined",
+        "amount": 109,
+        "delayed_status": true
+}'
+```
+```
+[2024-12-20 09:42:58,587] [718038] [INFO] - message='Request to Stripe api' method=post url=https://api.stripe.com/v1/payment_intents
+[2024-12-20 09:42:59,655] [718038] [INFO] - message='Stripe API response' path=https://api.stripe.com/v1/payment_intents response_code=402
+[2024-12-20 09:42:59,655] [718038] [INFO] - error_code=card_declined error_message='Your card was declined.' error_param=None error_type=card_error message='Stripe v1 API error received'
+[2024-12-20 09:42:59,657] [718038] [INFO] - Payment intent for 2d0239c9-5bd2-4d10-8c9d-3888b5c9a3c7 still processing, awaiting webhook call...
+[2024-12-20 09:43:00,044] [718039] [INFO] - Received webhook call for payment intent {"id": "pi_3Q...", "object": "payment_intent", "amount": 109, "amount_capturable": 0, "amount_details": {"tip": {}}, "amount_received": 0, "application": null, "application_fee_amount": null, "automatic_payment_methods": {"allow_redirects": "always", "enabled": true}, "canceled_at": null, "cancellation_reason": null, "capture_method": "automatic_async", "client_secret": "pi_3QY1nSG04wQ4kt1o0LDvgKp2_secret_6u9ZCdKZODCKfs5TswZDEDqcc", "confirmation_method": "automatic", "created": 1734684178, "currency": "usd", "customer": null, "description": null, "invoice": null, "last_payment_error": null, "latest_charge": null, "livemode": false, "metadata": {"restate_callback_id": "prom_1WwmuXpSfrCwBk-M7-JLlV6QcnWZ7nyKlAAAAAQ"}, "next_action": null, "on_behalf_of": null, "payment_method": null, "payment_method_configuration_details": {"id": "pmc_1QY1S3G04wQ4kt1oD2XuBNNT", "parent": null}, "payment_method_options": {"card": {"installments": null, "mandate_options": null, "network": null, "request_three_d_secure": "automatic"}, "link": {"persistent_token": null}}, "payment_method_types": ["card", "link"], "processing": null, "receipt_email": null, "review": null, "setup_future_usage": null, "shipping": null, "source": null, "statement_descriptor": null, "statement_descriptor_suffix": null, "status": "requires_payment_method", "transfer_data": null, "transfer_group": null}
+[2024-12-20 09:43:00,047] [718038] [INFO] - Webhook call for 2d0239c9-5bd2-4d10-8c9d-3888b5c9a3c7 received!
+[2024-12-20 09:43:00,135] [718044] [INFO] - Received webhook call for payment intent {"id": "pi_3Q...", "object": "payment_intent", "amount": 109, "amount_capturable": 0, "amount_details": {"tip": {}}, "amount_received": 0, "application": null, "application_fee_amount": null, "automatic_payment_methods": {"allow_redirects": "always", "enabled": true}, "canceled_at": null, "cancellation_reason": null, "capture_method": "automatic_async", "client_secret": "pi_3QY1nSG04wQ4kt1o0LDvgKp2_secret_6u9ZCdKZODCKfs5TswZDEDqcc", "confirmation_method": "automatic", "created": 1734684178, "currency": "usd", "customer": null, "description": null, "invoice": null, "last_payment_error": {"advice_code": "try_again_later", "charge": "ch_3QY1nSG04wQ4kt1o0mEz8YHB", "code": "card_declined", "decline_code": "generic_decline", "doc_url": "https://stripe.com/docs/error-codes/card-declined", "message": "Your card was declined.", "payment_method": {"id": "pm_1QY1nSG04wQ4kt1oFaoJxf8z", "object": "payment_method", "allow_redisplay": "unspecified", "billing_details": {"address": {"city": null, "country": null, "line1": null, "line2": null, "postal_code": null, "state": null}, "email": null, "name": null, "phone": null}, "card": {"brand": "visa", "checks": {"address_line1_check": null, "address_postal_code_check": null, "cvc_check": "pass"}, "country": "US", "display_brand": "visa", "exp_month": 12, "exp_year": 2025, "fingerprint": "HgmUUSMwiOzktMXB", "funding": "credit", "generated_from": null, "last4": "0002", "networks": {"available": ["visa"], "preferred": null}, "regulated_status": "unregulated", "three_d_secure_usage": {"supported": true}, "wallet": null}, "created": 1734684178, "customer": null, "livemode": false, "metadata": {}, "type": "card"}, "type": "card_error"}, "latest_charge": "ch_3QY1nSG04wQ4kt1o0mEz8YHB", "livemode": false, "metadata": {"restate_callback_id": "prom_1WwmuXpSfrCwBk-M7-JLlV6QcnWZ7nyKlAAAAAQ"}, "next_action": null, "on_behalf_of": null, "payment_method": null, "payment_method_configuration_details": {"id": "pmc_1QY1S3G04wQ4kt1oD2XuBNNT", "parent": null}, "payment_method_options": {"card": {"installments": null, "mandate_options": null, "network": null, "request_three_d_secure": "automatic"}, "link": {"persistent_token": null}}, "payment_method_types": ["card", "link"], "processing": null, "receipt_email": null, "review": null, "setup_future_usage": null, "shipping": null, "source": null, "statement_descriptor": null, "statement_descriptor_suffix": null, "status": "requires_payment_method", "transfer_data": null, "transfer_group": null}
 ```
 
 A few notes:

@@ -375,7 +375,7 @@ webhooks to your local machine.
 
 7. Go to the Stripe UI and create a webhook. Select all _"Payment Intent"_ event types. Put the ngrok
    public URL + `/PaymentService/processWebhook` as the webhook URL (you need to update this whenever you stop/start ngrok).
-   Example: `https://<some random numbers>.ngrok-free.app/PaymentService/processWebhooks`
+   Example: `https://<some random numbers>.ngrok-free.app/PaymentService/processWebhook`
 
 8. Put the webhook secret (`whsec_...`) to the [StripeUtils.java](src/main/java/my/example/signalspayment/StripeUtils.java) file.
 
