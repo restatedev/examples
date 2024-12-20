@@ -278,7 +278,7 @@ If the upload takes too long, however, the client asks the upload service to sen
 
 ### Demo scenario
 
-Run the upload client with a userId: `npx tsx run ./src/dataupload/client.ts`
+Run the upload client with a userId: `npx tsx ./src/dataupload/client.ts`
 
 This will submit an upload workflow to the data upload service.
 The workflow will run only once per ID, so you need to provide a new ID for each run.
@@ -464,7 +464,7 @@ curl localhost:9070/subscriptions -H 'content-type: application/json' \
 
 1. Register a new package via the RPC handler:
 ```shell
-curl localhost:8080/package-tracker/package1/registerPackage \
+curl localhost:8080/package-tracker/package123/registerPackage \
   -H 'content-type: application/json' -d '{"finalDestination": "Bridge 6, Amsterdam"}'
 ```
 
@@ -474,15 +474,15 @@ docker exec -it broker kafka-console-producer --bootstrap-server broker:29092 --
 ```
 Send messages like
 ```
-package1:{"timestamp": "2024-10-10 13:00", "location": "Pinetree Road 5, Paris"}
-package1:{"timestamp": "2024-10-10 14:00", "location": "Mountain Road 155, Brussels"}
+package123:{"timestamp": "2024-10-10 13:00", "location": "Pinetree Road 5, Paris"}
+package123:{"timestamp": "2024-10-10 14:00", "location": "Mountain Road 155, Brussels"}
 ```
 
 3. Query the package location via the RPC handler:
 ```shell
-curl localhost:8080/package-tracker/package1/getLocation
+curl localhost:8080/package-tracker/package123/getPackageInfo
 ```
-or via the CLI: `restate kv get package-tracker package1`
+or via the CLI: `restate kv get package-tracker package123`
 
 You can see how the state was enriched by the initial RPC event and the subsequent Kafka events:
 ```
@@ -490,7 +490,7 @@ You can see how the state was enriched by the initial RPC event and the subseque
 ―――――――――
                           
  Service  package-tracker 
- Key      package1        
+ Key      package123       
 
  KEY           VALUE                                            
  package-info  {                                                
@@ -586,13 +586,13 @@ You can now await and resolve promises from different processes at different tim
 With via simple HTTP calls (see above) or the TypeScript API.
 
 You can start the bundled examples via 
-- `npx tsx watch ./src/durablepromise/1_example.ts`
-- `npx tsx watch ./src/durablepromise/2_example_process.ts`
-- `npx tsx watch ./src/durablepromise/3_example_parallel_processes.ts`
-- `npx tsx watch ./src/durablepromise/4_example.ts`,
+- `npx tsx ./src/durablepromise/1_example.ts`
+- `npx tsx ./src/durablepromise/2_example_process.ts`
+- `npx tsx ./src/durablepromise/3_example_parallel_processes.ts`
+- `npx tsx ./src/durablepromise/4_example.ts`,
 optionally passing `[promise-id] [restateUri]` as parameters.
 
-# Pattern: Priority queue
+## Pattern: Priority queue
 
 An example of implementing your own priority queue using Restate state and awakeables.
 
@@ -601,9 +601,9 @@ Run the example with `npx tsx watch ./src/priorityqueue/app.ts`.
 You can simulate adding work to the queue like this:
 ```shell
 # add a single entry
-curl localhost:8080/myService/expensiveMethod/send --json '{"left": 1, "right": 2, "priority": 1}'
+curl localhost:8080/myService/expensiveMethod/send -H 'content-type:application/json' -d '{"left": 1, "right": 2, "priority": 1}'
 # add lots
-for i in $(seq 1 30); do curl localhost:8080/myService/expensiveMethod/send --json '{"left": 1, "right": 2, "priority": 2}'; done
+for i in $(seq 1 30); do curl localhost:8080/myService/expensiveMethod/send -H 'content-type:application/json' -d '{"left": 1, "right": 2, "priority": 2}'; done
 ```
 
 As you do so, you can observe the logs; in flight requests will increase up to 10, beyond which items will be enqueued.

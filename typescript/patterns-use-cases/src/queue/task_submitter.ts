@@ -11,7 +11,7 @@ async function submitAndAwaitTask(task: TaskOpts) {
   // submit the task; similar to publishing a message to a queue
   // Restate ensures the task is executed exactly once
   const taskHandle = await restateClient
-    .serviceSendClient<AsyncTaskWorker>({ name: "taskWorker" })
+    .serviceSendClient<AsyncTaskWorker>({ name: "asyncTaskWorker" })
     .runTask(
       task,
       // use a stable uuid as an idempotency key

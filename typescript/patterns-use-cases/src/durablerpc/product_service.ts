@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import {Context, ObjectContext} from "@restatedev/restate-sdk";
+import {ObjectContext} from "@restatedev/restate-sdk";
 
 /**
  * The product service is deployed somewhere as a Restate application.
