@@ -12,12 +12,16 @@ function bump_ts_sdk_clients() {
     npm --prefix $1 install @restatedev/restate-sdk-clients@^$NEW_VERSION
 }
 
+function bump_ts_sdk_testing() {
+    npm --prefix $1 install @restatedev/restate-sdk-testcontainers@^$NEW_VERSION
+}
+
 bump_ts_sdk $PROJECT_ROOT/basics/basics-typescript
 bump_ts_sdk_clients $PROJECT_ROOT/basics/basics-typescript
 
 bump_ts_sdk $PROJECT_ROOT/templates/typescript
 bump_ts_sdk $PROJECT_ROOT/templates/typescript-testing
-bump_ts_sdk_clients $PROJECT_ROOT/templates/typescript-testing
+bump_ts_sdk_testing $PROJECT_ROOT/templates/typescript-testing
 bump_ts_sdk $PROJECT_ROOT/templates/typescript-lambda-cdk
 bump_ts_sdk $PROJECT_ROOT/templates/bun
 
