@@ -2,18 +2,19 @@
 
 Common tasks and patterns implemented with Restate:
 
-| Category         | Use case / Name                          |                                                                             |                                                                                                | Difficulty  | Description                                                                                                 |
-|------------------|------------------------------------------|-----------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|-------------|-------------------------------------------------------------------------------------------------------------|
-| Microservices    | Durable RPC | [code](src/main/java/my/example/durablerpc/MyClient.java)                   | [README](#microservices-durable-rpc)                                                           | Basic        | Restate persists requests and makes sure they execute exactly-once.                                         |
-| Microservices    | Sagas | [code](src/main/java/my/example/sagas/BookingWorkflow.java)                 | [README](#microservices-sagas)                                                                 | Basic        | Preserve consistency by tracking undo actions and running them when code fails halfway through.             |
-| Microservices    | Stateful Actors | [code](src/main/java/my/example/statefulactors/MachineOperator.java)        | [README](#microservices-stateful-actors)                                                       | Basic                          | State machine with a set of transitions, built as a Restate Virtual Object for automatic state persistence. |
-| Microservices    | Payment state machines | [code](src/main/java/my/example/statemachinepayments/PaymentProcessor.java) | [README](#microservices-payment-state-machine)                                                 | Advanced                       | State machine example that tracks a payment process, ensuring consistent processing and cancellations.      |
-| Async tasks      | (Delayed) Task Queue | [code](src/main/java/my/example/queue/TaskSubmitter.java)                   | [README](#async-tasks-delayed-tasks-queue)                                                     | Basic                          | Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.          |
-| Async tasks      | Parallelizing work | [code](src/main/java/my/example/parallelizework/FanOutWorker.java)          | [README](#async-tasks-parallelizing-work)                                                      | Intermediate                   | Execute a list of tasks in parallel and then gather their result.                                           |
-| Async tasks      | Slow async data upload | [code](src/main/java/my/example/dataupload/UploadClient.java)               | [README](#async-tasks-async-data-upload)                                                       | Intermediate                   | Kick of a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long.    |
-| Async tasks      | Payments: async signals | [code](src/main/java/my/example/signalspayments/PaymentService.java)        | [README](#async-tasks-payment-signals---combining-sync-and-async-webhook-responses-from-stripe) | Advanced                       | Handling async payment callbacks for slow payments, with Stripe.                                            |
-| Event processing | Transactional handlers | [code](src/main/java/my/example/eventtransactions/UserFeed.java)            | [README](#event-processing-transactional-handlers-with-durable-side-effects-and-timers)        | Basic                          | Processing events (from Kafka) to update various downstream systems in a transactional way.                 |
-| Event processing | Enriching streams | [code](src/main/java/my/example/eventenrichment/PackageTracker.java)        | [README](#event-processing-event-enrichment)                                                   | Basic                          | Stateful functions/actors connected to Kafka and callable over RPC.                                         |
+
+| Category         | Use case / Name         |                                                                          |                                                                                                                             | Difficulty   | Description                                                                                                 |
+|------------------|-------------------------|--------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|--------------|-------------------------------------------------------------------------------------------------------------|
+| Microservices    | Durable RPC             | [code](src/durablerpc/client.py)                      | [README](#microservices-durable-rpc)                                                            | Basic        | Restate persists requests and makes sure they execute exactly-once.                                         |
+| Microservices    | Sagas                   | [code](src/sagas/booking_workflow.py)                 | [README](#microservices-sagas)                                                                  | Basic        | Preserve consistency by tracking undo actions and running them when code fails halfway through.             |
+| Microservices    | Stateful Actors         | [code](src/statefulactors/machine_operator.py)        | [README](#microservices-stateful-actors)                                                        | Basic        | State machine with a set of transitions, built as a Restate Virtual Object for automatic state persistence. |
+| Microservices    | Payment state machines  | [code](src/statemachinepayments/payment_processor.py) | [README](#microservices-payment-state-machine)                                                  | Advanced     | State machine example that tracks a payment process, ensuring consistent processing and cancellations.      |
+| Async tasks      | (Delayed) Task Queue    | [code](src/queue/task_submitter.py)                   | [README](#async-tasks-delayed-tasks-queue)                                                      | Basic        | Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.          |
+| Async tasks      | Parallelizing work      | [code](src/parallelizework/fan_out_worker.py)         | [README](#async-tasks-parallelizing-work)                                                       | Intermediate | Execute a list of tasks in parallel and then gather their result.                                           |
+| Async tasks      | Slow async data upload  | [code](src/dataupload/client.py)                      | [README](#async-tasks-async-data-upload)                                                        | Intermediate | Kick of a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long.    |
+| Async tasks      | Payments: async signals | [code](src/signalspayments/payment_service.py)        | [README](#async-tasks-payment-signals---combining-sync-and-async-webhook-responses-from-stripe) | Advanced     | Handling async payment callbacks for slow payments, with Stripe.                                            |
+| Event processing | Transactional handlers  | [code](src/eventtransactions/user_feed.py)            | [README](#event-processing-transactional-handlers-with-durable-side-effects-and-timers)         | Basic        | Processing events (from Kafka) to update various downstream systems in a transactional way.                 |
+| Event processing | Enriching streams       | [code](src/eventenrichment/package_tracker.py)        | [README](#event-processing-event-enrichment)                                                    | Basic        | Stateful functions/actors connected to Kafka and callable over RPC.                                         |
 
 
 To get started, create a venv and install the requirements file:
@@ -301,7 +302,7 @@ Task result: Finished work on task: task123
 This example shows how to use the Restate SDK to **execute a list of tasks in parallel and then gather their result**.
 Also known as fan-out, fan-in.
 
-The example implements a [worker service](src/main/java/my/example/parallelizework/FanOutWorker.java), that takes a task as input.
+The example implements a [worker service](src/parallelizework/fan_out_worker.py), that takes a task as input.
 It then splits the task into subtasks, executes them in parallel, and then gathers the results.
 
 Restate guarantees and manages the execution of all the subtasks across failures.
@@ -326,9 +327,7 @@ If the upload takes too long, however, the client asks the upload service to sen
 
 ### Demo scenario
 
-Run the upload client with a userId: `python src/dataupload/client.py`
-
-curl -X POST localhost:8080/DataUploadService/package1/run
+Run the upload client with a userId: `python src/dataupload/client.py my_user_id12`
 
 This will submit an upload workflow to the data upload service.
 The workflow will run only once per ID, so you need to provide a new ID for each run.
