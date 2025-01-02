@@ -2,7 +2,8 @@ import * as restate from "@restatedev/restate-sdk";
 import * as restateClients from "@restatedev/restate-sdk-clients";
 import { createUserEntry, sendEmailWithLink } from "./utils/stubs";
 
-// Workflow for user signup and email verification.
+// Implement long-running workflows with Restate.
+// For example, a user signup and email verification workflow.
 //  - Main workflow in run() method
 //  - Additional methods interact with the workflow.
 // Each workflow instance has a unique ID and runs only once (to success or failure).

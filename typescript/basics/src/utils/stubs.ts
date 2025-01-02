@@ -59,3 +59,30 @@ export async function sendEmailWithLink(req: {
     To simulate a user clicking the link, run the following command: \n 
     curl localhost:8080/usersignup/${req.userId}/click -H 'content-type: application/json' -d '{ "secret": "${req.secret}"}'`);
 }
+
+// Stubs for 4_building_blocks.ts
+
+/**
+ * Simulates calling a payment API, with a random probability of API downtime.
+ */
+export function updateRecurringPayment(
+  _creditCard: string,
+  paymentId: any,
+): string {
+  maybeCrash(0.3);
+  console.log(`>>> Creating recurring payment ${paymentId}`);
+  return "payment-reference";
+}
+
+export function cancelSubscription(
+  subscription: string,
+  _paymentRef: string,
+): string {
+  maybeCrash(0.3);
+  console.log(`>>> Creating subscription ${subscription}`);
+  return "SUCCESS";
+}
+
+export function sendEmail(message: string) {
+  console.log(`Sending email: ${message}`);
+}

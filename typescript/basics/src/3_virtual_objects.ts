@@ -1,11 +1,13 @@
 import * as restate from "@restatedev/restate-sdk";
 
-// Virtual Objects hold K/V state and have methods to interact with the object.
+// Virtual Objects are services that hold K/V state. Its handlers interact with the object state.
 // An object is identified by a unique id - only one object exists per id.
 //
-// Virtual Objects have their K/V state locally accessible without requiring any database
+// Handlers are stateless executors.
+// Restate proxies requests to it and attaches the object's state to the request.
+// Virtual Objects then have their K/V state locally accessible without requiring any database
 // connection or lookup. State is exclusive, and atomically committed with the
-// method execution.
+// method execution. It is always consistent with the progress of the execution.
 //
 // Virtual Objects are Stateful (Serverless) constructs.
 //
@@ -36,6 +38,9 @@ restate.endpoint().bind(greeterObject).listen(9080);
 // or .handler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
 
 /*
+You specify which object you want to invoke, by including its key in the URL path:
+localhost:8080/objectName/key/handlerName
+
 Check the README to learn how to run Restate.
 Then, invoke handlers via HTTP:
 
