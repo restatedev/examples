@@ -5,6 +5,7 @@ import (
 	restate "github.com/restatedev/sdk-go"
 	"github.com/restatedev/sdk-go/server"
 	"log"
+	"time"
 )
 
 type SocialMediaPost struct {
@@ -46,7 +47,7 @@ func (UserFeed) ProcessPost(ctx restate.ObjectContext, post SocialMediaPost) err
 		if status != PENDING {
 			break
 		}
-		err = restate.Sleep(ctx, 5000)
+		err = restate.Sleep(ctx, 5*time.Second)
 		if err != nil {
 			return err
 		}
