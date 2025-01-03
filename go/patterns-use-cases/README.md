@@ -32,7 +32,7 @@ curl localhost:9070/subscriptions -H 'content-type: application/json' \
 }'
 ```
 
-## Demo scenario
+### Demo scenario
 
 Start a Kafka producer and send some messages to the `social-media-posts` topic:
 ```shell
@@ -49,21 +49,54 @@ userid1:{"content": "Hi! This is my second post!", "metadata": "public"}
 Our Kafka broker only has a single partition so all these messages end up on the same partition.
 You can see in the logs how events for different users are processed in parallel, but events for the same user are processed sequentially:
 
+<details>
+<summary>Logs</summary>
+
 ```shell
-Created post fd74fc81-2f8b-457a-aca3-2f297643ea54 for user userid1 with content: Hi! This is my first post!
-Created post b0b6d057-0ec2-4a52-9942-81b675eae7c5 for user userid2 with content: Hi! This is my first post!
-Content moderation for post fd74fc81-2f8b-457a-aca3-2f297643ea54 is still pending... Will check again in 5 seconds
-Content moderation for post b0b6d057-0ec2-4a52-9942-81b675eae7c5 is done
-Updating the user feed for user userid2 and post b0b6d057-0ec2-4a52-9942-81b675eae7c5
-Content moderation for post fd74fc81-2f8b-457a-aca3-2f297643ea54 is still pending... Will check again in 5 seconds
-Content moderation for post fd74fc81-2f8b-457a-aca3-2f297643ea54 is still pending... Will check again in 5 seconds
-Content moderation for post fd74fc81-2f8b-457a-aca3-2f297643ea54 is done
-Updating the user feed for user userid1 and post fd74fc81-2f8b-457a-aca3-2f297643ea54
-Created post a05b134c-e7f6-4dcf-9cf2-e66faef49bde for user userid1 with content: Hi! This is my second post!
-Content moderation for post a05b134c-e7f6-4dcf-9cf2-e66faef49bde is still pending... Will check again in 5 seconds
-Content moderation for post a05b134c-e7f6-4dcf-9cf2-e66faef49bde is done
-Updating the user feed for user userid1 and post a05b134c-e7f6-4dcf-9cf2-e66faef49bde
+2025/01/03 16:33:16 INFO Handling invocation method=UserFeed/ProcessPost invocationID=inv_13puWeoWJykN2iR3HzJOiyzymCA9yPbT1f
+Created post 3dae1f20-a7e5-4f3f-8113-3a4b91e48e72 for user userid1 with content: Hi! This is my first post!
+Content moderation for post 3dae1f20-a7e5-4f3f-8113-3a4b91e48e72 is still pending... Will check again in 5 seconds
+2025/01/03 16:33:19 INFO Handling invocation method=UserFeed/ProcessPost invocationID=inv_1eZjTF0DbaEl2J2i6fbVKbMmbeHAjPGBe9
+Created post c4672199-7a06-4540-8bf7-a5ec15327346 for user userid2 with content: Hi! This is my first post!
+Content moderation for post c4672199-7a06-4540-8bf7-a5ec15327346 is still pending... Will check again in 5 seconds
+Content moderation for post 3dae1f20-a7e5-4f3f-8113-3a4b91e48e72 is still pending... Will check again in 5 seconds
+Content moderation for post c4672199-7a06-4540-8bf7-a5ec15327346 is done
+Updating the user feed for user userid2 with post c4672199-7a06-4540-8bf7-a5ec15327346
+2025/01/03 16:33:24 INFO Invocation completed successfully method=UserFeed/ProcessPost invocationID=inv_1eZjTF0DbaEl2J2i6fbVKbMmbeHAjPGBe9
+2025/01/03 16:33:24 INFO Handling invocation method=UserFeed/ProcessPost invocationID=inv_1eZjTF0DbaEl5vwb9ckycf7xsj0c5wWo0h
+Created post ede539a3-0c53-4d4b-a93e-8fdef3330de6 for user userid2 with content: Hi! This is my first post!
+Content moderation for post ede539a3-0c53-4d4b-a93e-8fdef3330de6 is still pending... Will check again in 5 seconds
+Content moderation for post 3dae1f20-a7e5-4f3f-8113-3a4b91e48e72 is done
+Updating the user feed for user userid1 with post 3dae1f20-a7e5-4f3f-8113-3a4b91e48e72
+2025/01/03 16:33:32 INFO Invocation completed successfully method=UserFeed/ProcessPost invocationID=inv_13puWeoWJykN2iR3HzJOiyzymCA9yPbT1f
+2025/01/03 16:33:32 INFO Handling invocation method=UserFeed/ProcessPost invocationID=inv_13puWeoWJykN6neIyklfqzeQVAun6OI6hb
+Created post a31a5ebb-1e19-4629-a7ae-b1e80bb469ec for user userid1 with content: Hi! This is my first post!
+Content moderation for post a31a5ebb-1e19-4629-a7ae-b1e80bb469ec is still pending... Will check again in 5 seconds
+Content moderation for post ede539a3-0c53-4d4b-a93e-8fdef3330de6 is still pending... Will check again in 5 seconds
+Content moderation for post ede539a3-0c53-4d4b-a93e-8fdef3330de6 is done
+Updating the user feed for user userid2 with post ede539a3-0c53-4d4b-a93e-8fdef3330de6
+2025/01/03 16:33:44 INFO Invocation completed successfully method=UserFeed/ProcessPost invocationID=inv_1eZjTF0DbaEl5vwb9ckycf7xsj0c5wWo0h
+Content moderation for post a31a5ebb-1e19-4629-a7ae-b1e80bb469ec is still pending... Will check again in 5 seconds
+Content moderation for post a31a5ebb-1e19-4629-a7ae-b1e80bb469ec is done
+Updating the user feed for user userid1 with post a31a5ebb-1e19-4629-a7ae-b1e80bb469ec
+2025/01/03 16:33:52 INFO Invocation completed successfully method=UserFeed/ProcessPost invocationID=inv_13puWeoWJykN6neIyklfqzeQVAun6OI6hb
+2025/01/03 16:33:52 INFO Handling invocation method=UserFeed/ProcessPost invocationID=inv_13puWeoWJykN4MGP7mftRXvTi5JIWKSJbP
+Created post 7da58f9a-4af4-4a35-94b0-90879a20390d for user userid1 with content: Hi! This is my second post!
+Content moderation for post 7da58f9a-4af4-4a35-94b0-90879a20390d is still pending... Will check again in 5 seconds
+Content moderation for post 7da58f9a-4af4-4a35-94b0-90879a20390d is still pending... Will check again in 5 seconds
+Content moderation for post 7da58f9a-4af4-4a35-94b0-90879a20390d is done
+Updating the user feed for user userid1 with post 7da58f9a-4af4-4a35-94b0-90879a20390d
+2025/01/03 16:34:02 INFO Invocation completed successfully method=UserFeed/ProcessPost invocationID=inv_13puWeoWJykN4MGP7mftRXvTi5JIWKSJbP
+2025/01/03 16:34:02 INFO Handling invocation method=UserFeed/ProcessPost invocationID=inv_13puWeoWJykN6C0ovGVJ4Bvrhxhw9Lnpx7
+Created post b8c0d187-1148-41d2-9060-d25fe0d9bdfe for user userid1 with content: Hi! This is my second post!
+Content moderation for post b8c0d187-1148-41d2-9060-d25fe0d9bdfe is still pending... Will check again in 5 seconds
+Content moderation for post b8c0d187-1148-41d2-9060-d25fe0d9bdfe is still pending... Will check again in 5 seconds
+Content moderation for post b8c0d187-1148-41d2-9060-d25fe0d9bdfe is done
+Updating the user feed for user userid1 with post b8c0d187-1148-41d2-9060-d25fe0d9bdfe
+2025/01/03 16:34:37 INFO Invocation completed successfully method=UserFeed/ProcessPost invocationID=inv_13puWeoWJykN6C0ovGVJ4Bvrhxhw9Lnpx7
 ```
+
+</details>
 
 As you see, slow events do not block other slow events.
 Restate effectively created a queue per user ID.
