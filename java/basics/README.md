@@ -37,6 +37,6 @@ about how they work and how they can be run.
 
    _Note: the '--force' flag here is to circumvent all checks related to graceful upgrades, because it is only a playground, not a production setup._
 
-4. Check the comments in the example for how to interact with the example.
+4. Check the comments  at the bottom of each example for how to interact with the example.
 
 **NOTE:** When you get an error of the type `{"code":"not_found","message":"Service 'greeter' not found. ...}`, then you forgot step (3) for that example.

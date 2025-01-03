@@ -38,7 +38,7 @@ restate.endpoint().bind(greeterObject).listen(9080);
 // or .handler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
 
 /*
-You specify which object you want to invoke, by including its key in the URL path:
+You specify which object you want to invoke by including its key in the URL path:
 localhost:8080/objectName/key/handlerName
 
 Check the README to learn how to run Restate.

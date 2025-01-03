@@ -9,10 +9,10 @@ about how they work and how they can be run.
 
 ### Examples
 
-* **[Basic Durable Execution:](app/1_durable_execution.py):** Running code cleanly
+Running code cleanly
   to the end in the presence of failures. Automatic retries and recovery of previously
-  finished actions. The example applies a series of updates and permission setting changes
-  to user's profile.
+  finished actions. The example applies creates a subscription to movie streaming services
+  by first creating a recurring payment and then adding the subscriptions.
 
 * **[Workflows](app/2_workflows.py):** Workflows are durable execution tasks that can
   be submitted and awaited. They have an identity and can be signaled and queried
