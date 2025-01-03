@@ -20,4 +20,4 @@ hs_err_pid*
 restate-data
 
 # Go
-go/pkg/
+**/pkg/
