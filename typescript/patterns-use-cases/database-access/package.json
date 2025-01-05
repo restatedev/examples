@@ -1,0 +1,20 @@
+{
+  "name": "@restatedev/examples-database",
+  "version": "1.0.0",
+  "description": "Example of accessing databases from Restate",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc --noEmitOnError",
+    "example": "ts-node --transpile-only ./src/main.ts"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "^1.4.0",
+    "pg": "^8.10.0",
+    "sequelize": "^6.30.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.2"
+  }
+}

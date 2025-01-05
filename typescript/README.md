@@ -26,6 +26,7 @@ Common tasks and patterns implemented with Restate:
 | Async tasks      | [Payments: async signals processing](patterns-use-cases/async-tasks-payment-signals) | Advanced    | Handling async payment callbacks for slow payments, with Stripe.                                            |
 | Event processing | [Transactional handlers](patterns-use-cases/event-processing-transactional-handlers) | Basic       | Processing events (from Kafka) to update various downstream systems in a transactional way.                 |
 | Event processing | [Enriching streams](patterns-use-cases/event-processing-enrichment)                  | Basic       | Stateful functions/actors connected to Kafka and callable over RPC.                                         |
+| Patterns         | [Database Access Patterns](patterns-use-cases/database-access)                       | Intermediate | Patterns for accessing databases with and without idempotency or transactional integration.                |
 | Patterns         | [Durable Promises](patterns-use-cases/pattern-durable-promises)                      | Advanced    | Implementation of Promises/Futures that are durable across processes and failures.                          |
 | Patterns         | [Priority Queue](patterns-use-cases/pattern-priority-queue)                          | Advanced    | Example of implementing a priority queue to manage task execution order.                                    |
 
