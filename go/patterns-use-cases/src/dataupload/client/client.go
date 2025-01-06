@@ -21,17 +21,17 @@ func upload(id string, email string) error {
 	client := &http.Client{Timeout: 5 * time.Second}
 
 	url := fmt.Sprintf("%s/DataUploadService/%s/Run", RESTATE_URL, id)
-	req, _ := http.NewRequest("POST", url, nil)
-	resp, err := client.Do(req)
+	resp, err := client.Get(url)
 	if err != nil {
 		if err, ok := err.(net.Error); ok && err.Timeout() {
 			slog.Info("Slow upload... Mail the link later")
 			emailHandlerUrl := fmt.Sprintf("%s/DataUploadService/%s/ResultAsEmail/send", RESTATE_URL, id)
 			emailData, _ := json.Marshal(email)
-			_, err := client.Post(emailHandlerUrl, "application/json", bytes.NewBuffer(emailData))
+			resp2, err := client.Post(emailHandlerUrl, "application/json", bytes.NewBuffer(emailData))
 			if err != nil {
 				return err
 			}
+			defer resp2.Body.Close()
 			return nil
 		}
 		return err
