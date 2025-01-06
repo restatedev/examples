@@ -35,9 +35,9 @@ func (FanOutWorker) Run(ctx restate.Context, task Task) (Result, error) {
 	// Fan in - Aggregate the results
 	subResults := make([]SubTaskResult, 0, len(subtasks))
 	for selector.Remaining() {
-		switch future := selector.Select().(type) {
-		case restate.ResponseFuture[SubTaskResult]:
-			response, err := future.Response()
+		future := selector.Select()
+		if response, ok := future.(restate.ResponseFuture[SubTaskResult]); ok {
+			response, err := response.Response()
 			if err != nil {
 				return Result{}, err
 			}
