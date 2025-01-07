@@ -15,14 +15,20 @@ import (
 
 const RESTATE_URL = "http://localhost:8080"
 
+// The upload client calls the data upload workflow and awaits the result for 5 seconds.
+// If the workflow doesn't complete within that time, it asks the
+// workflow to send the upload url via email instead.
+
 func upload(id string, email string) error {
 	slog.Info(fmt.Sprintf("Start upload for %s", id))
 
 	client := &http.Client{Timeout: 5 * time.Second}
 
 	url := fmt.Sprintf("%s/DataUploadService/%s/Run", RESTATE_URL, id)
+	// Send a request with a timeout of 5 seconds
 	resp, err := client.Get(url)
 	if err != nil {
+		// Timeout hit; Request the workflow to send us an email with the response instead
 		if err, ok := err.(net.Error); ok && err.Timeout() {
 			slog.Info("Slow upload... Mail the link later")
 			emailHandlerUrl := fmt.Sprintf("%s/DataUploadService/%s/ResultAsEmail/send", RESTATE_URL, id)

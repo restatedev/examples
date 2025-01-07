@@ -1,1 +1,1 @@
-package signalspayments
+package main
