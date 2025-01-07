@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
-	"time"
 )
 
 const RESTATE_URL = "http://localhost:8080"
@@ -19,7 +18,7 @@ type TaskOpts struct {
 func SubmitAndAwaitTask(task TaskOpts) error {
 	idempotencyKey := task.Id
 	slog.Info("Submitting task with idempotency key: " + idempotencyKey)
-	client := &http.Client{Timeout: 5 * time.Second}
+	client := &http.Client{}
 
 	// submit the task; similar to publishing a message to a queue (by adding /send to the url)
 	// Restate ensures the task is executed exactly once
@@ -42,7 +41,7 @@ func SubmitAndAwaitTask(task TaskOpts) error {
 
 	// ... do other things while the task is being processed ...
 
-	// Later on, you can retrieve the result of the task
+	// Later on, you can retrieve the result of the task (possibly in a different process)
 	attachUrl := fmt.Sprintf("%s/restate/invocation/AsyncTaskWorker/RunTask/%s/attach", RESTATE_URL, idempotencyKey)
 	resp, err = http.DefaultClient.Get(attachUrl)
 	if err != nil {

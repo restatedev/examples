@@ -1,6 +1,43 @@
 
 
-## Microservices: Sagas
+## Durable RPC, Idempotency and Concurrency
+
+This example shows an example of:
+- **Durable RPC**: once a request has reached Restate, it is guaranteed to be processed
+- **Exactly-once processing**: Ensure that duplicate requests are not processed multiple times via idempotency keys
+
+The example shows how you can programmatically submit a requests to a Restate service.
+Every request gets processed durably, and deduplicated based on the idempotency key.
+
+The example shows a [client](src/durablerpc/client/client.go) that receives product reservation requests and forwards them to the product service.
+The [Product service](src/durablerpc/service/productservice.go) is a Restate service that durably processes the reservation requests and deduplicates them.
+Each product can be reserved only once.
+
+### Running the example
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `go run ./src/durablerpc/service`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+### Demo scenario
+Run the client to let it send a request to reserve a product: 
+```shell
+go run ./src/durablerpc/client --productid 1 --reservationid 1
+```
+The response will be `true`.
+
+Let's change the reservation ID and run the request again:
+```shell
+go run ./src/durablerpc/client --productid 1 --reservationid 2
+```
+This will give us `false` because this product is already reserved, so we can't reserve it again.
+
+However, if we run the first request again with same reservation ID, we will get `true` again:
+```shell
+go run ./src/durablerpc/client --productid 1 --reservationid 1
+``` 
+Restate deduplicated the request (with the reservation ID as idempotency key) and returned the first response.
+
+## Sagas
 
 An example of a trip reservation workflow, using the saga pattern to undo previous steps in case of an error.
 
@@ -76,8 +113,6 @@ Have a look at the logs to see the cancellations of the flight and car booking i
 2025/01/06 16:16:02 INFO Invocation completed successfully method=BookingWorkflow/Run invocationID=inv_17l9ZLwBY3bz6HEIybYB6Rh9SbV6khuc0N
 ```
 </details>
-
-
 
 ## Event Processing: Transactional Handlers with Durable Side Effects and Timers
 
