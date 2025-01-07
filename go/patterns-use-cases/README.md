@@ -1,3 +1,19 @@
+# Go Patterns and Use Cases
+
+Common tasks and patterns implemented with Restate:
+
+| Use case / Pattern                                                                                                      | Description                                                                                                     |
+|-------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
+| [Durable RPC, Idempotency & Concurrency](README.md#durable-rpc-idempotency-and-concurrency)                             | Use programmatic clients to call Restate handlers. Add idempotency keys for deduplication. [(code)](src/durablerpc/express_app.ts)                      |
+| [(Delayed) Message Queue](README.md#delayed-message-queue)                                                              | Restate as a queue: Send (delayed) events to handlers. Optionally, retrieve the response later. [(code)](src/queue/task_submitter.ts)                 |
+| [Sagas](README.md#sagas)                                                                                               | Preserve consistency by tracking undo actions and running them when code fails halfway through. [(code)](src/sagas/booking_workflow.ts)                 |
+| [Webhook Callbacks](#durable-webhook-event-processing)                                                                 | Point webhook callbacks to a Restate handler for durable event processing. [(code)](src/webhookcallbacks/webhook_callback_router.ts)                                    |
+| [Scheduling Tasks](#scheduling-tasks)                                                             | Restate as scheduler: Schedule tasks for later and ensure the task is triggered and executed. [(code)](src/schedulingtasks/payment_reminders.ts)                 |
+| [Stateful Actors and State Machines](README.md#stateful-actors-and-durable-state-machines)                             | Stateful Actor representing a machine in our factory. Track state transitions with automatic state persistence. [(code)](src/statefulactors/machine_operator.ts) |
+| [Transactional Event Processing](README.md#event-processing-transactional-handlers-with-durable-side-effects-and-timers)| Process events from Kafka to update various downstream systems in a transactional way. [(code)](src/eventtransactions/user_feed.ts)                        |
+| [Event enrichment / Joins](README.md#event-processing-event-enrichment)                                                 | Stateful functions/actors connected to Kafka and callable over RPC. [(code)](src/eventenrichment/package_tracker.ts)                                           |
+| [Parallelizing work](README.md#parallelizing-work)                                                                      | Execute a list of tasks in parallel and then gather their result. [(code)](src/parallelizework/fan_out_worker.ts)                                                                                                                              |
+| [Turn slow sync tasks into async](README.md#async-data-upload)                                                          | Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [(code)](src/dataupload/client.ts)                                                                                       |
 
 
 ## Durable RPC, Idempotency and Concurrency
@@ -36,6 +52,17 @@ However, if we run the first request again with same reservation ID, we will get
 go run ./src/durablerpc/client --productid 1 --reservationid 1
 ``` 
 Restate deduplicated the request (with the reservation ID as idempotency key) and returned the first response.
+
+## (Delayed) Message Queue
+
+Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.
+
+Files to look at:
+- [Task Submitter](src/queue/client/tasksubmitter.go): schedules tasks via send requests with and idempotency key.
+    - The **send requests** put the tasks in Restate's queue. The task submitter does not wait for the task response.
+    - The **idempotency key** in the header is used by Restate to deduplicate requests.
+    - If a delay is set, the task will be executed later and Restate will track the timer durably, like a **delayed task queue**.
+- [Async Task Worker](src/queue/service/asynctaskworker.go): gets invoked by Restate for each task in the queue.
 
 ## Sagas
 
@@ -130,7 +157,7 @@ The handler calls itself three times in a row after a delay of one day, and then
 
 Restate tracks the timer across failures, and triggers execution.
 
-## Stateful Actors
+## Stateful Actors and Durable State Machines
 
 This example implements a State Machine with a Virtual Object.
 
@@ -212,7 +239,6 @@ echo "executing..."
 ```
 
 </details>
-
 
 ## Event Processing: Transactional Handlers with Durable Side Effects and Timers
 
@@ -317,8 +343,7 @@ Processing events (from Kafka) to update various downstream systems.
     
     </details>
 
-
-## Event Processing: Event Enrichment
+## Event Processing: Event Enrichment / Joins
 
 This example shows an example of:
 - **Event enrichment** over different sources: RPC and Kafka
@@ -401,3 +426,39 @@ The Package Tracker Virtual Object tracks the package details and its location h
     ```
    
     </details>
+    
+    
+## Parallelizing work
+
+This example shows how to use the Restate SDK to **execute a list of tasks in parallel and then gather their result**.
+Also known as fan-out, fan-in.
+
+The example implements a [worker service](src/parallelizework/fanoutworker.go), that takes a task as input.
+It then splits the task into subtasks, executes them in parallel, and then gathers the results.
+
+Restate guarantees and manages the execution of all the subtasks across failures.
+You can run this on FaaS infrastructure, like AWS Lambda, and it will scale automatically.
+
+## Async Data Upload
+
+This example shows how to use the Restate SDK to **kick of a synchronous task and turn it into an asynchronous one if it takes too long**.
+
+The example implements a [data upload service](src/dataupload/service/datauploadservice.go), that creates a bucket, uploads data to it, and then returns the URL.
+
+The [upload client](src/dataupload/client/client.go) does a synchronous request to upload the file, and the server will respond with the URL.
+
+If the upload takes too long, however, the client asks the upload service to send the URL later in an email.
+
+### Running the examples
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `go run ./src/dataupload/service`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+### Demo scenario
+
+Run the upload client with a userId: `go run ./src/dataupload/client`
+
+This will submit an upload workflow to the data upload service.
+The workflow will run only once per ID, so you need to provide a new ID for each run.
+
+Have a look at the logs to see how the execution switches from synchronously waiting to the response to requesting an email:

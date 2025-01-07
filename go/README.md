@@ -2,12 +2,12 @@
 
 ## Basics
 
-| Name                                   | Description                                                                                          |
-|----------------------------------------|------------------------------------------------------------------------------------------------------|
-| [Services - Durable Execution](basics) | Making code resilient to failures via automatic retries and recovery of previously finished actions. |
-| [Durable Building Blocks](basics) | Restate turns familiar programming constructs into recoverable, distributed building blocks. Discover what you can do with the SDK. |
-| [Virtual Objects](basics)              | Stateful services with access to long-lasting, consistent K/V state.                                 |
-| [Workflows](basics)                    | Durable sequences of steps that can be queried, signaled and awaited.                                |
+| Name                                                             | Description                                                                                          |
+|------------------------------------------------------------------|------------------------------------------------------------------------------------------------------|
+| [Services - Durable Execution](basics/part0/durableexecution.go) | Making code resilient to failures via automatic retries and recovery of previously finished actions. |
+| [Durable Building Blocks](basics/part1/buildingblocks.go)        | Restate turns familiar programming constructs into recoverable, distributed building blocks. Discover what you can do with the SDK. |
+| [Virtual Objects](basics/part3/virtualobjects.go)                | Stateful services with access to long-lasting, consistent K/V state.                                 |
+| [Workflows](basics/part2/workflows.go)                           | Durable sequences of steps that can be queried, signaled and awaited.                                |
 
 ## Use Cases and Patterns
 
