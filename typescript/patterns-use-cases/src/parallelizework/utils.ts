@@ -12,6 +12,6 @@ export async function split(task: Task): Promise<SubTask[]> {
   return [];
 }
 
-export async function aggregate(packages: SubTaskResult[]): Promise<Result> {
+export async function aggregate(subResults: SubTaskResult[]): Promise<Result> {
   return {};
 }

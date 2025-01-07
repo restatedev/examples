@@ -3,17 +3,17 @@ import {ObjectContext} from "@restatedev/restate-sdk";
 
 /**
  * The product service is deployed somewhere as a Restate application.
- * We just need its type definition for the client here.
+ * It is a virtual object that makes sure only one reservation is made concurrently.
  */
 const productService = restate.object({
     name: "product",
     handlers: {
         reserve: async (ctx: ObjectContext) => {
             if(await ctx.get("reserved")) {
-                console.log("Product already reserved", ctx.key);
+                console.log("Product already reserved");
                 return false;
             }
-            console.log("Reserving product", ctx.key);
+            console.log("Reserving product");
             ctx.set("reserved", true)
             return true;
         },

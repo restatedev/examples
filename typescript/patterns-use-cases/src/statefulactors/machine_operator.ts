@@ -25,6 +25,7 @@ const machineOperator = restate.object({
       }
 
       // Bringing up a machine is a slow process that frequently crashes
+      // Any other requests to this Virtual Object will be enqueued until this handler is done
       await bringUpMachine(ctx, machineId);
       ctx.set("status", Status.UP);
 
@@ -40,6 +41,7 @@ const machineOperator = restate.object({
       }
 
       // Tearing down a machine is a slow process that frequently crashes
+      // Any other requests to this Virtual Object will be enqueued until this handler is done
       await tearDownMachine(ctx, machineId);
       ctx.set("status", Status.DOWN);
 

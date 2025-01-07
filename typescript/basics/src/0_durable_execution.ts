@@ -6,29 +6,32 @@ import {
   createSubscription,
 } from "./utils/stubs";
 
-// Restate lets you implement resilient applications.
-// Restate ensures handler code runs to completion despite failures:
+// Restate helps you implement resilient applications:
 //  - Automatic retries
-//  - Restate tracks the progress of execution, and prevents re-execution of completed work on retries
-//  - Regular code and control flow, no custom DSLs
-
+//  - Tracking progress of execution and preventing re-execution of completed work on retries
+//  - Providing durable building blocks like timers, promises, and messaging: recoverable and revivable anywhere
+//
 // Applications consist of services with handlers that can be called over HTTP or Kafka.
+// The SDK lets you implement handlers with regular code and control flow, no custom DSLs.
+// Whenever a handler uses the Restate Context, an event gets persisted in Restate's log.
+// After a failure, this log gets replayed to recover the state of the handler.
+
 const subscriptionService = restate.service({
     name: "SubscriptionService",
     // Handlers can be called over HTTP at http://restate:8080/ServiceName/handlerName
     // Restate persists HTTP requests to this handler and manages execution.
     handlers: {
         add: async (ctx: restate.Context, req: SubscriptionRequest) => {
-            // Stable idempotency key: Restate persists the result of
-            // all `ctx` actions and recovers them after failures
+            // Restate persists the result of all `ctx` actions and recovers them after failures
+            // For example, generate a stable idempotency key:
             const paymentId = ctx.rand.uuidv4();
 
-            // Retried in case of timeouts, API downtime, etc.
+            // Failed actions get retried in case of timeouts, API downtime, etc.
             const payRef = await ctx.run(() =>
                 createRecurringPayment(req.creditCard, paymentId)
             );
 
-            // Persists successful subscriptions and skip them on retries
+            // Restate persists successful actions and skip them on retries
             for (const subscription of req.subscriptions) {
                 await ctx.run(() =>
                     createSubscription(req.userId, subscription, payRef)

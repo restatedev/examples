@@ -2,21 +2,22 @@
 
 Common tasks and patterns implemented with Restate:
 
-| Category         | Use case / Name         |                                                     |                                                                                                 | Difficulty   | Description                                                                                                 |
-|------------------|-------------------------|-----------------------------------------------------|-------------------------------------------------------------------------------------------------|--------------|-------------------------------------------------------------------------------------------------------------|
-| Microservices    | Durable RPC             | [code](src/durablerpc/express_app.ts)          | [README](#microservices-durable-rpc)                                                            | Basic        | Restate persists requests and makes sure they execute exactly-once.                                         |
-| Microservices    | Sagas                   | [code](src/sagas/booking_workflow.ts)               | [README](#microservices-sagas)                                                                  | Basic        | Preserve consistency by tracking undo actions and running them when code fails halfway through.             |
-| Microservices    | Stateful Actors         | [code](src/statefulactors/machine_operator.ts)      | [README](#microservices-stateful-actors)                                                        | Basic        | State machine with a set of transitions, built as a Restate Virtual Object for automatic state persistence. |
-| Microservices    | Payment state machines  | [code](src/statemachinepayments/payment_service.ts) | [README](#microservices-payment-state-machine)                                                  | Advanced     | State machine example that tracks a payment process, ensuring consistent processing and cancellations.      |
-| Async tasks      | (Delayed) Task Queue    | [code](src/queue/task_submitter.ts)                 | [README](#async-tasks-delayed-tasks-queue)                                                      | Basic        | Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.          |
-| Async tasks      | Parallelizing work      | [code](src/parallelizework/fan_out_worker.ts)       | [README](#async-tasks-parallelizing-work)                                                       | Intermediate | Execute a list of tasks in parallel and then gather their result.                                           |
-| Async tasks      | Slow async data upload  | [code](src/dataupload/client.ts)                    | [README](#async-tasks-async-data-upload)                                                        | Intermediate | Kick of a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long.    |
-| Async tasks      | Payments: async signals | [code](src/signalspayments/payment_service.ts)      | [README](#async-tasks-payment-signals---combining-sync-and-async-webhook-responses-from-stripe) | Advanced     | Handling async payment callbacks for slow payments, with Stripe.                                            |
-| Event processing | Transactional handlers  | [code](src/eventtransactions/user_feed.ts)          | [README](#event-processing-transactional-handlers-with-durable-side-effects-and-timers)         | Basic        | Processing events (from Kafka) to update various downstream systems in a transactional way.                 |
-| Event processing | Enriching streams       | [code](src/eventenrichment/package_tracker.ts)      | [README](#event-processing-event-enrichment)                                                    | Basic        | Stateful functions/actors connected to Kafka and callable over RPC.                                         |
-| Patterns         | Durable Promises        | [code](durablepromise)                              | [README](#pattern-durable-promise)                                                              | Advanced     | Implementation of Promises/Futures that are durable across processes and failures.                          |
-| Patterns         | Priority Queue          | [code](priorityqueue)                               | [README](#pattern-priority-queue)                                                               | Advanced     | Example of implementing a priority queue to manage task execution order.                                    |
-
+| Use case / Pattern                                     |                                                         |                                                                                                        | Difficulty   | Description                                                                                                                                                                                    |
+|--------------------------------------------------------|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------|--------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Durable RPC, Idempotency and Concurrency               | [code](src/durablerpc/express_app.ts)                   | [README](README.md#durable-rpc-idempotency-and-concurrency)                                            | Basic        | Use the programmatic clients to invoke Restate handlers. Add idempotency keys for deduplication. And limit concurrency via Virtual Objects.                                                    |
+| (Delayed) Message Queue                                | [code](src/queue/task_submitter.ts)                     | [README](README.md#delayed-message-queue)                                                              | Basic        | Use Restate as a queue. Send a (delayed) event to a handler. Optionally, retrieve the response later.                                                                                          |
+| Sagas                                                  | [code](src/sagas/booking_workflow.ts)                   | [README](README.md#sagas)                                                                              | Basic        | Preserve consistency by tracking undo actions and running them when code fails halfway through. Restate guarantees completion.                                                                 |
+| Webhook Event Processing                               | [code](src/webhookcallbacks/webhook_callback_router.ts) | [README](#durable-webhook-event-processing)                                                           | Basic        | Point webhook callbacks to a Restate handler for durable event processing.   |
+| Scheduling Tasks                                       | [code](src/schedulingtasks/payment_reminders.ts)        | [README](#scheduling-tasks-and-durable-webhooks)                                                       | Basic        | Use Restate as scheduler. Schedule tasks for later and ensure the task is triggered and executed. |
+| Stateful Actors and Durable State Machines             | [code](src/statefulactors/machine_operator.ts)          | [README](README.md#stateful-actors-and-durable-state-machines)                                         | Basic        | Stateful Actor representing a machine in our factory. The handlers bring the machine up and down and track the state transitions, built as a Restate Virtual Object for automatic state persistence. |
+| Event processing: Transactional handlers               | [code](src/eventtransactions/user_feed.ts)              | [README](README.md#event-processing-transactional-handlers-with-durable-side-effects-and-timers)       | Basic        | Processing events (from Kafka) to update various downstream systems in a transactional way. With durable side effects and timers.                                                              |
+| Event processing: Enriching streams                    | [code](src/eventenrichment/package_tracker.ts)          | [README](README.md#event-processing-event-enrichment)                                                  | Basic        | Stateful functions/actors connected to Kafka and callable over RPC.                                                                                                                            |
+| Parallelizing work                                     | [code](src/parallelizework/fan_out_worker.ts)           | [README](README.md#parallelizing-work)                                                                 | Intermediate | Execute a list of tasks in parallel and then gather their result.                                                                                                                              |
+| Turn slow sync tasks into async                        | [code](src/dataupload/client.ts)                        | [README](README.md#async-data-upload)                                                                  | Intermediate | Kick of a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long.                                                                                       |
+| Payment state machines                                 | [code](src/statemachinepayments/payment_service.ts)     | [README](README.md#payment-state-machine)                                                              | Advanced     | State machine example that tracks a payment process, ensuring consistent processing and cancellations.                                                                                         |
+| Payments: combining sync responses and async callbacks | [code](src/signalspayments/payment_service.ts)          | [README](README.md#payment-signals---combining-sync-responses-and-async-webhook-callbacks-from-stripe) | Advanced     | Handling async payment callbacks for slow payments, with Stripe.                                                                                                                               |
+| Patterns: Durable Promises                             | [code](durablepromise)                                  | [README](README.md#pattern-durable-promises)                                                           | Advanced     | Custom implementation of Promises/Futures that are durable across processes and failures.                                                                                                      |
+| Patterns: Priority Queue                               | [code](priorityqueue)                                   | [README](README.md#pattern-priority-queue)                                                             | Advanced     | Example of implementing a priority queue to manage task execution order.                                                                                                                       |
 
 First, install the dependencies:
 
@@ -24,7 +25,7 @@ First, install the dependencies:
 npm install
 ``` 
 
-## Microservices: Durable RPC
+## Durable RPC, Idempotency and Concurrency
 
 This example shows an example of:
 - **Durable RPC**: once a request has reached Restate, it is guaranteed to be processed
@@ -37,7 +38,43 @@ The example shows a [client](src/durablerpc/express_app.ts) that receives produc
 The [Product service](src/durablerpc/product_service.ts) is a Restate service that durably processes the reservation requests and deduplicates them.
 Each product can be reserved only once.
 
-## Microservices: Sagas
+### Running the example
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `npx tsx watch ./src/durablerpc/product_service.ts`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+4. Start the Express app: `npx tsx watch ./src/durablerpc/express_app.ts`
+
+### Demo scenario
+Send a request to the Express app to reserve a product:
+```shell
+curl -X POST localhost:5000/reserve/product1/reservation1
+```
+The response will be `true`.
+
+Let's change the reservation ID and run the request again:
+```shell
+curl -X POST localhost:5050/reserve/product1/reservation2
+```
+This will give us `false` because this product is already reserved, so we can't reserve it again.
+
+However, if we run the first request again with same reservation ID, we will get `true` again:
+```shell
+curl -X POST localhost:5050/reserve/product1/reservation1
+``` 
+Restate deduplicated the request (with the reservation ID as idempotency key) and returned the first response.
+
+## (Delayed) Message Queue
+
+Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.
+
+Files to look at:
+- [Task Submitter](src/queue/task_submitter.ts): schedules tasks via send requests with and idempotency key.
+    - The **send requests** put the tasks in Restate's queue. The task submitter does not wait for the task response.
+    - The **idempotency key** in the header is used by Restate to deduplicate requests.
+    - If a delay is set, the task will be executed later and Restate will track the timer durably, like a **delayed task queue**.
+- [Async Task Worker](src/queue/async_task_worker.ts): gets invoked by Restate for each task in the queue.
+
+## Sagas
 
 An example of a trip reservation workflow, using the saga pattern to undo previous steps in case of an error.
 
@@ -102,7 +139,23 @@ Flight 51e219f8-eb34-4384-a5ff-88607e89c220 cancelled
 ... rest of trace ...
 ```
 
-## Microservices: Stateful Actors
+## Durable Webhook Event Processing
+
+This example processes webhook callbacks from a payment provider.
+Restate handlers can be used as the target for webhook callbacks.
+This turns handlers into durable event processors that ensure the event is processed exactly once.
+You don't need to do anything special!
+
+## Scheduling Tasks 
+This example processes failed payment events from a payment provider.
+The service reminds the customer for 3 days to update their payment details, and otherwise escalates to support.
+
+To schedule the reminders, the handler uses Restate's durable timers and delayed calls.
+The handler calls itself three times in a row after a delay of one day, and then stops the loop and calls another handler.
+
+Restate tracks the timer across failures, and triggers execution. 
+
+## Stateful Actors and Durable State Machines
 
 This example implements a State Machine with a Virtual Object.
 
@@ -172,188 +225,6 @@ A failure happened!
 [restate] [machineOperator/tearDown][inv_174rq2A9bm3T57Pp4C02QnpcQoPPf2PdbX][2024-12-16T10:54:28.529Z] INFO:  Done transitioning b to DOWN
 ```
 
-## Microservices: Payment State Machine
-
-This example shows how to build a reliable payment state machine.
-
-The state machine ensures that payments are processed once, not duplicated,
-can be revoked, and that concurrent payment requests and cancellations sort
-out consistently.
-
-The example illustrates the following aspects:
-
-- Payment requests use a token to identify payments (stripe-style)
-- Restate tracks the status of each payment request by token in internal state.
-- A payment can be cancelled, which prevents it from succeeding later, or rolls it back, if
-  it was already processed.
-- Virtual Object concurrency ensures that requests and cancellations don't produce
-  tricky race conditions.
-- Expiry of tokens is handled through Restate's internal timers.
-
-Despite the relatively few lines of code (no careful synchronization, retries, or other recovery logic),
-this application maintains a high level of consistency in the presence of concurrent external requests
-and failures.
-
-### Running this example
-1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `npx tsx watch ./src/statemachinepayments/payment_service.ts`
-3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
-
-### Demo scenario
-Send some requests:
-
-Make some requests:
-
-- Make a payment. The 'my-payment-id' path segment is the unique id for the payment.
-  For multiple payments, replace this with different IDs each time.
-  ```shell
-  curl -X POST localhost:8080/payments/my-payment-id/makePayment -H 'content-type: application/json' \
-   -d '{  "accountId": "abc", "amount": 100 }'
-  ```
-
-- Cancel a payment
-
-  ```shell
-  curl -X POST localhost:8080/payments/my-payment-id/cancelPayment
-  ```
-
-Feel free to try and break the semantics with a storm of concurrent requests and restart processes
-randomly at some points. Restate will ensure full consistency in all cases.
-
-- Have a look at the state:
-```shell
-restate kv get payments my-payment-id
-```
-```
-🤖 State:
-―――――――――
-                           
- Service  payments 
- Key      my-payment-id
-
- KEY      VALUE                 
- payment  {                     
-            "accountId": "abc", 
-            "amountCents": 100  
-          }                     
- status   "CANCELLED"
-```
-
-## Async Tasks: (Delayed) Tasks Queue
-
-Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.
-
-Files to look at:
-- [Task Submitter](src/queue/task_submitter.ts): schedules tasks via send requests with and idempotency key.
-    - The **send requests** put the tasks in Restate's queue. The task submitter does not wait for the task response.
-    - The **idempotency key** in the header is used by Restate to deduplicate requests.
-    - If a delay is set, the task will be executed later and Restate will track the timer durably, like a **delayed task queue**.
-- [Async Task Worker](src/queue/async_task_worker.ts): gets invoked by Restate for each task in the queue.
-
-## Async Tasks: Parallelizing work
-
-This example shows how to use the Restate SDK to **execute a list of tasks in parallel and then gather their result**.
-Also known as fan-out, fan-in.
-
-The example implements a [worker service](src/parallelizework/fan_out_worker.ts), that takes a task as input.
-It then splits the task into subtasks, executes them in parallel, and then gathers the results.
-
-Restate guarantees and manages the execution of all the subtasks across failures.
-You can run this on FaaS infrastructure, like AWS Lambda, and it will scale automatically.
-
-## Async Tasks: Async Data Upload
-
-This example shows how to use the Restate SDK to **kick of a synchronous task and turn it into an asynchronous one if it takes too long**.
-
-The example implements a [data upload service](src/dataupload/data_upload_service.ts), that creates a bucket, uploads data to it, and then returns the URL.
-
-The [upload client](src/dataupload/client.ts) does a synchronous request to upload the file, and the server will respond with the URL.
-
-If the upload takes too long, however, the client asks the upload service to send the URL later in an email.
-
-### Running the examples
-1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `npx tsx watch ./src/dataupload/data_upload_service.ts`
-3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
-
-### Demo scenario
-
-Run the upload client with a userId: `npx tsx ./src/dataupload/client.ts`
-
-This will submit an upload workflow to the data upload service.
-The workflow will run only once per ID, so you need to provide a new ID for each run.
-
-Have a look at the logs to see how the execution switches from synchronously waiting to the response to requesting an email:
-
-
-## Async Tasks: Payment Signals - Combining Sync and Async (Webhook) Responses from Stripe
-
-This example issues a payment request to Stripe.
-When calling Stripe, the result often comes synchronously as a response API call.
-But sometimes, an immediate answer is not possible, and especially some payment
-methods (like IBAN transfers or Klarna) frequently only return "processing" to notify
-you later via a webhook.
-
-This example combines both paths in a single function that reliably waits for both
-paths, if needed, thus giving you a single long-running synchronous function.
-This is useful, for example, when the payment is processed completely asynchronously,
-like during periodic charging of a subscription.
-
-And because we have a durable execution system that suspends and resumes state
-and promises, we can actually combine this into a single reliably promise/async-function.
-
-### Running the Example
-
-This example works end-to-end with Stripe. You need a Stripe account to run it.
-If you want to run everything locally, you also need a tool like _ngrok_ to forward
-webhooks to your local machine.
-
-1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `npx tsx watch ./src/signalspayments/payment_service.ts`
-3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
-
-4. Create a free Stripe test account. This requires no verification, but you can only work
-   with test data, not make real payments. Good enough for this example.
-
-5. In the [Stripe UI](dashboard.stripe.com), go to ["Developers" -> "API Keys"](https://dashboard.stripe.com/test/apikeys) and copy the _secret key_ (`sk_test_...`).
-   Add it to the [stripe_utils.ts](src/signalspayment/stripe_utils.ts) file. Because this is a dev-only
-   API key, it supports only test data, so it isn't super sensitive.
-
-6. Run launch _ngrok_:
-    1. [Get a free account](dashboard.ngrok.com)
-    2. [Copy your auth token](https://dashboard.ngrok.com/get-started/your-authtoken)
-    3. Download the binary, or launch a docker container. Make it forward HTTP calls to local port `8080`:
-        - `NGROK_AUTHTOKEN=<your token> ngrok http 8080`
-        - or `docker run --rm -it -e NGROK_AUTHTOKEN=<your token> --network host ngrok/ngrok http 8080` (on Linux command).
-          Copy the public URL that ngrok shows you: `https://<some random numbers>.ngrok-free.app`
-
-7. Go to the Stripe UI and [create a webhook](https://dashboard.stripe.com/test/webhooks)
-    - Put the ngrok public URL + `/payments/processWebhook` as the webhook URL (you need to update this whenever you stop/start ngrok).
-      Example: `https://<some random numbers>.ngrok-free.app/payments/processWebhook`
-    - Select all _"Payment Intent"_ event types.
-
-8. Put the webhook secret (`whsec_...`) to the [stripe_utils.ts](./src/signalspayments/utils/stripe_utils.ts) file.
-
-Use as test data `pm_card_visa` for a successful payment and `pm_card_visa_chargeDeclined` for a declined payment.
-Because the test data rarely triggers an async response, this example's tools can mimic that
-if you add `"delayedStatus": true` to the request.
-
-```shell
-curl localhost:8080/payments/processPayment -H 'content-type: application/json' -d '{
-        "paymentMethodId": "pm_card_visa",
-        "amount": 109,
-        "delayedStatus": true
-}'
-```
-
-A few notes:
-* You would usually submit payment calls through Restate also with an idempotency token,
-  like: ` -H 'idempotency-key: my-id-token'`
-* The webhook setup with ngrok is not trivial and can easily be wrong. You might end up with
-  some payments waiting for the webhooks. You can use the CLI to cancel them:
-  `restate inv list` and `restate inv cancel <invocation_id>`.
-* Here is an opportunity for the SAGAs pattern to cancel payments in that case.
-
 ## Event Processing: Transactional Handlers with Durable Side Effects and Timers
 
 Processing events (from Kafka) to update various downstream systems.
@@ -385,7 +256,7 @@ curl localhost:9070/subscriptions -H 'content-type: application/json' \
 }'
 ```
 
-## Demo scenario
+### Demo scenario
 
 Start a Kafka producer and send some messages to the `social-media-posts` topic:
 ```shell
@@ -508,6 +379,176 @@ You can see how the state was enriched by the initial RPC event and the subseque
                 }  
 ```
 
+## Parallelizing work
+
+This example shows how to use the Restate SDK to **execute a list of tasks in parallel and then gather their result**.
+Also known as fan-out, fan-in.
+
+The example implements a [worker service](src/parallelizework/fan_out_worker.ts), that takes a task as input.
+It then splits the task into subtasks, executes them in parallel, and then gathers the results.
+
+Restate guarantees and manages the execution of all the subtasks across failures.
+You can run this on FaaS infrastructure, like AWS Lambda, and it will scale automatically.
+
+## Async Data Upload
+
+This example shows how to use the Restate SDK to **kick of a synchronous task and turn it into an asynchronous one if it takes too long**.
+
+The example implements a [data upload service](src/dataupload/data_upload_service.ts), that creates a bucket, uploads data to it, and then returns the URL.
+
+The [upload client](src/dataupload/client.ts) does a synchronous request to upload the file, and the server will respond with the URL.
+
+If the upload takes too long, however, the client asks the upload service to send the URL later in an email.
+
+### Running the examples
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `npx tsx watch ./src/dataupload/data_upload_service.ts`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+### Demo scenario
+
+Run the upload client with a userId: `npx tsx ./src/dataupload/client.ts`
+
+This will submit an upload workflow to the data upload service.
+The workflow will run only once per ID, so you need to provide a new ID for each run.
+
+Have a look at the logs to see how the execution switches from synchronously waiting to the response to requesting an email:
+
+## Payment State Machine
+
+This example shows how to build a reliable payment state machine.
+
+The state machine ensures that payments are processed once, not duplicated,
+can be revoked, and that concurrent payment requests and cancellations sort
+out consistently.
+
+The example illustrates the following aspects:
+
+- Payment requests use a token to identify payments (stripe-style)
+- Restate tracks the status of each payment request by token in internal state.
+- A payment can be cancelled, which prevents it from succeeding later, or rolls it back, if
+  it was already processed.
+- Virtual Object concurrency ensures that requests and cancellations don't produce
+  tricky race conditions.
+- Expiry of tokens is handled through Restate's internal timers.
+
+Despite the relatively few lines of code (no careful synchronization, retries, or other recovery logic),
+this application maintains a high level of consistency in the presence of concurrent external requests
+and failures.
+
+### Running this example
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `npx tsx watch ./src/statemachinepayments/payment_service.ts`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+### Demo scenario
+Send some requests:
+
+Make some requests:
+
+- Make a payment. The 'my-payment-id' path segment is the unique id for the payment.
+  For multiple payments, replace this with different IDs each time.
+  ```shell
+  curl -X POST localhost:8080/payments/my-payment-id/makePayment -H 'content-type: application/json' \
+   -d '{  "accountId": "abc", "amount": 100 }'
+  ```
+
+- Cancel a payment
+
+  ```shell
+  curl -X POST localhost:8080/payments/my-payment-id/cancelPayment
+  ```
+
+Feel free to try and break the semantics with a storm of concurrent requests and restart processes
+randomly at some points. Restate will ensure full consistency in all cases.
+
+- Have a look at the state:
+```shell
+restate kv get payments my-payment-id
+```
+```
+🤖 State:
+―――――――――
+                           
+ Service  payments 
+ Key      my-payment-id
+
+ KEY      VALUE                 
+ payment  {                     
+            "accountId": "abc", 
+            "amountCents": 100  
+          }                     
+ status   "CANCELLED"
+```
+
+## Payment Signals - Combining Sync Responses and Async Webhook Callbacks from Stripe
+
+This example issues a payment request to Stripe.
+When calling Stripe, the result often comes synchronously as a response API call.
+But sometimes, an immediate answer is not possible, and especially some payment
+methods (like IBAN transfers or Klarna) frequently only return "processing" to notify
+you later via a webhook.
+
+This example combines both paths in a single function that reliably waits for both
+paths, if needed, thus giving you a single long-running synchronous function.
+This is useful, for example, when the payment is processed completely asynchronously,
+like during periodic charging of a subscription.
+
+And because we have a durable execution system that suspends and resumes state
+and promises, we can actually combine this into a single reliably promise/async-function.
+
+### Running the Example
+
+This example works end-to-end with Stripe. You need a Stripe account to run it.
+If you want to run everything locally, you also need a tool like _ngrok_ to forward
+webhooks to your local machine.
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `npx tsx watch ./src/signalspayments/payment_service.ts`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+4. Create a free Stripe test account. This requires no verification, but you can only work
+   with test data, not make real payments. Good enough for this example.
+
+5. In the [Stripe UI](dashboard.stripe.com), go to ["Developers" -> "API Keys"](https://dashboard.stripe.com/test/apikeys) and copy the _secret key_ (`sk_test_...`).
+   Add it to the [stripe_utils.ts](src/signalspayment/stripe_utils.ts) file. Because this is a dev-only
+   API key, it supports only test data, so it isn't super sensitive.
+
+6. Run launch _ngrok_:
+    1. [Get a free account](dashboard.ngrok.com)
+    2. [Copy your auth token](https://dashboard.ngrok.com/get-started/your-authtoken)
+    3. Download the binary, or launch a docker container. Make it forward HTTP calls to local port `8080`:
+        - `NGROK_AUTHTOKEN=<your token> ngrok http 8080`
+        - or `docker run --rm -it -e NGROK_AUTHTOKEN=<your token> --network host ngrok/ngrok http 8080` (on Linux command).
+          Copy the public URL that ngrok shows you: `https://<some random numbers>.ngrok-free.app`
+
+7. Go to the Stripe UI and [create a webhook](https://dashboard.stripe.com/test/webhooks)
+    - Put the ngrok public URL + `/payments/processWebhook` as the webhook URL (you need to update this whenever you stop/start ngrok).
+      Example: `https://<some random numbers>.ngrok-free.app/payments/processWebhook`
+    - Select all _"Payment Intent"_ event types.
+
+8. Put the webhook secret (`whsec_...`) to the [stripe_utils.ts](./src/signalspayments/utils/stripe_utils.ts) file.
+
+Use as test data `pm_card_visa` for a successful payment and `pm_card_visa_chargeDeclined` for a declined payment.
+Because the test data rarely triggers an async response, this example's tools can mimic that
+if you add `"delayedStatus": true` to the request.
+
+```shell
+curl localhost:8080/payments/processPayment -H 'content-type: application/json' -d '{
+        "paymentMethodId": "pm_card_visa",
+        "amount": 109,
+        "delayedStatus": true
+}'
+```
+
+A few notes:
+* You would usually submit payment calls through Restate also with an idempotency token,
+  like: ` -H 'idempotency-key: my-id-token'`
+* The webhook setup with ngrok is not trivial and can easily be wrong. You might end up with
+  some payments waiting for the webhooks. You can use the CLI to cancel them:
+  `restate inv list` and `restate inv cancel <invocation_id>`.
+* Here is an opportunity for the SAGAs pattern to cancel payments in that case.
+
 ## Pattern: Durable Promises
 
 The Durable Promises implemented in this example work like regular futures/promises,
@@ -573,7 +614,7 @@ The Durable Promises are a simple application implemented on top of Restate, mak
 use of Restate's Virtual Objects. You can use this simple implementation and add it
 to your application or infra as a self-contained piece.
 
-### Running
+### Running the example 
 
 * Start Restate in one shell: `restate-server`
 * Start the Durable Promises implementation in another shell: `npx tsx watch ./src/durablepromise/dp/runner.ts 9080`
