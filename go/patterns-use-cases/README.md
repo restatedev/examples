@@ -2,19 +2,16 @@
 
 Common tasks and patterns implemented with Restate:
 
-| Use case / Pattern                                                                                                      | Description                                                                                                     |
-|-------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
-| [Durable RPC, Idempotency & Concurrency](README.md#durable-rpc-idempotency-and-concurrency)                             | Use programmatic clients to call Restate handlers. Add idempotency keys for deduplication. [(code)](src/durablerpc/express_app.ts)                      |
-| [(Delayed) Message Queue](README.md#delayed-message-queue)                                                              | Restate as a queue: Send (delayed) events to handlers. Optionally, retrieve the response later. [(code)](src/queue/task_submitter.ts)                 |
-| [Sagas](README.md#sagas)                                                                                               | Preserve consistency by tracking undo actions and running them when code fails halfway through. [(code)](src/sagas/booking_workflow.ts)                 |
-| [Webhook Callbacks](#durable-webhook-event-processing)                                                                 | Point webhook callbacks to a Restate handler for durable event processing. [(code)](src/webhookcallbacks/webhook_callback_router.ts)                                    |
-| [Scheduling Tasks](#scheduling-tasks)                                                             | Restate as scheduler: Schedule tasks for later and ensure the task is triggered and executed. [(code)](src/schedulingtasks/payment_reminders.ts)                 |
-| [Stateful Actors and State Machines](README.md#stateful-actors-and-durable-state-machines)                             | Stateful Actor representing a machine in our factory. Track state transitions with automatic state persistence. [(code)](src/statefulactors/machine_operator.ts) |
-| [Transactional Event Processing](README.md#event-processing-transactional-handlers-with-durable-side-effects-and-timers)| Process events from Kafka to update various downstream systems in a transactional way. [(code)](src/eventtransactions/user_feed.ts)                        |
-| [Event enrichment / Joins](README.md#event-processing-event-enrichment)                                                 | Stateful functions/actors connected to Kafka and callable over RPC. [(code)](src/eventenrichment/package_tracker.ts)                                           |
-| [Parallelizing work](README.md#parallelizing-work)                                                                      | Execute a list of tasks in parallel and then gather their result. [(code)](src/parallelizework/fan_out_worker.ts)                                                                                                                              |
-| [Turn slow sync tasks into async](README.md#async-data-upload)                                                          | Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [(code)](src/dataupload/client.ts)                                                                                       |
-
+- **[Durable RPC, Idempotency & Concurrency](README.md#durable-rpc-idempotency-and-concurrency)**: Use programmatic clients to call Restate handlers. Add idempotency keys for deduplication. [(code)](src/durablerpc/client/client.go)
+- **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Restate as a queue: Send (delayed) events to handlers. Optionally, retrieve the response later. [(code)](src/queue/client/tasksubmitter.go)
+- **[Sagas](README.md#sagas)**: Preserve consistency by tracking undo actions and running them when code fails halfway through. [(code)](src/sagas/bookingworkflow.go)
+- **[Webhook Callbacks](README.md#durable-webhook-event-processing)**: Point webhook callbacks to a Restate handler for durable event processing. [(code)](src/webhookcallbacks/callbackrouter.go)
+- **[Scheduling Tasks](README.md#scheduling-tasks)**: Restate as scheduler: Schedule tasks for later and ensure the task is triggered and executed. [(code)](src/schedulingtasks/paymentreminders.go)
+- **[Stateful Actors and State Machines](README.md#stateful-actors-and-durable-state-machines)**: Stateful Actor representing a machine in our factory. Track state transitions with automatic state persistence. [(code)](src/statefulactors/machineoperator.go)
+- **[Transactional Event Processing](README.md#event-processing-transactional-handlers-with-durable-side-effects-and-timers)**: Process events from Kafka to update various downstream systems in a transactional way. [(code)](src/eventtransactions/userfeed.go)
+- **[Event enrichment / Joins](README.md#event-processing-event-enrichment)**: Stateful functions/actors connected to Kafka and callable over RPC. [(code)](src/eventenrichment/packagetracker.go)
+- **[Parallelizing work](README.md#parallelizing-work)**: Execute a list of tasks in parallel and then gather their result. [(code)](src/parallelizework/fanoutworker.go)
+- **[Turn slow sync tasks into async](README.md#async-data-upload)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [(code)](src/dataupload/client/client.go)
 
 ## Durable RPC, Idempotency and Concurrency
 
