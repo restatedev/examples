@@ -9,10 +9,15 @@ about how they work and how they can be run.
 
 ### Examples
 
-* **[Durable Execution](src/1_durable_execution.ts):** Running code cleanly
+* **[Durable Execution](src/0_durable_execution.ts):** Running code cleanly
   to the end in the presence of failures. Automatic retries and recovery of previously
   finished actions. The example applies creates a subscription to movie streaming services
   by first creating a recurring payment and then adding the subscriptions.
+
+* **[Building blocks](src/1_building_blocks.ts):** Restate gives you a durable version
+  of common building blocks like queues, promises, RPC, state, and timers.
+  This example shows a handler which processes payment failure events from a payment provider.
+  The handler reminds the customer for 3 days to update their payment details, and otherwise cancels the subscriptions.
 
 * **[Workflows](src/2_workflows.ts):** Workflows are durable execution tasks that can
   be submitted and awaited. They have an identity and can be signaled and queried
@@ -22,11 +27,6 @@ about how they work and how they can be run.
 * **[Virtual Objects](src/3_virtual_objects.ts):** Stateful serverless objects
   to manage durable consistent state and state-manipulating logic.
 
-* **[Building blocks](src/4_durable_building_blocks.ts):** Restate gives you a durable version 
-  of common building blocks like queues, promises, RPC, state, and timers. 
-  This example shows a handler which processes payment failure events from a payment provider. 
-  The handler reminds the customer for 3 days to update their payment details, and otherwise cancels the subscriptions.  
-
 ### Running the examples
 
 1. Make sure you have installed the dependencies: `npm install`.
@@ -34,10 +34,10 @@ about how they work and how they can be run.
 2. Start Restate Server in a separate shell: `npx restate-server`
 
 3. Start the relevant example:
-   - `npm run example-1` for the Durable Execution example
+   - `npm run example-0` for the Durable Execution example
+   - The building blocks example is not runnable and more like a reference
    - `npm run example-2` for the Workflows example
    - `npm run example-3` for the Virtual Objects example
-   - `npm run example-4` for the Durable Building Blocks example
 
 4. Register the example at Restate server by calling
    `npx restate -y deployment register --force "localhost:9080"`.
