@@ -114,6 +114,22 @@ Have a look at the logs to see the cancellations of the flight and car booking i
 ```
 </details>
 
+## Durable Webhook Event Processing
+
+This example processes webhook callbacks from a payment provider.
+Restate handlers can be used as the target for webhook callbacks.
+This turns handlers into durable event processors that ensure the event is processed exactly once.
+You don't need to do anything special!
+
+## Scheduling Tasks
+This example processes failed payment events from a payment provider.
+The service reminds the customer for 3 days to update their payment details, and otherwise escalates to support.
+
+To schedule the reminders, the handler uses Restate's durable timers and delayed calls.
+The handler calls itself three times in a row after a delay of one day, and then stops the loop and calls another handler.
+
+Restate tracks the timer across failures, and triggers execution.
+
 ## Stateful Actors
 
 This example implements a State Machine with a Virtual Object.

@@ -20,7 +20,7 @@ const RESTATE_URL = "http://localhost:8080"
 // workflow to send the upload url via email instead.
 
 func upload(id string, email string) error {
-	slog.Info(fmt.Sprintf("Start upload for %s", id))
+	slog.Info("Start upload for " + id)
 
 	client := &http.Client{Timeout: 5 * time.Second}
 
@@ -50,7 +50,7 @@ func upload(id string, email string) error {
 	}
 
 	// ... process result directly ...
-	slog.Info(fmt.Sprintf("Fast upload: URL was %s", string(body)))
+	slog.Info("Fast upload: URL was " + string(body))
 	return nil
 }
 
