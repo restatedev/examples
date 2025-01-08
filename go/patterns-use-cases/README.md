@@ -1,5 +1,7 @@
 # Go Patterns and Use Cases
 
+Common tasks and patterns implemented with Restate:
+
 #### Communication
 - **[Durable RPC, Idempotency & Concurrency](README.md#durable-rpc-idempotency-and-concurrency)**: Use programmatic clients to call Restate handlers. Add idempotency keys for deduplication. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/durablerpc/client/client.go)
 - **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Restate as a queue: Send (delayed) events to handlers. Optionally, retrieve the response later. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/queue/client/tasksubmitter.go)
@@ -15,12 +17,12 @@
 - **[Parallelizing Work](README.md#parallelizing-work)**: Execute a list of tasks in parallel and then gather their result. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/parallelizework/fanoutworker.go)
 
 #### Event processing
-- **[Event Enrichment / Joins](README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventenrichment/packagetracker.go)
 - **[Transactional Event Processing](README.md#transactional-event-processing)**: Process events from Kafka to update various downstream systems in a transactional way. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventtransactions/userfeed.go)
+- **[Event Enrichment / Joins](README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventenrichment/packagetracker.go)
 
 ## Durable RPC, Idempotency and Concurrency
 
-This example shows an example of:
+This example shows:
 - **Durable RPC**: once a request has reached Restate, it is guaranteed to be processed
 - **Exactly-once processing**: Ensure that duplicate requests are not processed multiple times via idempotency keys
 
@@ -74,6 +76,16 @@ Restate handlers can be used as the target for webhook callbacks.
 This turns handlers into durable event processors that ensure the event is processed exactly once.
 
 You don't need to do anything special!
+
+## Scheduling Tasks
+This example processes failed payment events from a payment provider.
+The service reminds the customer for 3 days to update their payment details, and otherwise escalates to support.
+
+To schedule the reminders, the handler uses Restate's durable timers and delayed calls.
+The handler calls itself three times in a row after a delay of one day, and then stops the loop and calls another handler.
+
+Restate tracks the timer across failures, and triggers execution.
+
 
 ## Convert Sync Tasks to Async
 
@@ -166,6 +178,7 @@ Have a look at the logs to see the cancellations of the flight and car booking i
 2025/01/06 16:16:02 INFO Refunded payment: e4eac4a9-47c9-4087-9502-cb0fff1218c6
 2025/01/06 16:16:02 INFO Invocation completed successfully method=BookingWorkflow/Run invocationID=inv_17l9ZLwBY3bz6HEIybYB6Rh9SbV6khuc0N
 ```
+
 </details>
 </details>
 
@@ -253,14 +266,6 @@ echo "executing..."
 </details>
 </details>
 
-## Scheduling Tasks
-This example processes failed payment events from a payment provider.
-The service reminds the customer for 3 days to update their payment details, and otherwise escalates to support.
-
-To schedule the reminders, the handler uses Restate's durable timers and delayed calls.
-The handler calls itself three times in a row after a delay of one day, and then stops the loop and calls another handler.
-
-Restate tracks the timer across failures, and triggers execution.
 
 ## Parallelizing work
 
