@@ -27,8 +27,8 @@ const paymentTracker = restate.object({
             }
 
             // Otherwise, sent up to 3 reminders (via delayed self calls) and then escalate to the support team
-            const remindersSent = await ctx.get<number>("reminders_count") ?? 0;
-            if (remindersSent >= MAX_REMINDERS) {
+            const remindersCount = await ctx.get<number>("reminders_count") ?? 0;
+            if (remindersCount >= MAX_REMINDERS) {
                 // Escalate to support
                 ctx.objectSendClient(PaymentTracker, ctx.key).escalate(event);
                 ctx.set("status", "FAILED_ESCALATED");
@@ -36,12 +36,12 @@ const paymentTracker = restate.object({
             }
 
             await ctx.run(() =>
-                sendEmail(`Payment failed. Re-execute the payment within ${3 - remindersSent} days.`)
+                sendEmail(`Payment failed. Re-execute the payment within ${3 - remindersCount} days.`)
             );
-            ctx.set("reminders_count", remindersSent + 1);
+            ctx.set("reminders_count", remindersCount + 1);
             ctx.set("status", "FAILED");
 
-            // Schedule the next reminder
+            // DELAYED CALL: Schedule the next reminder
             ctx.objectSendClient(PaymentTracker, ctx.key, {delay: REMINDER_INTERVAL}).remindPaymentFailed(event);
         },
 
@@ -64,17 +64,3 @@ restate
     .endpoint()
     .bind(paymentTracker)
     .listen(9080);
-
-/*
-Check the README to learn how to run Restate.
-Then invoke this function and see in the log how it recovers.
-Each action (e.g. "created recurring payment") is only logged once across all retries.
-Retries did not re-execute the successful operations.
-
-curl localhost:8080/SubscriptionService/add -H 'content-type: application/json' -d \
-'{
-    "userId": "Sam Beckett",
-    "creditCard": "1234-5678-9012-3456",
-    "subscriptions" : ["Netflix", "Disney+", "HBO Max"]
-}'
-*/

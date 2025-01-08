@@ -23,8 +23,8 @@ Common tasks and patterns implemented with Restate:
 - **[Event enrichment / Joins](README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventenrichment/package_tracker.ts)
 
 #### Custom constructs (Advanced)
-- **[Patterns: Durable Promises](README.md#pattern-durable-promises)**: Custom implementation of Promises/Futures that are durable across processes and failures. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](durablepromise)
-- **[Patterns: Priority Queue](README.md#pattern-priority-queue)**: Example of implementing a priority queue to manage task execution order. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](priorityqueue)
+- **[Durable Promises](README.md#durable-promises)**: Custom implementation of Promises/Futures that are durable across processes and failures. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/durablepromise)
+- **[Priority Queue](README.md#priority-queue)**: Example of implementing a priority queue to manage task execution order. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/priorityqueue)
 
 First, install the dependencies:
 
@@ -575,7 +575,7 @@ You can see how the state was enriched by the initial RPC event and the subseque
 </details>
 </details>
 
-## Pattern: Durable Promises
+## Durable Promises
 
 The Durable Promises implemented in this example work like regular futures/promises,
 but are durable cross processes and failures.
@@ -665,7 +665,7 @@ optionally passing `[promise-id] [restateUri]` as parameters.
 
 </details> 
 
-## Pattern: Priority queue
+## Priority queue
 
 An example of implementing your own priority queue using Restate state and awakeables.
 
