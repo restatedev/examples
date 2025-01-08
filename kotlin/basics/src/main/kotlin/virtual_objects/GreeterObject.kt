@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
- *
- * This file is part of the Restate Examples
- * which is released under the MIT license.
- *
- * You can find a copy of the license in the file LICENSE
- * in the root directory of this repository or package or at
- * https://github.com/restatedev/examples/blob/main/LICENSE
- */
 package virtual_objects
 
 import dev.restate.sdk.annotation.Handler
@@ -16,23 +6,31 @@ import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
 import dev.restate.sdk.kotlin.KtStateKey
 import dev.restate.sdk.kotlin.ObjectContext
 
-//
-// Virtual Objects hold state and have methods to interact with the object.
+// Virtual Objects are services that hold K/V state. Its handlers interact with the object state.
 // An object is identified by a unique id - only one object exists per id.
 //
-// Virtual Objects have their state locally accessible without requiring any database
-// connection or lookup. State is exclusive, and atomically committed with the
-// method execution.
+// To guarantee state consistency, only one handler is executed at a time per Virtual Object (ID).
 //
-// Virtual Objects are _Stateful Serverless_ constructs.
+// Handlers are stateless executors.
+// Restate proxies requests to it and attaches the object's state to the request.
+// Virtual Objects then have their K/V state locally accessible without requiring any database
+// connection or lookup. State is exclusive, and atomically committed with the
+// method execution. It is always consistent with the progress of the execution.
+//
+// Virtual Objects are Stateful (Serverless) constructs.
 //
 @VirtualObject
 class GreeterObject {
+
+  companion object {
+    // Reference to the K/V state stored in Restate
+    private val COUNT = KtStateKey.json<Int>("available-drivers")
+  }
+
   @Handler
   suspend fun greet(ctx: ObjectContext, greeting: String): String  {
     // Access the state attached to this object (this 'name')
     // State access and updates are exclusive and consistent with the invocations
-
     val count = ctx.get(COUNT) ?: 0
     val newCount = count + 1
     ctx.set(COUNT, newCount)
@@ -52,7 +50,6 @@ class GreeterObject {
   }
 }
 
-private val COUNT = KtStateKey.json<Int>("available-drivers")
 
 fun main() {
   RestateHttpEndpointBuilder.builder()
@@ -60,9 +57,18 @@ fun main() {
     .buildAndListen()
 }
 
-// See README for details on how to start and connect to Restate.
-// Call this service through HTTP directly the following way:
-// Example1: `curl localhost:8080/GreeterObject/mary/greet -H 'content-type: application/json' -d '"Hi"'`;
-// Example2: `curl localhost:8080/GreeterObject/barack/greet -H 'content-type: application/json' -d '"Hello"'`;
-// Example3: `curl localhost:8080/GreeterObject/mary/ungreet -H 'content-type: application/json' -d ''`;
+/*
+Check the README to learn how to run Restate.
+Then, invoke handlers via HTTP:
+
+curl localhost:8080/GreeterObject/mary/greet -H 'content-type: application/json' -d '"Hi"'
+  --> "Hi mary for the 1-th time."
+
+curl localhost:8080/GreeterObject/barack/greet -H 'content-type: application/json' -d '"Hello"'
+  --> "Hello barack for the 1-th time."
+
+curl localhost:8080/GreeterObject/mary/ungreet -H 'content-type: application/json' -d ''
+  --> "Dear mary, taking one greeting back: 0."
+
+ */
 

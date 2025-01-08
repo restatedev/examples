@@ -1,16 +1,16 @@
-package building_blocks;
+package building_blocks
 
-import dev.restate.sdk.Context;
-import dev.restate.sdk.JsonSerdes;
-import dev.restate.sdk.annotation.Handler;
-import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
-import utils.SubscriptionService;
-
-import java.time.Duration;
-import java.util.UUID;
-
-import static utils.ExampleStubs.chargeBankAccount;
+import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.annotation.Handler
+import dev.restate.sdk.annotation.Service
+import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
+import dev.restate.sdk.kotlin.Context
+import utils.SubscriptionService
+import utils.SubscriptionServiceClient
+import utils.chargeBankAccount
+import java.util.UUID
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.seconds
 
 /*
  * RESTATE's DURABLE BUILDING BLOCKS
@@ -26,54 +26,55 @@ import static utils.ExampleStubs.chargeBankAccount;
  */
 
 @Service
-public class MyService {
+class MyService {
 
     // This handler can be called over HTTP at http://restate:8080/MyService/handlerName
     // Use the context to access Restate's durable building blocks
     @Handler
-    public void run(Context ctx) throws Exception {
+    suspend fun run(ctx: Context) {
         // 1. IDEMPOTENCY: Add an idempotency key to the header of your requests
         // Restate deduplicates calls automatically. Nothing to do here.
 
         // 2. DURABLE RPC: Call other services without manual retry and deduplication logic
         // Restate persists all requests and ensures execution till completion
-        String result = SubscriptionServiceClient.fromContext(ctx, "my-sub-123").create("my-request").await();
+        val result = SubscriptionServiceClient.fromContext(ctx, "my-sub-123").create("my-request").await()
 
         // 3. DURABLE MESSAGING: send (delayed) messages to other services without deploying a message broker
         // Restate persists the timers and triggers execution
-        SubscriptionServiceClient.fromContext(ctx, "my-sub-123").send().create("my-request");
+        SubscriptionServiceClient.fromContext(ctx, "my-sub-123").send().create("my-request")
 
         // 4. DURABLE PROMISES: tracked by Restate, can be moved between processes and survive failures
         // Awakeables: block the workflow until notified by another handler
-        var awakeable = ctx.awakeable(JsonSerdes.STRING);
+        val awakeable = ctx.awakeable<String>()
         // Wait on the promise
         // If the process crashes while waiting, Restate will recover the promise somewhere else
-        String greeting = awakeable.await();
+        val greeting = awakeable.await()
         // Another process can resolve the awakeable via its ID
-        ctx.awakeableHandle(awakeable.id()).resolve(JsonSerdes.STRING, "hello");
+        ctx.awakeableHandle(awakeable.id).resolve("hello")
 
         // 5. DURABLE TIMERS: sleep or wait for a timeout, tracked by Restate and recoverable
         // When this runs on FaaS, the handler suspends and the timer is tracked by Restate
         // Example of durable recoverable sleep
         // If the service crashes two seconds later, Restate will invoke it after another 3 seconds
-        ctx.sleep(Duration.ofSeconds(5));
+        ctx.sleep(5.seconds)
         // Example of waiting on a promise (call/awakeable/...) or a timeout
-        awakeable.await(Duration.ofSeconds(5000));
+        val timeout = ctx.timer(5.seconds)
+        Awaitable.any(awakeable, timeout).await()
         // Example of scheduling a handler for later on
-        SubscriptionServiceClient.fromContext(ctx, "my-sub-123").send(Duration.ofDays(1)).cancel();
+        SubscriptionServiceClient.fromContext(ctx, "my-sub-123").send(1.days).cancel()
 
         // 7. PERSIST RESULTS: avoid re-execution of actions on retries
         // Use this for non-deterministic actions or interaction with APIs, DBs, ...
         // For example, generate idempotency keys that are stable across retries
         // Then use these to call other APIs and let them deduplicate
-        String paymentDeduplicationID = UUID.randomUUID().toString();
-        ctx.run(() -> chargeBankAccount(paymentDeduplicationID, 100));
+        val paymentDeduplicationID = UUID.randomUUID().toString()
+        ctx.runBlock { chargeBankAccount(paymentDeduplicationID, 100) }
     }
+}
 
-    public static void main(String[] args) {
-        RestateHttpEndpointBuilder.builder()
-                .bind(new MyService())
-                .bind(new SubscriptionService())
-                .buildAndListen();
-    }
+fun main() {
+    RestateHttpEndpointBuilder.builder()
+        .bind(MyService())
+        .bind(SubscriptionService())
+        .buildAndListen()
 }

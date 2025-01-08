@@ -9,13 +9,7 @@ data class UserRole(val roleKey: String, val roleDescription: String)
 data class Permission(val permissionKey: String, val setting: String)
 
 @Serializable
-data class UpdateRequest(val userId: String, val role: UserRole, val permissions: List<Permission>)
+data class SubscriptionRequest(val userId: String, val creditCard: String, val subscriptions: List<String>)
 
 @Serializable
 data class User(val email: String, val name: String)
-
-@Serializable
-data class UserProfile(val id: String, val name: String, val email: String)
-
-@Serializable
-data class UserUpdate(val profile: String, val permissions: String, val resources: String)

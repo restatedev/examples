@@ -1,78 +1,74 @@
-/*
- * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
- *
- * This file is part of the Restate Examples for the Node.js/TypeScript SDK,
- * which is released under the MIT license.
- *
- * You can find a copy of the license in the file LICENSE
- * in the root directory of this repository or package or at
- * https://github.com/restatedev/examples/blob/main/LICENSE
- */
 package workflows
 
-import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Shared
-import dev.restate.sdk.annotation.VirtualObject
 import dev.restate.sdk.annotation.Workflow
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
 import dev.restate.sdk.kotlin.*
 import utils.*
 
+// Workflow are a special type of Virtual Object with a run handler that runs once per ID.
+// Workflows are stateful and can be interacted with via queries (getting data out of the workflow)
+// and signals (pushing data to the workflow).
 //
-// A simple workflow for a user signup and email verification.
-//
-//  - the main workflow is in the run() method
-//  - any number of other methods can be added to implement interactions
-//    with the workflow.
-//
-// Workflow instances always have a unique ID that identifies the workflow execution.
-// Each workflow instance (ID) can run only once (to success or failure).
+// Workflows are used to model long-running flows, such as user onboarding, order processing, etc.
+// Workflows have the following handlers:
+//  - Main workflow in run() method
+//  - Additional methods interact with the workflow.
+// Each workflow instance has a unique ID and runs only once (to success or failure).
 //
 @Workflow
 class SignupWorkflow {
+
+  companion object {
+    // References to K/V state and promises stored in Restate
+    private val EMAIL_CLICKED = KtDurablePromiseKey.json<String>("email_clicked")
+    private val ONBOARDING_STATUS = KtStateKey.json<String>("status")
+  }
+
   @Workflow
   suspend fun run(ctx: WorkflowContext, user: User): Boolean {
+    // workflow ID = user ID; workflow runs once per user
+    val userId = ctx.key()
+
     // Durably executed action; write to other system
     ctx.runBlock { createUserEntry(user) }
 
-    // Store some K/V state; can be retrieved from other handlers
-    ctx.set(ONBOARDING_STATUS, "Created user")
-
     // Sent user email with verification link
     val secret = ctx.random().nextUUID().toString()
-    ctx.runBlock { sendEmailWithLink(user.email, secret) }
-    ctx.set(ONBOARDING_STATUS, "Verifying user")
+    ctx.runBlock { sendEmailWithLink(userId, user, secret) }
 
     // Wait until user clicked email verification link
-    // Resolved or rejected by the other handlers
+    // Promise gets resolved or rejected by the other handlers
     val clickSecret: String =
       ctx.promise(EMAIL_CLICKED)
         .awaitable()
         .await()
-    ctx.set(ONBOARDING_STATUS, "Link clicked")
 
     return clickSecret == secret
   }
 
-
+  // --- Other handlers interact with the workflow via queries and signals ---
   @Shared
   suspend fun click(ctx: SharedWorkflowContext, secret: String) {
-    // Resolve the promise with the result secret
+    // Send data to the workflow via a durable promise
     ctx.promiseHandle(EMAIL_CLICKED).resolve(secret)
   }
-
-  // Get the onboarding status of the user
-  @Shared
-  suspend fun getStatus(ctx: SharedWorkflowContext) =
-    ctx.get(ONBOARDING_STATUS) ?: "Unknown"
-
 }
-
-private val EMAIL_CLICKED = KtDurablePromiseKey.json<String>("email_clicked")
-private val ONBOARDING_STATUS = KtStateKey.json<String>("status")
 
 fun main() {
   RestateHttpEndpointBuilder.builder()
     .bind(SignupWorkflow())
     .buildAndListen()
 }
+
+/*
+Check the README to learn how to run Restate.
+- Then, submit the workflow via HTTP:
+  curl localhost:8080/SignupWorkflow/userid1/run/send -H 'content-type: application/json' -d '{ "name": "Bob", "email": "bob@builder.com" }'
+
+- Resolve the email link via:
+  curl localhost:8080/SignupWorkflow/userid1/click -H 'content-type: application/json' -d '{ "secret": "xxx"}'
+
+- Attach back to the workflow to get the result:
+  curl localhost:8080/restate/workflow/SignupWorkflow/userid1/attach
+*/
