@@ -10,10 +10,16 @@
 ## Use Cases and Patterns
 
 #### Communication
-- **[Durable RPC, Idempotency & Concurrency](patterns-use-cases/README.md#durable-rpc-idempotency-and-concurrency)** [<img height="20" width="20" src="https://unpkg.com/simple-icons@v14/icons/github.svg" />](patterns-use-cases/src/durablerpc/client/client.go): Use programmatic clients to call Restate handlers. Add idempotency keys for deduplication. 
-- **[Durable RPC, Idempotency & Concurrency](patterns-use-cases/README.md#durable-rpc-idempotency-and-concurrency)**: Use programmatic clients to call Restate handlers. Add idempotency keys for deduplication. [<img height="20" width="20" src="https://unpkg.com/simple-icons@v14/icons/github.svg" />](patterns-use-cases/src/durablerpc/client/client.go)
-- **[(Delayed) Message Queue](patterns-use-cases/README.md#delayed-message-queue)**: Restate as a queue: Send (delayed) events to handlers. Optionally, retrieve the response later. [<img height="20" width="20" src="https://unpkg.com/simple-icons@v14/icons/github.svg" />](patterns-use-cases/src/queue/client/tasksubmitter.go)
-- **[Webhook Callbacks](patterns-use-cases/README.md#durable-webhook-event-processing)**: Point webhook callbacks to a Restate handler for durable event processing. [<img height="20" width="20" src="https://unpkg.com/simple-icons@v14/icons/github.svg" />](patterns-use-cases/src/webhookcallbacks/callbackrouter.go)
+
+-  [<img height="20" width="20" src="https://unpkg.com/simple-icons@v14/icons/github.svg" />](patterns-use-cases/src/durablerpc/client/client.go) **[Durable RPC, Idempotency & Concurrency](patterns-use-cases/README.md#durable-rpc-idempotency-and-concurrency)**: Use programmatic clients to call Restate handlers. Add idempotency keys for deduplication.
+-  [<img height="20" width="20" src="https://unpkg.com/simple-icons@v14/icons/github.svg" />](patterns-use-cases/src/durablerpc/client/client.go) **[Durable RPC, Idempotency & Concurrency](patterns-use-cases/README.md#durable-rpc-idempotency-and-concurrency)**: Use programmatic clients to call Restate handlers. Add idempotency keys for deduplication.
+-  [<img height="20" width="20" src="https://unpkg.com/simple-icons@v14/icons/github.svg" />](patterns-use-cases/src/durablerpc/client/client.go) **[Durable RPC, Idempotency & Concurrency](patterns-use-cases/README.md#durable-rpc-idempotency-and-concurrency)**: Use programmatic clients to call Restate handlers. Add idempotency keys for deduplication.
+
+[![image](./play-button-svgrepo-com.png)](patterns-use-cases/src/webhookcallbacks/callbackrouter.go)
+- **[(Delayed) Message Queue](patterns-use-cases/README.md#delayed-message-queue)**: Restate as a queue: Send (delayed) events to handlers. Optionally, retrieve the response later. 
+
+[<img height="20" width="20" src="https://unpkg.com/simple-icons@v14/icons/github.svg" />](patterns-use-cases/src/queue/client/tasksubmitter.go)
+- **[Webhook Callbacks](patterns-use-cases/README.md#durable-webhook-event-processing)**: Point webhook callbacks to a Restate handler for durable event processing. 
 - **[Turn slow sync tasks into async](patterns-use-cases/README.md#async-data-upload)**: Kick off a synchronous task (e.g. data upload) and convert it to asynchronous if it takes too long. [<img height="20" width="20" src="https://unpkg.com/simple-icons@v14/icons/github.svg" />](patterns-use-cases/src/dataupload/client/client.go)
 
 #### Common patterns
