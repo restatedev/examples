@@ -8,15 +8,15 @@ RESTATE_URL = "http://localhost:8080"
 def submit_and_await_task(task: TaskOpts):
     idempotency_key = task.id
     print(f"Submitting task with idempotency key: {idempotency_key}")
-    headers = {
-        # use a stable uuid as an idempotency key
-        "idempotency-key": idempotency_key,
-        "Content-Type": "application/json"
-    }
 
     # Submit the task; similar to publishing a message to a queue
     # Restate ensures the task is executed exactly once
     # Optionally set a delay for the task by adding `?delay=10s` to the URL
+    headers = {
+        # use a stable uuid as an idempotency key; Restate deduplicates for us
+        "idempotency-key": idempotency_key,
+        "Content-Type": "application/json"
+    }
     url = f"{RESTATE_URL}/AsyncTaskWorker/run/send"
     send_request = requests.post(url, json=task.model_dump(), headers=headers)
     print(f"Task submitted: {send_request.json()}")

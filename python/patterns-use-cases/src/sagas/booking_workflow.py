@@ -79,3 +79,19 @@ async def run(ctx: restate.WorkflowContext, req: BookingRequest):
 
 
 app = restate.app([booking_workflow, car_rental_service, flights_service])
+
+# Run the workflow with a sample request:
+# curl -X POST localhost:8080/BookingWorkflow/trip123/run -H 'content-type: application/json' -d '{
+#   "flights": {
+#     "flight_id": "12345",
+#     "passenger_name": "John Doe"
+#   },
+#   "car": {
+#     "pickup_location": "Airport",
+#     "rental_date": "2024-12-16"
+#   },
+#   "payment_info": {
+#     "card_number": "4111111111111111",
+#     "amount": 1500
+#   }
+# }'
