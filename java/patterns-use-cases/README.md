@@ -1,21 +1,24 @@
 # Java Patterns and Use Cases
 
-Common tasks and patterns implemented with Restate:
+#### Communication
+- **[Durable RPC, Idempotency & Concurrency](README.md#durable-rpc-idempotency--concurrency)**: Restate persists requests and makes sure they execute exactly-once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/durablerpc/MyClient.java)
+- **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/queue/TaskSubmitter.java)
+- **[Convert Sync Tasks to Async](README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/dataupload/UploadClient.java)
 
-| Category         | Use case / Name                          |                                                                             |                                                                                                | Difficulty  | Description                                                                                                 |
-|------------------|------------------------------------------|-----------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|-------------|-------------------------------------------------------------------------------------------------------------|
-| Microservices    | Durable RPC | [code](src/main/java/my/example/durablerpc/MyClient.java)                   | [README](#microservices-durable-rpc)                                                           | Basic        | Restate persists requests and makes sure they execute exactly-once.                                         |
-| Microservices    | Sagas | [code](src/main/java/my/example/sagas/BookingWorkflow.java)                 | [README](#microservices-sagas)                                                                 | Basic        | Preserve consistency by tracking undo actions and running them when code fails halfway through.             |
-| Microservices    | Stateful Actors | [code](src/main/java/my/example/statefulactors/MachineOperator.java)        | [README](#microservices-stateful-actors)                                                       | Basic                          | State machine with a set of transitions, built as a Restate Virtual Object for automatic state persistence. |
-| Microservices    | Payment state machines | [code](src/main/java/my/example/statemachinepayments/PaymentProcessor.java) | [README](#microservices-payment-state-machine)                                                 | Advanced                       | State machine example that tracks a payment process, ensuring consistent processing and cancellations.      |
-| Async tasks      | (Delayed) Task Queue | [code](src/main/java/my/example/queue/TaskSubmitter.java)                   | [README](#async-tasks-delayed-tasks-queue)                                                     | Basic                          | Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.          |
-| Async tasks      | Parallelizing work | [code](src/main/java/my/example/parallelizework/FanOutWorker.java)          | [README](#async-tasks-parallelizing-work)                                                      | Intermediate                   | Execute a list of tasks in parallel and then gather their result.                                           |
-| Async tasks      | Slow async data upload | [code](src/main/java/my/example/dataupload/UploadClient.java)               | [README](#async-tasks-async-data-upload)                                                       | Intermediate                   | Kick of a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long.    |
-| Async tasks      | Payments: async signals | [code](src/main/java/my/example/signalspayments/PaymentService.java)        | [README](#async-tasks-payment-signals---combining-sync-and-async-webhook-responses-from-stripe) | Advanced                       | Handling async payment callbacks for slow payments, with Stripe.                                            |
-| Event processing | Transactional handlers | [code](src/main/java/my/example/eventtransactions/UserFeed.java)            | [README](#event-processing-transactional-handlers-with-durable-side-effects-and-timers)        | Basic                          | Processing events (from Kafka) to update various downstream systems in a transactional way.                 |
-| Event processing | Enriching streams | [code](src/main/java/my/example/eventenrichment/PackageTracker.java)        | [README](#event-processing-event-enrichment)                                                   | Basic                          | Stateful functions/actors connected to Kafka and callable over RPC.                                         |
+#### Common patterns
+- **[Sagas](README.md#sagas)**: Preserve consistency by tracking undo actions and running them when code fails halfway through. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/sagas/BookingWorkflow.java)
+- **[Stateful Actors and State Machines](README.md#stateful-actors-and-state-machines)**: State machine with a set of transitions, built as a Restate Virtual Object for automatic state persistence. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/statefulactors/MachineOperator.java)
+- **[Payment State Machines (Advanced)](README.md#payment-state-machines)**: State machine example that tracks a payment process, ensuring consistent processing and cancellations. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/statemachinepayments/PaymentProcessor.java)
 
-## Microservices: Durable RPC
+#### Scheduling
+- **[Parallelizing Work](README.md#parallelizing-work)**: Execute a list of tasks in parallel and then gather their result. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/parallelizework/FanOutWorker.java)
+- **[Payment Signals](README.md#payment-signals)**: Handling async payment callbacks for slow payments, with Stripe. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/signalspayments/PaymentService.java)
+
+#### Event processing
+- **[Transactional Event Processing](README.md#transactional-event-processing)**: Processing events (from Kafka) to update various downstream systems in a transactional way. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/eventtransactions/UserFeed.java)
+- **[Event Enrichment / Joins](README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/eventenrichment/PackageTracker.java)
+
+## Durable RPC, Idempotency & Concurrency
 
 This example shows an example of:
 - **Durable RPC**: once a request has reached Restate, it is guaranteed to be processed
@@ -24,11 +27,37 @@ This example shows an example of:
 The example shows how you can programmatically submit a requests to a Restate service.
 Every request gets processed durably, and deduplicated based on the idempotency key.
 
-The example shows a [client](src/main/java/my/example/durablerpc/MyClient.java) that receives product reservation requests and forwards them to the product service.
-The [Product service](src/main/java/my/example/durablerpc/ProductService.java) is a Restate service that durably processes the reservation requests and deduplicates them.
-Each product can be reserved only once.
+- The[client](src/main/java/my/example/durablerpc/MyClient.java) that receives product reservation requests and forwards them to the product service.
+- The [Product service](src/main/java/my/example/durablerpc/ProductService.java) is a Restate service that durably processes the reservation requests and deduplicates them. Each product can be reserved only once.
 
-## Microservices: Sagas
+<details>
+<summary><strong>Running the example</strong></summary>
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `./gradlew -PmainClass=my.example.durablerpc.ProductService run`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+Run the client to let it send a request to reserve a product:
+```shell
+./gradlew -PmainClass=my.example.durablerpc.MyClient run --args="product132 reservation123"
+```
+The response will be `true`.
+
+Let's change the reservation ID and run the request again:
+```shell
+./gradlew -PmainClass=my.example.durablerpc.MyClient run --args="product132 reservation456"
+```
+This will give us `false` because this product is already reserved, so we can't reserve it again.
+
+However, if we run the first request again with same reservation ID, we will get `true` again:
+```shell
+./gradlew -PmainClass=my.example.durablerpc.MyClient run --args="product132 reservation123"
+``` 
+Restate deduplicated the request (with the reservation ID as idempotency key) and returned the first response.
+
+</details>
+
+## Sagas
 
 An example of a trip reservation workflow, using the saga pattern to undo previous steps in case of an error.
 
@@ -37,28 +66,20 @@ Every step pushes a compensation action (an undo operation) to a stack. In the c
 
 The main requirement is that steps are implemented as journaled operations, like `ctx.run()` or RPC/messaging.
 
-### Adding compensations
 The example shows two ways you can implement the compensation, depending on the characteristics of the API/system you interact with.
+1. **Two-phase commit**: The reservation is created and then confirmed or cancelled. The compensation executes 'cancel' and is added after the reservation is created.
+2. **Idempotency key**: The payment is made in one shot and supplies an ID. The compensation is added before the payment is made and uses the same ID.
 
-The flight and car reservations work in a two-phase commit way, where you first create a reservation, get a reservation ID back, and then confirm or cancel the reservation with its ID.
-In this case, you need to add the compensation to the list after creating the reservation, because you need the reservation ID to cancel it.
-If the failure happens while making the reservation, you can be sure that it never takes effect, because you didn't confirm it.
-
-The payment on the other hand uses a client generated idempotency key.
-The payment goes through in one shot (single API call).
-If we receive an error, we might not be sure if this occurred before or after the payment took effect.
-Therefore, we need to add the compensation to the list before the payment is made.
-If a failure happens during the payment, the compensation will run.
-The downstream API then uses the idempotency key to check if the payment went through, and whether it needs to be refunded.
-
-Note that the compensating action needs to be idempotent.
+Note that the compensating actions need to be idempotent.
 
 ### Running this example
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the service: `./gradlew -PmainClass=my.example.sagas.BookingWorkflow run`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080` 
 
-### Demo scenario
+
+<details>
+<summary><strong>Running the example</strong></summary>
 
 Have a look at the logs to see how the compensations run in case of a terminal error.
 
@@ -81,6 +102,10 @@ curl -X POST localhost:8080/BookingWorkflow/trip12883/run -H 'content-type: appl
 ```
 
 Have a look at the logs to see the cancellations of the flight and car booking in case of a terminal error:
+
+<details>
+<summary><strong>View logs</strong></summary>
+
 ```shell
 2024-12-18 11:35:48 INFO  [BookingWorkflow/run][inv_12ogPnVefk1c3clc9wNhEa4pMxxRh9IRyx] dev.restate.sdk.core.InvocationStateMachine - Start invocation
 2024-12-18 11:35:49 INFO  [Flights/reserve][inv_1ccelXW8IxuW6QpLWQu9ykt5aMAqRTl7pL] dev.restate.sdk.core.InvocationStateMachine - Start invocation
@@ -102,7 +127,10 @@ dev.restate.sdk.common.TerminalException: Payment could not be accepted!
 ... rest of trace ...
 ```
 
-## Microservices: Stateful Actors
+</details>
+</details>
+
+## Stateful Actors and State Machines
 
 This example implements a State Machine with a Virtual Object.
 
@@ -124,12 +152,12 @@ This example implements a State Machine with a Virtual Object.
 What you get by this are _linearized interactions_ with your state machine,
 avoiding accidental state corruption and concurrency issues.
 
-### Running the example
+<details>
+<summary><strong>Running the example</strong></summary>
+
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the service: `./gradlew -PmainClass=my.example.statefulactors.MachineOperator run`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
-
-### Demo scenario
 
 Invoke the state machine transitions like
 ```shell
@@ -152,7 +180,9 @@ unaffected by crashes and recoveries.
 echo "executing..."
 ```
 
-For example:
+<details>
+<summary><strong>View logs</strong></summary>
+
 ```shell
 2024-12-19 09:12:22 INFO  [MachineOperator/setUp][inv_1dceKvwtEc2n5doRPWFKzl2mKeGSpwxxO9] dev.restate.sdk.core.InvocationStateMachine - Start invocation
 2024-12-19 09:12:22 INFO  [MachineOperator/setUp][inv_174rq2A9bm3T30Ad4teHAPrb0QzkrcjlGV] dev.restate.sdk.core.InvocationStateMachine - Start invocation
@@ -192,7 +222,10 @@ java.lang.RuntimeException: A failure happened!
 2024-12-19 09:12:32 INFO  [MachineOperator/tearDown][inv_174rq2A9bm3T2s4ghDhTXRkFKH3ZLp8Jtn] dev.restate.sdk.core.InvocationStateMachine - End invocation
 ```
 
-## Microservices: Payment State Machine
+</details>
+</details>
+
+## Payment State Machines
 
 This example shows how to build a reliable payment state machine.
 
@@ -214,12 +247,13 @@ Despite the relatively few lines of code (no careful synchronization, retries, o
 this application maintains a high level of consistency in the presence of concurrent external requests
 and failures.
 
-### Running this example
+<details>
+<summary><strong>Running the example</strong></summary>
+
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the service: `./gradlew -PmainClass=my.example.statemachinepayments.AppMain run`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
-### Demo scenario
 Send some requests:
 
 - Make a payment
@@ -238,6 +272,10 @@ Send some requests:
 ```shell
 restate kv get PaymentProcessor some-string-id
 ```
+
+<details>
+<summary>View logs</summary>
+
 ```
 🤖 State:
 ―――――――――
@@ -253,18 +291,20 @@ restate kv get PaymentProcessor some-string-id
  status   "CANCELLED"
 ```
 
-## Async Tasks: (Delayed) Tasks Queue
+</details>
+</details>
+
+## (Delayed) Message Queue
 
 Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.
 
-Files to look at:
 - [Task Submitter](src/main/java/my/example/queue/TaskSubmitter.java): schedules tasks via send requests with and idempotency key.
     - The **send requests** put the tasks in Restate's queue. The task submitter does not wait for the task response.
     - The **idempotency key** in the header is used by Restate to deduplicate requests.
     - If a delay is set, the task will be executed later and Restate will track the timer durably, like a **delayed task queue**.
 - [Async Task Worker](src/main/java/my/example/queue/AsyncTaskWorker.java): gets invoked by Restate for each task in the queue.
 
-## Async Tasks: Parallelizing work
+## Parallelizing Work
 
 This example shows how to use the Restate SDK to **execute a list of tasks in parallel and then gather their result**.
 Also known as fan-out, fan-in.
@@ -275,7 +315,7 @@ It then splits the task into subtasks, executes them in parallel, and then gathe
 Restate guarantees and manages the execution of all the subtasks across failures.
 You can run this on FaaS infrastructure, like AWS Lambda, and it will scale automatically.
 
-## Async Tasks: Async Data Upload
+## Convert Sync Tasks to Async
 
 This example shows how to use the Restate SDK to **kick of a synchronous task and turn it into an asynchronous one if it takes too long**.
 
@@ -285,12 +325,12 @@ The [upload client](src/main/java/my/example/dataupload/UploadClient.java) does 
 
 If the upload takes too long, however, the client asks the upload service to send the URL later in an email.
 
-### Running the examples
+<details>
+<summary><strong>Running the example</strong></summary>
+
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the service: `./gradlew -PmainClass=my.example.dataupload.DataUploadService run`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
-
-### Demo scenario
 
 Run the upload client with a userId: `./gradlew -PmainClass=my.example.dataupload.UploadClient run --args="someone21"`
 
@@ -299,7 +339,8 @@ The workflow will run only once per ID, so you need to provide a new ID for each
 
 Have a look at the logs to see how the execution switches from synchronously waiting to the response to requesting an email:
 
-#### Fast upload
+<details>
+<summary><strong>View logs: fast upload</strong></summary>
 
 Client logs:
 ```
@@ -313,8 +354,10 @@ Workflow logs:
 2024-12-18 15:02:34 INFO  [DataUploadService/run][inv_17cZwACLnO7f5m1BjN7SKoQpuyycCmWwnv] my.example.utils.DataOperations - Uploading data to target https://s3-eu-central-1.amazonaws.com/257587941/. ETA: 1500 ms
 2024-12-18 15:02:36 INFO  [DataUploadService/run][inv_17cZwACLnO7f5m1BjN7SKoQpuyycCmWwnv] dev.restate.sdk.core.InvocationStateMachine - End invocation
 ```
+</details>
 
-#### Slow upload
+<details>
+<summary><strong>View logs: slow upload</strong></summary>
 
 Client logs:
 ```
@@ -334,7 +377,10 @@ Workflow logs:
 ```
 You see the call to `resultAsEmail` after the upload took too long, and the sending of the email.
 
-## Async Tasks: Payment Signals - Combining Sync and Async (Webhook) Responses from Stripe
+</details>
+</details>
+
+## Payment Signals
 
 This example issues a payment request to Stripe.
 When calling Stripe, the result often comes synchronously as a response API call.
@@ -350,7 +396,8 @@ like during periodic charging of a subscription.
 And because we have a durable execution system that suspends and resumes state
 and promises, we can actually combine this into a single reliably promise/async-function.
 
-### Running the Example
+<details>
+<summary><strong>Running the example</strong></summary>
 
 This example works end-to-end with Stripe. You need a Stripe account to run it.
 If you want to run everything locally, you also need a tool like _ngrok_ to forward
@@ -402,7 +449,9 @@ A few notes:
   `restate inv list` and `restate inv cancel <invocation_id>`.
 * Here is an opportunity for the SAGAs pattern to cancel payments in that case.
 
-## Event Processing: Transactional Handlers with Durable Side Effects and Timers
+</details>
+
+## Transactional Event Processing
 
 Processing events (from Kafka) to update various downstream systems.
 - Durable side effects with retries and recovery of partial progress
@@ -412,28 +461,22 @@ Processing events (from Kafka) to update various downstream systems.
 - Ability to delay events when the downstream systems are busy, without blocking
   entire partitions.
 
-
-### Running the example
+<details>
+<summary><strong>Running the example</strong></summary>
 
 1. Start the Kafka broker via Docker Compose: `docker compose up -d`.
-
 2. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) with the Kafka broker configuration in a separate shell: `restate-server --config-file restate.toml`
-
 3. Start the service: `./gradlew -PmainClass=my.example.eventtransactions.UserFeed run`
-
 4. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
-
 5. Let Restate subscribe to the Kafka topic `social-media-posts` and invoke `UserFeed/processPost` on each message.
-```shell
-curl localhost:9070/subscriptions -H 'content-type: application/json' \
--d '{
-    "source": "kafka://my-cluster/social-media-posts",
-    "sink": "service://UserFeed/processPost",
-    "options": {"auto.offset.reset": "earliest"}
-}'
-```
-
-### Demo scenario
+    ```shell
+    curl localhost:9070/subscriptions -H 'content-type: application/json' \
+    -d '{
+        "source": "kafka://my-cluster/social-media-posts",
+        "sink": "service://UserFeed/processPost",
+        "options": {"auto.offset.reset": "earliest"}
+    }'
+    ```
 
 Start a Kafka producer and send some messages to the `social-media-posts` topic:
 ```shell
@@ -448,7 +491,11 @@ userid1:{"content": "Hi! This is my second post!", "metadata": "public"}
 ```
 
 Our Kafka broker only has a single partition so all these messages end up on the same partition.
-You can see in the logs how events for different users are processed in parallel, but events for the same user are processed sequentially:
+You can see in the logs how events for different users are processed in parallel, but events for the same user are processed sequentially.
+
+
+<details>
+<summary><strong>View logs</strong></summary>
 
 ```shell
 2024-12-17 18:07:43 INFO  [UserFeed/processPost][inv_13puWeoWJykN17cPZQm43rQZxiPr0qNmhP] my.example.utils.Stubs - Creating post 300dbd34-eae8-4875-8a71-c18b14e2aed7 for user userid1
@@ -482,7 +529,10 @@ The handler will fast-forward to where it was, will recover the post ID and will
 
 You can try it out by killing Restate or the service halfway through processing a post.
 
-## Event Processing: Event Enrichment
+</details>
+</details>
+
+## Event Enrichment / Joins
 
 This example shows an example of:
 - **Event enrichment** over different sources: RPC and Kafka
@@ -494,7 +544,8 @@ The example implements a package delivery tracking service.
 Packages are registered via an RPC handler, and their location is updated via Kafka events.
 The Package Tracker Virtual Object tracks the package details and its location history.
 
-### Running the example
+<details>
+<summary><strong>Running the example</strong></summary>
 
 1. Start the Kafka broker via Docker Compose: `docker compose up -d`.
 
@@ -505,59 +556,65 @@ The Package Tracker Virtual Object tracks the package details and its location h
 4. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 5. Let Restate subscribe to the Kafka topic `package-location-updates` and invoke `PackageTracker/updateLocation` on each message.
-```shell
-curl localhost:9070/subscriptions -H 'content-type: application/json' \
--d '{
-    "source": "kafka://my-cluster/package-location-updates",
-    "sink": "service://PackageTracker/updateLocation",
-    "options": {"auto.offset.reset": "earliest"}
-}'
-```
+    ```shell
+    curl localhost:9070/subscriptions -H 'content-type: application/json' \
+    -d '{
+        "source": "kafka://my-cluster/package-location-updates",
+        "sink": "service://PackageTracker/updateLocation",
+        "options": {"auto.offset.reset": "earliest"}
+    }'
+    ```
 
-### Demo scenario
+6. Register a new package via the RPC handler:
+    ```shell
+    curl localhost:8080/PackageTracker/package1/registerPackage \
+      -H 'content-type: application/json' -d '{"finalDestination": "Bridge 6, Amsterdam"}'
+    ```
 
-1. Register a new package via the RPC handler:
-```shell
-curl localhost:8080/PackageTracker/package1/registerPackage \
-  -H 'content-type: application/json' -d '{"finalDestination": "Bridge 6, Amsterdam"}'
-```
+7. Start a Kafka producer and publish some messages to update the location of the package on the `package-location-updates` topic:
+    ```shell
+    docker exec -it broker kafka-console-producer --bootstrap-server broker:29092 --topic package-location-updates --property parse.key=true --property key.separator=:
+    ```
+    Send messages like
+    ```
+    package1:{"timestamp": "2024-10-10 13:00", "location": "Pinetree Road 5, Paris"}
+    package1:{"timestamp": "2024-10-10 14:00", "location": "Mountain Road 155, Brussels"}
+    ```
 
-2. Start a Kafka producer and publish some messages to update the location of the package on the `package-location-updates` topic:
-```shell
-docker exec -it broker kafka-console-producer --bootstrap-server broker:29092 --topic package-location-updates --property parse.key=true --property key.separator=:
-```
-Send messages like
-```
-package1:{"timestamp": "2024-10-10 13:00", "location": "Pinetree Road 5, Paris"}
-package1:{"timestamp": "2024-10-10 14:00", "location": "Mountain Road 155, Brussels"}
-```
+8. Query the package location via the RPC handler:
+    ```shell
+    curl localhost:8080/PackageTracker/package1/getPackageInfo
+    ```
+    or via the CLI: `restate kv get PackageTracker package1`
+    
+    You can see how the state was enriched by the initial RPC event and the subsequent Kafka events:
+    
+    <details>
+    <summary>See Output</summary>
+    
+    ```
+    🤖 State:
+    ―――――――――
+                              
+     Service  PackageTracker 
+     Key      package1        
+    
+     KEY           VALUE                                            
+     package-info  {                                                
+                      "finalDestination": "Bridge 6, Amsterdam",  
+                      "locations": [                                 
+                        {                                            
+                          "location": "Pinetree Road 5, Paris",      
+                          "timestamp": "2024-10-10 13:00"            
+                        },                                            
+                        {                                            
+                          "location": "Mountain Road 155, Brussels", 
+                          "timestamp": "2024-10-10 14:00"            
+                        }                                            
+                      ]                                              
+                    }  
+    ```
+    
+    </details>
 
-3. Query the package location via the RPC handler:
-```shell
-curl localhost:8080/PackageTracker/package1/getPackageInfo
-```
-or via the CLI: `restate kv get PackageTracker package1`
-
-You can see how the state was enriched by the initial RPC event and the subsequent Kafka events:
-```
-🤖 State:
-―――――――――
-                          
- Service  PackageTracker 
- Key      package1        
-
- KEY           VALUE                                            
- package-info  {                                                
-                  "finalDestination": "Bridge 6, Amsterdam",  
-                  "locations": [                                 
-                    {                                            
-                      "location": "Pinetree Road 5, Paris",      
-                      "timestamp": "2024-10-10 13:00"            
-                    },                                            
-                    {                                            
-                      "location": "Mountain Road 155, Brussels", 
-                      "timestamp": "2024-10-10 14:00"            
-                    }                                            
-                  ]                                              
-                }  
-```
+</details>
