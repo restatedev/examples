@@ -35,5 +35,11 @@ java {
   }
 }
 
-// Set main class
-application { mainClass.set("dev.restate.patterns.BookingWorkflow") }
+// Configure main class
+application {
+  if (project.hasProperty("mainClass")) {
+    mainClass.set(project.property("mainClass") as String)
+  } else {
+    mainClass.set("my.example.sagas.BookingWorkflowKt")
+  }
+}
