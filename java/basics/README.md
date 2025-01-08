@@ -1,4 +1,4 @@
-# Examples of the basic concepts for Restate in Java
+# The basic concepts of Restate in Java
 
 The examples here showcase the most basic building blocks of Restate. **Durable Execution**,
 **Durable Promises**, and **Virtual Objects**, and the **Workflows** abstraction built on top
@@ -9,18 +9,22 @@ about how they work and how they can be run.
 
 ### Examples
 
-* **[Basic Durable Execution:](src/main/java/durable_execution/SubscriptionService.java):** Running code cleanly
+* **[Services & Durable Execution](src/main/java/durable_execution/SubscriptionService.java)):** Running code cleanly
   to the end in the presence of failures. Automatic retries and recovery of previously
-  finished actions. The example applies a series of updates and permission setting changes
-  to user's profile.
+  finished actions. The example applies creates a subscription to movie streaming services
+  by first creating a recurring payment and then adding the subscriptions.
+
+* **[Building blocks](src/main/java/building_blocks/MyService.java):** Restate gives you a durable version
+  of common building blocks like queues, promises, RPC, state, and timers.
+  This example shows a reference of the API and what you can do with it.
+
+* **[Virtual Objects](src/main/java/virtual_objects/GreeterObject.java):** Stateful serverless objects
+  to manage durable consistent state and state-manipulating logic.
 
 * **[Workflows](src/main/java/workflows/SignupWorkflow.java):** Workflows are durable execution tasks that can
   be submitted and awaited. They have an identity and can be signaled and queried
   through durable promises. The example is a user-signup flow that takes multiple
   operations, including verifying the email address.
-
-* **[Virtual Objects](src/main/java/virtual_objects/GreeterObject.java):** Stateful serverless objects
-  to manage durable consistent state and state-manipulating logic.
 
 ### Running the examples
 
@@ -29,6 +33,7 @@ about how they work and how they can be run.
 
 2. Start the relevant example:
     - `./gradlew -PmainClass=durable_execution.SubscriptionService run` for the Durable Execution example
+   - The building blocks example is not runnable and more like a reference of what you can do with the API
     - `./gradlew -PmainClass=workflows.SignupWorkflow run` for the Workflows example
     - `./gradlew -PmainClass=virtual_objects.GreeterObject run` for the Virtual Objects example
 

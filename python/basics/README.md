@@ -9,7 +9,7 @@ about how they work and how they can be run.
 
 ### Examples
 
-* **[Durable Execution](app/0_durable_execution.py):** Running code cleanly
+* **[Services & Durable Execution](app/0_durable_execution.py):** Running code cleanly
   to the end in the presence of failures. Automatic retries and recovery of previously
   finished actions. The example applies creates a subscription to movie streaming services
   by first creating a recurring payment and then adding the subscriptions.

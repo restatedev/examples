@@ -1,4 +1,4 @@
-# Examples of the basic concepts for Restate in TypeScript / JavaScript
+# The basic concepts of Restate in Go
 
 The examples here showcase the most basic building blocks of Restate. **Durable Execution**,
 **Durable Promises**, and **Virtual Objects**, and the **Workflows** abstraction built on top
@@ -9,15 +9,14 @@ about how they work and how they can be run.
 
 ### Examples
 
-* **[Durable Execution](part0/durableexecution.go):** Running code cleanly
+* **[Services & Durable Execution](part0/durableexecution.go):** Running code cleanly
   to the end in the presence of failures. Automatic retries and recovery of previously
   finished actions. The example applies creates a subscription to movie streaming services
   by first creating a recurring payment and then adding the subscriptions.
 
 * **[Building blocks](part1/buildingblocks.go):** Restate gives you a durable version
   of common building blocks like queues, promises, RPC, state, and timers.
-  This example shows a handler which processes payment failure events from a payment provider.
-  The handler reminds the customer for 3 days to update their payment details, and otherwise cancels the subscriptions.
+  This example shows a reference of the API and what you can do with it.
 
 * **[Virtual Objects](part2/virtualobjects.go):** Stateful serverless objects
   to manage durable consistent state and state-manipulating logic.

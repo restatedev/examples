@@ -14,13 +14,19 @@ type User struct {
 	Email string
 }
 
-// Implement long-running workflows with Restate.
-// For example, a user signup and email verification workflow.
+// Workflow are a special type of Virtual Object with a run handler that runs once per ID.
+// Workflows are stateful and can be interacted with via queries (getting data out of the workflow)
+// and signals (pushing data to the workflow).
+//
+// Workflows are used to model long-running flows, such as user onboarding, order processing, etc.
+// Workflows have the following handlers:
 //  - Main workflow in run() method
 //  - Additional methods interact with the workflow.
 // Each workflow instance has a unique ID and runs only once (to success or failure).
 
 type SignupWorkflow struct{}
+
+// --- The workflow logic ---
 
 func (SignupWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error) {
 	// workflow ID = user ID; workflow runs once per user

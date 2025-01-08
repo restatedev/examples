@@ -32,7 +32,7 @@ async def run(ctx: restate.Context):
     # ---
     # 2. DURABLE RPC: Call other services without manual retry and deduplication logic
     # Restate persists all requests and ensures execution till completion
-    details = await ctx.object_call(subscription_service.create, "my-sub-123", "my-request")
+    result = await ctx.object_call(subscription_service.create, "my-sub-123", "my-request")
 
     # ---
     # 3. DURABLE MESSAGING: send (delayed) messages to other services without deploying a message broker
@@ -44,6 +44,7 @@ async def run(ctx: restate.Context):
     # Awakeables: block the workflow until notified by another handler
     awakeable_id, promise = ctx.awakeable()
     # Wait on the promise
+    # If the process crashes while waiting, Restate will recover the promise somewhere else
     greeting_result = await promise
     # Another process can resolve the awakeable via its ID
     ctx.resolve_awakeable(awakeable_id, "hello")

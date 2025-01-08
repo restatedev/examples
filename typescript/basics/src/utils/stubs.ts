@@ -1,3 +1,5 @@
+import * as restate from "@restatedev/restate-sdk";
+
 /**
  * Utility to let the service crash with a probability to show how the system recovers.
  */
@@ -60,14 +62,18 @@ export async function sendEmailWithLink(req: {
     curl localhost:8080/usersignup/${req.userId}/click -H 'content-type: application/json' -d '{ "secret": "${req.secret}"}'`);
 }
 
-export function cancelSubscription(
-  customerId: string,
-): string {
-  maybeCrash(0.3);
-  console.log(`>>> Cancelling subscription for customer ${customerId}`);
-  return "SUCCESS";
+export function chargeBankAccount(paymentDeduplicationID: string, param2: { amount: number; account: string }) {
+  return undefined;
 }
 
-export function sendEmail(_email: string, message: string) {
-  console.log(`Sending email: ${message}`);
-}
+const subscriptionService = restate.object({
+  name: "SubscriptionService",
+  handlers: {
+    create: async (ctx: restate.ObjectContext, userId: string) => { return "SUCCESS" },
+    cancel: async (ctx: restate.ObjectContext) => {
+      console.info(`Cancelling all subscriptions for user ${ctx.key}`);
+    },
+  }
+})
+
+export type SubscriptionSvc = typeof subscriptionService;

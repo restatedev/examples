@@ -23,7 +23,12 @@ import utils.User;
 import static utils.ExampleStubs.createUserEntry;
 import static utils.ExampleStubs.sendEmailWithLink;
 
-// Workflow for user signup and email verification.
+// Workflow are a special type of Virtual Object with a run handler that runs once per ID.
+// Workflows are stateful and can be interacted with via queries (getting data out of the workflow)
+// and signals (pushing data to the workflow).
+//
+// Workflows are used to model long-running flows, such as user onboarding, order processing, etc.
+// Workflows have the following handlers:
 //  - Main workflow in run() method
 //  - Additional methods interact with the workflow.
 // Each workflow instance has a unique ID and runs only once (to success or failure).

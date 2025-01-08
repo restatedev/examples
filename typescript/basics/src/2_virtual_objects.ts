@@ -3,6 +3,8 @@ import * as restate from "@restatedev/restate-sdk";
 // Virtual Objects are services that hold K/V state. Its handlers interact with the object state.
 // An object is identified by a unique id - only one object exists per id.
 //
+// To guarantee state consistency, only one handler is executed at a time per Virtual Object (ID).
+//
 // Handlers are stateless executors.
 // Restate proxies requests to it and attaches the object's state to the request.
 // Virtual Objects then have their K/V state locally accessible without requiring any database
@@ -10,7 +12,7 @@ import * as restate from "@restatedev/restate-sdk";
 // method execution. It is always consistent with the progress of the execution.
 //
 // Virtual Objects are Stateful (Serverless) constructs.
-//
+
 const greeterObject = restate.object({
   name: "greeter",
   handlers: {

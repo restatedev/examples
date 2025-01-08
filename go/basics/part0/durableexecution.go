@@ -8,15 +8,18 @@ import (
 	"os"
 )
 
-// Restate lets you implement resilient applications.
-// Restate ensures handler code runs to completion despite failures:
+// Restate helps you implement resilient applications:
 //  - Automatic retries
-//  - Restate tracks the progress of execution, and prevents re-execution of completed work on retries
-//  - Regular code and control flow, no custom DSLs
-// Applications consist of services with handlers that can be called over HTTP or Kafka.
+//  - Tracking progress of execution and preventing re-execution of completed work on retries
+//  - Providing durable building blocks like timers, promises, and messaging: recoverable and revivable anywhere
 //
+// Applications consist of services with handlers that can be called over HTTP or Kafka.
 // Handlers can be called at http://restate:8080/ServiceName/handlerName
-// Restate persists HTTP requests to this handler and manages execution.
+//
+// Restate persists and proxies HTTP requests to handlers and manages their execution.
+// The SDK lets you implement handlers with regular code and control flow, no custom DSLs.
+// Whenever a handler uses the Restate Context, an event gets persisted in Restate's log.
+// After a failure, this log gets replayed to recover the state of the handler.
 
 type SubscriptionRequest struct {
 	UserID        string   `json:"userId"`
@@ -27,11 +30,12 @@ type SubscriptionRequest struct {
 type SubscriptionService struct{}
 
 func (SubscriptionService) Add(ctx restate.Context, req SubscriptionRequest) error {
-	// Stable idempotency key: Restate persists the result of
-	// all `ctx` actions and recovers them after failures
+	// Restate persists the result of all `ctx` actions and recovers them after failures
+	// For example, generate a stable idempotency key:
 	paymentId := restate.Rand(ctx).UUID().String()
 
-	// Retried in case of timeouts, API downtime, etc.
+	// restate.Run persists results of successful actions and skips execution on retries
+	// Failed actions (timeouts, API downtime, etc.) get retried
 	payRef, err := restate.Run(ctx, func(ctx restate.RunContext) (string, error) {
 		return CreateRecurringPayment(req.CreditCard, paymentId)
 	})
@@ -39,7 +43,6 @@ func (SubscriptionService) Add(ctx restate.Context, req SubscriptionRequest) err
 		return err
 	}
 
-	// Persists successful subscriptions and skip them on retries
 	for _, subscription := range req.Subscriptions {
 		if _, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
 			return restate.Void{}, CreateSubscription(req.UserID, subscription, payRef)

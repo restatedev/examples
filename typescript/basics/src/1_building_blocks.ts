@@ -1,7 +1,10 @@
 import * as restate from "@restatedev/restate-sdk";
 import {
-    SubscriptionRequest,
+    chargeBankAccount,
+    SubscriptionSvc,
 } from "./utils/stubs";
+
+const SubscriptionService: SubscriptionSvc = {name: "SubscriptionService"}
 
 /*
 * RESTATE's DURABLE BUILDING BLOCKS
@@ -15,7 +18,7 @@ import {
 * The run handler below shows a catalog of these building blocks.
 * Look at the other examples in this project to see how to use them in examples.
  */
-const myObject = restate.service({
+const myService = restate.service({
     name: "myService",
     handlers: {
         // This handler can be called over HTTP at http://restate:8080/myService/handlerName
@@ -29,29 +32,30 @@ const myObject = restate.service({
             // ---
             // 2. DURABLE RPC: Call other services without manual retry and deduplication logic
             // Restate persists all requests and ensures execution till completion
-            const details = await ctx.objectClient(SubscriptionService, "my-sub-123").getDetails();
+            const result = await ctx.objectClient(SubscriptionService, "my-sub-123").create("my-request");
 
             // ---
             // 3. DURABLE MESSAGING: send (delayed) messages to other services without deploying a message broker
             // Restate persists the timers and triggers execution
-            ctx.objectSendClient(SubscriptionService, "my-sub-123", {delay: 24*60*60*1000}).cancel();
+            ctx.objectSendClient(SubscriptionService, "my-sub-123").create("my-request");
 
             // ---
             // 4. DURABLE PROMISES: tracked by Restate, can be moved between processes and survive failures
             // Awakeables: block the workflow until notified by another handler
             const {id, promise} = ctx.awakeable()
-            // Use the Id from some other process to resolve it later
-            ctx.resolveAwakeable(id);
-            // Meanwhile, the workflow is blocked
-            // These kind of blocking operations
+            // Wait on the promise
+            // If the process crashes while waiting, Restate will recover the promise somewhere else
             await promise;
+            // Another process can resolve the awakeable via its ID
+            ctx.resolveAwakeable(id);
 
             // ---
             // 5. DURABLE TIMERS: sleep or wait for a timeout, tracked by Restate and recoverable
             // When this runs on FaaS, the handler suspends and the timer is tracked by Restate
             // Example of durable recoverable sleep
-            ctx.sleep(5000)
-            // Example of waiting on durable promise or a timeout
+            // If the service crashes two seconds later, Restate will invoke it after another 3 seconds
+            await ctx.sleep(5000)
+            // Example of waiting on a promise (call/awakeable/...) or a timeout
             await promise.orTimeout(5000);
             // Example of scheduling a handler for later on
             ctx.objectSendClient(SubscriptionService, "my-sub-123", {delay: 24*60*60*1000}).cancel();
@@ -67,25 +71,3 @@ const myObject = restate.service({
         },
     }
 })
-
-// ----------------------------------------------------------
-// Stubs; ignore these
-
-function chargeBankAccount(paymentDeduplicationID: string, param2: { amount: number; account: string }) {
-    return undefined;
-}
-
-const subscriptionService = restate.object({
-    name: "SubscriptionService",
-    handlers: {
-        create: async (ctx: restate.ObjectContext, req: SubscriptionRequest) => {},
-        cancel: async (ctx: restate.ObjectContext) => {
-            console.info(`Cancelling all subscriptions for user ${ctx.key}`);
-        },
-        getDetails: async (ctx: restate.ObjectContext) => {
-            return {email: ctx.key + "@example.com"};
-        }
-    }
-})
-
-const SubscriptionService: typeof subscriptionService = {name: "SubscriptionService"};

@@ -10,7 +10,23 @@ type SubscriptionRequest struct {
 	UserID string `json:"userId"`
 }
 
+/*
+ * RESTATE's DURABLE BUILDING BLOCKS
+ *
+ * Restate turns familiar programming constructs into recoverable, distributed building blocks.
+ * They get persisted in Restate, survive failures, and can be revived on another process.
+ *
+ * No more need for retry/recovery logic, K/V stores, workflow orchestrators,
+ * scheduler services, message queues, ...
+ *
+ * The run handler below shows a catalog of these building blocks.
+ * Look at the other examples in this project to see how to use them in examples.
+ */
+
 type MyService struct{}
+
+// This handler can be called over HTTP at http://restate:8080/myService/handlerName
+// Use the context to access Restate's durable building blocks
 
 func (MyService) Run(ctx restate.Context) error {
 	// 1. IDEMPOTENCY: Add an idempotency key to the header of your requests
@@ -34,6 +50,7 @@ func (MyService) Run(ctx restate.Context) error {
 	// Awakeables: block the workflow until notified by another handler
 	awakeable := restate.Awakeable[string](ctx)
 	// Wait on the result
+	// If the process crashes while waiting, Restate will recover the promise somewhere else
 	result, err := awakeable.Result()
 	if err != nil {
 		return err

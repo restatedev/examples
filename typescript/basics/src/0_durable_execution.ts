@@ -12,26 +12,27 @@ import {
 //  - Providing durable building blocks like timers, promises, and messaging: recoverable and revivable anywhere
 //
 // Applications consist of services with handlers that can be called over HTTP or Kafka.
+// Handlers can be called at http://restate:8080/ServiceName/handlerName
+//
+// Restate persists and proxies HTTP requests to handlers and manages their execution.
 // The SDK lets you implement handlers with regular code and control flow, no custom DSLs.
 // Whenever a handler uses the Restate Context, an event gets persisted in Restate's log.
 // After a failure, this log gets replayed to recover the state of the handler.
 
 const subscriptionService = restate.service({
     name: "SubscriptionService",
-    // Handlers can be called over HTTP at http://restate:8080/ServiceName/handlerName
-    // Restate persists HTTP requests to this handler and manages execution.
     handlers: {
         add: async (ctx: restate.Context, req: SubscriptionRequest) => {
             // Restate persists the result of all `ctx` actions and recovers them after failures
             // For example, generate a stable idempotency key:
             const paymentId = ctx.rand.uuidv4();
 
-            // Failed actions get retried in case of timeouts, API downtime, etc.
+            // ctx.run persists results of successful actions and skips execution on retries
+            // Failed actions (timeouts, API downtime, etc.) get retried
             const payRef = await ctx.run(() =>
                 createRecurringPayment(req.creditCard, paymentId)
             );
 
-            // Restate persists successful actions and skip them on retries
             for (const subscription of req.subscriptions) {
                 await ctx.run(() =>
                     createSubscription(req.userId, subscription, payRef)

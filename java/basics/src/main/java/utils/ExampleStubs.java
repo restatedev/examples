@@ -43,4 +43,8 @@ public class ExampleStubs {
                 "curl localhost:8080/SignupWorkflow/{}/click -H 'content-type: application/json' -d '\"{}\"'",
                 userId, secret);
     }
+
+    public static void chargeBankAccount(String paymentDeduplicationID, int amount) {
+        // Implementation here
+    }
 }

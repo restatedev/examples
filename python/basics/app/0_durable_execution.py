@@ -5,17 +5,6 @@ from pydantic import BaseModel
 from restate import Service, Context
 from utils import create_recurring_payment, create_subscription
 
-"""
-Restate lets you implement resilient applications.
-Restate ensures handler code runs to completion despite failures:
- - Automatic retries
- - Restate tracks the progress of execution, and prevents re-execution of completed work on retries
- - Regular code and control flow, no custom DSLs
-
-Applications consist of services with handlers that can be called over HTTP or Kafka.
-"""
-subscription_service = Service("SubscriptionService")
-
 
 class SubscriptionRequest(BaseModel):
     user_id: str
@@ -23,17 +12,34 @@ class SubscriptionRequest(BaseModel):
     subscriptions: list[str]
 
 
+"""
+ Restate helps you implement resilient applications:
+  - Automatic retries
+  - Tracking progress of execution and preventing re-execution of completed work on retries
+  - Providing durable building blocks like timers, promises, and messaging: recoverable and revivable anywhere
+
+ Applications consist of services with handlers that can be called over HTTP or Kafka.
+ Handlers can be called at http://restate:8080/ServiceName/handlerName
+
+ Restate persists and proxies HTTP requests to handlers and manages their execution.
+ The SDK lets you implement handlers with regular code and control flow, no custom DSLs.
+ Whenever a handler uses the Restate Context, an event gets persisted in Restate's log.
+ After a failure, this log gets replayed to recover the state of the handler.
+"""
+subscription_service = Service("SubscriptionService")
+
+
 @subscription_service.handler()
 async def add(ctx: Context, req: SubscriptionRequest):
-    # Stable idempotency key: Restate persists the result of
-    # all `ctx` actions and recovers them after failures
+    # Restate persists the result of all `ctx` actions and recovers them after failures
+    # For example, generate a stable idempotency key:
     payment_id = await ctx.run("payment id", lambda: str(uuid.uuid4()))
 
-    # Retried in case of timeouts, API downtime, etc.
+    # ctx.run persists results of successful actions and skips execution on retries
+    # Failed actions (timeouts, API downtime, etc.) get retried
     pay_ref = await ctx.run("recurring payment",
                             lambda: create_recurring_payment(req.credit_card, payment_id))
 
-    # Persists successful subscriptions and skip them on retries
     for subscription in req.subscriptions:
         await ctx.run("subscription",
                       lambda: create_subscription(req.user_id, subscription, pay_ref))

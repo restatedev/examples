@@ -10,9 +10,8 @@
     "build": "tsc --noEmitOnError",
     "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
     "example-0": "CRASH_PROCESS=true ./src/utils/restart-process.sh 'ts-node-dev --transpile-only src/0_durable_execution.ts'",
-    "example-2": "ts-node-dev --transpile-only src/2_workflows.ts",
-    "example-3": "ts-node-dev --transpile-only src/3_virtual_objects.ts",
-    "example-4": "ts-node-dev --transpile-only src/4_durable_building_blocks.ts"
+    "example-2": "ts-node-dev --transpile-only src/2_virtual_objects.ts",
+    "example-3": "ts-node-dev --transpile-only src/3_workflows.ts"
   },
   "dependencies": {
     "@restatedev/restate-sdk": "^1.4.0",

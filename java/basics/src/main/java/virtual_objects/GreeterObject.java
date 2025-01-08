@@ -17,18 +17,23 @@ import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
-// Virtual Objects hold K/V state and have methods to interact with the object.
+// Virtual Objects are services that hold K/V state. Its handlers interact with the object state.
 // An object is identified by a unique id - only one object exists per id.
 //
-// Virtual Objects have their K/V state locally accessible without requiring any database
+// To guarantee state consistency, only one handler is executed at a time per Virtual Object (ID).
+//
+// Handlers are stateless executors.
+// Restate proxies requests to it and attaches the object's state to the request.
+// Virtual Objects then have their K/V state locally accessible without requiring any database
 // connection or lookup. State is exclusive, and atomically committed with the
-// method execution.
+// method execution. It is always consistent with the progress of the execution.
 //
 // Virtual Objects are Stateful (Serverless) constructs.
 //
 @VirtualObject
 public class GreeterObject {
 
+    // Reference to the K/V state stored in Restate
     private static final StateKey<Integer> COUNT =
             StateKey.of("count", JsonSerdes.INT);
 
