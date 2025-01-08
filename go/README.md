@@ -2,10 +2,10 @@
 
 ## Basics
 
-- **[Services - Durable Execution](basics/part0/durableexecution.go)**: Making code resilient to failures via automatic retries and recovery of previously finished actions.
-- **[Durable Building Blocks](basics/part1/buildingblocks.go)**: Restate turns familiar programming constructs into recoverable, distributed building blocks. Discover what you can do with the SDK.
-- **[Virtual Objects](basics/part2/virtualobjects.go)**: Stateful services with access to long-lasting, consistent K/V state.
-- **[Workflows](basics/part3/workflows.go)**: Durable sequences of steps that can be queried, signaled and awaited.
+- **[Services - Durable Execution](basics)**: Making code resilient to failures via automatic retries and recovery of previously finished actions. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](basics/part0/durableexecution.go)
+- **[Durable Building Blocks](basics)**: Restate turns familiar programming constructs into recoverable, distributed building blocks. Discover what you can do with the SDK. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](basics/part1/buildingblocks.go)
+- **[Virtual Objects](basics)**: Stateful services with access to long-lasting, consistent K/V state. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](basics/part2/virtualobjects.go)
+- **[Workflows](basics)**: Durable sequences of steps that can be queried, signaled and awaited. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](basics/part3/workflows.go)
 
 ## Use Cases and Patterns
 #### Communication
@@ -37,7 +37,7 @@ Examples integrating Restate with other tools and frameworks:
 
 Starter templates for new projects:
 
-- **[Go Template](templates/go)**
+- **[Go Template](templates/go)** [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](templates/go/greeter.go)
 
 ## Tutorials
 

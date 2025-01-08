@@ -11,7 +11,7 @@ Common tasks and patterns implemented with Restate:
 - **[Transactional Event Processing](README.md#event-processing-transactional-handlers-with-durable-side-effects-and-timers)**: Process events from Kafka to update various downstream systems in a transactional way. [(code)](src/eventtransactions/userfeed.go)
 - **[Event enrichment / Joins](README.md#event-processing-event-enrichment)**: Stateful functions/actors connected to Kafka and callable over RPC. [(code)](src/eventenrichment/packagetracker.go)
 - **[Parallelizing work](README.md#parallelizing-work)**: Execute a list of tasks in parallel and then gather their result. [(code)](src/parallelizework/fanoutworker.go)
-- **[Turn slow sync tasks into async](README.md#async-data-upload)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [(code)](src/dataupload/client/client.go)
+- **[Turn slow sync tasks into async](README.md#async-data-upload)**: Kick off a synchronous task (e.g. data upload) and convert it to asynchronous if it takes too long. [(code)](src/dataupload/client/client.go)
 
 ## Durable RPC, Idempotency and Concurrency
 
