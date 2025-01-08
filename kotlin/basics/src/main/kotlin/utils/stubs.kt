@@ -7,13 +7,13 @@ private val killProcess: Boolean = System.getenv("CRASH_PROCESS") != null
 
 fun maybeCrash(probability: Double) {
   if (Math.random() < probability) {
-    logger.error("A failure happened!")
+    logger.error("👻 A failure happened!")
 
     if (killProcess) {
-      logger.error("--- CRASHING THE PROCESS ---")
+      logger.error("👻 --- CRASHING THE PROCESS ---")
       System.exit(1)
     } else {
-      throw RuntimeException("A failure happened!")
+      throw RuntimeException("👻 A failure happened!")
     }
   }
 }

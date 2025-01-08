@@ -89,5 +89,5 @@ Check the README to learn how to run Restate.
   curl localhost:8080/SignupWorkflow/userid1/click -H 'content-type: application/json' -d '{ "secret": "xxx"}'
 
 - Attach back to the workflow to get the result:
-  curl localhost:8080/restate/workflow/SignupWorkflow/userid1/attach
+  curl -X POST localhost:8080/restate/workflow/SignupWorkflow/userid1/attach
 */

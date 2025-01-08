@@ -14,14 +14,14 @@ about how they work and how they can be run.
   finished actions. The example applies creates a subscription to movie streaming services
   by first creating a recurring payment and then adding the subscriptions.
 
-* **[Building blocks](src/main/java/building_blocks/MyService.java):** Restate gives you a durable version
+* **[Building blocks](src/main/kotlin/building_blocks/MyService.kt):** Restate gives you a durable version
   of common building blocks like queues, promises, RPC, state, and timers.
   This example shows a reference of the API and what you can do with it.
 
-* **[Virtual Objects](src/main/java/virtual_objects/GreeterObject.java):** Stateful serverless objects
+* **[Virtual Objects](src/main/kotlin/virtual_objects/GreeterObject.kt):** Stateful serverless objects
   to manage durable consistent state and state-manipulating logic.
 
-* **[Workflows](src/main/java/workflows/SignupWorkflow.java):** Workflows are durable execution tasks that can
+* **[Workflows](src/main/kotlin/workflows/SignupWorkflow.kt):** Workflows are durable execution tasks that can
   be submitted and awaited. They have an identity and can be signaled and queried
   through durable promises. The example is a user-signup flow that takes multiple
   operations, including verifying the email address.
@@ -34,8 +34,8 @@ about how they work and how they can be run.
 2. Start the relevant example:
   - `./gradlew -PmainClass=durable_execution.SubscriptionServiceKt run` for the Durable Execution example
   - The building blocks example is not runnable and more like a reference of what you can do with the API
-  - `./gradlew -PmainClass=workflows.SignupWorkflowKt run` for the Workflows example
   - `./gradlew -PmainClass=virtual_objects.GreeterObjectKt run` for the Virtual Objects example
+  - `./gradlew -PmainClass=workflows.SignupWorkflowKt run` for the Workflows example
 
 3. Register the example at Restate server by calling
    `restate -y deployment register --force localhost:9080`.

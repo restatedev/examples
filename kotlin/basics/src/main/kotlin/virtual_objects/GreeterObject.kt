@@ -67,7 +67,7 @@ curl localhost:8080/GreeterObject/mary/greet -H 'content-type: application/json'
 curl localhost:8080/GreeterObject/barack/greet -H 'content-type: application/json' -d '"Hello"'
   --> "Hello barack for the 1-th time."
 
-curl localhost:8080/GreeterObject/mary/ungreet -H 'content-type: application/json' -d ''
+curl -X POST localhost:8080/GreeterObject/mary/ungreet
   --> "Dear mary, taking one greeting back: 0."
 
  */
