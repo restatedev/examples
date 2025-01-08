@@ -1,8 +1,5 @@
 # Go Patterns and Use Cases
 
-Common tasks and patterns implemented with Restate:
-
-## Use Cases and Patterns
 #### Communication
 - **[Durable RPC, Idempotency & Concurrency](README.md#durable-rpc-idempotency-and-concurrency)**: Use programmatic clients to call Restate handlers. Add idempotency keys for deduplication. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/durablerpc/client/client.go)
 - **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Restate as a queue: Send (delayed) events to handlers. Optionally, retrieve the response later. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/queue/client/tasksubmitter.go)
@@ -30,9 +27,8 @@ This example shows an example of:
 The example shows how you can programmatically submit a requests to a Restate service.
 Every request gets processed durably, and deduplicated based on the idempotency key.
 
-The example shows a [client](src/durablerpc/client/client.go) that receives product reservation requests and forwards them to the product service.
-The [Product service](src/durablerpc/service/productservice.go) is a Restate service that durably processes the reservation requests and deduplicates them.
-Each product can be reserved only once.
+- The [client](src/durablerpc/client/client.go) receives product reservation requests and forwards them to the product service.
+- The [Product service](src/durablerpc/service/productservice.go) is a Restate service that durably processes the reservation requests and deduplicates them. Each product can be reserved only once.
 
 <details>
 <summary><strong>Running the example</strong></summary>
@@ -64,8 +60,7 @@ Restate deduplicated the request (with the reservation ID as idempotency key) an
 
 Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.
 
-Files to look at:
-- [Task Submitter](src/queue/client/tasksubmitter.go): schedules tasks via send requests with and idempotency key.
+- [Task Submitter](src/queue/client/tasksubmitter.go): schedules tasks via send requests with an idempotency key.
     - The **send requests** put the tasks in Restate's queue. The task submitter does not wait for the task response.
     - The **idempotency key** in the header is used by Restate to deduplicate requests.
     - If a delay is set, the task will be executed later and Restate will track the timer durably, like a **delayed task queue**.
