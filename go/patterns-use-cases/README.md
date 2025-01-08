@@ -3,22 +3,22 @@
 #### Communication
 - **[Durable RPC, Idempotency & Concurrency](README.md#durable-rpc-idempotency-and-concurrency)**: Use programmatic clients to call Restate handlers. Add idempotency keys for deduplication. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/durablerpc/client/client.go)
 - **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Restate as a queue: Send (delayed) events to handlers. Optionally, retrieve the response later. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/queue/client/tasksubmitter.go)
-- **[Webhook Callbacks](README.md#durable-webhook-event-processing)**: Point webhook callbacks to a Restate handler for durable event processing. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/webhookcallbacks/callbackrouter.go)
-- **[Convert Sync Tasks to Async](README.md#async-data-upload)**: Kick off a synchronous task (e.g. data upload) and convert it to asynchronous if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/dataupload/client/client.go)
+- **[Webhook Callbacks](README.md#webhook-callbacks)**: Point webhook callbacks to a Restate handler for durable event processing. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/webhookcallbacks/callbackrouter.go)
+- **[Convert Sync Tasks to Async](README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and convert it to asynchronous if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/dataupload/client/client.go)
 
 #### Common patterns
 - **[Sagas](README.md#sagas)**: Preserve consistency by tracking undo actions and running them when code fails halfway through. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/sagas/bookingworkflow.go)
-- **[Stateful Actors and State Machines](README.md#stateful-actors-and-durable-state-machines)**: Stateful Actor representing a machine in our factory. Track state transitions with automatic state persistence. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/statefulactors/machineoperator.go)
+- **[Stateful Actors and State Machines](README.md#stateful-actors-and-state-machines)**: Stateful Actor representing a machine in our factory. Track state transitions with automatic state persistence. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/statefulactors/machineoperator.go)
 
 #### Scheduling
 - **[Scheduling Tasks](README.md#scheduling-tasks)**: Restate as scheduler: Schedule tasks for later and ensure the task is triggered and executed. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/schedulingtasks/paymentreminders.go)
 - **[Parallelizing Work](README.md#parallelizing-work)**: Execute a list of tasks in parallel and then gather their result. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/parallelizework/fanoutworker.go)
 
 #### Event processing
-- **[Event Enrichment / Joins](README.md#event-processing-event-enrichment)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventenrichment/packagetracker.go)
-- **[Transactional Event Processing](README.md#event-processing-transactional-handlers-with-durable-side-effects-and-timers)**: Process events from Kafka to update various downstream systems in a transactional way. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventtransactions/userfeed.go)
+- **[Event Enrichment / Joins](README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventenrichment/packagetracker.go)
+- **[Transactional Event Processing](README.md#transactional-event-processing)**: Process events from Kafka to update various downstream systems in a transactional way. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventtransactions/userfeed.go)
 
-## Durable RPC, Idempotency and Concurrency</strong></summary>
+## Durable RPC, Idempotency and Concurrency
 
 This example shows an example of:
 - **Durable RPC**: once a request has reached Restate, it is guaranteed to be processed
@@ -65,6 +65,41 @@ Use Restate as a queue. Schedule tasks for now or later and ensure the task is o
     - The **idempotency key** in the header is used by Restate to deduplicate requests.
     - If a delay is set, the task will be executed later and Restate will track the timer durably, like a **delayed task queue**.
 - [Async Task Worker](src/queue/service/asynctaskworker.go): gets invoked by Restate for each task in the queue.
+
+## Webhook Callbacks
+
+This example processes webhook callbacks from a payment provider.
+
+Restate handlers can be used as the target for webhook callbacks.
+This turns handlers into durable event processors that ensure the event is processed exactly once.
+
+You don't need to do anything special!
+
+## Convert Sync Tasks to Async
+
+This example shows how to use the Restate SDK to **kick of a synchronous task and turn it into an asynchronous one if it takes too long**.
+
+The example implements a [data upload service](src/dataupload/service/datauploadservice.go), that creates a bucket, uploads data to it, and then returns the URL.
+
+The [upload client](src/dataupload/client/client.go) does a synchronous request to upload the file, and the server will respond with the URL.
+
+If the upload takes too long, however, the client asks the upload service to send the URL later in an email.
+
+<details>
+<summary><strong>Running the example</strong></summary>
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `go run ./src/dataupload/service`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+Run the upload client with a userId: `go run ./src/dataupload/client`
+
+This will submit an upload workflow to the data upload service.
+The workflow will run only once per ID, so you need to provide a new ID for each run.
+
+Have a look at the logs to see how the execution switches from synchronously waiting to the response to requesting an email:
+
+</details>
 
 ## Sagas
 
@@ -134,25 +169,7 @@ Have a look at the logs to see the cancellations of the flight and car booking i
 </details>
 </details>
 
-## Durable Webhook Event Processing
-
-This example processes webhook callbacks from a payment provider.
-
-Restate handlers can be used as the target for webhook callbacks.
-This turns handlers into durable event processors that ensure the event is processed exactly once.
-
-You don't need to do anything special!
-
-## Scheduling Tasks
-This example processes failed payment events from a payment provider.
-The service reminds the customer for 3 days to update their payment details, and otherwise escalates to support.
-
-To schedule the reminders, the handler uses Restate's durable timers and delayed calls.
-The handler calls itself three times in a row after a delay of one day, and then stops the loop and calls another handler.
-
-Restate tracks the timer across failures, and triggers execution.
-
-## Stateful Actors and Durable State Machines
+## Stateful Actors and State Machines
 
 This example implements a State Machine with a Virtual Object.
 
@@ -236,14 +253,33 @@ echo "executing..."
 </details>
 </details>
 
-## Event Processing: Transactional Handlers with Durable Side Effects and Timers
+## Scheduling Tasks
+This example processes failed payment events from a payment provider.
+The service reminds the customer for 3 days to update their payment details, and otherwise escalates to support.
 
+To schedule the reminders, the handler uses Restate's durable timers and delayed calls.
+The handler calls itself three times in a row after a delay of one day, and then stops the loop and calls another handler.
+
+Restate tracks the timer across failures, and triggers execution.
+
+## Parallelizing work
+
+This example shows how to use the Restate SDK to **execute a list of tasks in parallel and then gather their result**.
+Also known as fan-out, fan-in.
+
+The example implements a [worker service](src/parallelizework/fanoutworker.go), that takes a task as input.
+It then splits the task into subtasks, executes them in parallel, and then gathers the results.
+
+Restate guarantees and manages the execution of all the subtasks across failures.
+You can run this on FaaS infrastructure, like AWS Lambda, and it will scale automatically.
+
+## Transactional Event Processing
 Processing events (from Kafka) to update various downstream systems.
-- Durable side effects with retries and recovery of partial progress
+- **Durable side effects** with retries and recovery of partial progress
 - Events get sent to objects based on the Kafka key.
   For each key, Restate ensures that events are processed sequentially and in order.
   Slow events on other keys do not block processing (high fan-out, no head-of-line waiting).
-- Ability to delay events when the downstream systems are busy, without blocking
+- Ability to **delay events** when the downstream systems are busy, without blocking
   entire partitions.
 
 
@@ -342,7 +378,7 @@ Processing events (from Kafka) to update various downstream systems.
 
 </details>
 
-## Event Processing: Event Enrichment / Joins
+## Event Enrichment / Joins
 
 This example shows an example of:
 - **Event enrichment** over different sources: RPC and Kafka
@@ -429,39 +465,5 @@ The Package Tracker Virtual Object tracks the package details and its location h
     
 </details>
     
-## Parallelizing work
 
-This example shows how to use the Restate SDK to **execute a list of tasks in parallel and then gather their result**.
-Also known as fan-out, fan-in.
 
-The example implements a [worker service](src/parallelizework/fanoutworker.go), that takes a task as input.
-It then splits the task into subtasks, executes them in parallel, and then gathers the results.
-
-Restate guarantees and manages the execution of all the subtasks across failures.
-You can run this on FaaS infrastructure, like AWS Lambda, and it will scale automatically.
-
-## Async Data Upload
-
-This example shows how to use the Restate SDK to **kick of a synchronous task and turn it into an asynchronous one if it takes too long**.
-
-The example implements a [data upload service](src/dataupload/service/datauploadservice.go), that creates a bucket, uploads data to it, and then returns the URL.
-
-The [upload client](src/dataupload/client/client.go) does a synchronous request to upload the file, and the server will respond with the URL.
-
-If the upload takes too long, however, the client asks the upload service to send the URL later in an email.
-
-<details>
-<summary><strong>Running the example</strong></summary>
-
-1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `go run ./src/dataupload/service`
-3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
-
-Run the upload client with a userId: `go run ./src/dataupload/client`
-
-This will submit an upload workflow to the data upload service.
-The workflow will run only once per ID, so you need to provide a new ID for each run.
-
-Have a look at the logs to see how the execution switches from synchronously waiting to the response to requesting an email:
-
-</details>
