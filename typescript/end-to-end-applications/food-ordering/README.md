@@ -20,7 +20,7 @@ The app logic (order workflow) discussed in the presentation can be found under:
 - Via git clone:
    ```shell
    git clone git@github.com:restatedev/examples.git
-   cd examples/end-to-end-applications/typescript/food-ordering
+   cd examples/typescript/end-to-end-applications/food-ordering
    ```
 
 - Via `wget`:
