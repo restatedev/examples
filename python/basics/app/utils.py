@@ -1,6 +1,8 @@
 import os
 import random
 
+import restate
+
 # Utility to let the service crash with a probability to show how the system recovers.
 kill_process = bool(os.getenv("CRASH_PROCESS"))
 
@@ -38,3 +40,20 @@ def send_email_with_link(user_id: str, email: str, secret: str):
     print(f"Sending email to {email} with secret {secret}. \n"
           f"To simulate a user clicking the link, run the following command: \n"
           f"curl localhost:8080/usersignup/{user_id}/click -H 'content-type: application/json' -d '{{ \"secret\": \"{secret}\"}}'")
+
+async def charge_bank_account(payment_deduplication_id: str, amount: int) -> bool:
+    return True
+
+
+
+subscription_service = restate.VirtualObject("SubscriptionService")
+
+
+@subscription_service.handler()
+async def create (ctx: restate.ObjectContext, userId: str):
+     pass
+
+
+@subscription_service.handler()
+async def cancel (ctx: restate.ObjectContext):
+    pass

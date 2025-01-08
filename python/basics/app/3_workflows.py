@@ -4,11 +4,12 @@ from pydantic import BaseModel
 from restate import Workflow, WorkflowContext, WorkflowSharedContext
 from app.utils import create_user_entry, send_email_with_link
 
-
-# Workflow for user signup and email verification.
-#  - Main workflow in run() method
-#  - Additional methods interact with the workflow.
-# Each workflow instance has a unique ID and runs only once (to success or failure).
+"""
+Workflow for user signup and email verification.
+ - Main workflow in run() method
+ - Additional methods interact with the workflow.
+Each workflow instance has a unique ID and runs only once (to success or failure).
+"""
 user_signup = Workflow("usersignup")
 
 
@@ -45,12 +46,15 @@ async def click(ctx: WorkflowSharedContext, secret: str):
     await ctx.promise("email_link").resolve(secret)
 
 app = restate.app(services=[user_signup])
-# You can deploy this as a container, Lambda, etc. - Invoke it over HTTP via: curl
-# localhost:8080/usersignup/signup-userid1/run/send -H 'content-type: application/json' \
-#       -d '{ "name": "Bob", "email": "bob@builder.com" }'
-#
-# - Resolve the email link via:
-#   curl localhost:8080/usersignup/signup-userid1/verifyEmail
-#
-# - Attach back to the workflow to get the result:
-#   curl localhost:8080/restate/workflow/usersignup/userid1/attach
+
+"""
+You can deploy this as a container, Lambda, etc. - Invoke it over HTTP via: curl
+localhost:8080/usersignup/signup-userid1/run/send -H 'content-type: application/json' \
+      -d '{ "name": "Bob", "email": "bob@builder.com" }'
+
+- Resolve the email link via:
+  curl localhost:8080/usersignup/signup-userid1/verifyEmail
+
+- Attach back to the workflow to get the result:
+  curl localhost:8080/restate/workflow/usersignup/userid1/attach
+"""

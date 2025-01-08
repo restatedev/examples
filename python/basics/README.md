@@ -1,4 +1,4 @@
-# Examples of the basic concepts for Restate in TypeScript / JavaScript
+# The basic concepts of Restate in Python
 
 The examples here showcase the most basic building blocks of Restate. **Durable Execution**,
 **Durable Promises**, and **Virtual Objects**, and the **Workflows** abstraction built on top
@@ -9,18 +9,23 @@ about how they work and how they can be run.
 
 ### Examples
 
-Running code cleanly
+* **[Durable Execution](app/0_durable_execution.py):** Running code cleanly
   to the end in the presence of failures. Automatic retries and recovery of previously
   finished actions. The example applies creates a subscription to movie streaming services
   by first creating a recurring payment and then adding the subscriptions.
 
-* **[Workflows](app/2_workflows.py):** Workflows are durable execution tasks that can
+* **[Building blocks](app/1_building_blocks.py):** Restate gives you a durable version
+  of common building blocks like queues, promises, RPC, state, and timers.
+  This example shows a reference of the API and what you can do with it.
+
+* **[Virtual Objects](app/2_virtual_objects.py):** Stateful serverless objects
+  to manage durable consistent state and state-manipulating logic.
+
+* **[Workflows](app/3_workflows.py):** Workflows are durable execution tasks that can
   be submitted and awaited. They have an identity and can be signaled and queried
   through durable promises. The example is a user-signup flow that takes multiple
   operations, including verifying the email address. 
 
-* **[Virtual Objects](app/3_virtual_objects.py):** Stateful serverless objects
-  to manage durable consistent state and state-manipulating logic.
 
 ### Running the examples
 
@@ -35,8 +40,9 @@ To set up the example, use the following sequence of commands.
 
 3. Start the app as follows:
    - Durable execution example: `python -m hypercorn --config hypercorn-config.toml app/1_durable_execution.py:app`
-   - Workflows example: `python -m hypercorn --config hypercorn-config.toml app/2_workflows.py:app`
-   - Virtual Objects example: `python -m hypercorn --config hypercorn-config.toml app/3_virtual_objects.py:app`
+   - The building blocks example is not runnable and more like a reference of what you can do with the API
+   - Virtual Objects example: `python -m hypercorn --config hypercorn-config.toml app/2_virtual_objects.py:app`
+   - Workflows example: `python -m hypercorn --config hypercorn-config.toml app/3_workflows.py:app`
 
 4. Start the Restate Server ([other options here](https://docs.restate.dev/develop/local_dev)):
     ```shell

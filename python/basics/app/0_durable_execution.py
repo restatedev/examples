@@ -5,13 +5,15 @@ from pydantic import BaseModel
 from restate import Service, Context
 from utils import create_recurring_payment, create_subscription
 
-# Restate lets you implement resilient applications.
-# Restate ensures handler code runs to completion despite failures:
-#  - Automatic retries
-#  - Restate tracks the progress of execution, and prevents re-execution of completed work on retries
-#  - Regular code and control flow, no custom DSLs
+"""
+Restate lets you implement resilient applications.
+Restate ensures handler code runs to completion despite failures:
+ - Automatic retries
+ - Restate tracks the progress of execution, and prevents re-execution of completed work on retries
+ - Regular code and control flow, no custom DSLs
 
-# Applications consist of services with handlers that can be called over HTTP or Kafka.
+Applications consist of services with handlers that can be called over HTTP or Kafka.
+"""
 subscription_service = Service("SubscriptionService")
 
 
@@ -41,15 +43,16 @@ async def add(ctx: Context, req: SubscriptionRequest):
 # or use .handler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
 app = restate.app([subscription_service])
 
-#
-# Check the README to learn how to run Restate.
-# Then invoke this function and see in the log how it recovers.
-# Each action (e.g. "created recurring payment") is only logged once across all retries.
-# Retries did not re-execute the successful operations.
-#
-# curl localhost:8080/SubscriptionService/add -H 'content-type: application/json' -d \
-# '{
-#     "user_id": "Sam Beckett",
-#     "credit_card": "1234-5678-9012-3456",
-#     "subscriptions" : ["Netflix", "Disney+", "HBO Max"]
-# }'
+"""
+Check the README to learn how to run Restate.
+Then invoke this function and see in the log how it recovers.
+Each action (e.g. "created recurring payment") is only logged once across all retries.
+Retries did not re-execute the successful operations.
+
+curl localhost:8080/SubscriptionService/add -H 'content-type: application/json' -d \
+'{
+    "user_id": "Sam Beckett",
+    "credit_card": "1234-5678-9012-3456",
+    "subscriptions" : ["Netflix", "Disney+", "HBO Max"]
+}'
+"""
