@@ -2,18 +2,26 @@
 
 Common tasks and patterns implemented with Restate:
 
-- **[Durable RPC, Idempotency & Concurrency](README.md#durable-rpc-idempotency-and-concurrency)**: Use programmatic clients to call Restate handlers. Add idempotency keys for deduplication. [(code)](src/durablerpc/client/client.go)
-- **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Restate as a queue: Send (delayed) events to handlers. Optionally, retrieve the response later. [(code)](src/queue/client/tasksubmitter.go)
-- **[Sagas](README.md#sagas)**: Preserve consistency by tracking undo actions and running them when code fails halfway through. [(code)](src/sagas/bookingworkflow.go)
-- **[Webhook Callbacks](README.md#durable-webhook-event-processing)**: Point webhook callbacks to a Restate handler for durable event processing. [(code)](src/webhookcallbacks/callbackrouter.go)
-- **[Scheduling Tasks](README.md#scheduling-tasks)**: Restate as scheduler: Schedule tasks for later and ensure the task is triggered and executed. [(code)](src/schedulingtasks/paymentreminders.go)
-- **[Stateful Actors and State Machines](README.md#stateful-actors-and-durable-state-machines)**: Stateful Actor representing a machine in our factory. Track state transitions with automatic state persistence. [(code)](src/statefulactors/machineoperator.go)
-- **[Transactional Event Processing](README.md#event-processing-transactional-handlers-with-durable-side-effects-and-timers)**: Process events from Kafka to update various downstream systems in a transactional way. [(code)](src/eventtransactions/userfeed.go)
-- **[Event enrichment / Joins](README.md#event-processing-event-enrichment)**: Stateful functions/actors connected to Kafka and callable over RPC. [(code)](src/eventenrichment/packagetracker.go)
-- **[Parallelizing work](README.md#parallelizing-work)**: Execute a list of tasks in parallel and then gather their result. [(code)](src/parallelizework/fanoutworker.go)
-- **[Turn slow sync tasks into async](README.md#async-data-upload)**: Kick off a synchronous task (e.g. data upload) and convert it to asynchronous if it takes too long. [(code)](src/dataupload/client/client.go)
+## Use Cases and Patterns
+#### Communication
+- **[Durable RPC, Idempotency & Concurrency](README.md#durable-rpc-idempotency-and-concurrency)**: Use programmatic clients to call Restate handlers. Add idempotency keys for deduplication. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/durablerpc/client/client.go)
+- **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Restate as a queue: Send (delayed) events to handlers. Optionally, retrieve the response later. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/queue/client/tasksubmitter.go)
+- **[Webhook Callbacks](README.md#durable-webhook-event-processing)**: Point webhook callbacks to a Restate handler for durable event processing. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/webhookcallbacks/callbackrouter.go)
+- **[Convert Sync Tasks to Async](README.md#async-data-upload)**: Kick off a synchronous task (e.g. data upload) and convert it to asynchronous if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/dataupload/client/client.go)
 
-## Durable RPC, Idempotency and Concurrency
+#### Common patterns
+- **[Sagas](README.md#sagas)**: Preserve consistency by tracking undo actions and running them when code fails halfway through. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/sagas/bookingworkflow.go)
+- **[Stateful Actors and State Machines](README.md#stateful-actors-and-durable-state-machines)**: Stateful Actor representing a machine in our factory. Track state transitions with automatic state persistence. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/statefulactors/machineoperator.go)
+
+#### Scheduling
+- **[Scheduling Tasks](README.md#scheduling-tasks)**: Restate as scheduler: Schedule tasks for later and ensure the task is triggered and executed. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/schedulingtasks/paymentreminders.go)
+- **[Parallelizing Work](README.md#parallelizing-work)**: Execute a list of tasks in parallel and then gather their result. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/parallelizework/fanoutworker.go)
+
+#### Event processing
+- **[Event Enrichment / Joins](README.md#event-processing-event-enrichment)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventenrichment/packagetracker.go)
+- **[Transactional Event Processing](README.md#event-processing-transactional-handlers-with-durable-side-effects-and-timers)**: Process events from Kafka to update various downstream systems in a transactional way. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventtransactions/userfeed.go)
+
+## Durable RPC, Idempotency and Concurrency</strong></summary>
 
 This example shows an example of:
 - **Durable RPC**: once a request has reached Restate, it is guaranteed to be processed
@@ -26,12 +34,13 @@ The example shows a [client](src/durablerpc/client/client.go) that receives prod
 The [Product service](src/durablerpc/service/productservice.go) is a Restate service that durably processes the reservation requests and deduplicates them.
 Each product can be reserved only once.
 
-### Running the example
+<details>
+<summary><strong>Running the example</strong></summary>
+
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the service: `go run ./src/durablerpc/service`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
-### Demo scenario
 Run the client to let it send a request to reserve a product: 
 ```shell
 go run ./src/durablerpc/client --productid 1 --reservationid 1
@@ -49,6 +58,7 @@ However, if we run the first request again with same reservation ID, we will get
 go run ./src/durablerpc/client --productid 1 --reservationid 1
 ``` 
 Restate deduplicated the request (with the reservation ID as idempotency key) and returned the first response.
+</details>
 
 ## (Delayed) Message Queue
 
@@ -70,28 +80,18 @@ Every step pushes a compensation action (an undo operation) to a stack. In the c
 
 The main requirement is that steps are implemented as journaled operations, like `restate.Run()` or RPC/messaging.
 
-### Adding compensations
 The example shows two ways you can implement the compensation, depending on the characteristics of the API/system you interact with.
+1. **Two-phase commit**: The reservation is created and then confirmed or cancelled. The compensation executes 'cancel' and is added after the reservation is created.
+2. **Idempotency key**: The payment is made in one shot and supplies an ID. The compensation is added before the payment is made and uses the same ID.
 
-The flight and car reservations work in a two-phase commit way, where you first create a reservation, get a reservation ID back, and then confirm or cancel the reservation with its ID.
-In this case, you need to add the compensation to the list after creating the reservation, because you need the reservation ID to cancel it.
-If the failure happens while making the reservation, you can be sure that it never takes effect, because you didn't confirm it.
+Note that the compensating actions need to be idempotent.
 
-The payment on the other hand uses a client generated idempotency key.
-The payment goes through in one shot (single API call).
-If we receive an error, we might not be sure if this occurred before or after the payment took effect.
-Therefore, we need to add the compensation to the list before the payment is made.
-If a failure happens during the payment, the compensation will run.
-The downstream API then uses the idempotency key to check if the payment went through, and whether it needs to be refunded.
+<details>
+<summary><strong>Running the example</strong></summary>
 
-Note that the compensating action needs to be idempotent.
-
-### Running this example
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the service: `go run ./src/sagas`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
-
-### Demo scenario
 
 Have a look at the logs to see how the compensations run in case of a terminal error.
 
@@ -137,12 +137,15 @@ Have a look at the logs to see the cancellations of the flight and car booking i
 2025/01/06 16:16:02 INFO Invocation completed successfully method=BookingWorkflow/Run invocationID=inv_17l9ZLwBY3bz6HEIybYB6Rh9SbV6khuc0N
 ```
 </details>
+</details>
 
 ## Durable Webhook Event Processing
 
 This example processes webhook callbacks from a payment provider.
+
 Restate handlers can be used as the target for webhook callbacks.
 This turns handlers into durable event processors that ensure the event is processed exactly once.
+
 You don't need to do anything special!
 
 ## Scheduling Tasks
@@ -176,12 +179,12 @@ This example implements a State Machine with a Virtual Object.
 What you get by this are _linearized interactions_ with your state machine,
 avoiding accidental state corruption and concurrency issues.
 
-### Running the example
+<details>
+<summary><strong>Running the example</strong></summary>
+
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the service: `go run ./src/statefulactors`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
-
-### Demo scenario
 
 Invoke the state machine transitions like
 ```shell
@@ -236,6 +239,7 @@ echo "executing..."
 ```
 
 </details>
+</details>
 
 ## Event Processing: Transactional Handlers with Durable Side Effects and Timers
 
@@ -248,7 +252,8 @@ Processing events (from Kafka) to update various downstream systems.
   entire partitions.
 
 
-### Running the example
+<details>
+<summary><strong>Running the example</strong></summary>
 
 1. Start the Kafka broker via Docker Compose: `docker compose up -d`.
 
@@ -340,6 +345,8 @@ Processing events (from Kafka) to update various downstream systems.
     
     </details>
 
+</details>
+
 ## Event Processing: Event Enrichment / Joins
 
 This example shows an example of:
@@ -352,7 +359,8 @@ The example implements a package delivery tracking service.
 Packages are registered via an RPC handler, and their location is updated via Kafka events.
 The Package Tracker Virtual Object tracks the package details and its location history.
 
-### Running the example
+<details>
+<summary><strong>Running the example</strong></summary>
 
 1. Start the Kafka broker via Docker Compose: `docker compose up -d`.
 
@@ -424,6 +432,7 @@ The Package Tracker Virtual Object tracks the package details and its location h
    
     </details>
     
+</details>
     
 ## Parallelizing work
 
@@ -446,12 +455,12 @@ The [upload client](src/dataupload/client/client.go) does a synchronous request 
 
 If the upload takes too long, however, the client asks the upload service to send the URL later in an email.
 
-### Running the examples
+<details>
+<summary><strong>Running the example</strong></summary>
+
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the service: `go run ./src/dataupload/service`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
-
-### Demo scenario
 
 Run the upload client with a userId: `go run ./src/dataupload/client`
 
@@ -459,3 +468,5 @@ This will submit an upload workflow to the data upload service.
 The workflow will run only once per ID, so you need to provide a new ID for each run.
 
 Have a look at the logs to see how the execution switches from synchronously waiting to the response to requesting an email:
+
+</details>
