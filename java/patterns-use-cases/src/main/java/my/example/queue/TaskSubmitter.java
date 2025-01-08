@@ -30,9 +30,11 @@ public class TaskSubmitter {
                         .send(/*Duration.ofDays(1)*/)
                         .runTask(
                                 taskOpts,
-                                // use a stable uuid as an idempotency key
+                                // use a stable uuid as an idempotency key; Restate deduplicates for us
                                 CallRequestOptions.DEFAULT.withIdempotency("dQw4w9WgXcQ")
                         );
+
+        // ... do other things while the task is being processed ...
 
         // await the handler's result; optionally from another process
         String result = restateClient.invocationHandle(handle.getInvocationId(), JsonSerdes.STRING).attach();

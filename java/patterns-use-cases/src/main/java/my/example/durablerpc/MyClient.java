@@ -18,4 +18,14 @@ public class MyClient {
 
         return reserved;
     }
+
+    public static void main(String[] args) {
+        if (args.length < 2) {
+            System.err.println("Specify the productId and reservationId as the arguments: " +
+                    "./gradlew run -PmainClass=my.example.durablerpc.MyClient --args=\"productId123 reservationId123\"");
+            System.exit(1);
+        }
+        boolean reserved = new MyClient().reserveProduct(args[0], args[1]);
+        System.out.println("Product reserved: " + reserved);
+    }
 }

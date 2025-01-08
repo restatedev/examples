@@ -72,14 +72,13 @@ The example shows two ways you can implement the compensation, depending on the 
 
 Note that the compensating actions need to be idempotent.
 
-### Running this example
-1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `./gradlew -PmainClass=my.example.sagas.BookingWorkflow run`
-3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080` 
-
 
 <details>
 <summary><strong>Running the example</strong></summary>
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `./gradlew -PmainClass=my.example.sagas.BookingWorkflow run`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080` 
 
 Have a look at the logs to see how the compensations run in case of a terminal error.
 
