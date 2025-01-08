@@ -19,7 +19,7 @@ public class CarRentals {
     // this should implement the communication with the rental
     // provider's APIs
     // just return a mock random id representing the reservation
-    String bookingId = UUID.randomUUID().toString();
+    String bookingId = ctx.random().nextUUID().toString();
     logger.info("Car rental reservation created with id: {}", bookingId);
     return bookingId;
   }

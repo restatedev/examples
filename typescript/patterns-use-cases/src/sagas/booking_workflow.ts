@@ -9,21 +9,14 @@ type BookingRequest = {
   paymentInfo: { cardNumber: string, amount: number }
 };
 
- //
- // An example of a trip reservation workflow, using the SAGAs pattern to
- // undo previous steps in case of an error.
- //
- // The durable execution's guarantee to run code to the end in the presence
- // of failures, and to deterministically recover previous steps from the
- // journal, makes sagas easy.
- // Every step pushes a compensation action (an undo operation) to a stack.
- // in the case of an error, those operations are run.
- //
- // The main requirement is that steps are implemented as journaled
- // operations, like `ctx.run()` or rpc/messaging.
+// Trip reservation workflow using sagas:
+// For some types of failures, we do not want to retry but instead undo the previous actions and finish.
 //
-// Note: that the compensation logic is purely implemented in the user code and runs durably
-// until it completes.
+// You can use Durable Execution to execute actions and track their undo equivalents (compensations) in a list.
+// When a terminal error occurs, Durable Execution ensures execution of all compensations.
+//
+// Note: that the compensation logic is purely implemented in user code (no special Restate API)
+
 const bookingWorkflow = restate.workflow({
   name: "BookingWorkflow",
   handlers: {
@@ -70,6 +63,15 @@ const bookingWorkflow = restate.workflow({
     }
   },
 });
+
+/*
+NOTE: Depending on the characteristics of the API/system you interact with, you add the compensation at a different time:
+1. **Two-phase commit**: For APIs like flights and cars, you first create a reservation and get an ID.
+You then confirm or cancel using this ID. Add the compensation after creating the reservation.
+
+2. **Idempotency key**: For APIs like payments, you generate a UUID and perform the action in one step.
+Add the compensation before performing the action, using the same UUID.
+ */
 
 restate.endpoint()
     .bind(bookingWorkflow)
