@@ -1,4 +1,4 @@
-package my.example.dataupload;
+package my.example.syncasync;
 
 import dev.restate.sdk.client.Client;
 import org.apache.logging.log4j.LogManager;

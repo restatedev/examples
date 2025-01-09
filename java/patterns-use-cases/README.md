@@ -3,7 +3,7 @@
 #### Communication
 - **[Durable RPC, Idempotency & Concurrency](README.md#durable-rpc-idempotency--concurrency)**: Restate persists requests and makes sure they execute exactly-once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/durablerpc/MyClient.java)
 - **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/queue/TaskSubmitter.java)
-- **[Convert Sync Tasks to Async](README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/dataupload/UploadClient.java)
+- **[Convert Sync Tasks to Async](README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/syncasync/UploadClient.java)
 
 #### Orchestration patterns
 - **[Sagas](README.md#sagas)**: Preserve consistency by tracking undo actions and running them when code fails halfway through. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/sagas/BookingWorkflow.java)
@@ -71,13 +71,13 @@ Use Restate as a queue. Schedule tasks for now or later and ensure the task is o
 - [Async Task Worker](src/main/java/my/example/queue/AsyncTaskWorker.java): gets invoked by Restate for each task in the queue.
 
 ## Convert Sync Tasks to Async
-[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/dataupload/UploadClient.java)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/syncasync/UploadClient.java)
 
 This example shows how to use the Restate SDK to **kick of a synchronous task and turn it into an asynchronous one if it takes too long**.
 
-The example implements a [data upload service](src/main/java/my/example/dataupload/DataUploadService.java), that creates a bucket, uploads data to it, and then returns the URL.
+The example implements a [data upload service](src/main/java/my/example/syncasync/DataUploadService.java), that creates a bucket, uploads data to it, and then returns the URL.
 
-The [upload client](src/main/java/my/example/dataupload/UploadClient.java) does a synchronous request to upload the file, and the server will respond with the URL.
+The [upload client](src/main/java/my/example/syncasync/UploadClient.java) does a synchronous request to upload the file, and the server will respond with the URL.
 
 If the upload takes too long, however, the client asks the upload service to send the URL later in an email.
 
@@ -85,10 +85,10 @@ If the upload takes too long, however, the client asks the upload service to sen
 <summary><strong>Running the example</strong></summary>
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `./gradlew -PmainClass=my.example.dataupload.DataUploadService run`
+2. Start the service: `./gradlew -PmainClass=my.example.syncasync.DataUploadService run`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
-Run the upload client with a userId: `./gradlew -PmainClass=my.example.dataupload.UploadClient run --args="someone21"`
+Run the upload client with a userId: `./gradlew -PmainClass=my.example.syncasync.UploadClient run --args="someone21"`
 
 This will submit an upload workflow to the data upload service.
 The workflow will run only once per ID, so you need to provide a new ID for each run.

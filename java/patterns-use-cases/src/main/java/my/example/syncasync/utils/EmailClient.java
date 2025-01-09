@@ -1,4 +1,4 @@
-package my.example.dataupload.utils;
+package my.example.syncasync.utils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
