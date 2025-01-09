@@ -20,7 +20,7 @@ Common tasks and patterns implemented with Restate:
 - **[Transactional Event Processing](README.md#transactional-event-processing)**: Process events from Kafka to update various downstream systems in a transactional way. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventtransactions/userfeed.go)
 - **[Event Enrichment / Joins](README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventenrichment/packagetracker.go)
 
-## Durable RPC, Idempotency and Concurrency
+## Durable RPC, Idempotency & Concurrency
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/durablerpc/client/client.go)
 
 This example shows:

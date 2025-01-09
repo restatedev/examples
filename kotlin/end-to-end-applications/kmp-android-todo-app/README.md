@@ -2,7 +2,7 @@
 
 Kotlin multiplatform example for a Todo app using Restate as backend:
 
-![](screenshot.png)
+<img width="200" src="screenshot.png">
 
 This project contains:
 

@@ -33,7 +33,7 @@ First, install the dependencies:
 npm install
 ``` 
 
-## Durable RPC, Idempotency and Concurrency 
+## Durable RPC, Idempotency & Concurrency
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/durablerpc/express_app.ts)
 
 This example shows:

@@ -28,7 +28,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Durable RPC, Idempotency and Concurrency
+## Durable RPC, Idempotency & Concurrency
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/durablerpc/client.py)
 
 This example shows:
