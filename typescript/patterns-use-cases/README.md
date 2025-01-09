@@ -5,7 +5,7 @@ Common tasks and patterns implemented with Restate:
 #### Communication
 - **[Durable RPC, Idempotency & Concurrency](README.md#durable-rpc-idempotency--concurrency)**: Use programmatic clients to call Restate handlers. Add idempotency keys for deduplication. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/durablerpc/express_app.ts)
 - **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Restate as a queue: Send (delayed) events to handlers. Optionally, retrieve the response later. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/queue/task_submitter.ts)
-- **[Webhook Callbacks](#webhook-callbacks)**: Point webhook callbacks to a Restate handler for durable event processing. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/webhookcallbacks/webhook_callback_router.ts)
+- **[Webhook Callbacks](README.md#webhook-callbacks)**: Point webhook callbacks to a Restate handler for durable event processing. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/webhookcallbacks/webhook_callback_router.ts)
 - **[Convert Sync Tasks to Async](README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/syncasync/client.ts)
 - **[Payments signals (Advanced)](README.md#payment-signals)**: Combining fast synchronous responses and slow async callbacks for payments, with Stripe. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/signalspayments/payment_service.ts)
 
@@ -154,19 +154,19 @@ webhooks to your local machine.
 4. Create a free Stripe test account. This requires no verification, but you can only work
    with test data, not make real payments. Good enough for this example.
 
-5. In the [Stripe UI](dashboard.stripe.com), go to ["Developers" -> "API Keys"](https://dashboard.stripe.com/test/apikeys) and copy the _secret key_ (`sk_test_...`).
-   Add it to the [stripe_utils.ts](src/signalspayment/stripe_utils.ts) file. Because this is a dev-only
+5. In the Stripe UI (dashboard.stripe.com), go to ["Developers" -> "API Keys"](https://dashboard.stripe.com/test/apikeys) and copy the _secret key_ (`sk_test_...`).
+   Add it to the [stripe_utils.ts](src/signalspayments/utils/stripe_utils.ts) file. Because this is a dev-only
    API key, it supports only test data, so it isn't super sensitive.
 
 6. Run launch _ngrok_:
-    1. [Get a free account](dashboard.ngrok.com)
-    2. [Copy your auth token](https://dashboard.ngrok.com/get-started/your-authtoken)
+    1. Get a free account (dashboard.ngrok.com)
+    2. Copy your auth token (https://dashboard.ngrok.com/get-started/your-authtoken)
     3. Download the binary, or launch a docker container. Make it forward HTTP calls to local port `8080`:
         - `NGROK_AUTHTOKEN=<your token> ngrok http 8080`
         - or `docker run --rm -it -e NGROK_AUTHTOKEN=<your token> --network host ngrok/ngrok http 8080` (on Linux command).
           Copy the public URL that ngrok shows you: `https://<some random numbers>.ngrok-free.app`
 
-7. Go to the Stripe UI and [create a webhook](https://dashboard.stripe.com/test/webhooks)
+7. Go to the Stripe UI and create a webhook (https://dashboard.stripe.com/test/webhooks)
     - Put the ngrok public URL + `/payments/processWebhook` as the webhook URL (you need to update this whenever you stop/start ngrok).
       Example: `https://<some random numbers>.ngrok-free.app/payments/processWebhook`
     - Select all _"Payment Intent"_ event types.
