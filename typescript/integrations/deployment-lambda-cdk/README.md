@@ -6,7 +6,7 @@ service with this Restate environment.
 
 For more information on CDK, please see [Getting started with the AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html).
 
-* [CDK app entry point `lambda-ts-cdk.ts`](typescript-lambda-cdk-test/bin/lambda-ts-cdk.ts)
+* [CDK app entry point `lambda-ts-cdk.ts`](bin/lambda-ts-cdk.ts)
 * [CDK stack consisting of a Lambda function and providing Restate service registration](lib/lambda-ts-cdk-stack.ts)
 * [TypeScript Lambda handler](lib/lambda/handler.ts)
 

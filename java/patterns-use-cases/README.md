@@ -418,12 +418,12 @@ webhooks to your local machine.
 4. Create a free Stripe test account. This requires no verification, but you can only work
    with test data, not make real payments. Good enough for this example.
 
-5. In the [Stripe UI](dashboard.stripe.com), go to ["Developers" -> "API Keys"](https://dashboard.stripe.com/test/apikeys) and copy the _secret key_ (`sk_test_...`).
-   Add it to the [StripeUtils.java](src/main/java/my/example/signalspayment/utils/StripeUtils.java) file. Because this is a dev-only
+5. In the [Stripe UI](https://dashboard.stripe.com), go to ["Developers" -> "API Keys"](https://dashboard.stripe.com/test/apikeys) and copy the _secret key_ (`sk_test_...`).
+   Add it to the [StripeUtils.java](src/main/java/my/example/signalspayments/utils/StripeUtils.java) file. Because this is a dev-only
    API key, it supports only test data, so it isn't super sensitive.
 
 6. Run launch _ngrok_:
-    1. [Get a free account](dashboard.ngrok.com)
+    1. [Get a free account](https://dashboard.ngrok.com)
     2. [Copy your auth token](https://dashboard.ngrok.com/get-started/your-authtoken)
     3. Download the binary, or launch a docker container. Make it forward HTTP calls to local port `8080`:
         - `NGROK_AUTHTOKEN=<your token> ngrok http 8080`
@@ -435,7 +435,7 @@ webhooks to your local machine.
       Example: `https://<some random numbers>.ngrok-free.app/payments/processWebhook`
     - Select all _"Payment Intent"_ event types.
 
-8. Put the webhook secret (`whsec_...`) to the [StripeUtils.java](src/main/java/my/example/signalspayment/StripeUtils.java) file.
+8. Put the webhook secret (`whsec_...`) to the [StripeUtils.java](src/main/java/my/example/signalspayments/utils/StripeUtils.java) file.
 
 Use as test data `pm_card_visa` for a successful payment and `pm_card_visa_chargeDeclined` for a declined payment.
 Because the test data rarely triggers an async response, this example's tools can mimic that

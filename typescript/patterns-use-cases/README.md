@@ -154,19 +154,19 @@ webhooks to your local machine.
 4. Create a free Stripe test account. This requires no verification, but you can only work
    with test data, not make real payments. Good enough for this example.
 
-5. In the Stripe UI (dashboard.stripe.com), go to ["Developers" -> "API Keys"](https://dashboard.stripe.com/test/apikeys) and copy the _secret key_ (`sk_test_...`).
+5. In the [Stripe UI](https://dashboard.stripe.com), go to ["Developers" -> "API Keys"](https://dashboard.stripe.com/test/apikeys) and copy the _secret key_ (`sk_test_...`).
    Add it to the [stripe_utils.ts](src/signalspayments/utils/stripe_utils.ts) file. Because this is a dev-only
    API key, it supports only test data, so it isn't super sensitive.
 
 6. Run launch _ngrok_:
-    1. Get a free account (dashboard.ngrok.com)
+    1. [Get a free account](https://dashboard.ngrok.com)
     2. Copy your auth token (https://dashboard.ngrok.com/get-started/your-authtoken)
     3. Download the binary, or launch a docker container. Make it forward HTTP calls to local port `8080`:
         - `NGROK_AUTHTOKEN=<your token> ngrok http 8080`
         - or `docker run --rm -it -e NGROK_AUTHTOKEN=<your token> --network host ngrok/ngrok http 8080` (on Linux command).
           Copy the public URL that ngrok shows you: `https://<some random numbers>.ngrok-free.app`
 
-7. Go to the Stripe UI and create a webhook (https://dashboard.stripe.com/test/webhooks)
+7. Go to the Stripe UI and [create a webhook](https://dashboard.stripe.com/test/webhooks)
     - Put the ngrok public URL + `/payments/processWebhook` as the webhook URL (you need to update this whenever you stop/start ngrok).
       Example: `https://<some random numbers>.ngrok-free.app/payments/processWebhook`
     - Select all _"Payment Intent"_ event types.

@@ -37,9 +37,9 @@ docker compose build
 docker compose up
 ```
 
-WebUI is running at http://localhost:3000
+WebUI is running at `http://localhost:3000`
 
-Jaeger is running at http://localhost:16686
+Jaeger is running at `http://localhost:16686`
 
 When you are making changes to the code, and you want to trigger a build of the Docker images:
 

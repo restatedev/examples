@@ -5,9 +5,9 @@ The stack uses the Restate CDK constructs library to register the service with a
 
 For more information on CDK, please see [Getting started with the AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html).
 
-* [CDK app entry point `lambda-go-cdk.ts`](bin/lambda-go-cdk.ts)
-* [CDK stack consisting of a Lambda function and providing Restate service registration](cdk/lambda-go-cdk-stack.ts)
-* [Go Lambda handler](lambda) - based on [`go` template](../go)
+* [CDK app entry point `go-lambda-cdk.ts`](bin/go-lambda-cdk.ts)
+* [CDK stack consisting of a Lambda function and providing Restate service registration](cdk/go-lambda-cdk-stack.ts)
+* [Go Lambda handler](lambda) - based on [`go` template](../../templates/go)
 
 ## Download the example
 

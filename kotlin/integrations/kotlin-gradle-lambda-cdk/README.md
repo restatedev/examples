@@ -8,7 +8,7 @@ For more information on CDK, please see [Getting started with the AWS CDK](https
 
 * [CDK app entry point `lambda-jvm-cdk.ts`](bin/lambda-jvm-cdk.ts)
 * [CDK stack consisting of a Lambda function and providing Restate service registration](cdk/lambda-jvm-cdk-stack.ts)
-* [Kotlin Lambda handler](lambda) - based on [`hello-world-lambda`](../hello-world-lambda)
+* [Kotlin Lambda handler](lambda) - based on [`hello-world-lambda`](lambda/src/main/kotlin/dev/restate/sdk/examples/LambdaHandler.kt)
 
 ## Download the example
 
