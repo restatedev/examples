@@ -19,6 +19,7 @@
 - **[Event Enrichment / Joins](README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/eventenrichment/PackageTracker.java)
 
 ## Durable RPC, Idempotency & Concurrency
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/durablerpc/MyClient.java)
 
 This example shows an example of:
 - **Durable RPC**: once a request has reached Restate, it is guaranteed to be processed
@@ -57,7 +58,85 @@ Restate deduplicated the request (with the reservation ID as idempotency key) an
 
 </details>
 
+## (Delayed) Message Queue
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/queue/TaskSubmitter.java)
+
+Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.
+
+- [Task Submitter](src/main/java/my/example/queue/TaskSubmitter.java): schedules tasks via send requests with and idempotency key.
+    - The **send requests** put the tasks in Restate's queue. The task submitter does not wait for the task response.
+    - The **idempotency key** in the header is used by Restate to deduplicate requests.
+    - If a delay is set, the task will be executed later and Restate will track the timer durably, like a **delayed task queue**.
+- [Async Task Worker](src/main/java/my/example/queue/AsyncTaskWorker.java): gets invoked by Restate for each task in the queue.
+
+## Convert Sync Tasks to Async
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/dataupload/UploadClient.java)
+
+This example shows how to use the Restate SDK to **kick of a synchronous task and turn it into an asynchronous one if it takes too long**.
+
+The example implements a [data upload service](src/main/java/my/example/dataupload/DataUploadService.java), that creates a bucket, uploads data to it, and then returns the URL.
+
+The [upload client](src/main/java/my/example/dataupload/UploadClient.java) does a synchronous request to upload the file, and the server will respond with the URL.
+
+If the upload takes too long, however, the client asks the upload service to send the URL later in an email.
+
+<details>
+<summary><strong>Running the example</strong></summary>
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `./gradlew -PmainClass=my.example.dataupload.DataUploadService run`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+Run the upload client with a userId: `./gradlew -PmainClass=my.example.dataupload.UploadClient run --args="someone21"`
+
+This will submit an upload workflow to the data upload service.
+The workflow will run only once per ID, so you need to provide a new ID for each run.
+
+Have a look at the logs to see how the execution switches from synchronously waiting to the response to requesting an email:
+
+<details>
+<summary><strong>View logs: fast upload</strong></summary>
+
+Client logs:
+```
+2024-12-18 15:02:34 INFO   my.example.UploadClient - Uploading data for user someone212
+2024-12-18 15:02:36 INFO   my.example.UploadClient - Fast upload... URL was https://s3-eu-central-1.amazonaws.com/257587941/
+```
+Workflow logs:
+```
+2024-12-18 15:02:34 INFO  [DataUploadService/run][inv_17cZwACLnO7f5m1BjN7SKoQpuyycCmWwnv] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2024-12-18 15:02:34 INFO  [DataUploadService/run][inv_17cZwACLnO7f5m1BjN7SKoQpuyycCmWwnv] my.example.utils.DataOperations - Creating bucket with URL https://s3-eu-central-1.amazonaws.com/257587941/
+2024-12-18 15:02:34 INFO  [DataUploadService/run][inv_17cZwACLnO7f5m1BjN7SKoQpuyycCmWwnv] my.example.utils.DataOperations - Uploading data to target https://s3-eu-central-1.amazonaws.com/257587941/. ETA: 1500 ms
+2024-12-18 15:02:36 INFO  [DataUploadService/run][inv_17cZwACLnO7f5m1BjN7SKoQpuyycCmWwnv] dev.restate.sdk.core.InvocationStateMachine - End invocation
+```
+</details>
+
+<details>
+<summary><strong>View logs: slow upload</strong></summary>
+
+Client logs:
+```
+2024-12-18 15:02:41 INFO   my.example.UploadClient - Uploading data for user someone2122
+2024-12-18 15:02:46 INFO   my.example.UploadClient - Slow upload... Mail the link later
+```
+
+Workflow logs:
+```
+2024-12-18 15:02:41 INFO  [DataUploadService/run][inv_1koakM2GXxcN2Co3aM3pSrQJokiqnyR7MJ] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2024-12-18 15:02:41 INFO  [DataUploadService/run][inv_1koakM2GXxcN2Co3aM3pSrQJokiqnyR7MJ] my.example.utils.DataOperations - Creating bucket with URL https://s3-eu-central-1.amazonaws.com/493004051/
+2024-12-18 15:02:41 INFO  [DataUploadService/run][inv_1koakM2GXxcN2Co3aM3pSrQJokiqnyR7MJ] my.example.utils.DataOperations - Uploading data to target https://s3-eu-central-1.amazonaws.com/493004051/. ETA: 10000 ms
+2024-12-18 15:02:46 INFO  [DataUploadService/resultAsEmail][inv_1koakM2GXxcN7veCWCBDo77G0P2BIX7KFz] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2024-12-18 15:02:51 INFO  [DataUploadService/run][inv_1koakM2GXxcN2Co3aM3pSrQJokiqnyR7MJ] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2024-12-18 15:02:51 INFO  [DataUploadService/resultAsEmail][inv_1koakM2GXxcN7veCWCBDo77G0P2BIX7KFz] my.example.utils.EmailClient - Sending email to https://s3-eu-central-1.amazonaws.com/493004051/ with url someone2122@example.com
+2024-12-18 15:02:51 INFO  [DataUploadService/resultAsEmail][inv_1koakM2GXxcN7veCWCBDo77G0P2BIX7KFz] dev.restate.sdk.core.InvocationStateMachine - End invocation
+```
+You see the call to `resultAsEmail` after the upload took too long, and the sending of the email.
+
+</details>
+</details>
+
 ## Sagas
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/sagas/BookingWorkflow.java)
 
 An example of a trip reservation workflow, using the saga pattern to undo previous steps in case of an error.
 
@@ -130,6 +209,7 @@ dev.restate.sdk.common.TerminalException: Payment could not be accepted!
 </details>
 
 ## Stateful Actors and State Machines
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/statefulactors/MachineOperator.java)
 
 This example implements a State Machine with a Virtual Object.
 
@@ -225,6 +305,7 @@ java.lang.RuntimeException: A failure happened!
 </details>
 
 ## Payment State Machines
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/statemachinepayments/PaymentProcessor.java)
 
 This example shows how to build a reliable payment state machine.
 
@@ -293,17 +374,8 @@ restate kv get PaymentProcessor some-string-id
 </details>
 </details>
 
-## (Delayed) Message Queue
-
-Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.
-
-- [Task Submitter](src/main/java/my/example/queue/TaskSubmitter.java): schedules tasks via send requests with and idempotency key.
-    - The **send requests** put the tasks in Restate's queue. The task submitter does not wait for the task response.
-    - The **idempotency key** in the header is used by Restate to deduplicate requests.
-    - If a delay is set, the task will be executed later and Restate will track the timer durably, like a **delayed task queue**.
-- [Async Task Worker](src/main/java/my/example/queue/AsyncTaskWorker.java): gets invoked by Restate for each task in the queue.
-
 ## Parallelizing Work
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/parallelizework/FanOutWorker.java)
 
 This example shows how to use the Restate SDK to **execute a list of tasks in parallel and then gather their result**.
 Also known as fan-out, fan-in.
@@ -314,72 +386,8 @@ It then splits the task into subtasks, executes them in parallel, and then gathe
 Restate guarantees and manages the execution of all the subtasks across failures.
 You can run this on FaaS infrastructure, like AWS Lambda, and it will scale automatically.
 
-## Convert Sync Tasks to Async
-
-This example shows how to use the Restate SDK to **kick of a synchronous task and turn it into an asynchronous one if it takes too long**.
-
-The example implements a [data upload service](src/main/java/my/example/dataupload/DataUploadService.java), that creates a bucket, uploads data to it, and then returns the URL.
-
-The [upload client](src/main/java/my/example/dataupload/UploadClient.java) does a synchronous request to upload the file, and the server will respond with the URL.
-
-If the upload takes too long, however, the client asks the upload service to send the URL later in an email.
-
-<details>
-<summary><strong>Running the example</strong></summary>
-
-1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `./gradlew -PmainClass=my.example.dataupload.DataUploadService run`
-3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
-
-Run the upload client with a userId: `./gradlew -PmainClass=my.example.dataupload.UploadClient run --args="someone21"`
-
-This will submit an upload workflow to the data upload service.
-The workflow will run only once per ID, so you need to provide a new ID for each run.
-
-Have a look at the logs to see how the execution switches from synchronously waiting to the response to requesting an email:
-
-<details>
-<summary><strong>View logs: fast upload</strong></summary>
-
-Client logs:
-```
-2024-12-18 15:02:34 INFO   my.example.UploadClient - Uploading data for user someone212
-2024-12-18 15:02:36 INFO   my.example.UploadClient - Fast upload... URL was https://s3-eu-central-1.amazonaws.com/257587941/
-```
-Workflow logs:
-```
-2024-12-18 15:02:34 INFO  [DataUploadService/run][inv_17cZwACLnO7f5m1BjN7SKoQpuyycCmWwnv] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-18 15:02:34 INFO  [DataUploadService/run][inv_17cZwACLnO7f5m1BjN7SKoQpuyycCmWwnv] my.example.utils.DataOperations - Creating bucket with URL https://s3-eu-central-1.amazonaws.com/257587941/
-2024-12-18 15:02:34 INFO  [DataUploadService/run][inv_17cZwACLnO7f5m1BjN7SKoQpuyycCmWwnv] my.example.utils.DataOperations - Uploading data to target https://s3-eu-central-1.amazonaws.com/257587941/. ETA: 1500 ms
-2024-12-18 15:02:36 INFO  [DataUploadService/run][inv_17cZwACLnO7f5m1BjN7SKoQpuyycCmWwnv] dev.restate.sdk.core.InvocationStateMachine - End invocation
-```
-</details>
-
-<details>
-<summary><strong>View logs: slow upload</strong></summary>
-
-Client logs:
-```
-2024-12-18 15:02:41 INFO   my.example.UploadClient - Uploading data for user someone2122
-2024-12-18 15:02:46 INFO   my.example.UploadClient - Slow upload... Mail the link later
-```
-
-Workflow logs:
-```
-2024-12-18 15:02:41 INFO  [DataUploadService/run][inv_1koakM2GXxcN2Co3aM3pSrQJokiqnyR7MJ] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-18 15:02:41 INFO  [DataUploadService/run][inv_1koakM2GXxcN2Co3aM3pSrQJokiqnyR7MJ] my.example.utils.DataOperations - Creating bucket with URL https://s3-eu-central-1.amazonaws.com/493004051/
-2024-12-18 15:02:41 INFO  [DataUploadService/run][inv_1koakM2GXxcN2Co3aM3pSrQJokiqnyR7MJ] my.example.utils.DataOperations - Uploading data to target https://s3-eu-central-1.amazonaws.com/493004051/. ETA: 10000 ms
-2024-12-18 15:02:46 INFO  [DataUploadService/resultAsEmail][inv_1koakM2GXxcN7veCWCBDo77G0P2BIX7KFz] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-18 15:02:51 INFO  [DataUploadService/run][inv_1koakM2GXxcN2Co3aM3pSrQJokiqnyR7MJ] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-12-18 15:02:51 INFO  [DataUploadService/resultAsEmail][inv_1koakM2GXxcN7veCWCBDo77G0P2BIX7KFz] my.example.utils.EmailClient - Sending email to https://s3-eu-central-1.amazonaws.com/493004051/ with url someone2122@example.com
-2024-12-18 15:02:51 INFO  [DataUploadService/resultAsEmail][inv_1koakM2GXxcN7veCWCBDo77G0P2BIX7KFz] dev.restate.sdk.core.InvocationStateMachine - End invocation
-```
-You see the call to `resultAsEmail` after the upload took too long, and the sending of the email.
-
-</details>
-</details>
-
 ## Payment Signals
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/signalspayments/PaymentService.java)
 
 This example issues a payment request to Stripe.
 When calling Stripe, the result often comes synchronously as a response API call.
@@ -451,6 +459,7 @@ A few notes:
 </details>
 
 ## Transactional Event Processing
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/eventtransactions/UserFeed.java)
 
 Processing events (from Kafka) to update various downstream systems.
 - Durable side effects with retries and recovery of partial progress
@@ -532,6 +541,7 @@ You can try it out by killing Restate or the service halfway through processing 
 </details>
 
 ## Event Enrichment / Joins
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/eventenrichment/PackageTracker.java)
 
 This example shows an example of:
 - **Event enrichment** over different sources: RPC and Kafka
