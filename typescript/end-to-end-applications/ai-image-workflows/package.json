@@ -13,8 +13,7 @@
   },
   "dependencies": {
     "@restatedev/restate-sdk": "^1.4.0",
-    "axios": "^1.6.7",
-    "axios-retry": "^4.0.0",
+    "node-fetch": "^3.3.2",
     "jimp": "^0.22.10",
     "puppeteer": "^21.9.0"
   },
