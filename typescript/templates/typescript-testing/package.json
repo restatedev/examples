@@ -1,0 +1,28 @@
+{
+  "name": "restate-ts-testing-template",
+  "version": "0.0.1",
+  "description": "Example showing how to test Restate applications E2E using testcontainers",
+  "main": "app.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc --noEmitOnError",
+    "prebundle": "rm -rf dist",
+    "bundle": "esbuild src/app.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
+    "postbundle": "cd dist && zip -r index.zip index.js*",
+    "app": "node ./dist/app.js",
+    "app-dev": "tsx watch ./src/app.ts",
+    "test": "DEBUG=testcontainers,testcontainers:exec,testcontainers:containers jest --maxWorkers=1 --detectOpenHandles"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "^1.4.0",
+    "@restatedev/restate-sdk-testcontainers": "^1.4.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.4.0",
+    "@types/node": "^20.14.2",
+    "esbuild": "^0.21.5",
+    "ts-jest": "^29.0.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.4.5"
+  }
+}

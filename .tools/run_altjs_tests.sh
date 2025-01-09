@@ -26,6 +26,6 @@ function wrangler_install_check() {
     popd
 }
 
-wrangler_install_check $PROJECT_ROOT/templates/cloudflare-worker
-bun_install_check $PROJECT_ROOT/templates/bun
-deno_install_check $PROJECT_ROOT/templates/deno
+wrangler_install_check $PROJECT_ROOT/typescript/templates/cloudflare-worker
+bun_install_check $PROJECT_ROOT/typescript/templates/bun
+deno_install_check $PROJECT_ROOT/typescript/templates/deno

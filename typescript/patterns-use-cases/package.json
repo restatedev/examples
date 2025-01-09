@@ -1,0 +1,23 @@
+{
+  "name": "restate-patterns-use-cases",
+  "version": "0.0.1",
+  "description": "Patterns and Use Cases for Restate TS SDK",
+  "main": "app.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc --noEmitOnError"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "^1.4.0",
+    "@restatedev/restate-sdk-clients": "^1.4.0",
+    "express": "^5.0.0",
+    "stripe": "^14.15.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.2",
+    "@types/express": "^5.0.0",
+    "esbuild": "^0.21.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.4.5"
+  }
+}

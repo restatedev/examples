@@ -8,5 +8,6 @@ function bump_cdk() {
     npm --prefix $1 install @restatedev/restate-cdk@$NEW_VERSION
 }
 
-bump_cdk $PROJECT_ROOT/templates/kotlin-gradle-lambda-cdk
-bump_cdk $PROJECT_ROOT/templates/typescript-lambda-cdk
+bump_cdk $PROJECT_ROOT/go/integrations/go-lambda-cdk
+bump_cdk $PROJECT_ROOT/kotlin/integrations/kotlin-gradle-lambda-cdk
+bump_cdk $PROJECT_ROOT/typescript/integrations/deployment-lambda-cdk

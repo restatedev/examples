@@ -9,6 +9,6 @@ function cargo_build_check() {
     popd
 }
 
-cargo_build_check $PROJECT_ROOT/templates/rust
-cargo_build_check $PROJECT_ROOT/templates/rust-shuttle
-cargo_build_check $PROJECT_ROOT/tutorials/tour-of-restate-rust
+cargo_build_check $PROJECT_ROOT/rust/templates/rust
+cargo_build_check $PROJECT_ROOT/rust/templates/rust-shuttle
+cargo_build_check $PROJECT_ROOT/rust/tutorials/tour-of-restate-rust

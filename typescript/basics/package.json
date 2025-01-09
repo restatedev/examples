@@ -1,0 +1,26 @@
+{
+  "name": "@restatedev/examples-basics",
+  "version": "0.8.0",
+  "description": "Examples of the basic concepts of Restate",
+  "type": "commonjs",
+  "license": "MIT",
+  "author": "Restate developers",
+  "email": "code@restate.dev",
+  "scripts": {
+    "build": "tsc --noEmitOnError",
+    "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
+    "example-0": "CRASH_PROCESS=true ./src/utils/restart-process.sh 'ts-node-dev --transpile-only src/0_durable_execution.ts'",
+    "example-2": "ts-node-dev --transpile-only src/2_virtual_objects.ts",
+    "example-3": "ts-node-dev --transpile-only src/3_workflows.ts"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "^1.4.0",
+    "@restatedev/restate-sdk-clients": "^1.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.0.2"
+  }
+}
