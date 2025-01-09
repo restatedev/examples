@@ -38,6 +38,7 @@ Have a look at the example catalog for your preferred SDK language:
 [![Go](https://skillicons.dev/icons?i=go)](go)
 [![Kotlin](https://skillicons.dev/icons?i=kotlin)](kotlin)
 
+Or have a look at the [general catalog](catalog.md) to see an overview of all examples in this repository.
 
 ## Joining the community
 
