@@ -73,7 +73,7 @@ do its magic. Once both server and example are running, register the example:
 When adding a new example:
 
 * Make sure it has a README
-* Add it to this README
+* Add it to the following catalogs: [catalog.md](catalog.md), the language-specific catalog, and the patterns-use-cases catalog if it is a pattern.
 * Check it's listed in run tests/update examples scripts in [`.tools`](./.tools)
 * Optionally, add it to the [zips script](./.tools/prepare_release_zip.sh) and [`release.yaml`](./.github/workflows/release.yml)
 
