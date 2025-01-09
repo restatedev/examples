@@ -29,6 +29,7 @@ pip install -r requirements.txt
 ```
 
 ## Durable RPC, Idempotency and Concurrency
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/durablerpc/client.py)
 
 This example shows an example of:
 - **Durable RPC**: once a request has reached Restate, it is guaranteed to be processed
@@ -70,6 +71,7 @@ Restate deduplicated the request (with the reservation ID as idempotency key) an
 </details>
 
 ## (Delayed) Message Queue
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/queue/task_submitter.py)
 
 Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.
 
@@ -108,6 +110,7 @@ Task result: Finished work on task: task123
 </details>
 
 ## Convert Sync Tasks to Async
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/dataupload/client.py)
 
 This example shows how to use the Restate SDK to **kick of a synchronous task and turn it into an asynchronous one if it takes too long**.
 
@@ -170,6 +173,7 @@ You see the call to `resultAsEmail` after the upload took too long, and the send
 </details>
 
 ## Sagas
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/sagas/booking_workflow.py)
 
 An example of a trip reservation workflow, using the saga pattern to undo previous steps in case of an error.
 
@@ -224,6 +228,7 @@ Have a look at the logs to see the cancellations of the flight and car booking i
 </details>
 
 ## Stateful Actors and State Machines
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/statefulactors/machine_operator.py)
 
 This example implements a State Machine with a Virtual Object.
 
@@ -306,6 +311,7 @@ Exception: A failure happened!
 </details>
 
 ## Payment State Machines
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/statemachinepayments/payment_processor.py)
 
 This example shows how to build a reliable payment state machine.
 
@@ -375,6 +381,7 @@ restate kv get PaymentProcessor some-string-id
 </details>
 
 ## Parallelizing work
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/parallelizework/fan_out_worker.py)
 
 This example shows how to use the Restate SDK to **execute a list of tasks in parallel and then gather their result**.
 Also known as fan-out, fan-in.
@@ -386,6 +393,7 @@ Restate guarantees and manages the execution of all the subtasks across failures
 You can run this on FaaS infrastructure, like AWS Lambda, and it will scale automatically.
 
 ## Payment Signals
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/signalspayments/payment_service.py)
 
 This example issues a payment request to Stripe.
 When calling Stripe, the result often comes synchronously as a response API call.
@@ -486,6 +494,7 @@ A few notes:
 </details>
 
 ## Transactional Event Processing
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/eventtransactions/user_feed.py)
 
 Processing events (from Kafka) to update various downstream systems.
 - Durable side effects with retries and recovery of partial progress
@@ -563,6 +572,7 @@ You can try it out by killing Restate or the service halfway through processing 
 </details> 
 
 ## Event Enrichment / Joins
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/eventenrichment/package_tracker.py)
 
 This example shows an example of:
 - **Event enrichment** over different sources: RPC and Kafka
