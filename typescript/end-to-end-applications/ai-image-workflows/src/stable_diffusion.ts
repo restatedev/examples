@@ -57,6 +57,9 @@ async function callStableDiffusion(ctx: restate.Context, imgOutputPath: string, 
     // wait for the callback from the stable diffusion service containing the generated image
     const generatedImg = await awakeable.promise;
 
-    const decodedImage: Buffer = Buffer.from(generatedImg, "base64");
-    await ctx.run(async () => fs.writeFileSync(imgOutputPath, decodedImage));
+    const decodedImage = Buffer.from(generatedImg, "base64");
+    const jimpImage = await Jimp.read(decodedImage);
+    await ctx.run(() => {
+        jimpImage.writeAsync(imgOutputPath)
+    });
 }
