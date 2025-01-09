@@ -21,6 +21,7 @@ Common tasks and patterns implemented with Restate:
 - **[Event Enrichment / Joins](README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventenrichment/packagetracker.go)
 
 ## Durable RPC, Idempotency and Concurrency
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/durablerpc/client/client.go)
 
 This example shows:
 - **Durable RPC**: once a request has reached Restate, it is guaranteed to be processed
@@ -59,6 +60,7 @@ Restate deduplicated the request (with the reservation ID as idempotency key) an
 </details>
 
 ## (Delayed) Message Queue
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/queue/client/tasksubmitter.go)
 
 Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.
 
@@ -69,6 +71,7 @@ Use Restate as a queue. Schedule tasks for now or later and ensure the task is o
 - [Async Task Worker](src/queue/service/asynctaskworker.go): gets invoked by Restate for each task in the queue.
 
 ## Webhook Callbacks
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/webhookcallbacks/callbackrouter.go)
 
 This example processes webhook callbacks from a payment provider.
 
@@ -77,17 +80,8 @@ This turns handlers into durable event processors that ensure the event is proce
 
 You don't need to do anything special!
 
-## Scheduling Tasks
-This example processes failed payment events from a payment provider.
-The service reminds the customer for 3 days to update their payment details, and otherwise escalates to support.
-
-To schedule the reminders, the handler uses Restate's durable timers and delayed calls.
-The handler calls itself three times in a row after a delay of one day, and then stops the loop and calls another handler.
-
-Restate tracks the timer across failures, and triggers execution.
-
-
 ## Convert Sync Tasks to Async
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/dataupload/client/client.go)
 
 This example shows how to use the Restate SDK to **kick of a synchronous task and turn it into an asynchronous one if it takes too long**.
 
@@ -114,6 +108,7 @@ Have a look at the logs to see how the execution switches from synchronously wai
 </details>
 
 ## Sagas
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/sagas/bookingworkflow.go)
 
 An example of a trip reservation workflow, using the saga pattern to undo previous steps in case of an error.
 
@@ -183,6 +178,7 @@ Have a look at the logs to see the cancellations of the flight and car booking i
 </details>
 
 ## Stateful Actors and State Machines
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/statefulactors/machineoperator.go)
 
 This example implements a State Machine with a Virtual Object.
 
@@ -266,8 +262,19 @@ echo "executing..."
 </details>
 </details>
 
+## Scheduling Tasks
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/schedulingtasks/paymentreminders.go)
+
+This example processes failed payment events from a payment provider.
+The service reminds the customer for 3 days to update their payment details, and otherwise escalates to support.
+
+To schedule the reminders, the handler uses Restate's durable timers and delayed calls.
+The handler calls itself three times in a row after a delay of one day, and then stops the loop and calls another handler.
+
+Restate tracks the timer across failures, and triggers execution.
 
 ## Parallelizing work
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/parallelizework/fanoutworker.go)
 
 This example shows how to use the Restate SDK to **execute a list of tasks in parallel and then gather their result**.
 Also known as fan-out, fan-in.
@@ -279,6 +286,8 @@ Restate guarantees and manages the execution of all the subtasks across failures
 You can run this on FaaS infrastructure, like AWS Lambda, and it will scale automatically.
 
 ## Transactional Event Processing
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/eventtransactions/userfeed.go)
+
 Processing events (from Kafka) to update various downstream systems.
 - **Durable side effects** with retries and recovery of partial progress
 - Events get sent to objects based on the Kafka key.
@@ -384,6 +393,7 @@ Processing events (from Kafka) to update various downstream systems.
 </details>
 
 ## Event Enrichment / Joins
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/eventenrichment/packagetracker.go)
 
 This example shows an example of:
 - **Event enrichment** over different sources: RPC and Kafka
