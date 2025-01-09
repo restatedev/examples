@@ -45,7 +45,7 @@ async function callStableDiffusion(ctx: restate.Context, imgOutputPath: string, 
 
     await ctx.run(async () => {
         // invoke the stable diffusion service with our awakeable as callback
-        await fetch("http://localhost:5050/generate", {
+        await axios.post("http://localhost:5050/generate", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
