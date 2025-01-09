@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/restatedev/examples/tutorials/tour-of-restate-go/auxiliary"
+	"github.com/restatedev/examples/go/tutorials/tour-of-restate-go/auxiliary"
 	restate "github.com/restatedev/sdk-go"
 )
 

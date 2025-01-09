@@ -1,4 +1,4 @@
-module github.com/restatedev/examples/tutorials/tour-of-restate-go
+module github.com/restatedev/examples/go/tutorials/tour-of-restate-go
 
 go 1.22.5
 
