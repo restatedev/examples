@@ -7,15 +7,11 @@ on:
     branches: [main]
 
 jobs:
-  check-links:
-    name: runner / linkspector
+  markdown-link-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Run linkspector
-        uses: umbrelladocs/action-linkspector@v1
-        with:
-          fail_on_error: true
+      - uses: actions/checkout@v3
+      - uses: gaurav-nelson/github-action-markdown-link-check@v1
   build-rust:
     # prevent from running on forks
     if: github.repository_owner == 'restatedev'
