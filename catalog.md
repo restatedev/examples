@@ -2,7 +2,7 @@
 
 This catalog lists all the examples you find in this respository and can be used to route to the respective example of your programming language of choice.
 
-## Basics
+#### Basics
 
 | Example Name | Languages |
 |--------------|-----------|
@@ -11,7 +11,7 @@ This catalog lists all the examples you find in this respository and can be used
 | <a id="virtual-objects">Virtual Objects</a> | [<img src="https://skillicons.dev/icons?i=ts" width="24" height="24">](typescript/basics/src/2_virtual_objects.ts) [<img src="https://skillicons.dev/icons?i=go" width="24" height="24">](go/basics/part2/virtualobjects.go) [<img src="https://skillicons.dev/icons?i=python" width="24" height="24">](python/basics/app/2_virtual_objects.py) [<img src="https://skillicons.dev/icons?i=java" width="24" height="24">](java/basics/src/main/java/virtual_objects/GreeterObject.java) [<img src="https://skillicons.dev/icons?i=kotlin" width="24" height="24">](kotlin/basics/src/main/kotlin/virtual_objects/GreeterObject.kt) |
 | <a id="workflows">Workflows</a> | [<img src="https://skillicons.dev/icons?i=ts" width="24" height="24">](typescript/basics/src/3_workflows.ts) [<img src="https://skillicons.dev/icons?i=go" width="24" height="24">](go/basics/part3/workflows.go) [<img src="https://skillicons.dev/icons?i=python" width="24" height="24">](python/basics/app/3_workflows.py) [<img src="https://skillicons.dev/icons?i=java" width="24" height="24">](java/basics/src/main/java/workflows/SignupWorkflow.java) [<img src="https://skillicons.dev/icons?i=kotlin" width="24" height="24">](kotlin/basics/src/main/kotlin/workflows/SignupWorkflow.kt) |
 
-## Use Cases and Patterns
+#### Use Cases and Patterns
 
 | Example Name                                                              | Languages |
 |---------------------------------------------------------------------------|-----------|
@@ -30,7 +30,7 @@ This catalog lists all the examples you find in this respository and can be used
 | <a id="promise-as-a-service">Durable Promises as a Service</a>            | [<img src="https://skillicons.dev/icons?i=ts" width="24" height="24">](typescript/patterns-use-cases/README.md#durable-promises-as-a-service) |
 | <a id="priority-queue">Priority Queue</a>                                 | [<img src="https://skillicons.dev/icons?i=ts" width="24" height="24">](typescript/patterns-use-cases/README.md#priority-queue) |
 
-## Integrations
+#### Integrations
 
 | Example Name                            | Languages                                                                                                                                                                                                                                                                                                                                  |
 |-----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -38,7 +38,7 @@ This catalog lists all the examples you find in this respository and can be used
 | <a id="xstate">XState</a>               | [<img src="https://skillicons.dev/icons?i=ts" width="24" height="24">](typescript/integrations/xstate)                                                                                                                                                                                                                                     |
 | <a id="knative">Knative</a>             | [<img src="https://skillicons.dev/icons?i=go" width="24" height="24">](go/integrations/knative-go)                                                                                                                                                                                                                                         |
 
-## End-to-End Applications
+#### End-to-End Applications
 
 | Example Name                                                | Languages                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 |-------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -47,7 +47,7 @@ This catalog lists all the examples you find in this respository and can be used
 | <a id="chat-bot">LLM-powered Chat Bot / Task Agent</a>      | [<img src="https://skillicons.dev/icons?i=ts" width="24" height="24">](typescript/end-to-end-applications/chat-bot)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | <a id="kmp-android-todo-app">Kotlin Todo App</a>            | [<img src="https://skillicons.dev/icons?i=kotlin" width="24" height="24">](kotlin/end-to-end-applications/kmp-android-todo-app)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
-## Templates
+#### Templates
 
 [<img src="https://skillicons.dev/icons?i=ts" width="24" height="24">](typescript/templates)
 [<img src="https://skillicons.dev/icons?i=go" width="24" height="24">](go/templates)
@@ -56,7 +56,7 @@ This catalog lists all the examples you find in this respository and can be used
 [<img src="https://skillicons.dev/icons?i=kotlin" width="24" height="24">](kotlin/templates)
 [<img src="https://skillicons.dev/icons?i=rust" width="24" height="24">](rust/templates)
 
-## Tour of Restate Tutorial
+#### Tour of Restate Tutorial
 
 [<img src="https://skillicons.dev/icons?i=ts" width="24" height="24">](typescript/templates/tour-of-restate-typescript)
 [<img src="https://skillicons.dev/icons?i=go" width="24" height="24">](go/templates/tour-of-restate-go)
