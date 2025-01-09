@@ -6,7 +6,7 @@ Common tasks and patterns implemented with Restate:
 - **[Durable RPC, Idempotency & Concurrency](README.md#durable-rpc-idempotency-and-concurrency)**: Use programmatic clients to call Restate handlers. Add idempotency keys for deduplication. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/durablerpc/client/client.go)
 - **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Restate as a queue: Send (delayed) events to handlers. Optionally, retrieve the response later. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/queue/client/tasksubmitter.go)
 - **[Webhook Callbacks](README.md#webhook-callbacks)**: Point webhook callbacks to a Restate handler for durable event processing. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/webhookcallbacks/callbackrouter.go)
-- **[Convert Sync Tasks to Async](README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and convert it to asynchronous if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/dataupload/client/client.go)
+- **[Convert Sync Tasks to Async](README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and convert it to asynchronous if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/syncasync/client/client.go)
 
 #### Orchestration patterns
 - **[Sagas](README.md#sagas)**: Preserve consistency by tracking undo actions and running them when code fails halfway through. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/sagas/bookingworkflow.go)
@@ -82,13 +82,13 @@ This turns handlers into durable event processors that ensure the event is proce
 You don't need to do anything special!
 
 ## Convert Sync Tasks to Async
-[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/dataupload/client/client.go)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/syncasync/client/client.go)
 
 This example shows how to use the Restate SDK to **kick of a synchronous task and turn it into an asynchronous one if it takes too long**.
 
-The example implements a [data upload service](src/dataupload/service/datauploadservice.go), that creates a bucket, uploads data to it, and then returns the URL.
+The example implements a [data upload service](src/syncasync/service/datauploadservice.go), that creates a bucket, uploads data to it, and then returns the URL.
 
-The [upload client](src/dataupload/client/client.go) does a synchronous request to upload the file, and the server will respond with the URL.
+The [upload client](src/syncasync/client/client.go) does a synchronous request to upload the file, and the server will respond with the URL.
 
 If the upload takes too long, however, the client asks the upload service to send the URL later in an email.
 
@@ -96,10 +96,10 @@ If the upload takes too long, however, the client asks the upload service to sen
 <summary><strong>Running the example</strong></summary>
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `go run ./src/dataupload/service`
+2. Start the service: `go run ./src/syncasync/service`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
-Run the upload client with a userId: `go run ./src/dataupload/client`
+Run the upload client with a userId: `go run ./src/syncasync/client`
 
 This will submit an upload workflow to the data upload service.
 The workflow will run only once per ID, so you need to provide a new ID for each run.
