@@ -286,6 +286,45 @@ It then splits the task into subtasks, executes them in parallel, and then gathe
 Restate guarantees and manages the execution of all the subtasks across failures.
 You can run this on FaaS infrastructure, like AWS Lambda, and it will scale automatically.
 
+
+<details>
+<summary><strong>Running the example</strong></summary>
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `go run ./src/parallelizework`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+Send a request:
+```shell    
+curl -X POST http://localhost:8080/FanOutWorker/Run -H "Content-Type: application/json" -d '{"description": "get out of bed,shower,make coffee,have breakfast"}'
+```
+
+Check in the logs how all tasks get spawned in parallel.
+
+<details>
+<summary>View logs</summary>
+
+```
+2025/01/09 13:54:39 INFO Handling invocation method=FanOutWorker/Run invocationID=inv_18lpandMnWab0vKoZlYh7p5nZlpulrhB3H
+2025/01/09 13:54:39 INFO Handling invocation method=FanOutWorker/RunSubtask invocationID=inv_1f0Pcl2jyShz1WqwhgZgYeSiaurhxHG8N3
+2025/01/09 13:54:39 INFO Handling invocation method=FanOutWorker/RunSubtask invocationID=inv_13TV0u3ExV5U3C3wKf0zE6f0FuhwYqEAcF
+2025/01/09 13:54:39 INFO Handling invocation method=FanOutWorker/RunSubtask invocationID=inv_1dgUZkjML60x6niidaVNxat6q8QCK7aPGF
+2025/01/09 13:54:39 INFO Handling invocation method=FanOutWorker/RunSubtask invocationID=inv_1hZoh0etW1Oo4o4lU7VvZVmT5bmj3f8HKx
+2025/01/09 13:54:39 Executed subtask: get out of bed
+2025/01/09 13:54:39 INFO Invocation completed successfully method=FanOutWorker/RunSubtask invocationID=inv_1f0Pcl2jyShz1WqwhgZgYeSiaurhxHG8N3
+2025/01/09 13:54:39 Executed subtask: make coffee
+2025/01/09 13:54:39 INFO Invocation completed successfully method=FanOutWorker/RunSubtask invocationID=inv_1dgUZkjML60x6niidaVNxat6q8QCK7aPGF
+2025/01/09 13:54:39 Executed subtask: have breakfast
+2025/01/09 13:54:39 INFO Invocation completed successfully method=FanOutWorker/RunSubtask invocationID=inv_1hZoh0etW1Oo4o4lU7VvZVmT5bmj3f8HKx
+2025/01/09 13:54:41 Executed subtask: shower
+2025/01/09 13:54:41 INFO Invocation completed successfully method=FanOutWorker/RunSubtask invocationID=inv_13TV0u3ExV5U3C3wKf0zE6f0FuhwYqEAcF
+2025/01/09 13:54:41 Aggregated result: get out of bed: DONE,make coffee: DONE,have breakfast: DONE,shower: DONE
+2025/01/09 13:54:41 INFO Invocation completed successfully method=FanOutWorker/Run invocationID=inv_18lpandMnWab0vKoZlYh7p5nZlpulrhB3H
+```
+
+</details>
+</details>
+
 ## Transactional Event Processing
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/eventtransactions/userfeed.go)
 
