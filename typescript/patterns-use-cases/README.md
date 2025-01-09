@@ -9,7 +9,7 @@ Common tasks and patterns implemented with Restate:
 - **[Convert Sync Tasks to Async](README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/dataupload/client.ts)
 - **[Payments signals (Advanced)](README.md#payment-signals)**: Combining fast synchronous responses and slow async callbacks for payments, with Stripe. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/signalspayments/payment_service.ts)
 
-#### Common patterns
+#### Orchestration patterns
 - **[Sagas](README.md#sagas)**: Preserve consistency by tracking undo actions and running them when code fails halfway through. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/sagas/booking_workflow.ts)
 - **[Stateful Actors and State Machines](README.md#stateful-actors-and-state-machines)**: Stateful Actor representing a machine in our factory. Track state transitions with automatic state persistence. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/statefulactors/machine_operator.ts)
 - **[Payment state machines (Advanced)](README.md#payment-state-machines)**: State machine example that tracks a payment process, ensuring consistent processing and cancellations. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/statemachinepayments/payment_service.ts)
@@ -22,8 +22,9 @@ Common tasks and patterns implemented with Restate:
 - **[Transactional Event Processing](README.md#transactional-event-processing)**: Process events from Kafka to update various downstream systems in a transactional way. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventtransactions/user_feed.ts)
 - **[Event enrichment / Joins](README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventenrichment/package_tracker.ts)
 
-#### Custom constructs (Advanced)
-- **[Durable Promises](README.md#durable-promises)**: Custom implementation of Promises/Futures that are durable across processes and failures. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/durablepromise)
+#### Building coordination constructs (Advanced)
+Use Restate to build distributed coordination and synchronization constructs:
+- **[Durable Promises as a Service](README.md#durable-promises-as-a-service)**: Building Promises/Futures as a service, that can be exposed to external clients and are durable across processes and failures. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/durablepromise)
 - **[Priority Queue](README.md#priority-queue)**: Example of implementing a priority queue to manage task execution order. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/priorityqueue)
 
 First, install the dependencies:
@@ -38,6 +39,7 @@ npm install
 This example shows:
 - **Durable RPC**: once a request has reached Restate, it is guaranteed to be processed
 - **Exactly-once processing**: Ensure that duplicate requests are not processed multiple times via idempotency keys
+- **Concurrency**: Restate executes requests to the same Virtual Object key sequentially, to ensure consistency of its K/V state
 
 The example shows how you can programmatically submit a requests to a Restate service.
 Every request gets processed durably, and deduplicated based on the idempotency key.
@@ -588,13 +590,12 @@ You can see how the state was enriched by the initial RPC event and the subseque
 </details>
 </details>
 
-## Durable Promises
+## Durable Promises as a Service
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/durablepromise)
 
-The Durable Promises implemented in this example work like regular futures/promises,
-but are durable cross processes and failures.
+This example shows how you can use Restate to build Promises/Futures as a service, that can be exposed to external clients and are durable across processes and failures.
 
-Can be used to build simple and reliable **callbacks**,
+They can be used to build simple and reliable **callbacks**,
 **signal** and **communicate between systems**, or to decouple sender/receiver.
 
 * A promise is uniquely identified by an _id_

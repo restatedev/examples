@@ -1,4 +1,4 @@
-# The basic concepts of Restate in Java
+# The basic concepts of Restate in Kotlin
 
 The examples here showcase the most basic building blocks of Restate. **Durable Execution**,
 **Durable Promises**, and **Virtual Objects**, and the **Workflows** abstraction built on top

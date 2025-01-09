@@ -3,11 +3,11 @@
 Common tasks and patterns implemented with Restate:
 
 #### Communication
-- **[Durable RPC, Idempotency and Concurrency](#durable-rpc-idempotency-and-concurrency)**, Idempotency \& Concurrency: Restate persists requests and makes sure they execute exactly-once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/durablerpc/client.py)
+- **[Durable RPC, Idempotency and Concurrency](#durable-rpc-idempotency-and-concurrency)**: Restate persists requests and makes sure they execute exactly-once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/durablerpc/client.py)
 - **[(Delayed) Message Queue](#delayed-message-queue)**: Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/queue/task_submitter.py)
 - **[Convert Sync Tasks to Async](#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/dataupload/client.py)
 
-#### Common patterns
+#### Orchestration patterns
 - **[Sagas](#sagas)**: Preserve consistency by tracking undo actions and running them when code fails halfway through. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/sagas/booking_workflow.py)
 - **[Stateful Actors and State Machines](#stateful-actors-and-state-machines)**: State machine with a set of transitions, built as a Restate Virtual Object for automatic state persistence. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/statefulactors/machine_operator.py)
 - **[Payment State Machines (Advanced)](#payment-state-machines)**: State machine example that tracks a payment process, ensuring consistent processing and cancellations. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/statemachinepayments/payment_processor.py)
@@ -31,9 +31,10 @@ pip install -r requirements.txt
 ## Durable RPC, Idempotency and Concurrency
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/durablerpc/client.py)
 
-This example shows an example of:
+This example shows:
 - **Durable RPC**: once a request has reached Restate, it is guaranteed to be processed
 - **Exactly-once processing**: Ensure that duplicate requests are not processed multiple times via idempotency keys
+- **Concurrency**: Restate executes requests to the same Virtual Object key sequentially, to ensure consistency of its K/V state
 
 The example shows how you can programmatically submit a requests to a Restate service.
 Every request gets processed durably, and deduplicated based on the idempotency key.

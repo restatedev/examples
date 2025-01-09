@@ -8,7 +8,7 @@ Common tasks and patterns implemented with Restate:
 - **[Webhook Callbacks](README.md#webhook-callbacks)**: Point webhook callbacks to a Restate handler for durable event processing. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/webhookcallbacks/callbackrouter.go)
 - **[Convert Sync Tasks to Async](README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and convert it to asynchronous if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/dataupload/client/client.go)
 
-#### Common patterns
+#### Orchestration patterns
 - **[Sagas](README.md#sagas)**: Preserve consistency by tracking undo actions and running them when code fails halfway through. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/sagas/bookingworkflow.go)
 - **[Stateful Actors and State Machines](README.md#stateful-actors-and-state-machines)**: Stateful Actor representing a machine in our factory. Track state transitions with automatic state persistence. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/statefulactors/machineoperator.go)
 
@@ -26,6 +26,7 @@ Common tasks and patterns implemented with Restate:
 This example shows:
 - **Durable RPC**: once a request has reached Restate, it is guaranteed to be processed
 - **Exactly-once processing**: Ensure that duplicate requests are not processed multiple times via idempotency keys
+- **Concurrency**: Restate executes requests to the same Virtual Object key sequentially, to ensure consistency of its K/V state
 
 The example shows how you can programmatically submit a requests to a Restate service.
 Every request gets processed durably, and deduplicated based on the idempotency key.
