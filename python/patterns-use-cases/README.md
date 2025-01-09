@@ -5,7 +5,7 @@ Common tasks and patterns implemented with Restate:
 #### Communication
 - **[Durable RPC, Idempotency and Concurrency](#durable-rpc-idempotency-and-concurrency)**: Restate persists requests and makes sure they execute exactly-once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/durablerpc/client.py)
 - **[(Delayed) Message Queue](#delayed-message-queue)**: Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/queue/task_submitter.py)
-- **[Convert Sync Tasks to Async](#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/dataupload/client.py)
+- **[Convert Sync Tasks to Async](#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/syncasync/client.py)
 
 #### Orchestration patterns
 - **[Sagas](#sagas)**: Preserve consistency by tracking undo actions and running them when code fails halfway through. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/sagas/booking_workflow.py)
@@ -111,13 +111,13 @@ Task result: Finished work on task: task123
 </details>
 
 ## Convert Sync Tasks to Async
-[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/dataupload/client.py)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/syncasync/client.py)
 
 This example shows how to use the Restate SDK to **kick of a synchronous task and turn it into an asynchronous one if it takes too long**.
 
-The example implements a [data upload service](src/dataupload/data_upload_service.py), that creates a bucket, uploads data to it, and then returns the URL.
+The example implements a [data upload service](src/syncasync/data_upload_service.py), that creates a bucket, uploads data to it, and then returns the URL.
 
-The [client](src/dataupload/client.py) does a synchronous request to upload the file, and the server will respond with the URL.
+The [client](src/syncasync/client.py) does a synchronous request to upload the file, and the server will respond with the URL.
 
 If the upload takes too long, however, the client asks the upload service to send the URL later in an email.
 
@@ -125,10 +125,10 @@ If the upload takes too long, however, the client asks the upload service to sen
 <summary><strong>Running the example</strong></summary>
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/dataupload/data_upload_service:app`
+2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/syncasync/data_upload_service:app`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080` 
 
-Run the upload client with a userId: `python src/dataupload/client.py my_user_id12`
+Run the upload client with a userId: `python src/syncasync/client.py my_user_id12`
 
 This will submit an upload workflow to the data upload service.
 The workflow will run only once per ID, so you need to provide a new ID for each run.
