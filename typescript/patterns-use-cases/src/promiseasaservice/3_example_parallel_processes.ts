@@ -32,7 +32,7 @@ const numProcesses = process.argv.length > 4 ? Number(process.argv[4]) : 10;
 
 // Function to execute an external script with the same stdout and stderr as the parent
 function executeScript() {
-  const args = ["./src/durablepromise/2_example_process.ts", promiseId, restateUri];
+  const args = ["./src/promiseasaservice/2_example_process.ts", promiseId, restateUri];
   const child = spawn("tsx", args, { stdio: "inherit" });
 
   return new Promise<void>((resolve, reject) => {

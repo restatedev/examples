@@ -6,7 +6,7 @@ Common tasks and patterns implemented with Restate:
 - **[Durable RPC, Idempotency & Concurrency](README.md#durable-rpc-idempotency-and-concurrency)**: Use programmatic clients to call Restate handlers. Add idempotency keys for deduplication. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/durablerpc/express_app.ts)
 - **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Restate as a queue: Send (delayed) events to handlers. Optionally, retrieve the response later. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/queue/task_submitter.ts)
 - **[Webhook Callbacks](#webhook-callbacks)**: Point webhook callbacks to a Restate handler for durable event processing. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/webhookcallbacks/webhook_callback_router.ts)
-- **[Convert Sync Tasks to Async](README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/dataupload/client.ts)
+- **[Convert Sync Tasks to Async](README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/syncasync/client.ts)
 - **[Payments signals (Advanced)](README.md#payment-signals)**: Combining fast synchronous responses and slow async callbacks for payments, with Stripe. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/signalspayments/payment_service.ts)
 
 #### Orchestration patterns
@@ -24,7 +24,7 @@ Common tasks and patterns implemented with Restate:
 
 #### Building coordination constructs (Advanced)
 Use Restate to build distributed coordination and synchronization constructs:
-- **[Durable Promises as a Service](README.md#durable-promises-as-a-service)**: Building Promises/Futures as a service, that can be exposed to external clients and are durable across processes and failures. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/durablepromise)
+- **[Durable Promises as a Service](README.md#durable-promises-as-a-service)**: Building Promises/Futures as a service, that can be exposed to external clients and are durable across processes and failures. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/promiseasaservice)
 - **[Priority Queue](README.md#priority-queue)**: Example of implementing a priority queue to manage task execution order. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/priorityqueue)
 
 First, install the dependencies:
@@ -97,13 +97,13 @@ This turns handlers into durable event processors that ensure the event is proce
 You don't need to do anything special!
 
 ## Convert Sync Tasks to Async
-[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/webhookcallbacks/webhook_callback_router.ts)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/syncasync/data_upload_service.ts)
 
 This example shows how to use the Restate SDK to **kick of a synchronous task and turn it into an asynchronous one if it takes too long**.
 
-The example implements a [data upload service](src/dataupload/data_upload_service.ts), that creates a bucket, uploads data to it, and then returns the URL.
+The example implements a [data upload service](src/syncasync/data_upload_service.ts), that creates a bucket, uploads data to it, and then returns the URL.
 
-The [upload client](src/dataupload/client.ts) does a synchronous request to upload the file, and the server will respond with the URL.
+The [upload client](src/syncasync/client.ts) does a synchronous request to upload the file, and the server will respond with the URL.
 
 If the upload takes too long, however, the client asks the upload service to send the URL later in an email.
 
@@ -111,10 +111,10 @@ If the upload takes too long, however, the client asks the upload service to sen
 <summary><strong>Running the example</strong></summary>
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `npx tsx watch ./src/dataupload/data_upload_service.ts`
+2. Start the service: `npx tsx watch ./src/syncasync/data_upload_service.ts`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
-Run the upload client with a userId: `npx tsx ./src/dataupload/client.ts`
+Run the upload client with a userId: `npx tsx ./src/syncasync/client.ts`
 
 This will submit an upload workflow to the data upload service.
 The workflow will run only once per ID, so you need to provide a new ID for each run.
@@ -591,7 +591,7 @@ You can see how the state was enriched by the initial RPC event and the subseque
 </details>
 
 ## Durable Promises as a Service
-[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/durablepromise)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/promiseasaservice)
 
 This example shows how you can use Restate to build Promises/Futures as a service, that can be exposed to external clients and are durable across processes and failures.
 
@@ -662,7 +662,7 @@ to your application or infra as a self-contained piece.
 ### Running the example 
 
 * Start Restate in one shell: `restate-server`
-* Start the Durable Promises implementation in another shell: `npx tsx watch ./src/durablepromise/dp/runner.ts 9080`
+* Start the Durable Promises implementation in another shell: `npx tsx watch ./src/promiseasaservice/dp/runner.ts 9080`
 * Register Durable Promises service: `restate -y deployment register "localhost:9080" --force`
 
 _Note: the '--force' flag here is to circumvent all checks relating to graceful upgrades,
@@ -672,10 +672,10 @@ You can now await and resolve promises from different processes at different tim
 With via simple HTTP calls (see above) or the TypeScript API.
 
 You can start the bundled examples via 
-- `npx tsx ./src/durablepromise/1_example.ts`
-- `npx tsx ./src/durablepromise/2_example_process.ts`
-- `npx tsx ./src/durablepromise/3_example_parallel_processes.ts`
-- `npx tsx ./src/durablepromise/4_example.ts`,
+- `npx tsx ./src/promiseasaservice/1_example.ts`
+- `npx tsx ./src/promiseasaservice/2_example_process.ts`
+- `npx tsx ./src/promiseasaservice/3_example_parallel_processes.ts`
+- `npx tsx ./src/promiseasaservice/4_example.ts`,
 optionally passing `[promise-id] [restateUri]` as parameters.
 
 </details> 
