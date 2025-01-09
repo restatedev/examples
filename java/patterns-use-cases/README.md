@@ -445,7 +445,7 @@ A few notes:
   like: ` -H 'idempotency-key: my-id-token'`
 * The webhook setup with ngrok is not trivial and can easily be wrong. You might end up with
   some payments waiting for the webhooks. You can use the CLI to cancel them:
-  `restate inv list` and `restate inv cancel <invocation_id>`.
+  `restate invocations list` and `restate invocations cancel <invocation_id>`.
 * Here is an opportunity for the SAGAs pattern to cancel payments in that case.
 
 </details>

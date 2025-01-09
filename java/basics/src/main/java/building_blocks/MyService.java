@@ -5,7 +5,7 @@ import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
-import utils.SubscriptionService;
+import virtual_objects.GreeterObjectClient;
 
 import java.time.Duration;
 import java.util.UUID;
@@ -37,11 +37,11 @@ public class MyService {
 
         // 2. DURABLE RPC: Call other services without manual retry and deduplication logic
         // Restate persists all requests and ensures execution till completion
-        String result = SubscriptionServiceClient.fromContext(ctx, "my-sub-123").create("my-request").await();
+        String result = GreeterObjectClient.fromContext(ctx, "my-obj-key").greet("hello").await();
 
         // 3. DURABLE MESSAGING: send (delayed) messages to other services without deploying a message broker
         // Restate persists the timers and triggers execution
-        SubscriptionServiceClient.fromContext(ctx, "my-sub-123").send().create("my-request");
+        GreeterObjectClient.fromContext(ctx, "my-obj-key").send().greet("hello");
 
         // 4. DURABLE PROMISES: tracked by Restate, can be moved between processes and survive failures
         // Awakeables: block the workflow until notified by another handler
@@ -60,7 +60,7 @@ public class MyService {
         // Example of waiting on a promise (call/awakeable/...) or a timeout
         awakeable.await(Duration.ofSeconds(5000));
         // Example of scheduling a handler for later on
-        SubscriptionServiceClient.fromContext(ctx, "my-sub-123").send(Duration.ofDays(1)).cancel();
+        GreeterObjectClient.fromContext(ctx, "my-obj-key").send(Duration.ofDays(1)).ungreet();
 
         // 7. PERSIST RESULTS: avoid re-execution of actions on retries
         // Use this for non-deterministic actions or interaction with APIs, DBs, ...
@@ -73,7 +73,6 @@ public class MyService {
     public static void main(String[] args) {
         RestateHttpEndpointBuilder.builder()
                 .bind(new MyService())
-                .bind(new SubscriptionService())
                 .buildAndListen();
     }
 }

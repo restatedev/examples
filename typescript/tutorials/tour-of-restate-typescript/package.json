@@ -1,7 +1,7 @@
 {
   "name": "@restatedev/examples-tutorials-tour-of-restate",
   "version": "0.8.0",
-  "description": "Tour of Restate's key features with the Typescript handler API",
+  "description": "Tour of Restate's key features with the Typescript SDK",
   "type": "commonjs",
   "license": "MIT",
   "private": true,

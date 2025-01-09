@@ -8,20 +8,10 @@ function bump_ts_sdk() {
     npm --prefix $1 install @restatedev/restate-sdk@^$NEW_VERSION
 }
 
-function bump_ts_sdk_clients() {
-    npm --prefix $1 install @restatedev/restate-sdk-clients@^$NEW_VERSION
-}
-
-function bump_ts_sdk_testing() {
-    npm --prefix $1 install @restatedev/restate-sdk-testcontainers@^$NEW_VERSION
-}
-
 bump_ts_sdk $PROJECT_ROOT/basics
-bump_ts_sdk_clients $PROJECT_ROOT/basics
 
 bump_ts_sdk $PROJECT_ROOT/typescript/templates/typescript
 bump_ts_sdk $PROJECT_ROOT/typescript/templates/typescript-testing
-bump_ts_sdk_testing $PROJECT_ROOT/typescript/templates/typescript-testing
 bump_ts_sdk $PROJECT_ROOT/typescript/integrations/typescript-lambda-cdk
 bump_ts_sdk $PROJECT_ROOT/typescript/templates/bun
 
@@ -37,9 +27,24 @@ mv $tmp $PROJECT_ROOT/typescript/templates/deno/main.ts
 bump_ts_sdk $PROJECT_ROOT/tutorials/tour-of-restate-typescript
 
 bump_ts_sdk $PROJECT_ROOT/typescript/patterns-use-cases
-bump_ts_sdk_clients $PROJECT_ROOT/patterns-use-cases/durable-promises/durable-promises-typescript
 
 bump_ts_sdk $PROJECT_ROOT/typescript/end-to-end-applications/ai-image-workflows
 bump_ts_sdk $PROJECT_ROOT/typescript/end-to-end-applications/food-ordering/app
-bump_ts_sdk_clients $PROJECT_ROOT/typescript/end-to-end-applications/food-ordering/webui
 bump_ts_sdk $PROJECT_ROOT/typescript/end-to-end-applications/chat-bot
+
+
+function bump_ts_sdk_clients() {
+    npm --prefix $1 install @restatedev/restate-sdk-clients@^$NEW_VERSION
+}
+
+bump_ts_sdk_clients $PROJECT_ROOT/basics
+bump_ts_sdk_clients $PROJECT_ROOT/patterns-use-cases/durable-promises/durable-promises-typescript
+bump_ts_sdk_clients $PROJECT_ROOT/typescript/end-to-end-applications/food-ordering/webui
+
+
+
+function bump_ts_sdk_testing() {
+    npm --prefix $1 install @restatedev/restate-sdk-testcontainers@^$NEW_VERSION
+}
+
+bump_ts_sdk_testing $PROJECT_ROOT/typescript/templates/typescript-testing

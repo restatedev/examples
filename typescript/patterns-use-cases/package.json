@@ -1,7 +1,7 @@
 {
-  "name": "restate-ts-template",
+  "name": "restate-patterns-use-cases",
   "version": "0.0.1",
-  "description": "Template for JavaScript/TypeScript services running with Restate (https://github.com/restatedev/) ",
+  "description": "Patterns and Use Cases for Restate TS SDK",
   "main": "app.js",
   "type": "commonjs",
   "scripts": {

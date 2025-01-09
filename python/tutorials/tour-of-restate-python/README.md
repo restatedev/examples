@@ -39,7 +39,7 @@ restate-server
 Register the service:
 
 ```shell
-restate dp register http://localhost:9080
+restate deployments register http://localhost:9080
 ```
 
 Then add a ticket to Mary's cart:
