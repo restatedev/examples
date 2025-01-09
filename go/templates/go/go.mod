@@ -1,4 +1,4 @@
-module github.com/restatedev/examples/templates/go
+module github.com/restatedev/examples/go/templates/go
 
 go 1.22.5
 
