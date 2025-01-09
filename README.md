@@ -97,11 +97,11 @@ Or have a look at the general catalog below:
 
 #### Tour of Restate Tutorial
 
-[<img src="https://skillicons.dev/icons?i=ts" width="24" height="24">](typescript/templates/tour-of-restate-typescript)
-[<img src="https://skillicons.dev/icons?i=go" width="24" height="24">](go/templates/tour-of-restate-go)
-[<img src="https://skillicons.dev/icons?i=python" width="24" height="24">](python/templates/tour-of-restate-python)
-[<img src="https://skillicons.dev/icons?i=java" width="24" height="24">](java/templates/tour-of-restate-java)
-[<img src="https://skillicons.dev/icons?i=rust" width="24" height="24">](rust/templates/tour-of-restate-rust)
+[<img src="https://skillicons.dev/icons?i=ts" width="24" height="24">](typescript/tutorials/tour-of-restate-typescript)
+[<img src="https://skillicons.dev/icons?i=go" width="24" height="24">](go/tutorials/tour-of-restate-go)
+[<img src="https://skillicons.dev/icons?i=python" width="24" height="24">](python/tutorials/tour-of-restate-python)
+[<img src="https://skillicons.dev/icons?i=java" width="24" height="24">](java/tutorials/tour-of-restate-java)
+[<img src="https://skillicons.dev/icons?i=rust" width="24" height="24">](rust/tutorials/tour-of-restate-rust)
 
 
 ## Joining the community
