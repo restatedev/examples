@@ -32,7 +32,8 @@ First, install the dependencies:
 npm install
 ``` 
 
-## Durable RPC, Idempotency and Concurrency
+## Durable RPC, Idempotency and Concurrency 
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/durablerpc/express_app.ts)
 
 This example shows:
 - **Durable RPC**: once a request has reached Restate, it is guaranteed to be processed
@@ -73,6 +74,7 @@ Restate deduplicated the request (with the reservation ID as idempotency key) an
 </details>
 
 ## (Delayed) Message Queue
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/queue/task_submitter.ts)
 
 Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.
 
@@ -83,6 +85,7 @@ Use Restate as a queue. Schedule tasks for now or later and ensure the task is o
 - [Async Task Worker](src/queue/async_task_worker.ts): gets invoked by Restate for each task in the queue.
 
 ## Webhook Callbacks
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/webhookcallbacks/webhook_callback_router.ts)
 
 This example processes webhook callbacks from a payment provider.
 
@@ -92,6 +95,7 @@ This turns handlers into durable event processors that ensure the event is proce
 You don't need to do anything special!
 
 ## Convert Sync Tasks to Async
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/webhookcallbacks/webhook_callback_router.ts)
 
 This example shows how to use the Restate SDK to **kick of a synchronous task and turn it into an asynchronous one if it takes too long**.
 
@@ -118,6 +122,7 @@ Have a look at the logs to see how the execution switches from synchronously wai
 </details>
 
 ## Payment Signals
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/signalspayments/payment_service.ts)
 
 This example issues a payment request to Stripe.
 When calling Stripe, the result often comes synchronously as a response API call.
@@ -189,6 +194,7 @@ A few notes:
 </details>
 
 ## Sagas
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/sagas/booking_workflow.ts)
 
 An example of a trip reservation workflow, using the saga pattern to undo previous steps in case of an error.
 
@@ -251,6 +257,7 @@ Flight 51e219f8-eb34-4384-a5ff-88607e89c220 cancelled
 </details>
 
 ## Stateful Actors and State Machines
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/statefulactors/machine_operator.ts)
 
 This example implements a State Machine with a Virtual Object.
 
@@ -326,6 +333,7 @@ A failure happened!
 </details>
 
 ## Payment State Machines
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/statemachinepayments/payment_service.ts)
 
 This example shows how to build a reliable payment state machine.
 
@@ -399,6 +407,8 @@ status   "CANCELLED"
 </details> 
 
 ## Scheduling Tasks
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/schedulingtasks/payment_reminders.ts)
+
 This example processes failed payment events from a payment provider.
 The service reminds the customer for 3 days to update their payment details, and otherwise escalates to support.
 
@@ -408,6 +418,7 @@ The handler calls itself three times in a row after a delay of one day, and then
 Restate tracks the timer across failures, and triggers execution.
 
 ## Parallelizing work
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/parallelizework/fan_out_worker.ts)
 
 This example shows how to use the Restate SDK to **execute a list of tasks in parallel and then gather their result**.
 Also known as fan-out, fan-in.
@@ -419,6 +430,7 @@ Restate guarantees and manages the execution of all the subtasks across failures
 You can run this on FaaS infrastructure, like AWS Lambda, and it will scale automatically.
 
 ## Transactional Event Processing
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/eventtransactions/user_feed.ts)
 
 Processing events (from Kafka) to update various downstream systems.
 - Durable side effects with retries and recovery of partial progress
@@ -493,6 +505,7 @@ You can try it out by killing Restate or the service halfway through processing 
 </details>
 
 ## Event Enrichment / Joins
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/eventenrichment/package_tracker.ts)
 
 This example shows an example of:
 - **Event enrichment** over different sources: RPC and Kafka
@@ -576,6 +589,7 @@ You can see how the state was enriched by the initial RPC event and the subseque
 </details>
 
 ## Durable Promises
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/durablepromise)
 
 The Durable Promises implemented in this example work like regular futures/promises,
 but are durable cross processes and failures.
@@ -666,6 +680,7 @@ optionally passing `[promise-id] [restateUri]` as parameters.
 </details> 
 
 ## Priority queue
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/priorityqueue)
 
 An example of implementing your own priority queue using Restate state and awakeables.
 
