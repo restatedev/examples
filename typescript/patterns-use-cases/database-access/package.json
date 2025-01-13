@@ -5,7 +5,7 @@
   "type": "commonjs",
   "scripts": {
     "build": "tsc --noEmitOnError",
-    "example": "ts-node --transpile-only ./src/main.ts"
+    "example": "tsx ./src/main.ts"
   },
   "dependencies": {
     "@restatedev/restate-sdk": "^1.4.0",
@@ -14,7 +14,8 @@
   },
   "devDependencies": {
     "@types/node": "^20.12.12",
-    "ts-node": "^10.9.2",
+    "@types/sequelize": "^4.28.20",
+    "tsx": "^4.19.2",
     "typescript": "^5.0.2"
   }
 }

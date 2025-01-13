@@ -72,6 +72,7 @@ Keyed DB Operations:
 
 
 Idempotency update:
-* Updating exactly-once: `curl -i localhost:8080/idempotency/update --json '{ "userId": "A", "addCredits": 100 }'`
+* Updating exactly-once via idempotency: `curl -i localhost:8080/idempotency/update --json '{ "userId": "A", "addCredits": 100 }'`
 
-
+Update using 2-phase-commit:
+* Updating exactly-once via 2pc txn: `curl -i localhost:8080/twoPhaseCommit/update --json '{ "userId": "A", "addCredits": 100 }'`

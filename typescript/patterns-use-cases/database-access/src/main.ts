@@ -1,6 +1,7 @@
 import * as restate from "@restatedev/restate-sdk";
 import { randomUUID } from "node:crypto";
 import { Sequelize, Transaction } from "sequelize";
+import { runQueryAs2pcTxn } from "./2phasecommit";
 
 // ----------------------------------------------------------------------------
 //
@@ -344,17 +345,27 @@ const idempotencyKeyDbAccess = restate.service({
 // ----------------------------------------------------------------------------
 
 /**
- * 2-phase commit integration between Restate and PostegreSQL
+ * Exactly-once updates to the database using a 2-phase commit integration between
+ * Restate and PostegreSQL. 
  * 
  * This uses PostgreSQL's PREPARE TRANSACTION feature to ensure that Restate
- * kicks off a transaction once and only once.
+ * kicks off a transaction once and only once, and it thus works without any
+ * additional idempotency or versioning mechanisms.
+ * BUT: It requires the Postgres database to enable prepared transactions in the
+ * configuration via `max_prepared_transactions = 100`.
  * 
- * Postgres' interface is far from optimal here, for example it does not provide a way
- * to block/fence off discarded transaction IDs or establish other relationship between
- * transaction IDs. As a result, this code is needs to be very aggressive in cleaning
- * up previous transactions, to avoid leaving database locks in place.  
+ * This is a _good use case_ of the 2-phase-commit protocol, because it is not
+ * the (rightfully) criticized use case of running distributed transactions across
+ * services and thus couple availability and liveliness of multiple services together.
+ * This case here keeps the same participants and dependencies and only uses 2pc as a
+ * way to split a single-participant transaction into two stages so that Restate can
+ * avoid executing the query against the database multiple times under retries.
  * 
- * This code currently works only on services which have a bidi streaming connection !!!
+ * NOTE: This code currently works only on services which have a bidi streaming connection,
+ * (so any service deployed as http/2 or http1 bidi) due to the fact that it needs to
+ * differentiate re-tries of blocks from first executions, which currently works only
+ * for streaming connections. This is simply a missing feature and not a fundamental
+ * limitation.
  */
 const twoPhaseCommitDbAccess = restate.service({
     name: "twoPhaseCommit",
@@ -363,91 +374,14 @@ const twoPhaseCommitDbAccess = restate.service({
         update: async (ctx: restate.Context, update: { userId: string, addCredits: number }) => {
             const { userId, addCredits } = update;
 
-            let txnIdToCommit: string | undefined = undefined;
+            const query = `UPDATE users
+                           SET credits = credits + ${addCredits}
+                           WHERE userid = '${userId}'`
 
-            while (txnIdToCommit === undefined) {
-
-                // We generate the transaction ID and use a trick here to find out if we
-                // actually generated the ID, or whether the ID was restored from the journal.
-                // That is the reason this code only works on long-lived bidi connections (not Lambda),
-                // because on Lambda, every `ctx.run` block is only ack-ed through a re-invocation
-                // and journal replay.
-                const idGen = await runWithHint(ctx, "generate txnId", async () => randomUUID());
-                const txnId = idGen.result;
-
-                async function cleanup() {
-                    try {
-                        await db.query(`ROLLBACK PREPARED '${txnId}'`);
-                    } catch (e: any) {
-                        if (e instanceof Error && (e as any).original?.code === "42704") {
-                            // ignore this, it means no txn with that name found, means was not
-                            // prepared or already rolled back
-                            return;
-                        }
-                        console.error(e.message);
-                        throw e;
-                    }
-                }
-            
-                try {
-                    // run the transaction, or clean up a potentially lingering transaction
-                    const txnRan = await ctx.run("run txn or clean up old txn", async () => {
-
-                        // Only if this attempt/retry generated the transaction id, then we can issue
-                        // the query, because then we know it was not executed before (under this id)
-                        // Otherwise, we don't know whether it was issued or not, and must clean up
-                        // to be on the safe side.
-                        if (idGen.executedThisTime) {
-                            const txn = await db.transaction();
-                            try {
-                                await db.query(
-                                    `UPDATE users
-                                        SET credits = credits + ${addCredits}
-                                      WHERE userid = '${userId}'`,
-                                    { transaction: txn }
-                                );
-                                await db.query(`PREPARE TRANSACTION '${txnId}'`, { transaction: txn });
-                                return true;
-                            } catch (e) {
-                                await txn.rollback();
-                                throw e;
-                            }
-                        } else {
-                            await cleanup();
-                            return false;
-                        }
-                    });
-                    if (txnRan) {
-                        txnIdToCommit = txnId;
-                    }
-                } catch (e) {
-                    // clean up in case the query didn't go through, to speed up cleanup
-                    // of possibly prepared txn
-                    await cleanup();
-                    throw e;
-                }
-            }
-
-            // now commit the prepared transaction - this step is idempotent, so if it was
-            // already committed, this does nothing
-            await ctx.run("commit prepared transaction", () =>
-                db.query(`COMMIT PREPARED '${txnIdToCommit}'`)
-            );
+            await runQueryAs2pcTxn(ctx, db, query);
         }
     }
 })
-
-
-async function runWithHint<T>(ctx: restate.Context, name: string, action: () => Promise<T>): Promise<{ result: T, executedThisTime: boolean }> {
-    let executedThisTime: boolean = false;
-
-    const result = await ctx.run(name, () => {
-        executedThisTime = true;
-        return action();
-    });
-
-    return { result, executedThisTime };
-}
 
 // ----------------------------------------------------------------------------
 
