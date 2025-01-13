@@ -1,6 +1,6 @@
 import * as restate from "@restatedev/restate-sdk";
-import type { AccountsObject }  from "./accounts/api";
-import {default as accounts} from "./accounts/impl";
+import type { AccountsObject }  from "./accounts";
+import { accountsObject } from "./accounts";
 
 type Payment = { accountId: string; amount: number };
 
@@ -88,5 +88,5 @@ const payments = restate.object({
 restate
   .endpoint()
   .bind(payments)
-  .bind(accounts)
+  .bind(accountsObject)
   .listen();
