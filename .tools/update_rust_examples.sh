@@ -10,6 +10,6 @@ function bump_rust_sdk() {
     popd
 }
 
-bump_rust_sdk $PROJECT_ROOT/templates/rust
-bump_rust_sdk $PROJECT_ROOT/templates/rust-shuttle
-bump_rust_sdk $PROJECT_ROOT/tutorials/tour-or-restate-rust
+bump_rust_sdk $PROJECT_ROOT/rust/templates/rust
+bump_rust_sdk $PROJECT_ROOT/rust/templates/rust-shuttle
+bump_rust_sdk $PROJECT_ROOT/rust/tutorials/tour-of-restate-rust

@@ -1,0 +1,25 @@
+{
+  "name": "@restatedev/examples-e2e-ai-image-workflow",
+  "version": "0.8.0",
+  "description": "An application that executes AI image workflows with stable diffusion and other tools.",
+  "author": "Restate Developers",
+  "license": "MIT",
+  "email": "code@restate.dev",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc --noEmitOnError",
+    "app-dev": "ts-node-dev --watch ./src --respawn --transpile-only src/app.ts",
+    "stable-diffusion-service": "ts-node-dev --watch ./src --respawn --transpile-only src/stable_diffusion.ts"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "^1.4.0",
+    "axios": "^1.6.7",
+    "axios-retry": "^4.0.0",
+    "jimp": "^0.22.10",
+    "puppeteer": "^21.9.0"
+  },
+  "devDependencies": {
+    "ts-node-dev": "^1.1.1",
+    "typescript": "^5.0.2"
+  }
+}
