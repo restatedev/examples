@@ -18,7 +18,7 @@ It also interacts with the delivery services to get the order delivered to the c
 - Via git clone:
     ```shell
     git clone git@github.com:restatedev/examples.git
-    cd examples/java/food-ordering
+    cd examples/java/end-to-end-applications/food-ordering
     ```
 
 - Via `wget`:

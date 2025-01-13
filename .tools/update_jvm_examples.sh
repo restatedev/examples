@@ -29,6 +29,7 @@ search_and_replace_version_gradle $PROJECT_ROOT/kotlin/patterns-use-cases
 
 search_and_replace_version_gradle $PROJECT_ROOT/java/tutorials/tour-of-restate-java
 
+search_and_replace_version_gradle $PROJECT_ROOT/java/end-to-end-applications/subway-fare-calculator
 search_and_replace_version_gradle $PROJECT_ROOT/java/end-to-end-applications/food-ordering/app/restate-app
 search_and_replace_version_gradle $PROJECT_ROOT/java/end-to-end-applications/food-ordering/app/restaurant
 search_and_replace_version_gradle $PROJECT_ROOT/kotlin/end-to-end-applications/food-ordering/app/restate-app
