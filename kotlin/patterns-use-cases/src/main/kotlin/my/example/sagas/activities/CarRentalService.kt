@@ -5,7 +5,6 @@ import dev.restate.sdk.annotation.Service
 import dev.restate.sdk.kotlin.Context
 import kotlinx.serialization.Serializable
 import org.apache.logging.log4j.LogManager
-import java.util.UUID
 
 @Serializable
 data class CarRentalBookingRequest(val pickupLocation: String, val rentalDate: String)
@@ -13,7 +12,7 @@ data class CarRentalBookingRequest(val pickupLocation: String, val rentalDate: S
 private val logger = LogManager.getLogger("CarRentals")
 
 @Service
-class CarRentals {
+class CarRentalService {
     @Handler
     fun reserve(ctx: Context, request: CarRentalBookingRequest): String {
         // this should implement the communication with the rental

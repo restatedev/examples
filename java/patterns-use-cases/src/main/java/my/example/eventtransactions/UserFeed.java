@@ -8,7 +8,9 @@ import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 import java.time.Duration;
 
 import static dev.restate.sdk.JsonSerdes.STRING;
-import static my.example.eventtransactions.utils.Stubs.*;
+import static my.example.eventtransactions.utils.Stubs.createPost;
+import static my.example.eventtransactions.utils.Stubs.getPostStatus;
+import static my.example.eventtransactions.utils.Stubs.updateUserFeed;
 
 // Implement transactional event handlers:
 // e.g. update various downstream systems via API calls

@@ -10,20 +10,20 @@ type FlightBookingRequest struct {
 	PassengerName string `json:"passenger_name"`
 }
 
-type Flights struct{}
+type FlightService struct{}
 
-func (Flights) Reserve(ctx restate.Context, _flightBookingRequest FlightBookingRequest) (string, error) {
+func (FlightService) Reserve(ctx restate.Context, _flightBookingRequest FlightBookingRequest) (string, error) {
 	flightBookingId := restate.Rand(ctx).UUID().String()
 	slog.Info("Flight reserved: " + flightBookingId)
 	return flightBookingId, nil
 }
 
-func (Flights) Confirm(ctx restate.Context, flightBookingId string) error {
+func (FlightService) Confirm(ctx restate.Context, flightBookingId string) error {
 	slog.Info("Flight confirmed: " + flightBookingId)
 	return nil
 }
 
-func (Flights) Cancel(ctx restate.Context, flightBookingId string) error {
+func (FlightService) Cancel(ctx restate.Context, flightBookingId string) error {
 	slog.Info("Flight cancelled: " + flightBookingId)
 	return nil
 }

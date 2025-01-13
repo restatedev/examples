@@ -12,7 +12,7 @@ class FlightBookingRequest(BaseModel):
     passenger_name: str
 
 
-flights_service = Service("flights")
+flight_service = Service("flights")
 
 
 @flights_service.handler()

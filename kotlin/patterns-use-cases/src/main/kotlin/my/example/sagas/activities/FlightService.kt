@@ -13,7 +13,7 @@ data class FlightBookingRequest(val flightId: String, val passengerName: String)
 private val logger = LogManager.getLogger("Flights")
 
 @Service
-class Flights {
+class FlightService {
     @Handler
     fun reserve(ctx: Context, request: FlightBookingRequest): String {
         // this should implement the communication with the flight
