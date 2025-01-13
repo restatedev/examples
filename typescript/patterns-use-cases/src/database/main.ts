@@ -1,5 +1,4 @@
 import * as restate from "@restatedev/restate-sdk";
-import { randomUUID } from "node:crypto";
 import { Sequelize, Transaction } from "sequelize";
 import { runQueryAs2pcTxn } from "./2phasecommit";
 
