@@ -16,7 +16,7 @@ import * as restate from "@restatedev/restate-sdk";
 // This is for simplicity to make this example work self-contained.
 // This should be a database in a real scenario
 //
-export default restate.object({
+export const accountsObject = restate.object({
   name: "accounts",
   handlers: {
 
@@ -54,6 +54,8 @@ export default restate.object({
     },
   },
 });
+
+export type AccountsObject = typeof accountsObject;
 
 // ----------------------------------------------------------------------------
 //  miscellaneous utils

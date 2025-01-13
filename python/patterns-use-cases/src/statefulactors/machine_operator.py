@@ -1,5 +1,6 @@
 import restate
 from restate import VirtualObject, ObjectContext
+
 from utils import bring_up_machine, Status, tear_down_machine
 
 # This is a State Machine implemented with a Virtual Object

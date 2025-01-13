@@ -1,8 +1,9 @@
-import restate
-from restate import VirtualObject, ObjectContext
 from datetime import timedelta
 
-from src.eventtransactions.utils import create_post, get_post_status, update_user_feed, SocialMediaPost, Status
+import restate
+from restate import VirtualObject, ObjectContext
+
+from utils import create_post, get_post_status, update_user_feed, SocialMediaPost, Status
 
 # Processing events (from Kafka) to update various downstream systems
 #  - Journaling actions in Restate and driving retries from Restate, recovering

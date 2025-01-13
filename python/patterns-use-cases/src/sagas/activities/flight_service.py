@@ -1,5 +1,6 @@
 import logging
 import uuid
+
 from pydantic import BaseModel
 from restate import Context, Service
 
@@ -12,10 +13,10 @@ class FlightBookingRequest(BaseModel):
     passenger_name: str
 
 
-flights_service = Service("flights")
+service = Service("flights")
 
 
-@flights_service.handler()
+@service.handler()
 async def reserve(ctx: Context, request: FlightBookingRequest) -> str:
     # this should implement the communication with the flight
     # provider's APIs
@@ -25,14 +26,14 @@ async def reserve(ctx: Context, request: FlightBookingRequest) -> str:
     return booking_id
 
 
-@flights_service.handler()
+@service.handler()
 async def confirm(ctx: Context, flight_booking_id: str):
     # this should implement the communication with the flight
     # provider's APIs
     logger.info(f"Flight reservation confirmed with id: {flight_booking_id}")
 
 
-@flights_service.handler()
+@service.handler()
 async def cancel(ctx: Context, flight_booking_id: str):
     # this should implement the communication with the flight
     # provider's APIs

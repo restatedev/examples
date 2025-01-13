@@ -6,11 +6,9 @@ import dev.restate.sdk.annotation.Service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.UUID;
-
 @Service
-public class CarRentals {
-  private static final Logger logger = LogManager.getLogger(CarRentals.class);
+public class CarRentalService {
+  private static final Logger logger = LogManager.getLogger(CarRentalService.class);
 
   public record CarRentalRequest(String pickupLocation, String rentalDate) {}
 

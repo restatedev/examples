@@ -1,8 +1,8 @@
+import logging
+import random
 from datetime import timedelta
 
 import restate
-import logging
-import random
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(process)d] [%(levelname)s] - %(message)s')
 

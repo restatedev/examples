@@ -1,8 +1,9 @@
-from restate import ObjectContext, VirtualObject
-from restate.exceptions import TerminalError
 import random
 
-from src.statemachinepayments.types import Result
+from restate import ObjectContext, VirtualObject
+from restate.exceptions import TerminalError
+
+from data_types import Result
 
 # A simple virtual object, to track accounts.
 # This is for simplicity to make this example work self-contained.

@@ -6,11 +6,9 @@ import dev.restate.sdk.annotation.Service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.UUID;
-
 @Service
-public class Flights {
-  private static final Logger logger = LogManager.getLogger(Flights.class);
+public class FlightService {
+  private static final Logger logger = LogManager.getLogger(FlightService.class);
 
   public record FlightBookingRequest(String flightId, String passengerName) {}
 
