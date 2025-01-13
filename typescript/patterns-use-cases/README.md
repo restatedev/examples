@@ -102,7 +102,7 @@ The basic premise is:
    or avoid inconsistencies in the presence of retries, concurrent requests,
    or zombie processes.
 
-The code in [main.ts](./src/main.ts) walks gradually through those patterns and explains
+The code in [main.ts](./src/database/main.ts) walks gradually through those patterns and explains
 them with inline comments.
 
 <details>
@@ -164,7 +164,7 @@ Idempotency update:
 Update using 2-phase-commit:
 * Updating exactly-once via 2pc txn: `curl -i localhost:8080/twoPhaseCommit/update -H 'content-type: application/json' -d '{ "userId": "A", "addCredits": 100 }'`
 
-</details
+</details>
 
 ## Webhook Callbacks
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/webhookcallbacks/webhook_callback_router.ts)
