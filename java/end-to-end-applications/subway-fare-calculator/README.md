@@ -81,3 +81,5 @@ Play around by sending some more requests. You can check the current K/V state v
 restate kv get CardTracker card-321
 ```
 
+As you badge in and out, the system will calculate the fare and the total amount spent by the passenger.
+Once the total amount spent exceeds the day ticket price, the system will charge a day ticket instead.
