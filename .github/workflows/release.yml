@@ -31,6 +31,7 @@ jobs:
             python-food-ordering
             java-basics
             java-food-ordering
+            java-subway-fare-calculator
             java-patterns-use-cases
             java-hello-world-gradle
             java-hello-world-maven

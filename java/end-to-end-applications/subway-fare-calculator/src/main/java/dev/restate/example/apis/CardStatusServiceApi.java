@@ -1,4 +1,4 @@
-package dev.restate.example.subwayfare.apis;
+package dev.restate.example.apis;
 
 public class CardStatusServiceApi {
 

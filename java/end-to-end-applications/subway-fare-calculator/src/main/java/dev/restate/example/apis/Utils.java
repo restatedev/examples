@@ -1,10 +1,10 @@
-package dev.restate.example.subwayfare.apis;
+package dev.restate.example.apis;
 
-import java.time.*;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
 public final class Utils {
 
@@ -16,7 +16,7 @@ public final class Utils {
     }
   }
 
-  public static Duration threeAm() {
+  public static Duration delayTillEndOfDay() {
     final LocalTime threeAm = LocalTime.of(3, 0);
 
     final LocalDate dayOfEnd = LocalDateTime.now().getHour() < 3

@@ -1,4 +1,4 @@
-package dev.restate.example.subwayfare.apis;
+package dev.restate.example.apis;
 
 import java.io.IOException;
 

@@ -38,6 +38,7 @@ Examples integrating Restate with other tools and frameworks:
 Complete applications built with Restate:
 
 - **[Food Ordering App](end-to-end-applications/food-ordering)**: A food delivery service (like DoorDash) that manages orders, restaurants, payments, and delivery drivers. The example mixes workflows (ordering) and stateful microservices (driver management), and uses Kafka as an event source for updates from delivery drivers.
+- **[Subway Fare Calculator](end-to-end-applications/subway-fare-calculator)**: A fare calculator for a subway system that calculates the fare based on distances traveled by customers. Implemented as Stateful Actors. 
 
 ## Templates
 
