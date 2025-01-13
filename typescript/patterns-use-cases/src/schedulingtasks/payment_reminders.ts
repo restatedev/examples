@@ -1,7 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import {
-    sendEmail, StripeEvent,
-} from "./utils/stubs";
+import {sendEmail, StripeEvent,} from "./utils/stubs";
 
 const MAX_REMINDERS = 3;
 const REMINDER_INTERVAL = 24 * 60 * 60 * 1000;

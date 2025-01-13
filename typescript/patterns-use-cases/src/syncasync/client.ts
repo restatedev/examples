@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk-clients";
-import { DataUploadService } from "./data_upload_service";
+import {DataUploadService} from "./data_upload_service";
 import {withTimeout} from "./utils";
 import {randomUUID} from "node:crypto";
 

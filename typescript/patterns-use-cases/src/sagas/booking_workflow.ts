@@ -1,7 +1,10 @@
 import * as restate from "@restatedev/restate-sdk";
-import {flights, FlightsService} from "./activities/flights";
-import {cars, CarService} from "./activities/cars";
-import { paymentClient } from "./activities/payment_client";
+import {flightsService, FlightsService} from "./activities/flight_service";
+import {carRentalService, CarRentalService} from "./activities/car_rental_service";
+import {paymentClient} from "./activities/payment_client";
+
+const FlightsService: FlightsService = { name: "FlightsService" };
+const CarRentalService: CarRentalService = { name: "CarRentalService" };
 
 type BookingRequest = {
   flights: { flightId: string, passengerName: string },
@@ -12,11 +15,11 @@ type BookingRequest = {
 /*
 Trip reservation workflow using sagas:
 Restate infinitely retries failures, and recovers previous progress.
-For some types of failures, we do not want to retry but instead undo the previous actions and finish.
+But for some types of failures (TerminalError), we don't want to retry but want to undo the previous actions and finish.
 
 Restate guarantees the execution of your code. This makes it very easy to implement sagas.
 We execute actions, and keep track of a list of undo actions.
-When a terminal error occurs (an error we do not want to retry), Restate ensures execution of all compensations.
+When a terminal error occurs, Restate ensures execution of all compensations.
 
 +------ Initialize compensations list ------+
                      |
@@ -48,31 +51,30 @@ const bookingWorkflow = restate.workflow({
 
       try {
         // Reserve the flights and let Restate remember the reservation ID
-        // This sends an HTTP request to the Restate flights service
-        const flightClient = ctx.serviceClient<FlightsService>({name: "flights"});
-        const flightBookingId = await flightClient.reserve(flights);
+        // This sends an HTTP request via Restate to the Restate flights service
+        const flightBookingId = await ctx.serviceClient(FlightsService).reserve(flights);
         // Use the flightBookingId to register the undo action for the flight reservation,
         // or later confirm the reservation.
-        compensations.push(() => flightClient.cancel({flightBookingId}));
+        compensations.push(() => ctx.serviceClient(FlightsService).cancel({flightBookingId}));
 
         // Reserve the car and let Restate remember the reservation ID
-        const carClient = ctx.serviceClient<CarService>({name: "cars"});
-        const carBookingId = await carClient.reserve(car);
+        const carBookingId = await ctx.serviceClient(CarRentalService).reserve(car);
         // Register the undo action for the car rental.
-        compensations.push(() => carClient.cancel({carBookingId}));
+        compensations.push(() => ctx.serviceClient(CarRentalService).cancel({carBookingId}));
 
         // Generate an idempotency key for the payment; stable on retries
         const paymentId = ctx.rand.uuidv4();
         // Register the refund as a compensation, using the idempotency key
         compensations.push(() => ctx.run(() => paymentClient.refund({ paymentId })));
-        // Do the payment using the idempotency key
+        // Do the payment using the idempotency key (sometimes throws Terminal Errors)
         await ctx.run(() => paymentClient.charge({ paymentInfo, paymentId }));
 
         // Confirm the flight and car reservations
-        await flightClient.confirm({flightBookingId});
-        await carClient.confirm({carBookingId});
+        await ctx.serviceClient(FlightsService).confirm({flightBookingId});
+        await ctx.serviceClient(CarRentalService).confirm({carBookingId});
 
       } catch (e) {
+        // Terminal errors tell Restate not to retry, but to compensate and fail the workflow
         if (e instanceof restate.TerminalError) {
           // Undo all the steps up to this point by running the compensations
           // Restate guarantees that all compensations are executed
@@ -87,17 +89,8 @@ const bookingWorkflow = restate.workflow({
   },
 });
 
-/*
-The example shows two styles of APIs we interact with:
-1. The flights and cars require to first reserve, and then use the ID you get to confirm or cancel.
-In this case, we add the compensation after creating the reservation (because we need the ID).
-
-2. The example of the payment API requires you to generate an idempotency key yourself, and executes in one shot.
-Here, we add the compensation before performing the action, using the same UUID.
- */
-
 restate.endpoint()
     .bind(bookingWorkflow)
-    .bind(cars)
-    .bind(flights)
+    .bind(carRentalService)
+    .bind(flightsService)
     .listen(9080);

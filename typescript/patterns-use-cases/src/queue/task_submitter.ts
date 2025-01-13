@@ -1,7 +1,6 @@
 import * as restate from "@restatedev/restate-sdk-clients";
-import { AsyncTaskWorker, TaskOpts } from "./async_task_worker";
 import {SendOpts} from "@restatedev/restate-sdk-clients";
-
+import {AsyncTaskWorker, TaskOpts} from "./async_task_worker";
 
 const RESTATE_URL = "http://localhost:8080";
 

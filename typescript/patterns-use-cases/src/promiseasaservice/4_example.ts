@@ -1,6 +1,5 @@
-
 import * as restate from "@restatedev/restate-sdk";
-import { durablePromise } from "./dp/clients";
+import {durablePromise} from "./dp/clients";
 
 restate.service({
   name: "qna",

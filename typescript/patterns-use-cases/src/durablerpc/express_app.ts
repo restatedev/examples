@@ -1,7 +1,7 @@
 import * as restate from "@restatedev/restate-sdk-clients";
-import { Opts } from "@restatedev/restate-sdk-clients";
-import express, { Request, Response } from "express";
-import { ProductService } from "./product_service";
+import {Opts} from "@restatedev/restate-sdk-clients";
+import express, {Request, Response} from "express";
+import {ProductService} from "./product_service";
 
 const app = express();
 

@@ -1,4 +1,4 @@
-import { TerminalError } from "@restatedev/restate-sdk";
+import {TerminalError} from "@restatedev/restate-sdk";
 import Stripe from "stripe";
 
 const stripeSecretKey = "sk_test_...";

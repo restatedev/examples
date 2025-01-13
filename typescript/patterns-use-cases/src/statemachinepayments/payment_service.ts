@@ -1,6 +1,6 @@
 import * as restate from "@restatedev/restate-sdk";
-import type { AccountsObject }  from "./accounts";
-import { accountsObject } from "./accounts";
+import type {AccountsObject} from "./accounts";
+import {accountsObject} from "./accounts";
 
 type Payment = { accountId: string; amount: number };
 

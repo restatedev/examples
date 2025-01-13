@@ -1,5 +1,5 @@
-import { Context, service } from "@restatedev/restate-sdk";
-import { Queue } from "./queue_client";
+import {Context, service} from "@restatedev/restate-sdk";
+import {Queue} from "./queue_client";
 
 const QUEUE_NAME = "myService/expensiveMethod";
 

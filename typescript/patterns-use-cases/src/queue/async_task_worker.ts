@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import { Context } from "@restatedev/restate-sdk";
+import {Context} from "@restatedev/restate-sdk";
 
 const asyncTaskWorker = restate.service({
   name: "asyncTaskWorker",
