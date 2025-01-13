@@ -1,4 +1,4 @@
-import { object, ObjectContext, TerminalError } from "@restatedev/restate-sdk";
+import {object, ObjectContext} from "@restatedev/restate-sdk";
 
 type QueueState = {
   items: QueueItem[];

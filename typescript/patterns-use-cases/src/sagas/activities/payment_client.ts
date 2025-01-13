@@ -1,4 +1,3 @@
-import {randomUUID} from "node:crypto";
 import {TerminalError} from "@restatedev/restate-sdk";
 
 export const paymentClient = {

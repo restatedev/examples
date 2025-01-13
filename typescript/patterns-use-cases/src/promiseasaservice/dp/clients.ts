@@ -12,8 +12,8 @@
 import * as restate from "@restatedev/restate-sdk";
 import * as clients from "@restatedev/restate-sdk-clients";
 
-import type { DurablePromise } from "./api";
-import type {ValueOrError, DurablePromiseObject, DurablePromiseServer} from "./services";
+import type {DurablePromise} from "./api";
+import type {DurablePromiseObject, DurablePromiseServer, ValueOrError} from "./services";
 
 /**
  * Create a durable promise that uses the Restate Context to interact

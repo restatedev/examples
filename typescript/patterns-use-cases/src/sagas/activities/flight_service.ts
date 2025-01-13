@@ -1,7 +1,7 @@
 import * as restate from "@restatedev/restate-sdk";
 
-export const flights = restate.service({
-    name: "flights",
+export const flightsService = restate.service({
+    name: "FlightsService",
     handlers: {
       reserve: async (ctx: restate.Context, _req: { flightId: string, passengerName: string }) => {
         const flightBookingId = ctx.rand.uuidv4();
@@ -19,4 +19,4 @@ export const flights = restate.service({
     }
 });
 
-export type FlightsService = typeof flights;
+export type FlightsService = typeof flightsService;

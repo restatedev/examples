@@ -1,8 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import {
-  WorkflowContext,
-  WorkflowSharedContext,
-} from "@restatedev/restate-sdk";
+import {WorkflowContext, WorkflowSharedContext} from "@restatedev/restate-sdk";
 import {createS3Bucket, sendEmail, uploadData} from "./utils";
 
 const dataUploadService = restate.workflow({

@@ -1,8 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import {
-    createPost, getPostStatus, PENDING,
-    SocialMediaPost, updateUserFeed,
-} from "./utils/stubs";
+import {createPost, getPostStatus, PENDING, SocialMediaPost, updateUserFeed,} from "./utils/stubs";
 
 //
 // Processing events (from Kafka) to update various downstream systems

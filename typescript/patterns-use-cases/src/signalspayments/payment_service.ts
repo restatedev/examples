@@ -1,6 +1,6 @@
 import * as restate from "@restatedev/restate-sdk";
 import * as stripe_utils from "./utils/stripe_utils";
-import { verifyPaymentRequest } from "./utils/stripe_utils";
+import {verifyPaymentRequest} from "./utils/stripe_utils";
 import Stripe from "stripe";
 
 //

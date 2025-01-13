@@ -10,10 +10,7 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import {
-  durablePromiseObject,
-  durablePromiseServer,
-} from "./services";
+import {durablePromiseObject, durablePromiseServer,} from "./services";
 
 // launch the server, if this is our main entry point
 if (require.main === module) {

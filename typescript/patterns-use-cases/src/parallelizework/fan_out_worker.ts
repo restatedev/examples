@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk/lambda";
-import { Context, CombineablePromise } from "@restatedev/restate-sdk";
+import {CombineablePromise, Context} from "@restatedev/restate-sdk";
 import {aggregate, split, SubTask, Task} from "./utils";
 
 /**
