@@ -1,5 +1,6 @@
 import restate
 from restate import Service, Context
+
 from utils import *
 
 fanout_worker = Service("FanOutWorker")

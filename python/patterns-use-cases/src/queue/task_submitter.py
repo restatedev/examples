@@ -1,5 +1,7 @@
 import argparse
+
 import requests
+
 from async_task_worker import TaskOpts
 
 RESTATE_URL = "http://localhost:8080"

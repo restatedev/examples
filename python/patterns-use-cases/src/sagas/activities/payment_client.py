@@ -1,5 +1,5 @@
-import random
 import logging
+import random
 
 from pydantic import BaseModel
 from restate.exceptions import TerminalError

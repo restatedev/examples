@@ -12,10 +12,10 @@ class CarRentalRequest(BaseModel):
     rental_date: str
 
 
-car_rental_service = Service("carRentals")
+service = Service("carRentals")
 
 
-@car_rental_service.handler()
+@service.handler()
 async def reserve(ctx: Context, request: CarRentalRequest) -> str:
     # this should implement the communication with the rental
     # provider's APIs
@@ -25,14 +25,14 @@ async def reserve(ctx: Context, request: CarRentalRequest) -> str:
     return booking_id
 
 
-@car_rental_service.handler()
+@service.handler()
 async def confirm(ctx: Context, booking_id: str):
     # this should implement the communication with the rental
     # provider's APIs
     logging.info(f"Car rental reservation confirmed with id: {booking_id}")
 
 
-@car_rental_service.handler()
+@service.handler()
 async def cancel(ctx: Context, booking_id: str):
     # this should implement the communication with the rental
     # provider's APIs

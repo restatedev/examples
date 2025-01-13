@@ -1,8 +1,9 @@
-import restate
 import logging
+
+import restate
 from restate import WorkflowContext, WorkflowSharedContext, Workflow
 
-from src.syncasync.utils import upload_data, create_s3_bucket, send_email
+from utils import upload_data, create_s3_bucket, send_email
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(process)d] [%(levelname)s] - %(message)s')
 

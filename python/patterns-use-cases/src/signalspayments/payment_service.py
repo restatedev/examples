@@ -5,6 +5,7 @@ import uuid
 import restate
 from restate import Context, Service
 from restate.exceptions import TerminalError
+
 import stripe_utils
 from stripe_utils import (PaymentRequest, verify_payment_request, create_payment_intent,
                           RESTATE_CALLBACK_ID, is_payment_intent, parse_webhook_call)

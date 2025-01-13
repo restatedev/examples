@@ -1,5 +1,6 @@
 import argparse
 import logging
+
 import requests
 from pydantic import BaseModel
 

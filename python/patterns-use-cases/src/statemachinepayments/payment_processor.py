@@ -1,13 +1,13 @@
+from datetime import timedelta
+
 import restate
 from pydantic import BaseModel
 from restate import VirtualObject, ObjectContext
-from datetime import timedelta
+from restate.serde import PydanticJsonSerde
 
-from restate.serde import PydanticJsonSerde, Serde
-
-from accounts.accounts import account
-import accounts.accounts as account_service
-from src.statemachinepayments.types import Result
+from data_types import Result
+from src.statemachinepayments import accounts as account_service
+from src.statemachinepayments.accounts import account
 
 # A service that processes the payment requests.
 # This is implemented as a virtual object to ensure that only one concurrent request can happen

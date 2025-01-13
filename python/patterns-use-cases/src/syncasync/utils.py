@@ -1,6 +1,6 @@
 import asyncio
-import random
 import logging
+import random
 
 
 async def create_s3_bucket():

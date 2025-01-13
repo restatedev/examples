@@ -5,13 +5,12 @@ from pydantic import BaseModel
 from restate import Workflow
 from restate.exceptions import TerminalError
 
-from src.sagas.activities.flights import flights_service, reserve as flight_reserve, confirm as flight_confirm, \
-    cancel as flight_cancel, FlightBookingRequest
-from src.sagas.activities.car_rentals import CarRentalRequest, car_rental_service
-import src.sagas.activities.car_rentals as car_rentals
-
-from src.sagas.activities.payment_client import PaymentInfo
-import src.sagas.activities.payment_client as payment_client
+import activities.car_rental_service as car_rental_service
+import activities.flight_service as flight_service
+import activities.payment_client as payment_client
+from activities.car_rental_service import CarRentalRequest
+from activities.flight_service import FlightBookingRequest
+from activities.payment_client import PaymentInfo
 
 
 class BookingRequest(BaseModel):
@@ -19,33 +18,54 @@ class BookingRequest(BaseModel):
     car: CarRentalRequest
     payment_info: PaymentInfo
 
+
 """
- Trip reservation workflow using sagas:
- For some types of failures, we do not want to retry but instead undo the previous actions and finish.
+Trip reservation workflow using sagas:
+Restate infinitely retries failures, and recovers previous progress.
+But for some types of failures (terminal errors), we don't want to retry but want to undo the previous actions and finish.
 
- You can use Durable Execution to execute actions and track their undo equivalents (compensations) in a list.
- When a terminal error occurs, Durable Execution ensures execution of all compensations.
+Restate guarantees the execution of your code. This makes it very easy to implement sagas.
+We execute actions, and keep track of a list of undo actions.
+When a terminal errors occurs, Restate ensures execution of all compensations.
 
- Note: that the compensation logic is purely implemented in user code (no special Restate API)
++------ Initialize compensations list ------+
+                     |
+                     v
++------------------ Try --------------------+
+| 1. Reserve Flights & Register Undo        |
+| 2. Reserve Car & Register Undo            |
+| 3. Generate Payment ID & Register Refund  |
+| 4. Perform Payment                        |
+| 5. Confirm Flight Reservation             |
+| 6. Confirm Car Reservation                |
++------------------ Except ------------------+
+| If TerminalError:                         |
+|   Execute compensations in reverse order  |
+| Rethrow error                             |
++--------------------------------------------+
+
+Note: that the compensation logic is purely implemented in user code (no special Restate API)
 """
 booking_workflow = Workflow("BookingWorkflow")
 
 
 @booking_workflow.main()
 async def run(ctx: restate.WorkflowContext, req: BookingRequest):
-    # create a list of undo actions
+    # Create a list of undo actions
     compensations = []
 
     try:
-        # Reserve the flights and let Restate remember the reservation ID
-        flight_booking_id = await ctx.service_call(flight_reserve, arg=req.flights)
-        # Register the undo action for the flight reservation.
-        compensations.append(lambda: ctx.service_call(flight_cancel, arg=flight_booking_id))
+        # Reserve the flights; Restate remembers the reservation ID
+        # This sends an HTTP request via Restate to the Restate flights service
+        flight_booking_id = await ctx.service_call(flight_service.reserve, arg=req.flights)
+        # Use the flightBookingId to register the undo action for the flight reservation,
+        # or later confirm the reservation.
+        compensations.append(lambda: ctx.service_call(flight_service.cancel, arg=flight_booking_id))
 
         # Reserve the car and let Restate remember the reservation ID
-        car_booking_id = await ctx.service_call(car_rentals.reserve, arg=req.car)
+        car_booking_id = await ctx.service_call(car_rental_service.reserve, arg=req.car)
         # Register the undo action for the car rental.
-        compensations.append(lambda: ctx.service_call(car_rentals.cancel, arg=car_booking_id))
+        compensations.append(lambda: ctx.service_call(car_rental_service.cancel, arg=car_booking_id))
 
         # Generate an idempotency key for the payment
         payment_id = await ctx.run("payment_id", lambda: str(uuid.uuid4()))
@@ -53,32 +73,27 @@ async def run(ctx: restate.WorkflowContext, req: BookingRequest):
         # Register the refund as a compensation, using the idempotency key
         async def refund():
             return await payment_client.refund(payment_id)
+
         compensations.append(lambda: ctx.run("refund", refund))
 
         # Do the payment using the idempotency key
         async def charge():
             return await payment_client.charge(req.payment_info, payment_id)
+
         await ctx.run("charge", charge)
 
         # Confirm the flight and car reservations
-        await ctx.service_call(flight_confirm, arg=flight_booking_id)
-        await ctx.service_call(car_rentals.confirm, arg=car_booking_id)
+        await ctx.service_call(flight_service.confirm, arg=flight_booking_id)
+        await ctx.service_call(car_rental_service.confirm, arg=car_booking_id)
 
+    # Terminal errors tell Restate not to retry, but to compensate and fail the workflow
     except TerminalError as e:
         # Undo all the steps up to this point by running the compensations
+        # Restate guarantees that all compensations are executed
         for compensation in reversed(compensations):
             await compensation()
         # Rethrow error to fail this workflow
         raise e
 
 
-app = restate.app([booking_workflow, car_rental_service, flights_service])
-
-"""
-NOTE: Depending on the characteristics of the API/system you interact with, you add the compensation at a different time:
-1. **Two-phase commit**: For APIs like flights and cars, you first create a reservation and get an ID.
-You then confirm or cancel using this ID. Add the compensation after creating the reservation.
-
-2. **Idempotency key**: For APIs like payments, you generate a UUID and perform the action in one step.
-Add the compensation before performing the action, using the same UUID.
-"""
+app = restate.app([booking_workflow, car_rental_service.service, flight_service.service])
