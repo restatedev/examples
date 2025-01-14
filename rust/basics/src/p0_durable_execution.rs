@@ -1,8 +1,8 @@
-mod utils;
+mod stubs;
 
 use restate_sdk::prelude::*;
 use serde::Deserialize;
-use crate::utils::{create_recurring_payment, create_subscription};
+use crate::stubs::{create_recurring_payment, create_subscription};
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]

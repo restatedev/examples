@@ -1,7 +1,7 @@
-mod utils;
+mod stubs;
 
 use restate_sdk::prelude::*;
-use crate::utils::{create_user_entry, send_email_with_link, User};
+use crate::stubs::{create_user_entry, send_email_with_link, User};
 
 #[restate_sdk::workflow]
 pub trait SignupWorkflow {

@@ -1,9 +1,9 @@
-mod utils;
+mod stubs;
 
 use std::time::Duration;
 use restate_sdk::prelude::*;
-use crate::utils::charge_bank_account;
-use crate::utils::SubscriptionServiceClient;
+use crate::stubs::{charge_bank_account, SubscriptionServiceClient};
+
 /*
 * RESTATE's DURABLE BUILDING BLOCKS
 *

@@ -1,7 +1,9 @@
+#![allow(unused)]
 use rand::random;
 use anyhow::{anyhow, Result};
 use restate_sdk::errors::HandlerError;
 use log::{error, info};
+use restate_sdk::context::ObjectContext;
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
@@ -56,4 +58,24 @@ pub async fn send_email_with_link(user_id: &str, user: &User, secret: &str) -> R
 
 pub async fn charge_bank_account(_payment_deduplication_id: &str, _payment: &f32) -> Result<(), HandlerError> {
     Ok(())
+}
+
+
+#[restate_sdk::object]
+pub trait SubscriptionService {
+    async fn create(user_id: String) -> Result<String, HandlerError>;
+    async fn cancel() -> Result<(), HandlerError>;
+}
+
+pub struct SubscriptionServiceImpl;
+
+impl SubscriptionService for SubscriptionServiceImpl {
+    async fn create(&self, _ctx: ObjectContext<'_>, _user_id: String) -> Result<String, HandlerError> {
+        Ok("SUCCESS".to_string())
+    }
+
+    async fn cancel(&self, ctx: ObjectContext<'_>) -> Result<(), HandlerError> {
+        println!("Cancelling all subscriptions for user {}", ctx.key());
+        Ok(())
+    }
 }
