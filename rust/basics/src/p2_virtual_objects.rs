@@ -21,13 +21,22 @@ pub trait GreeterObject {
 pub struct GreeterObjectImpl;
 
 impl GreeterObject for GreeterObjectImpl {
-    async fn greet(&self, ctx: ObjectContext<'_>, greeting: String) -> Result<String, HandlerError> {
+    async fn greet(
+        &self,
+        ctx: ObjectContext<'_>,
+        greeting: String,
+    ) -> Result<String, HandlerError> {
         // Access the state attached to this object (this 'name')
         // State access and updates are exclusive and consistent with the execution progress.
         let mut count = ctx.get::<u64>("count").await?.unwrap_or(0);
         count += 1;
         ctx.set("count", count);
-        Ok(format!("{} {} for the {}-th time.", greeting, ctx.key(), count))
+        Ok(format!(
+            "{} {} for the {}-th time.",
+            greeting,
+            ctx.key(),
+            count
+        ))
     }
 
     async fn ungreet(&self, ctx: ObjectContext<'_>) -> Result<String, HandlerError> {
@@ -36,7 +45,11 @@ impl GreeterObject for GreeterObjectImpl {
             count -= 1;
         }
         ctx.set("count", count);
-        Ok(format!("Dear {}, taking one greeting back: {}.", ctx.key(), count))
+        Ok(format!(
+            "Dear {}, taking one greeting back: {}.",
+            ctx.key(),
+            count
+        ))
     }
 }
 
@@ -44,11 +57,7 @@ impl GreeterObject for GreeterObjectImpl {
 async fn main() {
     tracing_subscriber::fmt::init();
 
-    HttpServer::new(
-        Endpoint::builder()
-            .bind(GreeterObjectImpl.serve())
-            .build(),
-    )
+    HttpServer::new(Endpoint::builder().bind(GreeterObjectImpl.serve()).build())
         .listen_and_serve("0.0.0.0:9080".parse().unwrap())
         .await;
 }

@@ -1,8 +1,8 @@
 mod stubs;
 
+use crate::stubs::{create_recurring_payment, create_subscription};
 use restate_sdk::prelude::*;
 use serde::Deserialize;
-use crate::stubs::{create_recurring_payment, create_subscription};
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -40,17 +40,24 @@ pub trait SubscriptionService {
 struct SubscriptionServiceImpl;
 
 impl SubscriptionService for SubscriptionServiceImpl {
-    async fn add(&self, mut ctx: Context<'_>, Json(req): Json<SubscriptionRequest>) -> Result<(), HandlerError> {
+    async fn add(
+        &self,
+        mut ctx: Context<'_>,
+        Json(req): Json<SubscriptionRequest>,
+    ) -> Result<(), HandlerError> {
         // Restate persists the result of all `ctx` actions and recovers them after failures
         // For example, generate a stable idempotency key:
         let payment_id = ctx.rand_uuid().to_string();
 
         // ctx.run persists results of successful actions and skips execution on retries
         // Failed actions (timeouts, API downtime, etc.) get retried
-        let pay_ref = ctx.run(|| create_recurring_payment(&req.credit_card, &payment_id)).await?;
+        let pay_ref = ctx
+            .run(|| create_recurring_payment(&req.credit_card, &payment_id))
+            .await?;
 
         for subscription in req.subscriptions {
-            ctx.run(|| create_subscription(&req.user_id, &subscription, &pay_ref)).await?;
+            ctx.run(|| create_subscription(&req.user_id, &subscription, &pay_ref))
+                .await?;
         }
 
         Ok(())
@@ -67,8 +74,8 @@ async fn main() {
             .bind(SubscriptionServiceImpl.serve())
             .build(),
     )
-        .listen_and_serve("0.0.0.0:9080".parse().unwrap())
-        .await;
+    .listen_and_serve("0.0.0.0:9080".parse().unwrap())
+    .await;
 }
 
 /*

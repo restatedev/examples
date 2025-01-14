@@ -1,8 +1,8 @@
 mod stubs;
 
-use std::time::Duration;
-use restate_sdk::prelude::*;
 use crate::stubs::{charge_bank_account, SubscriptionServiceClient};
+use restate_sdk::prelude::*;
+use std::time::Duration;
 
 /*
 * RESTATE's DURABLE BUILDING BLOCKS
@@ -34,14 +34,18 @@ impl MyService for MyServiceImpl {
         // ---
         // 2. DURABLE RPC: Call other services without manual retry and deduplication logic
         // Restate persists all requests and ensures execution till completion
-        let result = ctx.object_client::<SubscriptionServiceClient>("my-sub-123")
-            .create("my-request".to_string()).call().await?;
+        let result = ctx
+            .object_client::<SubscriptionServiceClient>("my-sub-123")
+            .create("my-request".to_string())
+            .call()
+            .await?;
 
         // ---
         // 3. DURABLE MESSAGING: send (delayed) messages to other services without deploying a message broker
         // Restate persists the timers and triggers execution
         ctx.object_client::<SubscriptionServiceClient>("my-sub-123")
-            .create("my-request".to_string()).send();
+            .create("my-request".to_string())
+            .send();
 
         // ---
         // 4. DURABLE PROMISES: tracked by Restate, can be moved between processes and survive failures
@@ -61,7 +65,8 @@ impl MyService for MyServiceImpl {
         ctx.sleep(Duration::from_secs(5)).await?;
         // Example of scheduling a handler for later on
         ctx.object_client::<SubscriptionServiceClient>("my-sub-123")
-            .cancel().send_with_delay(Duration::from_secs(5));
+            .cancel()
+            .send_with_delay(Duration::from_secs(5));
 
         // ---
         // 7. PERSIST RESULTS: avoid re-execution of actions on retries
@@ -69,7 +74,8 @@ impl MyService for MyServiceImpl {
         // For example, generate idempotency keys that are stable across retries
         // Then use these to call other APIs and let them deduplicate
         let payment_deduplication_id = ctx.rand_uuid().to_string();
-        ctx.run(|| charge_bank_account(&payment_deduplication_id, &100.0)).await?;
+        ctx.run(|| charge_bank_account(&payment_deduplication_id, &100.0))
+            .await?;
 
         Ok(())
     }
@@ -79,11 +85,7 @@ impl MyService for MyServiceImpl {
 async fn main() {
     tracing_subscriber::fmt::init();
 
-    HttpServer::new(
-        Endpoint::builder()
-            .bind(MyServiceImpl.serve())
-            .build(),
-    )
+    HttpServer::new(Endpoint::builder().bind(MyServiceImpl.serve()).build())
         .listen_and_serve("0.0.0.0:9080".parse().unwrap())
         .await;
 }

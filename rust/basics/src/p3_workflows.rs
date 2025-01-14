@@ -1,7 +1,7 @@
 mod stubs;
 
-use restate_sdk::prelude::*;
 use crate::stubs::{create_user_entry, send_email_with_link, User};
+use restate_sdk::prelude::*;
 
 // Workflow are a special type of Virtual Object with a run handler that runs once per ID.
 // Workflows are stateful and can be interacted with via queries (getting data out of the workflow)
@@ -24,8 +24,11 @@ struct SignupWorkflowImpl;
 
 impl SignupWorkflow for SignupWorkflowImpl {
     // --- The workflow logic ---
-    async fn run(&self, mut ctx: WorkflowContext<'_>, Json(user): Json<User>) -> Result<bool, HandlerError> {
-
+    async fn run(
+        &self,
+        mut ctx: WorkflowContext<'_>,
+        Json(user): Json<User>,
+    ) -> Result<bool, HandlerError> {
         // Durably executed action; write to other system
         ctx.run(|| create_user_entry(&user)).await?;
 
@@ -33,7 +36,8 @@ impl SignupWorkflow for SignupWorkflowImpl {
         let secret = ctx.rand_uuid().to_string();
         // workflow ID = user ID; workflow runs once per user
         let user_id = ctx.key();
-        ctx.run(|| send_email_with_link(user_id, &user, &secret)).await?;
+        ctx.run(|| send_email_with_link(user_id, &user, &secret))
+            .await?;
 
         // Wait until user clicked email verification link
         // Promise gets resolved or rejected by the other handlers
@@ -42,7 +46,11 @@ impl SignupWorkflow for SignupWorkflowImpl {
     }
 
     // --- Other handlers interact with the workflow via queries and signals ---
-    async fn click(&self, ctx: SharedWorkflowContext<'_>, secret: String) -> Result<(), HandlerError> {
+    async fn click(
+        &self,
+        ctx: SharedWorkflowContext<'_>,
+        secret: String,
+    ) -> Result<(), HandlerError> {
         ctx.resolve_promise::<String>("email-link", secret);
         Ok(())
     }
@@ -52,13 +60,9 @@ impl SignupWorkflow for SignupWorkflowImpl {
 async fn main() {
     tracing_subscriber::fmt::init();
 
-    HttpServer::new(
-        Endpoint::builder()
-            .bind(SignupWorkflowImpl.serve())
-            .build(),
-    )
-    .listen_and_serve("0.0.0.0:9080".parse().unwrap())
-    .await;
+    HttpServer::new(Endpoint::builder().bind(SignupWorkflowImpl.serve()).build())
+        .listen_and_serve("0.0.0.0:9080".parse().unwrap())
+        .await;
 }
 
 /*
