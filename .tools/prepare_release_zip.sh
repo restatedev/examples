@@ -24,6 +24,7 @@ create_release_zip python/end-to-end-applications/food-ordering python-food-orde
 
 create_release_zip java/basics java-basics
 create_release_zip java/end-to-end-applications/food-ordering java-food-ordering
+create_release_zip java/end-to-end-applications/subway-fare-calculator java-subway-fare-calculator
 create_release_zip java/patterns-use-cases java-patterns-use-cases
 create_release_zip java/templates/java-gradle java-hello-world-gradle
 create_release_zip java/templates/java-maven java-hello-world-maven
@@ -52,7 +53,7 @@ create_release_zip typescript/tutorials/tour-of-restate-typescript typescript-to
 
 create_release_zip go/basics go-basics
 create_release_zip go/integrations/go-lambda-cdk go-hello-world-lambda-cdk
-create_release_zip go/integrations/knative-go kotlin-knative-go
+create_release_zip go/integrations/knative-go go-knative-go
 create_release_zip go/patterns-use-cases go-patterns-use-cases
 create_release_zip go/templates/go go-hello-world
 create_release_zip go/tutorials/tour-of-restate-go go-tour-of-restate
