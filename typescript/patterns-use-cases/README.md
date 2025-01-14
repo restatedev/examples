@@ -6,6 +6,7 @@ Common tasks and patterns implemented with Restate:
 - **[Durable RPC, Idempotency & Concurrency](README.md#durable-rpc-idempotency--concurrency)**: Use programmatic clients to call Restate handlers. Add idempotency keys for deduplication. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/durablerpc/express_app.ts)
 - **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Restate as a queue: Send (delayed) events to handlers. Optionally, retrieve the response later. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/queue/task_submitter.ts)
 - **[Webhook Callbacks](README.md#webhook-callbacks)**: Point webhook callbacks to a Restate handler for durable event processing. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/webhookcallbacks/webhook_callback_router.ts)
+- **[Database Interaction Patterns](README.md#database-interaction-patterns)**: Recommended approaches for reading from and writing to databases using Restate handlers. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/database/main.ts)
 - **[Convert Sync Tasks to Async](README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/syncasync/client.ts)
 - **[Payments signals (Advanced)](README.md#payment-signals)**: Combining fast synchronous responses and slow async callbacks for payments, with Stripe. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/signalspayments/payment_service.ts)
 
@@ -85,6 +86,85 @@ Use Restate as a queue. Schedule tasks for now or later and ensure the task is o
     - The **idempotency key** in the header is used by Restate to deduplicate requests.
     - If a delay is set, the task will be executed later and Restate will track the timer durably, like a **delayed task queue**.
 - [Async Task Worker](src/queue/async_task_worker.ts): gets invoked by Restate for each task in the queue.
+
+## Database Interaction Patterns
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/database/main.ts)
+
+This set of examples shows various patterns to access databases from Restate handlers.
+
+The basic premise is:
+
+1. You don't need to do anything special, you can just interact with
+   your database the same way as from other microservices or workflow activities.
+
+2. But you can use Restate's state, journal, and concurrency mechanisms
+   as helpers to improve common access problems, solve race conditions,
+   or avoid inconsistencies in the presence of retries, concurrent requests,
+   or zombie processes.
+
+The code in [main.ts](./src/database/main.ts) walks gradually through those patterns and explains
+them with inline comments.
+
+<details>
+<summary><strong>Running the Example</strong></summary>
+
+_This is purely opional, the example code and comments document the behavior well._
+_Running the example can be interesting, though, if you want to play with specific failure_
+_scenarios, like pausing/killing processes at specific points and observe the behavior._
+
+1. **Sample Postgres Instance**
+
+To run this example, you need a PostgreSQL database that the Restate handlers will
+access/modify. Simply start one using this Docker command (from the example directory,
+i.e., the directory containing this README file!).
+
+```shell
+docker run -it --rm \
+  --name restate_example_db \
+  -e POSTGRES_USER=restatedb \
+  -e POSTGRES_PASSWORD=restatedb \
+  -e POSTGRES_DB=exampledb \
+  -p 5432:5432 \
+  -v "$(pwd)/db:/docker-entrypoint-initdb.d" \
+  postgres:15.0-alpine
+```
+
+In a separate shell, you can check the contents of the database via those queries
+(requires `psql` to be installed):
+```shell
+psql postgresql://restatedb:restatedb@localhost:5432/exampledb -c 'SELECT * FROM users;'
+psql postgresql://restatedb:restatedb@localhost:5432/exampledb -c 'SELECT * FROM user_idempotency;'
+```
+
+2. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+3. Start the service: `npx tsx watch ./src/database/main.ts`
+4. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+5. The below commands trigger the individual example handlers in the different services.
+
+As with all Restate invocations, you can add idempotency keys to the invoking HTTP calls to make sure
+retries from HTTP clients are de-duplicated by Restate.
+Add an idempotency-key header by appending `-H 'idempotency-key: <mykey>'` to any command, for example: `curl -i localhost:8080/keyed/A/updateConditional --json '12' -H 'idempotency-key: abcdef'`.
+As with all Restate handlers, if you invoke them from within another Restate handler via the Context, invocations are automatically made idempotent.
+
+Simple DB operations:
+* Simple read: `curl -i localhost:8080/simple/read -H 'content-type: application/json' -d '"A"'`
+* Durable read: `curl -i localhost:8080/simple/durableRead -H 'content-type: application/json' -d '"B"'`
+* Insert: `curl -i localhost:8080/simple/insert  -H 'content-type: application/json' -d '{ "userId": "C", "name": "Emm", "address": "55, Rue du Faubourg Saint-Honoré, 75008 Paris, France", "credits": 1337 }'`
+* Update: `curl -i localhost:8080/simple/update  -H 'content-type: application/json' -d '{ "userId": "A", "newName": "Donald" }'`
+
+Keyed DB Operations:
+* Update simple: `curl -i localhost:8080/keyed/B/update -H 'content-type: application/json' -d '12'`
+* Update exactly-once: `curl -i localhost:8080/keyed/B/updateConditional -H 'content-type: application/json' -d '12'`
+
+
+Idempotency update:
+* Updating exactly-once via idempotency: `curl -i localhost:8080/idempotency/update -H 'content-type: application/json' -d '{ "userId": "A", "addCredits": 100 }'`
+
+Update using 2-phase-commit:
+* Updating exactly-once via 2pc txn: `curl -i localhost:8080/twoPhaseCommit/update -H 'content-type: application/json' -d '{ "userId": "A", "addCredits": 100 }'`
+
+</details>
 
 ## Webhook Callbacks
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/webhookcallbacks/webhook_callback_router.ts)
