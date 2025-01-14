@@ -1,36 +1,8 @@
 services:
-  app:
-    build: .
-    ports:
-      - 9080:9080
-    environment:
-      - MINIO_ENDPOINT=minio:9000
-      - MINIO_ACCESS_KEY=minioadmin
-      - MINIO_SECRET_KEY=minioadmin
-      - QDRANT_HOST=qdrant
-      - OLLAMA_HOST=ollama:5000
-      - OLLAMA_MODEL=mxbai-embed-large
-  restate:
-    image: restatedev/restate:latest
-    ports: 
-      - 8080:8080    
-      - 9090:9090    
-      - 9070:9070    
-      - 8081:8081    
-    restart: "no"    
-    environment:    
-      - RESTATE_LOG_FILTER=restate=warn
-      - RESTATE_LOG_FORMAT=json
-      - RESTATE_WORKER__INVOKER__INACTIVITY_TIMEOUT=10min
-    ulimits:    
-      nproc: 65535    
-      nofile:    
-        soft: 65535    
-        hard: 65535
   ollama:
     image: ollama/ollama:latest
     ports:
-      - 5000:5000
+      - 11434:11434
     volumes:
       - ./ollama:/root/.ollama
     container_name: ollama
@@ -62,10 +34,37 @@ services:
       - RESTATE_ADMIN_URL=http://restate:9070
     depends_on:
       - restate
+      - app
     deploy:
       restart_policy:
         condition: on-failure
         delay: 5s
+  app:
+    build: .
+    ports:
+      - 9080:9080
+    environment:
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - QDRANT_HOST=qdrant
+      - OLLAMA_HOST=ollama:11434
+      - OLLAMA_MODEL=mxbai-embed-large
+  restate:
+    image: restatedev/restate:latest
+    ports:
+      - 8080:8080
+      - 9090:9090
+      - 9070:9070
+      - 8081:8081
+    restart: "no"
+    environment:
+      - RESTATE_WORKER__INVOKER__INACTIVITY_TIMEOUT=10min
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 65535
+        hard: 65535
   setupwebhook:
     image: bitnami/minio-client:latest
     entrypoint: >
