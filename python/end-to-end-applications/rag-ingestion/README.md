@@ -1,4 +1,4 @@
-# RAG Ingestion Workflow Example 
+# RAG Ingestion Workflow with Restate's Python SDK 
 
 This repository contains a complete example of how to ingest documents to be used later for RAG.
 Upload a file to an S3 bucket (minio in this demo) and see it appear in a vector database.
@@ -6,31 +6,26 @@ Upload a file to an S3 bucket (minio in this demo) and see it appear in a vector
 This demo:
 * Shows how to use restate a reliable and resilient recipient of webhooks 
 * How to use [LangChain](https://www.langchain.com/) with restate
-* Using restate's [workflows in Python](https://docs.restate.dev/develop/python/workflows).
+* Using Restate's [workflows in Python](https://docs.restate.dev/develop/python/workflows).
 
-# Live demo:
+## Running the example
 
-## Setup ollama locally to download the model 
+1. Setup ollama locally to download the model
+    
+    ```
+    docker compose pull
+    docker compose build
+    docker compose up
+    ```
 
-```bash
-mkdir ollama/
-```
+2. From a separate terminal, download the embedding model.
+We are using `mxbai-embed-large`:
 
-```
-docker-compose pull
-docker-compose build
-docker-compose up
-```
+    ```bash
+    curl http://localhost:11434/api/pull -d '{ "name": "mxbai-embed-large" }'
+    ```
 
-From a separate terminal, download the embedding model.
-We are using `mxbai-embed-large`
-
-
-```bash
-curl http://localhost:11434/api/pull -d '{ "name": "mxbai-embed-large" }'
-```
-
-## All done, now you can go and upload files to this bucket!
+3. All done, now you can go and upload files to this bucket!
 
 * Minio console [Minio](http://localhost:9001/browser/docs) - user/password: `minioadmin` 
 * Qdrant [Qdrant](http://localhost:6333/dashboard#/collections)
