@@ -19,7 +19,7 @@ For more information on CDK, please see [Getting started with the AWS CDK](https
 - Via git clone:
     ```shell
     git clone git@github.com:restatedev/examples.git
-    cd examples/templates/go-lambda-cdk
+    cd examples/go/integrations/go-lambda-cdk
     ```
 
 - Via `wget`:

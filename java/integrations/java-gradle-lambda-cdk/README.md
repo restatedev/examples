@@ -7,7 +7,7 @@ For more information on CDK, please see [Getting started with the AWS CDK](https
 
 * [CDK app entry point `lambda-jvm-cdk.ts`](bin/lambda-jvm-cdk.ts)
 * [CDK stack consisting of a Lambda function and providing Restate service registration](cdk/lambda-jvm-cdk-stack.ts)
-* [Java Lambda handler](lambda) - based on [`hello-world-java`](../java-gradle)
+* [Java Lambda handler](lambda) - based on [`hello-world-java`](../../templates/java-gradle)
 
 ## Download the example
 
@@ -19,7 +19,7 @@ For more information on CDK, please see [Getting started with the AWS CDK](https
 - Via git clone:
     ```shell
     git clone git@github.com:restatedev/examples.git
-    cd examples/templates/java-gradle-lambda-cdk
+    cd examples/java/integrations/java-gradle-lambda-cdk
     ```
 
 - Via `wget`:

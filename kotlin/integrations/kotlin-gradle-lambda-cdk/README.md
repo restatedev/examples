@@ -20,7 +20,7 @@ For more information on CDK, please see [Getting started with the AWS CDK](https
 - Via git clone:
     ```shell
     git clone git@github.com:restatedev/examples.git
-    cd examples/templates/kotlin-gradle-lambda-cdk
+    cd examples/kotlin/integrations/kotlin-gradle-lambda-cdk
     ```
 
 - Via `wget`:
