@@ -62,7 +62,7 @@ export async function sendEmailWithLink(req: {
     curl localhost:8080/usersignup/${req.userId}/click -H 'content-type: application/json' -d '{ "secret": "${req.secret}"}'`);
 }
 
-export function chargeBankAccount(paymentDeduplicationID: string, param2: { amount: number; account: string }) {
+export function chargeBankAccount(_paymentDeduplicationID: string, _payment: { amount: number; account: string }) {
   return undefined;
 }
 
