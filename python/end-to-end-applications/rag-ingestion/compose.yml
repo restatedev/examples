@@ -1,0 +1,78 @@
+services:
+  app:
+    build: .
+    ports:
+      - 9080:9080
+    environment:
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - QDRANT_HOST=qdrant
+      - OLLAMA_HOST=ollama:11434
+      - OLLAMA_MODEL=mxbai-embed-large
+  restate:
+    image: restatedev/restate:latest
+    ports: 
+      - 8080:8080    
+      - 9090:9090    
+      - 9070:9070    
+      - 8081:8081    
+    restart: "no"    
+    environment:    
+      - RESTATE_LOG_FILTER=restate=warn
+      - RESTATE_LOG_FORMAT=json
+      - RESTATE_WORKER__INVOKER__INACTIVITY_TIMEOUT=10min
+    ulimits:    
+      nproc: 65535    
+      nofile:    
+        soft: 65535    
+        hard: 65535
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - 11434:11434
+    volumes:
+      - ./ollama:/root/.ollama
+    container_name: ollama
+    tty: true
+    restart: always
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_HOST=0.0.0.0
+  qdrant:
+    image: qdrant/qdrant:latest 
+    ports:
+      - 6333:6333
+      - 6334:6334
+  minio:
+    image: bitnami/minio:latest
+    ports:
+      - 9000:9000
+      - 9001:9001
+    environment:
+      MINIO_CONSOLE_ADDRESS: :9001
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_NOTIFY_WEBHOOK_ENABLE_RAG: on
+      MINIO_NOTIFY_WEBHOOK_ENDPOINT_RAG: http://restate:8080/docs/webhook
+  setupservices:
+    image: restatedev/restate-cli
+    command: deployment add -y --force --connect-timeout 180000 --request-timeout 180000 http://app:9080
+    environment:
+      - RESTATE_ADMIN_URL=http://restate:9070
+    depends_on:
+      - restate
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+  setupwebhook:
+    image: bitnami/minio-client:latest
+    entrypoint: >
+      sh -c "
+      until mc alias set myminio http://minio:9000 minioadmin minioadmin ; do sleep 1; done &&
+      mc mb myminio/docs &&
+      mc event add myminio/docs arn:minio:sqs::RAG:webhook --event put
+      "
+    depends_on:
+      - minio
