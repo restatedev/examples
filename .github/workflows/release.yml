@@ -57,7 +57,7 @@ jobs:
                   typescript-tour-of-restate.zip
                   go-basics.zip
                   go-hello-world-lambda-cdk.zip
-                  kotlin-knative-go.zip
+                  go-knative-go.zip
                   go-patterns-use-cases.zip
                   go-hello-world.zip
                   go-tour-of-restate.zip
