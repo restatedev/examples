@@ -21,10 +21,17 @@ class SubscriptionRequest(BaseModel):
  Applications consist of services with handlers that can be called over HTTP or Kafka.
  Handlers can be called at http://restate:8080/ServiceName/handlerName
 
- Restate persists and proxies HTTP requests to handlers and manages their execution.
- The SDK lets you implement handlers with regular code and control flow, no custom DSLs.
+ Restate persists and proxies HTTP requests to handlers and manages their execution:
+
+ ┌────────┐   ┌─────────┐   ┌────────────────────────────┐
+ │ HTTP   │ → │ Restate │ → │ Restate Service (with SDK) │
+ │ Client │ ← │         │ ← │   handler1(), handler2()   │
+ └────────┘   └─────────┘   └────────────────────────────┘
+
+ The SDK lets you implement handlers with regular code and control flow.
+ Handlers have access to a Context that provides durable building blocks that get persisted in Restate.
  Whenever a handler uses the Restate Context, an event gets persisted in Restate's log.
- After a failure, this log gets replayed to recover the state of the handler.
+ After a failure, a retry is triggered and this log gets replayed to recover the state of the handler.
 """
 subscription_service = Service("SubscriptionService")
 

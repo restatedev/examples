@@ -6,10 +6,10 @@ use serde::Deserialize;
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub(crate) struct SubscriptionRequest {
-    pub(crate) user_id: String,
-    pub(crate) credit_card: String,
-    pub(crate) subscriptions: Vec<String>,
+pub struct SubscriptionRequest {
+    pub user_id: String,
+    pub credit_card: String,
+    pub subscriptions: Vec<String>,
 }
 
 // Restate helps you implement resilient applications:

@@ -1,6 +1,6 @@
 #![allow(unused)]
 use anyhow::{anyhow, Result};
-use log::{error, info};
+use tracing::{error, info};
 use rand::random;
 use restate_sdk::context::ObjectContext;
 use restate_sdk::errors::HandlerError;

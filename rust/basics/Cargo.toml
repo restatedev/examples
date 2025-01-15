@@ -10,7 +10,7 @@ tracing-subscriber = "0.3"
 rand = "0.8.5"
 anyhow = "1.0.86"
 serde = { version = "1.0.208", features = ["derive"] }
-log = "0.4.22"
+tracing = "0.1.41"
 
 [[example]]
 name = "example-0"
