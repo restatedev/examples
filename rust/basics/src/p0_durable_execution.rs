@@ -1,13 +1,16 @@
-package durable_execution;
+mod stubs;
 
-import dev.restate.sdk.JsonSerdes;
-import dev.restate.sdk.Context;
-import dev.restate.sdk.annotation.Handler;
-import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
-import utils.SubscriptionRequest;
+use crate::stubs::{create_recurring_payment, create_subscription};
+use restate_sdk::prelude::*;
+use serde::Deserialize;
 
-import static utils.ExampleStubs.*;
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SubscriptionRequest {
+    pub user_id: String,
+    pub credit_card: String,
+    pub subscriptions: Vec<String>,
+}
 
 // Restate helps you implement resilient applications:
 //  - Automatic retries
@@ -29,31 +32,50 @@ import static utils.ExampleStubs.*;
 // Whenever a handler uses the Restate Context, an event gets persisted in Restate's log.
 // After a failure, a retry is triggered and this log gets replayed to recover the state of the handler.
 
-@Service
-public class SubscriptionService {
+#[restate_sdk::service]
+pub trait SubscriptionService {
+    async fn add(req: Json<SubscriptionRequest>) -> Result<(), HandlerError>;
+}
 
-    @Handler
-    public void add(Context ctx, SubscriptionRequest req) {
+struct SubscriptionServiceImpl;
+
+impl SubscriptionService for SubscriptionServiceImpl {
+    async fn add(
+        &self,
+        mut ctx: Context<'_>,
+        Json(req): Json<SubscriptionRequest>,
+    ) -> Result<(), HandlerError> {
         // Restate persists the result of all `ctx` actions and recovers them after failures
         // For example, generate a stable idempotency key:
-        var paymentId = ctx.random().nextUUID().toString();
+        let payment_id = ctx.rand_uuid().to_string();
 
         // ctx.run persists results of successful actions and skips execution on retries
         // Failed actions (timeouts, API downtime, etc.) get retried
-        var payRef = ctx.run(JsonSerdes.STRING, () ->
-                createRecurringPayment(req.creditCard(), paymentId));
+        let pay_ref = ctx
+            .run(|| create_recurring_payment(&req.credit_card, &payment_id))
+            .await?;
 
-        for (String subscription : req.subscriptions()) {
-            ctx.run(() -> createSubscription(req.userId(), subscription, payRef));
+        for subscription in req.subscriptions {
+            ctx.run(|| create_subscription(&req.user_id, &subscription, &pay_ref))
+                .await?;
         }
-    }
 
-    public static void main(String[] args) {
-        // Create an HTTP endpoint to serve your services
-        RestateHttpEndpointBuilder.builder()
-                .bind(new SubscriptionService())
-                .buildAndListen();
+        Ok(())
     }
+}
+
+// Create an HTTP endpoint to serve your services on port 9080
+#[tokio::main]
+async fn main() {
+    tracing_subscriber::fmt::init();
+
+    HttpServer::new(
+        Endpoint::builder()
+            .bind(SubscriptionServiceImpl.serve())
+            .build(),
+    )
+    .listen_and_serve("0.0.0.0:9080".parse().unwrap())
+    .await;
 }
 
 /*

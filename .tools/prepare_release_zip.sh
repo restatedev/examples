@@ -58,6 +58,7 @@ create_release_zip go/patterns-use-cases go-patterns-use-cases
 create_release_zip go/templates/go go-hello-world
 create_release_zip go/tutorials/tour-of-restate-go go-tour-of-restate
 
+create_release_zip rust/basics rust-basics
 create_release_zip rust/templates/rust rust-hello-world
 create_release_zip rust/templates/rust-shuttle rust-shuttle-hello-world
 create_release_zip rust/tutorials/tour-of-restate-rust rust-tour-of-restate

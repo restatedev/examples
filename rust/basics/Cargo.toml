@@ -1,0 +1,29 @@
+[package]
+name = "restate-example"
+version = "0.0.1"
+edition = "2021"
+
+[dependencies]
+restate-sdk = "0.3"
+tokio = { version = "1", features = ["full"] }
+tracing-subscriber = "0.3"
+rand = "0.8.5"
+anyhow = "1.0.86"
+serde = { version = "1.0.208", features = ["derive"] }
+tracing = "0.1.41"
+
+[[example]]
+name = "example-0"
+path = "src/p0_durable_execution.rs"
+
+[[example]]
+name = "example-1"
+path = "src/p1_building_blocks.rs"
+
+[[example]]
+name = "example-2"
+path = "src/p2_virtual_objects.rs"
+
+[[example]]
+name = "example-3"
+path = "src/p3_workflows.rs"
