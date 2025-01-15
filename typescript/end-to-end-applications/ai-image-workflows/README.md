@@ -1,4 +1,4 @@
-# AI Image Workflow example
+# AI Image Workflow Parser & Executor
 
 This example implements a workflow that executes various AI image processing steps,
 like image generation and transformations.

@@ -51,7 +51,7 @@ Examples integrating Restate with other tools and frameworks:
 Complete applications built with Restate:
 
 - **[Food Ordering App](end-to-end-applications/food-ordering)**: A food delivery service (like DoorDash) that manages orders, restaurants, payments, and delivery drivers. The example mixes workflows (ordering) and stateful microservices (driver management), and uses Kafka as an event source for updates from delivery drivers.
-- **[AI Image Processing Workflow](end-to-end-applications/ai-image-workflows)**: A dynamic workflow interpreter that interprets a list of image processing steps and runs them through image processing libraries and stable diffusion.
+- **[AI Image Workflow Parser & Executor](end-to-end-applications/ai-image-workflows)**: A dynamic workflow interpreter that interprets a list of image processing steps and runs them through image processing libraries and stable diffusion.
 - **[LLM-powered Chat Bot / Task Agent](end-to-end-applications/chat-bot)**: An LLM-powered chat bot with Slack integration that can be asked to handle tasks, like watching flight prices, or sending reminders.
 
 
