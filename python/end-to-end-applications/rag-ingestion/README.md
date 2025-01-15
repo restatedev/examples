@@ -1,7 +1,7 @@
 # RAG Ingestion Workflow with Restate's Python SDK 
 
 This repository contains a complete example of how to ingest documents to be used later for RAG.
-Upload a file to an S3 bucket (minio in this demo) and see it appear in a vector database.
+Upload a file to an S3 bucket (MinIO in this demo) and see it appear in a vector database.
 
 This demo:
 * Shows how to use Restate as a reliable and resilient recipient of webhook events
@@ -9,13 +9,13 @@ This demo:
 * How to use [LangChain](https://www.langchain.com/) with Restate
 * Using Restate's [workflows in Python](https://docs.restate.dev/develop/python/workflows).
 
-Whenever a new file is uploaded to Minio, it triggers a webhook event that is sent to a webhook endpoint. 
+Whenever a new file is uploaded to MinIO, it triggers a webhook event that is sent to a webhook endpoint. 
 The webhook endpoint is here a Restate handler (docs/webhook), that durable persists and processes all incoming events. 
 The handler invokes a workflow to downloads the file, extract snippets from it, compute embeddings for all snippets, and add them to a Qdrant vector store.
 
 ```mermaid
 graph TD
-    A[MinIO] -->|New file uploaded & Webhook Event sent| B[Restate]
+    A["S3 Bucket (MinIO)"] -->|New file uploaded & Webhook Event sent| B[Restate]
     B -->|Invoke handler with event| C[Webhook Handler]
     subgraph "Restate Docs Service"
     C --> D{File Type}
@@ -71,8 +71,8 @@ We are using `mxbai-embed-large`:
     ```
 
 3. All done, now you can go and upload files to this bucket!
-   * Minio console Minio (http://localhost:9001/browser/docs) - user/password: `minioadmin` 
-   * Qdrant Qdrant (http://localhost:6333/dashboard#/collections)
+   * MinIO console (http://localhost:9001/browser/docs) - user/password: `minioadmin` 
+   * Qdrant (http://localhost:6333/dashboard#/collections)
 
 4. Upload any `.txt` / `.pdf` file into the docs (http://localhost:9001/browser/docs) bucket. For example, upload [`testfile.txt`](testfile.txt).
 
