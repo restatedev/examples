@@ -15,7 +15,7 @@ The handler invokes a workflow to downloads the file, extract snippets from it, 
 
 ```mermaid
 graph TD
-    A[MinIO] -->|New file uploaded &\n Webhook Event sent| B[Restate]
+    A[MinIO] -->|New file uploaded & Webhook Event sent| B[Restate]
     B -->|Invoke handler with event| C[Webhook Handler]
     subgraph "Restate Docs Service"
     C --> D{File Type}
