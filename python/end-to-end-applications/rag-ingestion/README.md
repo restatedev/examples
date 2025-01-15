@@ -28,12 +28,12 @@ graph TD
     G -->|Invoke handler| M[Download PDF]
     subgraph "Restate Text Workflow Service"
     I --> J[Extract snippets]
-    J --> K[Compute embeddings \n via embeddings service]
+    J --> K[Compute embeddings via embeddings service]
     K --> L[Add to vector store]
     end
     subgraph "Restate PDF Workflow Service"
     M --> N[Extract snippets]
-    N --> O[Compute embeddings \n via embeddings service]
+    N --> O[Compute embeddings via embeddings service]
     O --> P[Add to vector store]
     end
     L --> Q[Qdrant]
