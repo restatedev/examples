@@ -29,6 +29,7 @@ jobs:
             python-patterns-use-cases
             python-tour-of-restate
             python-food-ordering
+            python-rag-ingestion
             java-basics
             java-food-ordering
             java-subway-fare-calculator
