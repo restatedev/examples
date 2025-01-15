@@ -71,12 +71,12 @@ We are using `mxbai-embed-large`:
     ```
 
 3. All done, now you can go and upload files to this bucket!
-   * MinIO console (http://localhost:9001/browser/docs) - user/password: `minioadmin` 
-   * Qdrant (http://localhost:6333/dashboard#/collections)
+   * MinIO console `http://localhost:9001/browser/docs` - user/password: `minioadmin` 
+   * Qdrant `http://localhost:6333/dashboard#/collections`
 
-4. Upload any `.txt` / `.pdf` file into the docs (http://localhost:9001/browser/docs) bucket. For example, upload [`testfile.txt`](testfile.txt).
+4. Upload any `.txt` / `.pdf` file into the docs `http://localhost:9001/browser/docs` bucket. For example, upload [`testfile.txt`](testfile.txt).
 
-5. Watch new vectors appear at docs collection (http://localhost:6333/dashboard#/collections/docs)
+5. Watch new vectors appear at docs collection `http://localhost:6333/dashboard#/collections/docs`
 
 Teardown the example via:
 
