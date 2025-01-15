@@ -44,7 +44,7 @@ impl MyService for MyServiceImpl {
         // 3. DURABLE MESSAGING: send (delayed) messages to other services without deploying a message broker
         // Restate persists the timers and triggers execution
         ctx.object_client::<SubscriptionServiceClient>("my-sub-123")
-            .create("my-request".to_string())
+            .create(String::from("my-request"))
             .send();
 
         // ---
@@ -55,7 +55,7 @@ impl MyService for MyServiceImpl {
         // If the process crashes while waiting, Restate will recover the promise somewhere else
         promise.await?;
         // Another process can resolve the awakeable via its ID
-        ctx.resolve_awakeable(&id, "hello".to_string());
+        ctx.resolve_awakeable(&id, String::from("hello"));
 
         // ---
         // 5. DURABLE TIMERS: sleep or wait for a timeout, tracked by Restate and recoverable

@@ -61,6 +61,7 @@ jobs:
                   go-patterns-use-cases.zip
                   go-hello-world.zip
                   go-tour-of-restate.zip
+                  rust-basics.zip
                   rust-hello-world.zip
                   rust-shuttle-hello-world.zip
                   rust-tour-of-restate.zip

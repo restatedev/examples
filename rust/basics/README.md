@@ -14,7 +14,7 @@ about how they work and how they can be run.
   finished actions. The example creates a subscription to movie streaming services
   by first creating a recurring payment and then adding the subscriptions.
 
-* **[Building blocks](src/p1_buildingblocks):** Restate gives you a durable version
+* **[Building blocks](src/p1_building_blocks.rs):** Restate gives you a durable version
   of common building blocks like queues, promises, RPC, state, and timers.
   This example shows a reference of the API and what you can do with it.
 
