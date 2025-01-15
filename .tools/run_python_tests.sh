@@ -18,4 +18,5 @@ pushd $PROJECT_ROOT/python/templates/python && python_mypi_lint && popd
 pushd $PROJECT_ROOT/python/basics && python_mypi_lint && popd
 pushd $PROJECT_ROOT/python/patterns-use-cases && python_mypi_lint && popd
 pushd $PROJECT_ROOT/python/tutorials/tour-of-restate-python && python_mypi_lint && popd
+pushd $PROJECT_ROOT/python/end-to-end-applications/rag-ingestion && python_mypi_lint && popd
 pushd $PROJECT_ROOT/python/end-to-end-applications/food-ordering/app && python_mypi_lint && popd

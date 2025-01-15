@@ -1,0 +1,8 @@
+restate_sdk
+hypercorn
+minio
+langchain
+langchain_community
+langchain-ollama
+langchain-qdrant
+pypdf

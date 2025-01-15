@@ -29,6 +29,7 @@ jobs:
                   python-patterns-use-cases.zip
                   python-tour-of-restate.zip
                   python-food-ordering.zip
+                  python-rag-ingestion.zip
                   java-basics.zip
                   java-food-ordering.zip
                   java-subway-fare-calculator.zip

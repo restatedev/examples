@@ -13,4 +13,5 @@ function search_and_replace_version() {
 
 search_and_replace_version $PROJECT_ROOT/python/templates/python
 search_and_replace_version $PROJECT_ROOT/python/tutorials/tour-of-restate-python
+search_and_replace_version $PROJECT_ROOT/python/end-to-end-applications/rag-ingestion
 search_and_replace_version $PROJECT_ROOT/python/end-to-end-applications/food-ordering/app
