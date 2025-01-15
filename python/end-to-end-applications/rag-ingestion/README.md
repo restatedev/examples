@@ -24,17 +24,17 @@ graph TD
     end
     E --> G[Restate]
     F --> G[Restate]
-    G -->|Invoke handler| I[1. Download Text]
-    G -->|Invoke handler| M[1. Download PDF]
+    G -->|Invoke handler| I[Download Text]
+    G -->|Invoke handler| M[Download PDF]
     subgraph "Restate Text Workflow Service"
-    I --> J[2. Extract snippets]
-    J --> K[3. Compute embeddings \n via embeddings service]
-    K --> L[4. Add to vector store]
+    I --> J[Extract snippets]
+    J --> K[Compute embeddings \n via embeddings service]
+    K --> L[Add to vector store]
     end
     subgraph "Restate PDF Workflow Service"
-    M --> N[2. Extract snippets]
-    N --> O[3. Compute embeddings \n via embeddings service]
-    O --> P[4. Add to vector store]
+    M --> N[Extract snippets]
+    N --> O[Compute embeddings \n via embeddings service]
+    O --> P[Add to vector store]
     end
     L --> Q[Qdrant]
     P --> Q
