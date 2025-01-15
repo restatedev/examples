@@ -14,6 +14,9 @@ jobs:
       - uses: gaurav-nelson/github-action-markdown-link-check@v1
         with:
           use-quiet-mode: 'yes'
+          use-verbose-mode: 'yes'
+          config-file: './.tools/mlc_config.json'
+          folder-path: '.'
   build-rust:
     # prevent from running on forks
     if: github.repository_owner == 'restatedev'
