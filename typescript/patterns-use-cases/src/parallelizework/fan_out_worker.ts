@@ -1,16 +1,32 @@
-import * as restate from "@restatedev/restate-sdk/lambda";
+import * as restate from "@restatedev/restate-sdk";
 import {CombineablePromise, Context} from "@restatedev/restate-sdk";
-import {aggregate, split, SubTask, Task} from "./utils";
+import {aggregate, executeSubtask, Result, split, SubTask, SubTaskResult, Task} from "./utils";
 
-/**
+/*
  * Restate makes it easy to parallelize async work by fanning out tasks.
- * Afterwards, you can collect the result by fanning in the partial results.
+ * Afterward, you can collect the result by fanning in the partial results.
+ *          +------------+
+ *          | Split task |
+ *          +------------+
+ *                |
+ *        ---------------------------------
+ *        |                |              |
+ * +--------------+ +--------------+ +--------------+
+ * | Exec subtask | | Exec subtask | | Exec subtask |
+ * +--------------+ +--------------+ +--------------+
+ *        |                |               |
+ *        ---------------------------------
+ *                |
+ *          +------------+
+ *          | Aggregate  |
+ *          +------------+
  * Durable Execution ensures that the fan-out and fan-in steps happen reliably exactly once.
  */
+
 const fanOutWorker = restate.service({
     name: "worker",
     handlers: {
-        run: async (ctx: Context, task: Task) => {
+        run: async (ctx: Context, task: Task): Promise<Result> => {
             // Split the task in subtasks
             const subtasks: SubTask[] = await ctx.run("split task", () =>
                 split(task)
@@ -27,15 +43,16 @@ const fanOutWorker = restate.service({
 
             // Fan in - Aggregate the results
             const results = await CombineablePromise.all(resultPromises);
-            return aggregate(results);
+            return aggregate(ctx, results);
         },
 
         // Can also run on FaaS
-        runSubtask: async (ctx: Context, subtask: SubTask) => {
+        runSubtask: async (ctx: Context, subtask: SubTask): Promise<SubTaskResult> => {
             // Processing logic goes here ...
             // Can be moved to a separate service to scale independently
+            return executeSubtask(ctx, subtask);
         },
     },
 });
 
-export const handler = restate.endpoint().bind(fanOutWorker).handler();
+restate.endpoint().bind(fanOutWorker).listen(9080);
