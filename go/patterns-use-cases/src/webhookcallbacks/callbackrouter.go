@@ -5,7 +5,8 @@ import restate "github.com/restatedev/sdk-go"
 type WebhookCallbackRouter struct{}
 
 // Any handler can be a durable webhook processor that never loses events
-// You don't need to do anything special for this. Just point your webhook to the handler endpoint.
+// You don't need to do anything special for this.
+// Just point your webhook to the handler endpoint: restate:8080/WebhookCallbackRouter/OnStripeEvent
 
 func (WebhookCallbackRouter) OnStripeEvent(ctx restate.Context, event StripeEvent) error {
 	if event.Type == "invoice.payment_failed" {
