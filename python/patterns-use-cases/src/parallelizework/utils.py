@@ -1,8 +1,7 @@
 from datetime import timedelta
 from random import randint
-from typing import List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, TypeAdapter
 
 
 class Task(BaseModel):
@@ -21,7 +20,7 @@ class Result(BaseModel):
     description: str
 
 
-def split(task: Task) -> List[SubTask]:
+def split(task: Task) -> list[SubTask]:
     # Split the task into subTasks
     subtask_descriptions = task.description.split(",")
     sub_tasks = [SubTask(description=description) for description in subtask_descriptions]
@@ -38,7 +37,7 @@ async def execute_subtask(ctx, subtask: SubTask) -> SubTaskResult:
     return SubTaskResult(description=f"{subtask.description}: DONE")
 
 
-def aggregate(sub_results: List[SubTaskResult]) -> Result:
+def aggregate(sub_results: list[SubTaskResult]) -> Result:
     # Aggregate the results
     descriptions = [sub_result.description for sub_result in sub_results]
     result_description = ",".join(descriptions)

@@ -71,6 +71,6 @@ public class FanOutWorker {
   }
 
   public static void main(String[] args) {
-     RestateHttpEndpointBuilder.builder().bind(new FanOutWorker()).buildAndListen(9082);
+     RestateHttpEndpointBuilder.builder().bind(new FanOutWorker()).buildAndListen();
   }
 }

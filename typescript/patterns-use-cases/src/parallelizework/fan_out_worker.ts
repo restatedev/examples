@@ -43,7 +43,7 @@ const fanOutWorker = restate.service({
 
             // Fan in - Aggregate the results
             const results = await CombineablePromise.all(resultPromises);
-            return aggregate(results);
+            return aggregate(ctx, results);
         },
 
         // Can also run on FaaS

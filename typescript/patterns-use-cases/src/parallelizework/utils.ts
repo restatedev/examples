@@ -1,28 +1,28 @@
 import { Context } from "@restatedev/restate-sdk";
 
 export interface Task {
-  Description: string;
+  description: string;
 }
 
 export interface SubTask {
-  Description: string;
+  description: string;
 }
 
 export interface SubTaskResult {
-  Description: string;
+  description: string;
 }
 
 export interface Result {
-  Description: string;
+  description: string;
 }
 
 export function split(task: Task): SubTask[] {
   // Split the task into subTasks
-  const subtaskDescriptions = task.Description.split(",");
+  const subtaskDescriptions = task.description.split(",");
 
   const subTasks: SubTask[] = [];
   for (const description of subtaskDescriptions) {
-    subTasks.push({ Description: description });
+    subTasks.push({ description } as SubTask);
   }
 
   return subTasks;
@@ -30,17 +30,17 @@ export function split(task: Task): SubTask[] {
 
 export async function executeSubtask(ctx: Context, subtask: SubTask): Promise<SubTaskResult> {
   // Execute subtask
-  console.log(`Started executing subtask: ${subtask.Description}`);
+  ctx.console.info(`Started executing subtask: ${subtask.description}`);
   // Sleep for a random amount between 0 and 10 seconds
   await ctx.sleep(Math.floor(ctx.rand.random() * 5) * 1000);
-  console.log(`Execution subtask finished: ${subtask.Description}`);
-  return { Description: `${subtask.Description}: DONE` };
+  ctx.console.info(`Execution subtask finished: ${subtask.description}`);
+  return { description: `${subtask.description}: DONE` };
 }
 
-export function aggregate(subResults: SubTaskResult[]): Result {
+export function aggregate(ctx: Context, subResults: SubTaskResult[]): Result {
   // Aggregate the results
-  const descriptions = subResults.map(subResult => subResult.Description);
+  const descriptions = subResults.map(subResult => subResult.description);
   const resultDescription = descriptions.join(",");
-  console.log(`Aggregated result: ${resultDescription}`);
-  return { Description: resultDescription };
+  ctx.console.info(`Aggregated result: ${resultDescription}`);
+  return { description: resultDescription };
 }
