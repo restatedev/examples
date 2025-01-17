@@ -8,9 +8,24 @@ import (
 	"os"
 )
 
-/*
+/**
  * Restate makes it easy to parallelize async work by fanning out tasks.
- * Afterwards, you can collect the result by fanning in the partial results.
+ * Afterward, you can collect the result by fanning in the partial results.
+ *          +------------+
+ *          | Split task |
+ *          +------------+
+ *                |
+ *        ---------------------------------
+ *        |                |              |
+ * +--------------+ +--------------+ +--------------+
+ * | Exec subtask | | Exec subtask | | Exec subtask |
+ * +--------------+ +--------------+ +--------------+
+ *        |                |               |
+ *        ---------------------------------
+ *                |
+ *          +------------+
+ *          | Aggregate  |
+ *          +------------+
  * Durable Execution ensures that the fan-out and fan-in steps happen reliably exactly once.
  */
 
@@ -62,8 +77,3 @@ func main() {
 		os.Exit(1)
 	}
 }
-
-/*
-Try running the FanOutWorker service with the following command:
-curl -X POST http://localhost:8080/FanOutWorker/Run -H "Content-Type: application/json" -d '{"description": "get out of bed,shower,make coffee,have breakfast"}'
-*/

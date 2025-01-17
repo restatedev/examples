@@ -40,12 +40,13 @@ func split(task Task) ([]SubTask, error) {
 
 func executeSubtask(ctx restate.Context, subtask SubTask) (SubTaskResult, error) {
 	// Execute subtask
-	// sleep for a random amount between 0 and 3 seconds
+	log.Printf("Started executing subtask: %s\n", subtask.Description)
+	// sleep for a random amount between 0 and 10 seconds
 	err := restate.Sleep(ctx, time.Duration(rand.Intn(5))*time.Second)
 	if err != nil {
 		return SubTaskResult{}, err
 	}
-	log.Printf("Executed subtask: %s\n", subtask.Description)
+	log.Printf("Execution subtask finished: %s\n", subtask.Description)
 	return SubTaskResult{Description: subtask.Description + ": DONE"}, nil
 }
 
