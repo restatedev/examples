@@ -1,5 +1,6 @@
 import restate
 from restate import Service, Context
+from restate.serde import PydanticJsonSerde
 
 from utils import *
 
@@ -26,13 +27,13 @@ fanout_worker = Service("FanOutWorker")
 
 
 @fanout_worker.handler()
-async def run(ctx: Context, task: Task):
+async def run(ctx: Context, task: Task) -> Result:
     # Split the task in subtasks
-    subtasks = await ctx.run("split task", lambda: split(task))
+    subtasks = await ctx.run("split task", lambda: split(task), serde=PydanticJsonSerde(SubTaskList))
 
     # Fan out the subtasks - run them in parallel
     result_promises = []
-    for subtask in subtasks:
+    for subtask in subtasks.subtasks:
         sub_result_promise = ctx.service_call(run_subtask, arg=subtask)
         result_promises.append(sub_result_promise)
 
@@ -43,7 +44,7 @@ async def run(ctx: Context, task: Task):
 
 # Can also run on FaaS
 @fanout_worker.handler()
-async def run_subtask(ctx: Context, subtask: SubTask):
+async def run_subtask(ctx: Context, subtask: SubTask) -> SubTaskResult:
     # Processing logic goes here...
     # Can be moved to a separate service to scale independently
     return await execute_subtask(ctx, subtask)
