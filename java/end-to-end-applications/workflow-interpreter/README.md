@@ -9,14 +9,6 @@ The workflow can contain steps that call different image processing services:
 - to rotate images
 - to blur images
 
-
-- A client sends an HTTP request to the ImageProcessingWorkflow
-- The workflow parses the JSON workflow definition
-- The workflow calls the specified services in the workflow definition in the correct order 
-  - calls to PuppeteerService 
-  - calls to TransformerService with /blur and /rotate
-- Results are concatenated and returned to the client
-
 ```txt
 +--------+ Request +------------------------+
 | Client | ------> | ImageProcessingWorkflow|
