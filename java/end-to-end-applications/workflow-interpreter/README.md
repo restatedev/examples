@@ -44,7 +44,6 @@ The workflow can contain steps that call different image processing services:
     |                          |
     +<-------------------------|
            Result Report
-
 ```
 
 **Note:** For simplicity, this example stores images locally in the folder `generated-images`.
