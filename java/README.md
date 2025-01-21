@@ -39,6 +39,7 @@ Complete applications built with Restate:
 
 - **[Food Ordering App](end-to-end-applications/food-ordering)**: A food delivery service (like DoorDash) that manages orders, restaurants, payments, and delivery drivers. The example mixes workflows (ordering) and stateful microservices (driver management), and uses Kafka as an event source for updates from delivery drivers.
 - **[Subway Fare Calculator](end-to-end-applications/subway-fare-calculator)**: A fare calculator for a subway system that calculates the fare based on distances traveled by customers. Implemented as Stateful Actors. 
+- **[Image Workflow Parser & Executor](end-to-end-applications/workflow-interpreter)**: A dynamic workflow interpreter (Spring Boot) that parses a JSON list of image processing commands and runs them through image processing libraries.
 
 ## Templates
 

@@ -56,9 +56,9 @@ workflow definition.
 
 You can clone the example repository (`git clone https://github.com/restatedev/examples`) or just download this example via
 
-- **CLI:** `restate example java-image-workflows`
+- **CLI:** `restate example java-workflow-interpreter`
 
-- **Zip archive:** https://github.com/restatedev/examples/releases/latest/download/java-image-workflows.zip
+- **Zip archive:** https://github.com/restatedev/examples/releases/latest/download/java-workflow-interpreter.zip
 
 ## Running the example
 
