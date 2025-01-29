@@ -11,6 +11,9 @@ pub(crate) trait CartObject {
     async fn checkout() -> Result<bool, HandlerError>;
     #[name = "expireTicket"]
     async fn expire_ticket(ticket_id: String) -> Result<(), HandlerError>;
+
+    #[shared]
+    async fn list() -> Result<String, HandlerError>;
 }
 
 pub struct CartObjectImpl;
@@ -99,5 +102,19 @@ impl CartObject for CartObjectImpl {
         }
 
         Ok(())
+    }
+
+    async fn list(
+        &self,
+        ctx: SharedObjectContext<'_>
+    ) -> Result<String, HandlerError> {
+        let mut tickets = ctx
+            .get::<Json<HashSet<String>>>("tickets")
+            .await?
+            .unwrap_or_default()
+            .into_inner();
+
+        let tickets_vec: Vec<String> = tickets.into_iter().collect();
+        Ok(tickets_vec.join(","))
     }
 }
