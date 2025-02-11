@@ -9,6 +9,9 @@ PROJECT_ROOT="$(dirname "$SELF_PATH")/.."
 function search_and_replace_version() {
   echo "upgrading Python version of $1 to $NEW_VERSION"
   sed -i 's/restate_sdk==[0-9A-Za-z.-]*/restate_sdk=='"$NEW_VERSION"'/' "$1/requirements.txt"
+  if [ -e "$1/pyproject.toml" ]; then
+    sed -i 's/restate-sdk==[0-9A-Za-z.-]*/restate-sdk=='"$NEW_VERSION"'/' "$1/pyproject.toml"
+  fi;
 }
 
 search_and_replace_version $PROJECT_ROOT/python/templates/python
