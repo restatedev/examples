@@ -1,0 +1,13 @@
+[project]
+name = "hello-world"
+version = "0.1.0"
+description = "Example hello world project"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "hypercorn>=0.17.3",
+    "pydantic>=2.10.6",
+    "restate-sdk==0.5.0",
+]
+
+
