@@ -14,6 +14,9 @@ dependencies {
   // SDK common (contains the restate http client)
   implementation("dev.restate:sdk-common:$restateVersion")
   implementation("dev.restate:sdk-api-kotlin:$restateVersion")
+
+  // Logging
+  implementation("org.apache.logging.log4j:log4j-core:2.24.1")
 }
 
 // Set main class
