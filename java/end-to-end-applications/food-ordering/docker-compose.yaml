@@ -1,4 +1,3 @@
-version: '3'
 services:
   broker:
     image: confluentinc/cp-kafka:7.5.0
@@ -24,7 +23,7 @@ services:
     image: confluentinc/cp-kafka:7.5.0
     depends_on:
       - broker
-    entrypoint: [ '/bin/sh', '-c' ]
+    entrypoint: ["/bin/sh", "-c"]
     command: |
       "
       # blocks until kafka is reachable
@@ -50,17 +49,29 @@ services:
     environment:
       - RESTATE_RUNTIME_ENDPOINT=http://runtime:8080
     ports:
-      - "5050:5050"  # exposed so that can be called when delivery services run outside docker compose
-    entrypoint: ["java", "-cp", "@/app/jib-classpath-file", "dev.restate.sdk.examples.RestaurantMain"]
+      - "5050:5050" # exposed so that can be called when delivery services run outside docker compose
+    entrypoint:
+      [
+        "java",
+        "-cp",
+        "@/app/jib-classpath-file",
+        "dev.restate.sdk.examples.RestaurantMain",
+      ]
 
   driver_app:
     container_name: driver_app
     image: delivery-service:1.0.0
     environment:
       - KAFKA_BOOTSTRAP_SERVERS=broker:29092
-    entrypoint: ["java", "-cp", "@/app/jib-classpath-file", "dev.restate.sdk.examples.external.DriverMobileAppSimulator"]
+    entrypoint:
+      [
+        "java",
+        "-cp",
+        "@/app/jib-classpath-file",
+        "dev.restate.sdk.examples.external.DriverMobileAppSimulator",
+      ]
 
-# To run the delivery services directly (in IDE, standalone), comment out this service
+  # To run the delivery services directly (in IDE, standalone), comment out this service
   delivery_service:
     container_name: delivery_service
     image: delivery-service:1.0.0
@@ -80,9 +91,9 @@ services:
       - ./restate-docker.toml:/restate.toml:Z,ro
     environment:
       - RESTATE_CONFIG=/restate.toml
-# remove those comments when running delivery services directly (in IDE, standalone), so the runtime can reach out to them
-#    extra_hosts:
-#      - "delivery_service:host-gateway"
+  # remove those comments when running delivery services directly (in IDE, standalone), so the runtime can reach out to them
+  #    extra_hosts:
+  #      - "delivery_service:host-gateway"
 
   runtimesetup:
     build:
@@ -92,19 +103,24 @@ services:
       - driver_app
       - restaurantpos
     restart: "no"
-    entrypoint: ["sh", "-c", "-x", "sleep 5 &&
-    echo '-w \"\\n\"' >> ~/.curlrc &&
-    curl -i -s --fail -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://delivery_service:9080\"}' &&
-    curl -i -s --fail -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://driver_app:9081\"}' &&
-    sleep 3 && 
-    curl -i -s --fail -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/orders\", \"sink\":\"service://OrderWorkflow/create\" }' &&
-    curl -i -s --fail -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/driver-updates\", \"sink\":\"service://DriverDigitalTwin/handleDriverLocationUpdateEvent\" }' &&
-    sleep 3 && 
-    curl -i -s --fail -X POST 'runtime:8080/DriverMobileAppSimulator/driver-A/startDriver' &&
-    curl -i -s --fail -X POST 'runtime:8080/DriverMobileAppSimulator/driver-B/startDriver' &&
-    exit 1"]
+    entrypoint: [
+        "sh",
+        "-c",
+        "-x",
+        "sleep 5 &&
+        echo '-w \"\\n\"' >> ~/.curlrc &&
+        curl -i -s --fail -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://delivery_service:9080\"}' &&
+        curl -i -s --fail -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://driver_app:9081\"}' &&
+        sleep 3 &&
+        curl -i -s --fail -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/orders\", \"sink\":\"service://OrderWorkflow/create\" }' &&
+        curl -i -s --fail -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/driver-updates\", \"sink\":\"service://DriverDigitalTwin/handleDriverLocationUpdateEvent\" }' &&
+        sleep 3 &&
+        curl -i -s --fail -X POST 'runtime:8080/DriverMobileAppSimulator/driver-A/startDriver' &&
+        curl -i -s --fail -X POST 'runtime:8080/DriverMobileAppSimulator/driver-B/startDriver' &&
+        exit 1",
+      ]
 
-  foodorderingwebui:
+  webui:
     build:
       context: ./webui
     depends_on:
