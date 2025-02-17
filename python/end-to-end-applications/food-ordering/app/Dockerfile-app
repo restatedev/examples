@@ -10,5 +10,4 @@ COPY . .
 EXPOSE 9080
 
 ENV PYTHONPATH="/usr/src/app"
-ENV RESTATE_CORE_LOG=trace
 CMD ["hypercorn", "ordering/app:app", "--config", "hypercorn-config.toml"]

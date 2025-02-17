@@ -1,4 +1,4 @@
-import { createContext, useContext, FC, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 
 import { IProduct } from 'models';
 
@@ -24,7 +24,11 @@ const useProductsContext = (): IProductsContext => {
   return context;
 };
 
-const ProductsProvider: FC = (props) => {
+type Props = {
+  children?: React.ReactNode;
+};
+
+const ProductsProvider = (props: Props) => {
   const [isFetching, setIsFetching] = useState(false);
   const [products, setProducts] = useState<IProduct[]>([]);
   const [filters, setFilters] = useState<string[]>([]);

@@ -8,8 +8,7 @@ WORKDIR /app
 ENV PATH /node_modules/.bin:$PATH
 
 # install app dependencies
-COPY package.json ./
-COPY package-lock.json ./
+COPY package*.json .
 RUN npm install
 
 # add app

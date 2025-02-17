@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   broker:
     image: confluentinc/cp-kafka:7.5.0
@@ -27,7 +27,7 @@ services:
     image: confluentinc/cp-kafka:7.5.0
     depends_on:
       - broker
-    entrypoint: [ '/bin/sh', '-c' ]
+    entrypoint: ["/bin/sh", "-c"]
     command: |
       "
       # blocks until kafka is reachable
@@ -59,7 +59,7 @@ services:
 
   order_app:
     container_name: order_app
-#    image: food-app:0.0.1
+    #    image: food-app:0.0.1
     build:
       context: ./app
       dockerfile: Dockerfile-app
@@ -96,14 +96,18 @@ services:
       - runtime
       - order_app
     restart: "no"
-    entrypoint: ["sh", "-c", "sleep 5 && 
-    apk add --no-cache bash jq curl &&
-    curl -X POST 'runtime:9070/deployments' -H 'content-type: application/json' -d '{\"uri\": \"http://order_app:9080\"}' &&
-    sleep 3 && 
-    curl -X POST 'runtime:9070/subscriptions' -H 'content-type: application/json' -d '{ \"source\":\"kafka://my-cluster/driver-updates\", \"sink\":\"service://driver-digital-twin/handleDriverLocationUpdateEvent\" }' &&
-    curl -X POST -H 'content-type: application/json' runtime:8080/driver-mobile-app/driver-01/startDriver -d '{}' &&
-    curl -X POST -H 'content-type: application/json' runtime:8080/driver-mobile-app/driver-02/startDriver -d '{}' &&
-    exit 1"]
+    entrypoint: [
+        "sh",
+        "-c",
+        'sleep 5 &&
+        apk add --no-cache bash jq curl &&
+        curl -X POST ''runtime:9070/deployments'' -H ''content-type: application/json'' -d ''{"uri": "http://order_app:9080"}'' &&
+        sleep 3 &&
+        curl -X POST ''runtime:9070/subscriptions'' -H ''content-type: application/json'' -d ''{ "source":"kafka://my-cluster/driver-updates", "sink":"service://driver-digital-twin/handleDriverLocationUpdateEvent" }'' &&
+        curl -X POST -H ''content-type: application/json'' runtime:8080/driver-mobile-app/driver-01/startDriver -d ''{}'' &&
+        curl -X POST -H ''content-type: application/json'' runtime:8080/driver-mobile-app/driver-02/startDriver -d ''{}'' &&
+        exit 1',
+      ]
 
   webui:
     build:
