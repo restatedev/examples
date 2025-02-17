@@ -1,4 +1,4 @@
-# RAG Ingestion Workflow with Restate's Python SDK 
+# RAG Ingestion Workflow with Restate's Python SDK
 
 This repository contains a complete example of how to ingest documents to be used later for RAG.
 Upload a file to an S3 bucket (MinIO in this demo) and see it appear in a vector database.
@@ -9,8 +9,8 @@ This demo:
 * How to use [LangChain](https://www.langchain.com/) with Restate
 * Using Restate's [workflows in Python](https://docs.restate.dev/develop/python/workflows).
 
-Whenever a new file is uploaded to MinIO, it triggers a webhook event that is sent to a webhook endpoint. 
-The webhook endpoint is here a Restate handler (docs/webhook), that durable persists and processes all incoming events. 
+Whenever a new file is uploaded to MinIO, it triggers a webhook event that is sent to a webhook endpoint.
+The webhook endpoint is here a Restate handler (docs/webhook), that durable persists and processes all incoming events.
 The handler invokes a workflow to downloads the file, extract snippets from it, compute embeddings for all snippets, and add them to a Qdrant vector store.
 
 ```mermaid
@@ -56,7 +56,7 @@ pip install -r requirements.txt
 ## Running the example
 
 1. Setup ollama locally to download the model
-    
+
     ```
     docker compose pull
     docker compose build
@@ -67,11 +67,11 @@ pip install -r requirements.txt
 We are using `mxbai-embed-large`:
 
     ```bash
-    curl http://localhost:5000/api/pull -d '{ "name": "mxbai-embed-large" }'
+    curl http://localhost:11434/api/pull -d '{ "name": "mxbai-embed-large" }'
     ```
 
 3. All done, now you can go and upload files to this bucket!
-   * MinIO console `http://localhost:9001/browser/docs` - user/password: `minioadmin` 
+   * MinIO console `http://localhost:9001/browser/docs` - user/password: `minioadmin`
    * Qdrant `http://localhost:6333/dashboard#/collections`
 
 4. Upload any `.txt` / `.pdf` file into the docs `http://localhost:9001/browser/docs` bucket. For example, upload [`testfile.txt`](testfile.txt).
@@ -83,5 +83,3 @@ Teardown the example via:
 ```
 docker-compose down --remove-orphans
 ```
-
-
