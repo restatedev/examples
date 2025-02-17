@@ -1,4 +1,4 @@
-import { createContext, useContext, FC, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { ICartDetails, ICartProduct, ICartTotal } from 'models';
 
 export interface ICartContext {
@@ -40,7 +40,11 @@ const detailsInitialValues = {
   checked_out: false,
 };
 
-const CartProvider: FC = (props) => {
+type Props = {
+  children?: React.ReactNode;
+};
+
+const CartProvider = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [products, setProducts] = useState<ICartProduct[]>([]);
   const [total, setTotal] = useState<ICartTotal>(totalInitialValues);

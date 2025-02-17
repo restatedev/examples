@@ -1,4 +1,4 @@
-import { createContext, useContext, FC, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 
 import { IUser } from 'models';
 
@@ -20,7 +20,11 @@ const useUserContext = (): IUserContext => {
   return context;
 };
 
-const UserProvider: FC = (props) => {
+type Props = {
+  children?: React.ReactNode;
+};
+
+const UserProvider = (props: Props) => {
   const [user, setUser] = useState<IUser | undefined>(undefined);
   const [isLoadingUser, setLoadingUser] = useState<boolean>(false);
 
