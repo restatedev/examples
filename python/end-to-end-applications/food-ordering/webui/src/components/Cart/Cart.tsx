@@ -45,7 +45,7 @@ const Cart = () => {
 
   const handleRestaurantSelection = (
     restaurantId: string,
-    restaurant: string
+    restaurant: string,
   ) => {
     const newRestaurant = {
       restaurant_id: restaurantId,
@@ -96,14 +96,12 @@ const Cart = () => {
 
       let done = false;
       while (!done) {
-        const newOrderStatus = (
-          await sendRequestToRestate({
-            service: 'order-status',
-            method: 'get',
-            key: user!.user_id,
-            data: {},
-          })
-        );
+        const newOrderStatus = await sendRequestToRestate({
+          service: 'order-status',
+          method: 'get',
+          key: user!.user_id,
+          data: {},
+        });
         console.info(newOrderStatus);
 
         if (newOrderStatus) {
@@ -154,7 +152,7 @@ const Cart = () => {
             <S.SubPrice>
               <S.SubPriceValue>{`${total.currencyFormat} ${formatPrice(
                 total.totalPrice,
-                total.currencyId
+                total.currencyId,
               )}`}</S.SubPriceValue>
               <S.SubPriceInstallment>
                 {total.installments ? (
@@ -163,7 +161,7 @@ const Cart = () => {
                       total.currencyFormat
                     } ${formatPrice(
                       total.totalPrice / total.installments,
-                      total.currencyId
+                      total.currencyId,
                     )}`}
                   </span>
                 ) : null}
@@ -215,7 +213,7 @@ const Cart = () => {
                   onClick={() =>
                     handleRestaurantSelection(
                       'snack_in_the_box',
-                      'Snack in the Box'
+                      'Snack in the Box',
                     )
                   }
                 >
