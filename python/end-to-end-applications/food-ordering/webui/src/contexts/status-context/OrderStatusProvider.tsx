@@ -1,4 +1,4 @@
-import { createContext, useContext, FC, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { IOrderStatus } from 'models';
 
 export interface IOrderStatusContext {
@@ -22,7 +22,11 @@ const useOrderStatusContext = (): IOrderStatusContext => {
   return context;
 };
 
-const OrderStatusProvider: FC = (props) => {
+type Props = {
+  children?: React.ReactNode;
+};
+
+const OrderStatusProvider = (props: Props) => {
   const [orderStatus, setOrderStatus] = useState<IOrderStatus>({
     eta: 0,
     status: 'NEW',
