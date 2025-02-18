@@ -47,26 +47,26 @@ Every request gets processed durably, and deduplicated based on the idempotency 
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/durablerpc/product_service:app`
-3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080` 
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 Run the client to let it send a request to reserve a product:
 ```shell
 python src/durablerpc/client.py product1 reservation1
 ```
 
-This will give us `{"reserved":true}`.
+This will give us `{"reserved": True}`.
 
 Let's change the reservation ID and run the request again:
 ```shell
 python src/durablerpc/client.py product1 reservation2
 ```
 
-This will give us `{"reserved":false}` because this product is already reserved, so we can't reserve it again.
+This will give us `{"reserved": False}` because this product is already reserved, so we can't reserve it again.
 
-However, if we run the first request again with same reservation ID, we will get `{"reserved":true}` again:
+However, if we run the first request again with same reservation ID, we will get `{"reserved": True}` again:
 ```shell
 python src/durablerpc/client.py product1 reservation1
-``` 
+```
 Restate deduplicated the request (with the reservation ID as idempotency key) and returned the first response.
 
 </details>
@@ -89,7 +89,7 @@ Files to look at:
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/queue/async_task_worker:app`
-3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080` 
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 Submit a task with a delay: `python src/queue/task_submitter.py task123`
 
@@ -126,7 +126,7 @@ If the upload takes too long, however, the client asks the upload service to sen
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/syncasync/data_upload_service:app`
-3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080` 
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 Run the upload client with a userId: `python src/syncasync/client.py my_user_id12`
 
@@ -194,7 +194,7 @@ Note that the compensating actions need to be idempotent.
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/sagas/booking_workflow:app`
-3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080` 
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 Have a look at the logs to see how the compensations run in case of a terminal error.
 
@@ -340,7 +340,7 @@ and failures.
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/statemachinepayments/payment_processor:app`
-3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080` 
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 Send some requests:
 
@@ -366,15 +366,15 @@ restate kv get PaymentProcessor some-string-id
 ```
 🤖 State:
 ―――――――――
-                           
- Service  PaymentProcessor 
- Key      some-string-id   
 
- KEY      VALUE                 
- payment  {                     
-            "account_id": "abc", 
-            "amount_cents": 100  
-          }                     
+ Service  PaymentProcessor
+ Key      some-string-id
+
+ KEY      VALUE
+ payment  {
+            "account_id": "abc",
+            "amount_cents": 100
+          }
  status   "CANCELLED"
 ```
 
@@ -428,7 +428,7 @@ webhooks to your local machine.
    Add it to the [stripe_utils.py](src/signalspayments/stripe_utils.py) file. Because this is a dev-only
    API key, it supports only test data, so it isn't super sensitive.
 
-6. Run launch _ngrok_: 
+6. Run launch _ngrok_:
    1. [Get a free account](https://dashboard.ngrok.com)
    2. [Copy your auth token](https://dashboard.ngrok.com/get-started/your-authtoken)
    3. Download the binary, or launch a docker container. Make it forward HTTP calls to local port `8080`:
@@ -439,7 +439,7 @@ webhooks to your local machine.
 7. Go to the Stripe UI and [create a webhook](https://dashboard.stripe.com/test/webhooks)
    - Put the ngrok public URL + `/PaymentService/processWebhook` as the webhook URL (you need to update this whenever you stop/start ngrok).
          Example: `https://<some random numbers>.ngrok-free.app/payments/processWebhook`
-   - Select all _"Payment Intent"_ event types. 
+   - Select all _"Payment Intent"_ event types.
 
 8. Put the webhook secret (`whsec_...`) in the [stripe_utils.py](src/signalspayments/stripe_utils.py) file.
 
@@ -570,7 +570,7 @@ The handler will fast-forward to where it was, will recover the post ID and will
 You can try it out by killing Restate or the service halfway through processing a post.
 
 </details>
-</details> 
+</details>
 
 ## Event Enrichment / Joins
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/eventenrichment/package_tracker.py)
@@ -632,24 +632,24 @@ You can see how the state was enriched by the initial RPC event and the subseque
 ```
 🤖 State:
 ―――――――――
-                          
- Service  PackageTracker 
- Key      package1        
 
- KEY           VALUE                                            
- package-info  {                                                
-                  "finalDestination": "Bridge 6, Amsterdam",  
-                  "locations": [                                 
-                    {                                            
-                      "location": "Pinetree Road 5, Paris",      
-                      "timestamp": "2024-10-10 13:00"            
-                    },                                            
-                    {                                            
-                      "location": "Mountain Road 155, Brussels", 
-                      "timestamp": "2024-10-10 14:00"            
-                    }                                            
-                  ]                                              
-                }  
+ Service  PackageTracker
+ Key      package1
+
+ KEY           VALUE
+ package-info  {
+                  "finalDestination": "Bridge 6, Amsterdam",
+                  "locations": [
+                    {
+                      "location": "Pinetree Road 5, Paris",
+                      "timestamp": "2024-10-10 13:00"
+                    },
+                    {
+                      "location": "Mountain Road 155, Brussels",
+                      "timestamp": "2024-10-10 14:00"
+                    }
+                  ]
+                }
 ```
 
 </details>
