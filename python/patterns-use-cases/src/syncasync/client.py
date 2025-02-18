@@ -24,7 +24,7 @@ def upload_data(user: User):
 
     try:
         url = f"{RESTATE_URL}/DataUploadService/{user.id}/run"
-        upload_url = requests.post(url, headers=headers, timeout=5).json()
+        upload_url = requests.post(url, timeout=5).json()
     except requests.exceptions.Timeout:
         logging.info("Slow upload... Mail the link later")
         email_url = f"{RESTATE_URL}/DataUploadService/{user.id}/resultAsEmail/send"
