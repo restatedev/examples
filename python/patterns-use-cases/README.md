@@ -622,7 +622,7 @@ The Package Tracker Virtual Object tracks the package details and its location h
 ```shell
 curl localhost:8080/package-tracker/package1/getPackageInfo
 ```
-or via the CLI: `restate kv get PackageTracker package1`
+or via the CLI: `restate kv get package-tracker package1`
 
 You can see how the state was enriched by the initial RPC event and the subsequent Kafka events:
 
@@ -633,7 +633,7 @@ You can see how the state was enriched by the initial RPC event and the subseque
 🤖 State:
 ―――――――――
 
- Service  PackageTracker
+ Service  package-tracker
  Key      package1
 
  KEY           VALUE
