@@ -100,7 +100,7 @@ Task submitted: {'invocationId': 'inv_1lloi4vK3cnG0T2Tsteh8rd99NrGpgtsYh', 'stat
 Task result: Finished work on task: task123
 ```
 
-If we resubmit the same task: `python src/queue/task_submitter.py user123`,
+If we resubmit the same task: `python src/queue/task_submitter.py task123`,
 you will see that the task is not executed again (signals `PreviouslyAccepted`), but the same result is returned:
 ```
 Submitting task with idempotency key: task123
