@@ -12,7 +12,6 @@ def reserve_product(product_id: str, reservation_id: str):
     url = f"{RESTATE_URL}/product/{product_id}/reserve"
     headers = {
         "idempotency-key": reservation_id,
-        "Content-Type": "application/json"
     }
     response = requests.post(url, headers=headers)
     print({"reserved": response.json()})
