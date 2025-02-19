@@ -41,22 +41,22 @@ Every request gets processed durably, and deduplicated based on the idempotency 
 2. Start the service: `go run ./src/durablerpc/service`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
-Run the client to let it send a request to reserve a product: 
+Run the client to let it send a request to reserve a product:
 ```shell
-go run ./src/durablerpc/client --productid 1 --reservationid 1
+go run ./src/durablerpc/client --productId 1 --reservationId 1
 ```
 The response will be `true`.
 
 Let's change the reservation ID and run the request again:
 ```shell
-go run ./src/durablerpc/client --productid 1 --reservationid 2
+go run ./src/durablerpc/client --productId 1 --reservationId 2
 ```
 This will give us `false` because this product is already reserved, so we can't reserve it again.
 
 However, if we run the first request again with same reservation ID, we will get `true` again:
 ```shell
-go run ./src/durablerpc/client --productid 1 --reservationid 1
-``` 
+go run ./src/durablerpc/client --productId 1 --reservationId 1
+```
 Restate deduplicated the request (with the reservation ID as idempotency key) and returned the first response.
 </details>
 
@@ -295,7 +295,7 @@ You can run this on FaaS infrastructure, like AWS Lambda, and it will scale auto
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 Send a request:
-```shell    
+```shell
 curl -X POST http://localhost:8080/FanOutWorker/Run -H "Content-Type: application/json" -d '{"description": "get out of bed,shower,make coffee,have breakfast"}'
 ```
 
@@ -372,10 +372,10 @@ Processing events (from Kafka) to update various downstream systems.
 
 8. Our Kafka broker only has a single partition so all these messages end up on the same partition.
   You can see in the logs how events for different users are processed in parallel, but events for the same user are processed sequentially:
-    
+
     <details>
     <summary>Logs</summary>
-    
+
     ```
     2025/01/03 16:33:16 INFO Handling invocation method=UserFeed/ProcessPost invocationID=inv_13puWeoWJykN2iR3HzJOiyzymCA9yPbT1f
     Created post 3dae1f20-a7e5-4f3f-8113-3a4b91e48e72 for user userid1 with content: Hi! This is my first post!
@@ -419,15 +419,15 @@ Processing events (from Kafka) to update various downstream systems.
     Updating the user feed for user userid1 with post b8c0d187-1148-41d2-9060-d25fe0d9bdfe
     2025/01/03 16:34:37 INFO Invocation completed successfully method=UserFeed/ProcessPost invocationID=inv_13puWeoWJykN6C0ovGVJ4Bvrhxhw9Lnpx7
     ```
-    
+
     As you see, slow events do not block other slow events. Restate effectively created a queue per user ID.
-    
+
     The handler creates the social media post and waits for content moderation to finish.
     If the moderation takes long, and there is an infrastructure crash, then Restate will trigger a retry.
     The handler will fast-forward to where it was, will recover the post ID and will continue waiting for moderation to finish.
-    
+
     You can try it out by killing Restate or the service halfway through processing a post.
-    
+
     </details>
 
 </details>
@@ -487,38 +487,35 @@ The Package Tracker Virtual Object tracks the package details and its location h
     curl localhost:8080/PackageTracker/package123/getPackageInfo
     ```
     or via the CLI: `restate kv get PackageTracker package123`
-    
+
     You can see how the state was enriched by the initial RPC event and the subsequent Kafka events:
-   
+
     <details>
     <summary>Output</summary>
-   
+
     ```
     🤖 State:
     ―――――――――
-                              
-     Service  package-tracker 
-     Key      package123       
-    
-     KEY           VALUE                                            
-     package-info  {                                                
-                      "finalDestination": "Bridge 6, Amsterdam",  
-                      "locations": [                                 
-                        {                                            
-                          "location": "Pinetree Road 5, Paris",      
-                          "timestamp": "2024-10-10 13:00"            
-                        },                                            
-                        {                                            
-                          "location": "Mountain Road 155, Brussels", 
-                          "timestamp": "2024-10-10 14:00"            
-                        }                                            
-                      ]                                              
-                    }  
+
+     Service  package-tracker
+     Key      package123
+
+     KEY           VALUE
+     package-info  {
+                      "finalDestination": "Bridge 6, Amsterdam",
+                      "locations": [
+                        {
+                          "location": "Pinetree Road 5, Paris",
+                          "timestamp": "2024-10-10 13:00"
+                        },
+                        {
+                          "location": "Mountain Road 155, Brussels",
+                          "timestamp": "2024-10-10 14:00"
+                        }
+                      ]
+                    }
     ```
-   
+
     </details>
-    
+
 </details>
-    
-
-
