@@ -5,7 +5,7 @@ The examples here showcase the most basic building blocks of Restate. **Durable 
 of them.
 
 The individual example files contain code snippets with comments and a brief descriptions
-about how they work and how they can be run.  
+about how they work and how they can be run.
 
 ### Examples
 
@@ -24,7 +24,7 @@ about how they work and how they can be run.
 * **[Workflows](app/3_workflows.py):** Workflows are durable execution tasks that can
   be submitted and awaited. They have an identity and can be signaled and queried
   through durable promises. The example is a user-signup flow that takes multiple
-  operations, including verifying the email address. 
+  operations, including verifying the email address.
 
 
 ### Running the examples
@@ -39,7 +39,7 @@ To set up the example, use the following sequence of commands.
     ```
 
 3. Start the app as follows:
-   - Durable execution example: `python -m hypercorn --config hypercorn-config.toml app/1_durable_execution.py:app`
+   - Durable execution example: `python -m hypercorn --config hypercorn-config.toml app/0_durable_execution.py:app`
    - The building blocks example is not runnable and more like a reference of what you can do with the API
    - Virtual Objects example: `python -m hypercorn --config hypercorn-config.toml app/2_virtual_objects.py:app`
    - Workflows example: `python -m hypercorn --config hypercorn-config.toml app/3_workflows.py:app`

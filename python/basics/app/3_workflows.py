@@ -53,13 +53,15 @@ async def click(ctx: WorkflowSharedContext, secret: str):
 app = restate.app(services=[user_signup])
 
 """
-You can deploy this as a container, Lambda, etc. - Invoke it over HTTP via: curl
-localhost:8080/usersignup/signup-userid1/run/send -H 'content-type: application/json' \
-      -d '{ "name": "Bob", "email": "bob@builder.com" }'
+You can deploy this as a container, Lambda, etc. - Invoke it over HTTP via:
+
+curl localhost:8080/usersignup/signup-userid1/run/send -H 'content-type: application/json' -d '{ "name": "Bob", "email": "bob@builder.com" }'
 
 - Resolve the email link via:
-  curl localhost:8080/usersignup/signup-userid1/verifyEmail
+
+curl localhost:8080/usersignup/signup-userid1/click  -H 'content-type: application/json' -d '"<SECRET>"'
 
 - Attach back to the workflow to get the result:
-  curl localhost:8080/restate/workflow/usersignup/userid1/attach
+
+curl localhost:8080/restate/workflow/usersignup/signup-userid1/attach
 """
