@@ -1,4 +1,3 @@
-version: '3'
 services:
   broker:
     image: confluentinc/cp-kafka:7.5.0
@@ -27,13 +26,13 @@ services:
     image: confluentinc/cp-kafka:7.5.0
     depends_on:
       - broker
-    entrypoint: [ '/bin/sh', '-c' ]
+    entrypoint: ["/bin/sh", "-c"]
     command: |
       "# blocks until kafka is reachable
       kafka-topics --bootstrap-server broker:29092 --list
       echo -e 'Creating kafka topics'
       kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic package-location-updates --replication-factor 1 --partitions 1
       kafka-topics --bootstrap-server broker:29092 --create --if-not-exists --topic social-media-posts --replication-factor 1 --partitions 1
-      
+
       echo -e 'Successfully created the following topics:'
       kafka-topics --bootstrap-server broker:29092 --list"

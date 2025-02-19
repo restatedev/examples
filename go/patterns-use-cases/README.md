@@ -484,7 +484,7 @@ The Package Tracker Virtual Object tracks the package details and its location h
 
 8. Query the package location via the RPC handler:
     ```shell
-    curl localhost:8080/PackageTracker/package123/getPackageInfo
+    curl localhost:8080/PackageTracker/package123/GetPackageInfo
     ```
     or via the CLI: `restate kv get PackageTracker package123`
 
