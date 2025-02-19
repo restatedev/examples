@@ -32,7 +32,7 @@ about how they work and how they can be run.
    `restate-server`
 
 2. Start the relevant example:
-    - `go run ./part1` for the Durable Execution example
+    - `go run ./part0` for the Durable Execution example
     - The building blocks example is not runnable and more like a reference of what you can do with the API
     - `go run ./part2` for the Virtual Objects example
     - `go run ./part3` for the Workflows example
