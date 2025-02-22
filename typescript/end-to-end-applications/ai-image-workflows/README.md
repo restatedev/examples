@@ -10,7 +10,50 @@ The workflow can contain steps that call different image processing services:
 - to rotate images
 - to blur images
 
-![](dynamic_workflow_executor.png)
+
+```txt
++--------+ Request +------------------------+
+| Client | ------> | ImageProcessingWorkflow|
++--------+         +------------------------+
+    ^                          |
+    |                          | Parse JSON workflow definition
+    |                          v
+    |              +------------------------+
+    |              |   Workflow Execution   |----+
+    |              +------------------------+    |
+    |                          |                 |
+    |                          |    +------------------------+
+    |                          |    | Optional Services      |
+    |                          |    | (any order)            |
+    |                          |    |  +-----------------+   |
+    |                          |    |  | PuppeteerService|   |
+    |                          |    |  +-----------------+   |
+    |                          |    |  | StableDiffusion |   |
+    |                          |    |  | (/generate)     |   |
+    |                          |    |  +-----------------+   |
+    |                          |    |  | StableDiffusion |   |
+    |                          |    |  | (/transform)    |   |
+    |                          |    |  +-----------------+   |
+    |                          |    |  | TransformerSvc  |   |
+    |                          |    |  | (/blur)         |   |
+    |                          |    |  +-----------------+   |
+    |                          |    |  | TransformerSvc  |   |
+    |                          |    |  | (/rotate)       |   |
+    |                          |    |  +-----------------+   |
+    |                          |    +------------------------+
+    |                          |                 |
+    |                          <-----------------+
+    |                          |
+    |                          | Concatenate
+    |                          v
+    |              +------------------------+
+    |              |    Result Assembly     |
+    |              +------------------------+
+    |                          |
+    +<-------------------------|
+           Result Report
+```
+
 
 
 **Note:** For simplicity, this example stores images locally in the folder `generated-images`. 
@@ -46,7 +89,12 @@ Here is list of example workflow execution requests that you can send to the wor
 Puppeteer screenshot -> rotate -> blur:
 
 ```shell
-curl localhost:8080/image-processing-workflow/user123-wf1/run -H 'content-type: application/json' -d '[{"action":"puppeteer","parameters":{"url":"https://restate.dev"}},{"action":"rotate","parameters":{"angle":90}},{"action":"blur","parameters":{"blur":5}}]'
+curl localhost:8080/image-processing-workflow/user123-wf1/run -H 'content-type: application/json' \
+  -d '[
+          {"action":"puppeteer","parameters":{"url":"https://restate.dev"}},
+          {"action":"rotate","parameters":{"angle":90}},
+          {"action":"blur","parameters":{"blur":5}}
+       ]'
 ```
 
 Have a look at the `generated-images` folder to see the end result.
@@ -115,7 +163,15 @@ Try more complex workflows, and have a look at the end result.
 - Puppeteer screenshot -> blur -> rotate -> rotate -> rotate -> rotate:
 
 ```shell
-curl localhost:8080/image-processing-workflow/user123-wf2/run -H 'content-type: application/json' -d '[{"action":"puppeteer","parameters":{"url":"https://restate.dev"}},{"action":"blur","parameters":{"blur":5}}, {"action":"rotate","parameters":{"angle":90}}, {"action":"rotate","parameters":{"angle":90}}, {"action":"rotate","parameters":{"angle":90}}, {"action":"rotate","parameters":{"angle":90}}]' 
+curl localhost:8080/image-processing-workflow/user123-wf2/run -H 'content-type: application/json' \
+  -d '[
+        {"action":"puppeteer","parameters":{"url":"https://restate.dev"}},
+        {"action":"blur","parameters":{"blur":5}}, 
+        {"action":"rotate","parameters":{"angle":90}}, 
+        {"action":"rotate","parameters":{"angle":90}}, 
+        {"action":"rotate","parameters":{"angle":90}}, 
+        {"action":"rotate","parameters":{"angle":90}}
+      ]' 
 ```
 
 - Invalid workflow definition (no image source is defined):
