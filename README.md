@@ -10,7 +10,7 @@ challenges.
 
 * **Basics:** Small examples highlighting the basic building blocks, like
   durable execution or virtual objects.
- 
+
 * **Use Cases and Patterns:** Small specific use cases, like webhooks,
   workflows, asynchronous task queuing.
 
@@ -27,7 +27,7 @@ challenges.
 * **Tutorials:** A step-by-step guide that builds an application and introduces
   the Restate concepts on the way.
 
-## Example catalogs 
+## Example catalogs
 
 Have a look at the example catalog for your preferred SDK language:
 
@@ -74,7 +74,7 @@ Or have a look at the general catalog below:
 
 | Example Name                            | Languages                                                                                                                                                                                                                                                                                                                                  |
 |-----------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| <a id="aws-lambda">AWS Lambda + CDK</a> | [<img src="https://skillicons.dev/icons?i=ts" width="24" height="24">](typescript/integrations/deployment-lambda-cdk) [<img src="https://skillicons.dev/icons?i=go" width="24" height="24">](go/integrations/go-lambda-cdk)  [<img src="https://skillicons.dev/icons?i=kotlin&theme=light" width="24" height="24">](kotlin/integrations/kotlin-gradle-lambda-cdk) |
+| <a id="aws-lambda">AWS Lambda + CDK</a> | [<img src="https://skillicons.dev/icons?i=ts" width="24" height="24">](typescript/integrations/deployment-lambda-cdk) [<img src="https://skillicons.dev/icons?i=go" width="24" height="24">](go/integrations/go-lambda-cdk) [<img src="https://skillicons.dev/icons?i=java&theme=light" width="24" height="24">](java/integrations/java-gradle-lambda-cdk) [<img src="https://skillicons.dev/icons?i=kotlin&theme=light" width="24" height="24">](kotlin/integrations/kotlin-gradle-lambda-cdk) |
 | <a id="xstate">XState</a>               | [<img src="https://skillicons.dev/icons?i=ts" width="24" height="24">](typescript/integrations/xstate)                                                                                                                                                                                                                                     |
 | <a id="knative">Knative</a>             | [<img src="https://skillicons.dev/icons?i=go" width="24" height="24">](go/integrations/knative-go)                                                                                                                                                                                                                                         |
 
