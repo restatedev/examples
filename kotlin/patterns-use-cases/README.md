@@ -1,6 +1,11 @@
 # Kotlin Patterns and Use Cases
 
+#### Orchestration patterns
 - **[Sagas](README.md#sagas)**: Preserve consistency by tracking undo actions and running them when code fails halfway through. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/kotlin/my/example/sagas/BookingWorkflow.kt)
+
+#### Event processing
+- **[Transactional Event Processing](README.md#transactional-event-processing)**: Processing events (from Kafka) to update various downstream systems in a transactional way. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/kotlin/my/example/eventtransactions/UserFeed.kt)
+- **[Event Enrichment / Joins](README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/kotlin/my/example/eventenrichment/PackageTracker.kt)
 
 ## Sagas
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/kotlin/my/example/sagas/BookingWorkflow.kt)
