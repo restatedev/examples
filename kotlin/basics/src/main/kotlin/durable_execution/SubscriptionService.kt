@@ -45,7 +45,7 @@ class SubscriptionService {
         }
 
         for (subscription in req.subscriptions) {
-            ctx.run {
+            ctx.runBlock {
                 createSubscription(req.userId, subscription, payRef)
             }
         }
