@@ -1,11 +1,25 @@
 # Kotlin Patterns and Use Cases
 
+### Communication
+- **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/kotlin/my/example/queue/TaskSubmitter.kt)
+
 #### Orchestration patterns
 - **[Sagas](README.md#sagas)**: Preserve consistency by tracking undo actions and running them when code fails halfway through. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/kotlin/my/example/sagas/BookingWorkflow.kt)
 
 #### Event processing
 - **[Transactional Event Processing](README.md#transactional-event-processing)**: Processing events (from Kafka) to update various downstream systems in a transactional way. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/kotlin/my/example/eventtransactions/UserFeed.kt)
 - **[Event Enrichment / Joins](README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/kotlin/my/example/eventenrichment/PackageTracker.kt)
+
+## (Delayed) Message Queue
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/kotlin/my/example/queue/TaskSubmitter.kt)
+
+Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.
+
+- [Task Submitter](src/main/kotlin/my/example/queue/TaskSubmitter.kt): schedules tasks via send requests with and idempotency key.
+   - The **send requests** put the tasks in Restate's queue. The task submitter does not wait for the task response.
+   - The **idempotency key** in the header is used by Restate to deduplicate requests.
+   - If a delay is set, the task will be executed later and Restate will track the timer durably, like a **delayed task queue**.
+- [Async Task Worker](src/main/kotlin/my/example/queue/AsyncTaskWorker.kt): gets invoked by Restate for each task in the queue.
 
 ## Sagas
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/kotlin/my/example/sagas/BookingWorkflow.kt)
