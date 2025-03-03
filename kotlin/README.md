@@ -9,6 +9,9 @@
 
 ## Use Cases and Patterns
 
+#### Communication
+- **[(Delayed) Message Queue](patterns-use-cases/README.md#delayed-message-queue)**: Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/src/main/kotlin/my/example/queue/TaskSubmitter.kt)
+
 #### Orchestration patterns
 - **[Sagas](patterns-use-cases/README.md#sagas)**: Preserve consistency by tracking undo actions and running them when code fails halfway through. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/src/main/kotlin/my/example/sagas/BookingWorkflow.kt)
 
