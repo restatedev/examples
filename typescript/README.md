@@ -1,5 +1,9 @@
 # TypeScript Example Catalog
 
+## Prerequisites
+- NodeJS >= v18.17.1
+- npm CLI >= 9.6.7
+
 ## Basics
 
 Learn the key concepts of Restate:
