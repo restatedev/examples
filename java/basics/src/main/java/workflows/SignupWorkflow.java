@@ -39,8 +39,6 @@ public class SignupWorkflow {
     // References to K/V state and promises stored in Restate
     private static final DurablePromiseKey<String> EMAIL_CLICKED =
             DurablePromiseKey.of("email_clicked", JsonSerdes.STRING);
-    private static final StateKey<String> ONBOARDING_STATUS =
-            StateKey.of("status", JsonSerdes.STRING);
 
     // --- The workflow logic ---
     @Workflow

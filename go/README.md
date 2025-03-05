@@ -1,5 +1,8 @@
 # Go Example Catalog
 
+## Prerequisites
+- Go >= 1.21.0
+
 ## Basics
 
 - **[Services - Durable Execution](basics)**: Making code resilient to failures via automatic retries and recovery of previously finished actions. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](basics/part0/durableexecution.go)

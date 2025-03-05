@@ -1,5 +1,8 @@
 # Rust Example Catalog
 
+## Prerequisites
+- [Rust](https://rustup.rs/)
+
 ## Basics
 
 - **[Services - Durable Execution](basics)**: Making code resilient to failures via automatic retries and recovery of previously finished actions. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](basics/src/p0_durable_execution.rs)

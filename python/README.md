@@ -1,5 +1,8 @@
 # Python Example Catalog
 
+## Prerequisites
+- Python >= v3.11
+
 ## Basics
 
 Learn the key concepts of Restate:
