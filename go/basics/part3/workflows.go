@@ -49,7 +49,7 @@ func (SignupWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error) 
 
 	// Wait until user clicked email verification link
 	// Promise gets resolved or rejected by the other handlers
-	clickSecret, err := restate.Promise[string](ctx, "email-link").Result()
+	clickSecret, err := restate.Promise[string](ctx, "link-clicked").Result()
 	if err != nil {
 		return false, err
 	}
@@ -61,7 +61,7 @@ func (SignupWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error) 
 
 func (SignupWorkflow) Click(ctx restate.WorkflowSharedContext, secret string) error {
 	// Send data to the workflow via a durable promise
-	return restate.Promise[string](ctx, "email-link").Resolve(secret)
+	return restate.Promise[string](ctx, "link-clicked").Resolve(secret)
 }
 
 func main() {

@@ -16,7 +16,6 @@ import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.common.DurablePromiseKey;
-import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 import utils.User;
 
@@ -37,8 +36,8 @@ import static utils.ExampleStubs.sendEmailWithLink;
 public class SignupWorkflow {
 
     // References to K/V state and promises stored in Restate
-    private static final DurablePromiseKey<String> EMAIL_CLICKED =
-            DurablePromiseKey.of("email_clicked", JsonSerdes.STRING);
+    private static final DurablePromiseKey<String> LINK_CLICKED =
+            DurablePromiseKey.of("link_clicked", JsonSerdes.STRING);
 
     // --- The workflow logic ---
     @Workflow
@@ -56,7 +55,7 @@ public class SignupWorkflow {
         // Wait until user clicked email verification link
         // Promise gets resolved or rejected by the other handlers
         String clickSecret =
-                ctx.promise(EMAIL_CLICKED)
+                ctx.promise(LINK_CLICKED)
                         .awaitable()
                         .await();
 
@@ -68,7 +67,7 @@ public class SignupWorkflow {
     @Shared
     public void click(SharedWorkflowContext ctx, String secret) {
         // Send data to the workflow via a durable promise
-        ctx.promiseHandle(EMAIL_CLICKED).resolve(secret);
+        ctx.promiseHandle(LINK_CLICKED).resolve(secret);
     }
 
     public static void main(String[] args) {
