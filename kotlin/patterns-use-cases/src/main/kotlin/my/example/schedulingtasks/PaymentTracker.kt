@@ -3,9 +3,7 @@ package my.example.schedulingtasks
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.VirtualObject
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
-import dev.restate.sdk.kotlin.KtStateKey
-import dev.restate.sdk.kotlin.ObjectContext
-import dev.restate.sdk.kotlin.runBlock
+import dev.restate.sdk.kotlin.*
 import kotlin.time.Duration.Companion.days
 
 @VirtualObject
@@ -30,7 +28,7 @@ class PaymentTracker {
         }
 
         val remindersCount = ctx.get(REMINDER_COUNT) ?: 0
-        if(remindersCount < 3) {
+        if (remindersCount < 3) {
             ctx.set(REMINDER_COUNT, remindersCount + 1)
             ctx.runBlock { sendReminderEmail(event) }
 
