@@ -7,8 +7,6 @@ import dev.restate.sdk.kotlin.KtStateKey
 import dev.restate.sdk.kotlin.ObjectContext
 import dev.restate.sdk.kotlin.runBlock
 import kotlin.time.Duration.Companion.days
-import kotlin.time.Duration.Companion.seconds
-
 
 @VirtualObject
 class PaymentTracker {
@@ -24,10 +22,10 @@ class PaymentTracker {
         ctx.set(PAID, true)
     }
 
-    // <mark_1>
     @Handler
     suspend fun onPaymentFailure(ctx: ObjectContext, event: StripeEvent) {
-        if(ctx.get(PAID) == true) {
+        // Already paid, no need to send reminders
+        if (ctx.get(PAID) == true) {
             return
         }
 
@@ -38,14 +36,14 @@ class PaymentTracker {
 
             // Schedule next reminder via a delayed self call
             PaymentTrackerClient.fromContext(ctx, ctx.key())
-                    .send(1.seconds)
+                    .send(1.days)
                     .onPaymentFailure(event)
         } else {
+            // After three reminders, escalate to support team
             ctx.runBlock { escalateToHuman(event) }
         }
     }
 }
-// <end_here>
 
 fun main() {
     RestateHttpEndpointBuilder.builder().bind(PaymentTracker()).buildAndListen()
