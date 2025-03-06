@@ -1,5 +1,4 @@
 from datetime import timedelta
-from typing import TypedDict
 
 import restate
 from restate import VirtualObject, ObjectContext
