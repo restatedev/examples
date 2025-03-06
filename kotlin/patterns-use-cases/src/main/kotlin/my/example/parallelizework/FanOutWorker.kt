@@ -8,15 +8,39 @@ import dev.restate.sdk.kotlin.Context
 import dev.restate.sdk.kotlin.awaitAll
 import dev.restate.sdk.kotlin.runBlock
 
+/*
+ * Restate makes it easy to parallelize async work by fanning out tasks.
+ * Afterward, you can collect the result by fanning in the partial results.
+ *          +------------+
+ *          | Split task |
+ *          +------------+
+ *                |
+ *        ---------------------------------
+ *        |                |              |
+ * +--------------+ +--------------+ +--------------+
+ * | Exec subtask | | Exec subtask | | Exec subtask |
+ * +--------------+ +--------------+ +--------------+
+ *        |                |               |
+ *        ---------------------------------
+ *                |
+ *          +------------+
+ *          | Aggregate  |
+ *          +------------+
+ * Durable Execution ensures that the fan-out and fan-in steps happen reliably exactly once.
+ */
 @Service
 class FanOutWorker {
     @Handler
     suspend fun run(ctx: Context, task: Task): TaskResult {
+        // Split the task in subtasks
         val subTasks = ctx.runBlock { task.split() }
 
-val results = subTasks.map {
-  FanOutWorkerClient.fromContext(ctx).runSubtask(it)
-}.awaitAll()
+        // Fan out the subtasks - run them in parallel
+        // Fan in - Await all results and aggregate
+        val results = subTasks.map {
+          FanOutWorkerClient.fromContext(ctx).runSubtask(it)
+        }.awaitAll()
+
         return results.aggregate()
     }
 
@@ -29,5 +53,5 @@ val results = subTasks.map {
 }
 
 fun main() {
-     RestateHttpEndpointBuilder.builder().bind(FanOutWorker()).buildAndListen()
+    RestateHttpEndpointBuilder.builder().bind(FanOutWorker()).buildAndListen()
 }
