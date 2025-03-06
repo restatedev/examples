@@ -387,6 +387,48 @@ It then splits the task into subtasks, executes them in parallel, and then gathe
 Restate guarantees and manages the execution of all the subtasks across failures.
 You can run this on FaaS infrastructure, like AWS Lambda, and it will scale automatically.
 
+<details>
+<summary><strong>Running the example</strong></summary>
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `./gradlew -PmainClass=my.example.parallelizework.FanOutWorker run`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+Send a request:
+```shell
+curl -X POST http://localhost:8080/FanOutWorker/run -H "Content-Type: application/json" -d '{"description": "get out of bed,shower,make coffee,have breakfast"}'
+```
+
+Check in the logs how all tasks get spawned in parallel.
+
+<details>
+<summary>View logs</summary>
+
+```
+2025-03-06 12:53:43 INFO  [FanOutWorker/runSubtask][inv_1eR9VE9c7xfz4SKB2eCJy86XGFTrGJKWMp] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2025-03-06 12:53:43 INFO  [FanOutWorker/runSubtask][inv_1eR9VE9c7xfz4SKB2eCJy86XGFTrGJKWMp] my.example.parallelizework.utils.Utils - Started executing subtask: get out of bed
+2025-03-06 12:53:43 INFO  [FanOutWorker/runSubtask][inv_15hry2WSJRuS45Sunug6olrHpWpHUKs0Mx] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2025-03-06 12:53:43 INFO  [FanOutWorker/runSubtask][inv_15hry2WSJRuS45Sunug6olrHpWpHUKs0Mx] my.example.parallelizework.utils.Utils - Started executing subtask: make coffee
+2025-03-06 12:53:43 INFO  [FanOutWorker/runSubtask][inv_1edYMhniRwzc0kU2LZXKqS0yc516iofpfP] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2025-03-06 12:53:43 INFO  [FanOutWorker/runSubtask][inv_1edYMhniRwzc0kU2LZXKqS0yc516iofpfP] my.example.parallelizework.utils.Utils - Started executing subtask: shower
+2025-03-06 12:53:43 INFO  [FanOutWorker/runSubtask][inv_1beEP283Rozk4vTmbUgorTdxrDaJkCwPkZ] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2025-03-06 12:53:43 INFO  [FanOutWorker/runSubtask][inv_1beEP283Rozk4vTmbUgorTdxrDaJkCwPkZ] my.example.parallelizework.utils.Utils - Started executing subtask: have breakfast
+2025-03-06 12:53:43 INFO  [FanOutWorker/runSubtask][inv_15hry2WSJRuS45Sunug6olrHpWpHUKs0Mx] my.example.parallelizework.utils.Utils - Execution subtask finished: make coffee
+2025-03-06 12:53:43 INFO  [FanOutWorker/runSubtask][inv_15hry2WSJRuS45Sunug6olrHpWpHUKs0Mx] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2025-03-06 12:53:46 INFO  [FanOutWorker/runSubtask][inv_1eR9VE9c7xfz4SKB2eCJy86XGFTrGJKWMp] my.example.parallelizework.utils.Utils - Execution subtask finished: get out of bed
+2025-03-06 12:53:46 INFO  [FanOutWorker/runSubtask][inv_1eR9VE9c7xfz4SKB2eCJy86XGFTrGJKWMp] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2025-03-06 12:53:46 INFO  [FanOutWorker/runSubtask][inv_1beEP283Rozk4vTmbUgorTdxrDaJkCwPkZ] my.example.parallelizework.utils.Utils - Execution subtask finished: have breakfast
+2025-03-06 12:53:46 INFO  [FanOutWorker/runSubtask][inv_1beEP283Rozk4vTmbUgorTdxrDaJkCwPkZ] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2025-03-06 12:53:52 INFO  [FanOutWorker/runSubtask][inv_1edYMhniRwzc0kU2LZXKqS0yc516iofpfP] my.example.parallelizework.utils.Utils - Execution subtask finished: shower
+2025-03-06 12:53:52 INFO  [FanOutWorker/runSubtask][inv_1edYMhniRwzc0kU2LZXKqS0yc516iofpfP] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2025-03-06 12:53:52 INFO  [FanOutWorker/run][inv_1eXFJRCIXMwr57UdPLLIRwARZFifnOusTL] my.example.parallelizework.utils.Utils - Aggregated result: get out of bed: DONE, shower: DONE, make coffee: DONE, have breakfast: DONE
+2025-03-06 12:53:52 INFO  [FanOutWorker/run][inv_1eXFJRCIXMwr57UdPLLIRwARZFifnOusTL] dev.restate.sdk.core.InvocationStateMachine - End invocation
+```
+
+</details>
+</details>
+
+
 ## Payment Signals
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/signalspayments/PaymentService.java)
 
