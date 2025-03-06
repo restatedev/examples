@@ -3,9 +3,7 @@ package my.example.schedulingtasks
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.VirtualObject
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
-import dev.restate.sdk.kotlin.KtStateKey
-import dev.restate.sdk.kotlin.ObjectContext
-import dev.restate.sdk.kotlin.runBlock
+import dev.restate.sdk.kotlin.*
 import kotlin.time.Duration.Companion.days
 
 @VirtualObject
