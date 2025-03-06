@@ -23,6 +23,6 @@ pushd $PROJECT_ROOT/java/tutorials/tour-of-restate-java && ./gradlew --console=p
 
 pushd $PROJECT_ROOT/java/end-to-end-applications/food-ordering/app && ./gradlew --console=plain check && popd
 pushd $PROJECT_ROOT/java/end-to-end-applications/subway-fare-calculator && ./gradlew --console=plain check && popd
-pushd $PROJECT_ROOT/java/end-to-end-applications/workflow-interpreter && ./gradlew --console=plain check && popd
+pushd $PROJECT_ROOT/java/end-to-end-applications/workflow-interpreter && mvn verify && popd
 pushd $PROJECT_ROOT/kotlin/end-to-end-applications/food-ordering/app && ./gradlew --console=plain check && popd
 pushd $PROJECT_ROOT/kotlin/end-to-end-applications/kmp-android-todo-app && ./gradlew --console=plain check && popd
