@@ -18,24 +18,8 @@ public final class WorkflowStatus {
         this.output = output;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public String getImgName() {
-        return imgName;
-    }
-
-    public List<String> getOutput() {
-        return output;
-    }
-
-    public void setOutput(List<String> output) {
-        this.output = output;
     }
 
     public void addToOutput(String output) {
