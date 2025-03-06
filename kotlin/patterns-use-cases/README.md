@@ -156,6 +156,7 @@ restate kv get PaymentTracker invoice123
 If we lower the time between scheduled calls, we can see the reminder emails being sent out and then the invoice getting escalated to the support team:
 <details>
 <summary>View logs</summary>
+
 ```
 2025-03-06 13:53:55 INFO  [PaymentTracker/onPaymentFailure][inv_1hB0HkaqQZyG6Gq5nDhCYU7dO8sFS4f8Dv] dev.restate.sdk.core.InvocationStateMachine - Start invocation
 2025-03-06 13:53:55 INFO  [PaymentTracker/onPaymentFailure][inv_1hB0HkaqQZyG6Gq5nDhCYU7dO8sFS4f8Dv] PaymentTracker - Sending reminder email for event: evt_1JH2Y4F2eZvKYlo2C8b9
@@ -170,8 +171,8 @@ If we lower the time between scheduled calls, we can see the reminder emails bei
 2025-03-06 13:53:58 INFO  [PaymentTracker/onPaymentFailure][inv_1hB0HkaqQZyG2yGntTp2f9zJOubDQGEDWV] PaymentTracker - Escalating to evt_1JH2Y4F2eZvKYlo2C8b9 invoice to support team
 2025-03-06 13:53:58 INFO  [PaymentTracker/onPaymentFailure][inv_1hB0HkaqQZyG2yGntTp2f9zJOubDQGEDWV] dev.restate.sdk.core.InvocationStateMachine - End invocation
 ```
-</details>
 
+</details>
 </details>
 
 ## Parallelizing work
