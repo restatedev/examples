@@ -14,7 +14,6 @@ const paymentTracker = restate.object({ // one instance per invoice id
                 return;
             }
 
-            // Otherwise, sent up to 3 reminders (via delayed self calls) and then escalate to the support team
             const remindersCount = await ctx.get<number>("reminders_count") ?? 0;
             if (remindersCount < 3) {
                 ctx.set("reminders_count", remindersCount + 1);
