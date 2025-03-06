@@ -491,13 +491,71 @@ status   "CANCELLED"
 ## Scheduling Tasks
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/schedulingtasks/payment_reminders.ts)
 
-This example processes failed payment events from a payment provider.
-The service reminds the customer for 3 days to update their payment details, and otherwise escalates to support.
-
-To schedule the reminders, the handler uses Restate's durable timers and delayed calls.
-The handler calls itself three times in a row after a delay of one day, and then stops the loop and calls another handler.
+An example of a handler that processes Stripe payment events.
+On payment failure, it sends reminder emails to the customer. After a certain number of reminders, it escalates the invoice to the support team.
+On payment success, it marks the invoice as paid.
 
 Restate tracks the timer across failures, and triggers execution.
+
+This example shows:
+- **Durable webhook callback event processing**
+- **Scheduling tasks and durable timers**: Sending reminder emails and escalating the invoice to the support team.
+- **Joining and correlating events**: The handler correlates the payment events with the invoice ID.
+- **Stateful service**: The handler keeps track of the number of reminders sent and the invoice status.
+
+<details>
+<summary><strong>Running the example</strong></summary>
+To run the example, you might want to reduce the time between scheduled calls to see the scheduling in action.
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `npx tsx watch ./src/schedulingtasks/payment_reminders.ts`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+Send some requests:
+
+- Send a payment failure event to the handler:
+  ```shell
+  curl -X POST localhost:8080/PaymentTracker/invoice123/onPaymentFailure --json '{
+        "type": "customer.subscription_created",
+        "created": 1633025000,
+        "data": {
+        "id": "evt_1JH2Y4F2eZvKYlo2C8b9",
+        "customer": "cus_J5K2Y4F2eZvKYlo2"
+        }
+    }'
+  ```
+
+- See how the reminder emails get sent
+- Then send a payment success event to the handler:
+  ```shell
+  curl -X POST localhost:8080/PaymentTracker/invoice123/onPaymentSuccess --json '{
+        "type": "customer.subscription_created",
+        "created": 1633025000,
+        "data": {
+        "id": "evt_1JH2Y4F2eZvKYlo2C8b9",
+        "customer": "cus_J5K2Y4F2eZvKYlo2"
+        }
+    }'
+  ```
+
+- Have a look at the state to see the invoice got paid:
+```shell
+restate kv get PaymentTracker invoice123
+```
+
+If we lower the time between scheduled calls, we can see the reminder emails being sent out and then the invoice getting escalated to the support team:
+<details>
+<summary>View logs</summary>
+
+```
+Sending reminder email for event: evt_1JH2Y4F2eZvKYlo2C8b9
+Sending reminder email for event: evt_1JH2Y4F2eZvKYlo2C8b9
+Sending reminder email for event: evt_1JH2Y4F2eZvKYlo2C8b9
+Escalating to evt_1JH2Y4F2eZvKYlo2C8b9 invoice to support team
+```
+
+</details>
+</details>
 
 ## Parallelizing work
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/parallelizework/fan_out_worker.ts)
