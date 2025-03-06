@@ -1,6 +1,25 @@
 # Kotlin Patterns and Use Cases
 
+### Communication
+- **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/kotlin/my/example/queue/TaskSubmitter.kt)
+
+#### Orchestration patterns
 - **[Sagas](README.md#sagas)**: Preserve consistency by tracking undo actions and running them when code fails halfway through. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/kotlin/my/example/sagas/BookingWorkflow.kt)
+
+#### Event processing
+- **[Transactional Event Processing](README.md#transactional-event-processing)**: Processing events (from Kafka) to update various downstream systems in a transactional way. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/kotlin/my/example/eventtransactions/UserFeed.kt)
+- **[Event Enrichment / Joins](README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/kotlin/my/example/eventenrichment/PackageTracker.kt)
+
+## (Delayed) Message Queue
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/kotlin/my/example/queue/TaskSubmitter.kt)
+
+Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.
+
+- [Task Submitter](src/main/kotlin/my/example/queue/TaskSubmitter.kt): schedules tasks via send requests with and idempotency key.
+   - The **send requests** put the tasks in Restate's queue. The task submitter does not wait for the task response.
+   - The **idempotency key** in the header is used by Restate to deduplicate requests.
+   - If a delay is set, the task will be executed later and Restate will track the timer durably, like a **delayed task queue**.
+- [Async Task Worker](src/main/kotlin/my/example/queue/AsyncTaskService.kt): gets invoked by Restate for each task in the queue.
 
 ## Sagas
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/kotlin/my/example/sagas/BookingWorkflow.kt)
@@ -73,4 +92,178 @@ dev.restate.sdk.common.TerminalException: Failed to reserve the trip: 👻 Payme
 ```
 
 </details>
+</details>
+
+## Transactional Event Processing
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/kotlin/my/example/eventtransactions/UserFeed.kt)
+
+Processing events (from Kafka) to update various downstream systems.
+- Durable side effects with retries and recovery of partial progress
+- Events get sent to objects based on the Kafka key.
+  For each key, Restate ensures that events are processed sequentially and in order.
+  Slow events on other keys do not block processing (high fan-out, no head-of-line waiting).
+- Ability to delay events when the downstream systems are busy, without blocking
+  entire partitions.
+
+<details>
+<summary><strong>Running the example</strong></summary>
+
+1. Start the Kafka broker via Docker Compose: `docker compose up -d`.
+2. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) with the Kafka broker configuration in a separate shell: `restate-server --config-file restate.toml`
+3. Start the service: `./gradlew -PmainClass=my.example.eventtransactions.UserFeedKt run`
+4. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+5. Let Restate subscribe to the Kafka topic `social-media-posts` and invoke `UserFeed/processPost` on each message.
+    ```shell
+    curl localhost:9070/subscriptions -H 'content-type: application/json' \
+    -d '{
+        "source": "kafka://my-cluster/social-media-posts",
+        "sink": "service://UserFeed/processPost",
+        "options": {"auto.offset.reset": "earliest"}
+    }'
+    ```
+
+Start a Kafka producer and send some messages to the `social-media-posts` topic:
+```shell
+docker exec -it broker kafka-console-producer --bootstrap-server broker:29092 --topic social-media-posts --property parse.key=true --property key.separator=:
+```
+
+Let's submit some posts for two different users:
+```
+userid1:{"content": "Hi! This is my first post!", "metadata": "public"}
+userid2:{"content": "Hi! This is my first post!", "metadata": "public"}
+userid1:{"content": "Hi! This is my second post!", "metadata": "public"}
+```
+
+Our Kafka broker only has a single partition so all these messages end up on the same partition.
+You can see in the logs how events for different users are processed in parallel, but events for the same user are processed sequentially.
+
+
+<details>
+<summary><strong>View logs</strong></summary>
+
+```shell
+2025-02-27 15:53:37 INFO  [UserFeed/processPost][inv_13puWeoWJykN7MoaUqxxd7a9qfkzzBSkzT] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2025-02-27 15:53:38 INFO  [UserFeed/processPost][inv_1eZjTF0DbaEl6kXNXP0jrPUYtCc9mabKet] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2025-02-27 15:53:38 INFO  [UserFeed/processPost][inv_1eZjTF0DbaEl6kXNXP0jrPUYtCc9mabKet] UserFeed - Creating post ee5b9dde-fc81-4819-a411-916e5c2b0c0d for user userid2
+2025-02-27 15:53:38 INFO  [UserFeed/processPost][inv_13puWeoWJykN7MoaUqxxd7a9qfkzzBSkzT] UserFeed - Creating post ea2eb2e4-aeb1-4cee-a903-a6399f0ee6ca for user userid1
+2025-02-27 15:53:38 INFO  [UserFeed/processPost][inv_13puWeoWJykN7MoaUqxxd7a9qfkzzBSkzT] UserFeed - Content moderation for post ea2eb2e4-aeb1-4cee-a903-a6399f0ee6ca is still pending... Will check again in 5 seconds
+2025-02-27 15:53:38 INFO  [UserFeed/processPost][inv_1eZjTF0DbaEl6kXNXP0jrPUYtCc9mabKet] UserFeed - Content moderation for post ee5b9dde-fc81-4819-a411-916e5c2b0c0d is still pending... Will check again in 5 seconds
+2025-02-27 15:53:43 INFO  [UserFeed/processPost][inv_13puWeoWJykN7MoaUqxxd7a9qfkzzBSkzT] UserFeed - Content moderation for post ea2eb2e4-aeb1-4cee-a903-a6399f0ee6ca is done
+2025-02-27 15:53:43 INFO  [UserFeed/processPost][inv_1eZjTF0DbaEl6kXNXP0jrPUYtCc9mabKet] UserFeed - Content moderation for post ee5b9dde-fc81-4819-a411-916e5c2b0c0d is still pending... Will check again in 5 seconds
+2025-02-27 15:53:43 INFO  [UserFeed/processPost][inv_13puWeoWJykN7MoaUqxxd7a9qfkzzBSkzT] UserFeed - Updating user feed for user userid1 with post ea2eb2e4-aeb1-4cee-a903-a6399f0ee6ca
+2025-02-27 15:53:43 INFO  [UserFeed/processPost][inv_13puWeoWJykN7MoaUqxxd7a9qfkzzBSkzT] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2025-02-27 15:53:43 INFO  [UserFeed/processPost][inv_13puWeoWJykN6geV0KhVhI46atSq8tEE1j] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2025-02-27 15:53:43 INFO  [UserFeed/processPost][inv_13puWeoWJykN6geV0KhVhI46atSq8tEE1j] UserFeed - Creating post 382f3687-fb11-49fa-912c-18a886dd1ecd for user userid1
+2025-02-27 15:53:43 INFO  [UserFeed/processPost][inv_13puWeoWJykN6geV0KhVhI46atSq8tEE1j] UserFeed - Content moderation for post 382f3687-fb11-49fa-912c-18a886dd1ecd is still pending... Will check again in 5 seconds
+2025-02-27 15:53:48 INFO  [UserFeed/processPost][inv_1eZjTF0DbaEl6kXNXP0jrPUYtCc9mabKet] UserFeed - Content moderation for post ee5b9dde-fc81-4819-a411-916e5c2b0c0d is still pending... Will check again in 5 seconds
+2025-02-27 15:54:23 INFO  [UserFeed/processPost][inv_1eZjTF0DbaEl6kXNXP0jrPUYtCc9mabKet] UserFeed - Content moderation for post ee5b9dde-fc81-4819-a411-916e5c2b0c0d is still pending... Will check again in 5 seconds
+2025-02-27 15:54:28 INFO  [UserFeed/processPost][inv_1eZjTF0DbaEl6kXNXP0jrPUYtCc9mabKet] UserFeed - Content moderation for post ee5b9dde-fc81-4819-a411-916e5c2b0c0d is still pending... Will check again in 5 seconds
+2025-02-27 15:54:28 INFO  [UserFeed/processPost][inv_13puWeoWJykN6geV0KhVhI46atSq8tEE1j] UserFeed - Content moderation for post 382f3687-fb11-49fa-912c-18a886dd1ecd is done
+2025-02-27 15:54:28 INFO  [UserFeed/processPost][inv_13puWeoWJykN6geV0KhVhI46atSq8tEE1j] UserFeed - Updating user feed for user userid1 with post 382f3687-fb11-49fa-912c-18a886dd1ecd
+2025-02-27 15:54:28 INFO  [UserFeed/processPost][inv_13puWeoWJykN6geV0KhVhI46atSq8tEE1j] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2025-02-27 15:54:33 INFO  [UserFeed/processPost][inv_1eZjTF0DbaEl6kXNXP0jrPUYtCc9mabKet] UserFeed - Content moderation for post ee5b9dde-fc81-4819-a411-916e5c2b0c0d is still pending... Will check again in 5 seconds
+2025-02-27 15:54:38 INFO  [UserFeed/processPost][inv_1eZjTF0DbaEl6kXNXP0jrPUYtCc9mabKet] UserFeed - Content moderation for post ee5b9dde-fc81-4819-a411-916e5c2b0c0d is still pending... Will check again in 5 seconds
+2025-02-27 15:55:03 INFO  [UserFeed/processPost][inv_1eZjTF0DbaEl6kXNXP0jrPUYtCc9mabKet] UserFeed - Content moderation for post ee5b9dde-fc81-4819-a411-916e5c2b0c0d is done
+2025-02-27 15:55:03 INFO  [UserFeed/processPost][inv_1eZjTF0DbaEl6kXNXP0jrPUYtCc9mabKet] UserFeed - Updating user feed for user userid2 with post ee5b9dde-fc81-4819-a411-916e5c2b0c0d
+2025-02-27 15:55:03 INFO  [UserFeed/processPost][inv_1eZjTF0DbaEl6kXNXP0jrPUYtCc9mabKet] dev.restate.sdk.core.InvocationStateMachine - End invocation
+```
+
+As you see, slow events do not block other slow events.
+Restate effectively created a queue per user ID.
+
+The handler creates the social media post and waits for content moderation to finish.
+If the moderation takes long, and there is an infrastructure crash, then Restate will trigger a retry.
+The handler will fast-forward to where it was, will recover the post ID and will continue waiting for moderation to finish.
+
+You can try it out by killing Restate or the service halfway through processing a post.
+
+</details>
+</details>
+
+## Event Enrichment / Joins
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/kotlin/my/example/eventenrichment/PackageTracker.kt)
+
+This example shows an example of:
+- **Event enrichment** over different sources: RPC and Kafka
+- **Stateful actors / Digital twins** updated over Kafka
+- **Streaming join**
+- Populating state from events and making it queryable via RPC handlers.
+
+The example implements a package delivery tracking service.
+Packages are registered via an RPC handler, and their location is updated via Kafka events.
+The Package Tracker Virtual Object tracks the package details and its location history.
+
+<details>
+<summary><strong>Running the example</strong></summary>
+
+1. Start the Kafka broker via Docker Compose: `docker compose up -d`.
+
+2. Start Restate Server with the Kafka broker configuration in a separate shell: `restate-server --config-file restate.toml`
+
+3. Start the service: `./gradlew -PmainClass=my.example.eventenrichment.PackageTrackerKt run`
+
+4. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+5. Let Restate subscribe to the Kafka topic `package-location-updates` and invoke `PackageTracker/updateLocation` on each message.
+    ```shell
+    curl localhost:9070/subscriptions -H 'content-type: application/json' \
+    -d '{
+        "source": "kafka://my-cluster/package-location-updates",
+        "sink": "service://PackageTracker/updateLocation",
+        "options": {"auto.offset.reset": "earliest"}
+    }'
+    ```
+
+6. Register a new package via the RPC handler:
+    ```shell
+    curl localhost:8080/PackageTracker/package1/registerPackage \
+      -H 'content-type: application/json' -d '{"finalDestination": "Bridge 6, Amsterdam"}'
+    ```
+
+7. Start a Kafka producer and publish some messages to update the location of the package on the `package-location-updates` topic:
+    ```shell
+    docker exec -it broker kafka-console-producer --bootstrap-server broker:29092 --topic package-location-updates --property parse.key=true --property key.separator=:
+    ```
+   Send messages like
+    ```
+    package1:{"timestamp": "2024-10-10 13:00", "location": "Pinetree Road 5, Paris"}
+    package1:{"timestamp": "2024-10-10 14:00", "location": "Mountain Road 155, Brussels"}
+    ```
+
+8. Query the package location via the RPC handler:
+    ```shell
+    curl localhost:8080/PackageTracker/package1/getPackageInfo
+    ```
+   or via the CLI: `restate kv get PackageTracker package1`
+
+   You can see how the state was enriched by the initial RPC event and the subsequent Kafka events:
+
+    <details>
+    <summary>See Output</summary>
+
+    ```
+    🤖 State:
+    ―――――――――
+                              
+     Service  PackageTracker 
+     Key      package1        
+    
+     KEY           VALUE                                            
+     package-info  {                                                
+                      "finalDestination": "Bridge 6, Amsterdam",  
+                      "locations": [                                 
+                        {                                            
+                          "location": "Pinetree Road 5, Paris",      
+                          "timestamp": "2024-10-10 13:00"            
+                        },                                            
+                        {                                            
+                          "location": "Mountain Road 155, Brussels", 
+                          "timestamp": "2024-10-10 14:00"            
+                        }                                            
+                      ]                                              
+                    }  
+    ```
+
+    </details>
+
 </details>

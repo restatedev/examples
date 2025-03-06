@@ -1,5 +1,8 @@
 # Kotlin Example Catalog
 
+## Prerequisites
+- JDK >= 17
+
 ## Basics
 
 - **[Services - Durable Execution](basics)**: Making code resilient to failures via automatic retries and recovery of previously finished actions. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](basics/src/main/kotlin/durable_execution/SubscriptionService.kt)
@@ -9,7 +12,15 @@
 
 ## Use Cases and Patterns
 
+#### Communication
+- **[(Delayed) Message Queue](patterns-use-cases/README.md#delayed-message-queue)**: Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/src/main/kotlin/my/example/queue/TaskSubmitter.kt)
+
+#### Orchestration patterns
 - **[Sagas](patterns-use-cases/README.md#sagas)**: Preserve consistency by tracking undo actions and running them when code fails halfway through. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/src/main/kotlin/my/example/sagas/BookingWorkflow.kt)
+
+#### Event processing
+- **[Transactional Event Processing](patterns-use-cases/README.md#transactional-event-processing)**: Processing events (from Kafka) to update various downstream systems in a transactional way. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/src/main/kotlin/my/example/eventtransactions/UserFeed.kt)
+- **[Event Enrichment / Joins](patterns-use-cases/README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/src/main/kotlin/my/example/eventenrichment/PackageTracker.kt)
 
 ## Integrations
 
