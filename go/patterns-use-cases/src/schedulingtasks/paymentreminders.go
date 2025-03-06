@@ -4,13 +4,9 @@ import (
 	"context"
 	restate "github.com/restatedev/sdk-go"
 	"github.com/restatedev/sdk-go/server"
-	"log/slog"
-	"os"
+	"log"
 	"time"
 )
-
-const MAX_REMINDERS = 3
-const REMINDER_INTERVAL = 24 * 60 * 60 * time.Millisecond
 
 /*
 * A service that manages recurring payments for subscriptions.
@@ -23,63 +19,53 @@ const REMINDER_INTERVAL = 24 * 60 * 60 * time.Millisecond
 
 type PaymentTracker struct{}
 
-// Schedule recurrent tasks with delayed self calls
-
-func (PaymentTracker) RemindPaymentFailed(ctx restate.ObjectContext, event StripeEvent) error {
-	status, err := restate.Get[string](ctx, "status")
-	if err != nil {
-		return err
-	}
-
-	// Stop the loop if the payment was successful in the meantime
-	// This value gets stored in state by the onPaymentSuccess handler and can be queried from outside
-	if status == "PAID" {
-		restate.Clear(ctx, "reminders_count")
-		return nil
-	}
-
-	// Otherwise, sent up to 3 reminders (via delayed self calls) and then escalate to the support team
-	remindersCount, err := restate.Get[int](ctx, "reminders_count")
-	if err != nil {
-		return err
-	}
-	if remindersCount >= MAX_REMINDERS {
-		// Escalate to support
-		restate.ObjectSend(ctx, "PaymentTracker", "Escalate", restate.Key(ctx)).Send(event)
-		restate.Set[string](ctx, "status", "FAILED_ESCALATED")
-		return nil
-	}
-
-	err = sendEmail("Payment failed. Re-execute the payment within " + string(rune(3-remindersCount)) + " days.")
-	if err != nil {
-		return err
-	}
-	restate.Set(ctx, "reminders_count", remindersCount+1)
-	restate.Set(ctx, "status", "FAILED")
-
-	// DELAYED CALL: Schedule the next reminder
-	restate.ObjectSend(ctx, "PaymentTracker", "RemindPaymentFailed", restate.Key(ctx)).
-		Send(event, restate.WithDelay(REMINDER_INTERVAL))
-	return nil
-}
-
 func (PaymentTracker) OnPaymentSuccess(ctx restate.ObjectContext, event StripeEvent) error {
-	// Mark the invoice as paid
-	restate.Set(ctx, "status", "PAID")
+	restate.Set(ctx, "paid", true)
 	return nil
 }
 
-func (PaymentTracker) Escalate(ctx restate.ObjectContext, event StripeEvent) error {
-	// Request human intervention to resolve the issue.
+func (PaymentTracker) OnPaymentFailure(ctx restate.ObjectContext, event StripeEvent) error {
+	paid, err := restate.Get[bool](ctx, "paid")
+	if err != nil {
+		return err
+	}
+	if paid {
+		return nil
+	}
+
+	remindersCount, err := restate.Get[int](ctx, "reminders_count")
+	print(remindersCount)
+	if err != nil {
+		return err
+	}
+	if remindersCount < 3 {
+		restate.Set(ctx, "reminders_count", remindersCount+1)
+		if _, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
+			return restate.Void{}, SendReminderEmail(event)
+		}); err != nil {
+			return err
+		}
+
+		// Schedule next reminder via a delayed self call
+		restate.ObjectSend(ctx,
+			"PaymentTracker",
+			restate.Key(ctx), // this object's invoice id
+			"OnPaymentFailure").
+			Send(event, restate.WithDelay(5*time.Second))
+	} else {
+		if _, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
+			return restate.Void{}, EscalateToHuman(event)
+		}); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 func main() {
-	server := server.NewRestate().
-		Bind(restate.Reflect(PaymentTracker{}))
-
-	if err := server.Start(context.Background(), ":9080"); err != nil {
-		slog.Error("application exited unexpectedly", "err", err.Error())
-		os.Exit(1)
+	if err := server.NewRestate().
+		Bind(restate.Reflect(PaymentTracker{})).
+		Start(context.Background(), ":9080"); err != nil {
+		log.Fatal(err)
 	}
 }
