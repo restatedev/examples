@@ -19,10 +19,8 @@ data class SubTaskResult(val description: String)
 
 private val logger = LogManager.getLogger("FanOutWorker")
 
-fun Task.split(): List<SubTask> {
-    // Split the task into subTasks
-    return this.description.split(",").map { SubTask(it) }
-}
+// Split the task into subTasks
+fun Task.split() = this.description.split(",").map { SubTask(it) }
 
 suspend fun SubTask.execute(ctx: Context): SubTaskResult {
     // Execute subtask
