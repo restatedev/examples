@@ -34,7 +34,6 @@ func (PaymentTracker) OnPaymentFailure(ctx restate.ObjectContext, event StripeEv
 	}
 
 	remindersCount, err := restate.Get[int](ctx, "reminders_count")
-	print(remindersCount)
 	if err != nil {
 		return err
 	}
