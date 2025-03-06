@@ -3,4 +3,3 @@ restate_sdk==0.5.1
 pydantic
 requests
 stripe
-pylint
