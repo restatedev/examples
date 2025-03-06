@@ -30,7 +30,7 @@ class PaymentTracker {
         }
 
         val remindersCount = ctx.get(REMINDER_COUNT) ?: 0
-        if(remindersCount < 3) {
+        if (remindersCount < 3) {
             ctx.set(REMINDER_COUNT, remindersCount + 1)
             ctx.runBlock { sendReminderEmail(event) }
 
