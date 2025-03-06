@@ -6,12 +6,11 @@ const paymentTracker = restate.object({ // one instance per invoice id
     handlers: {
         onPaymentSuccess: async (ctx: restate.ObjectContext, event: StripeEvent) => {
             // Mark the invoice as paid
-            ctx.set("status", "PAID");
+            ctx.set("paid", true);
         },
 
         onPaymentFailure: async (ctx: restate.ObjectContext, event: StripeEvent) => {
-            if (await ctx.get<string>("status") === "PAID") {
-                ctx.clear("reminders_count");
+            if (await ctx.get<boolean>("paid")) {
                 return;
             }
 
@@ -25,7 +24,7 @@ const paymentTracker = restate.object({ // one instance per invoice id
                 ctx.objectSendClient(
                     PaymentTracker,
                     ctx.key, // this object's invoice id
-                    {delay: 1000}
+                    {delay: 24 * 60 * 60 * 1000}
                 ).onPaymentFailure(event);
             } else {
                 await ctx.run(() => escalateToHuman(event));
