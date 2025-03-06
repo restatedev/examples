@@ -33,6 +33,7 @@ jobs:
                   java-basics.zip
                   java-food-ordering.zip
                   java-subway-fare-calculator.zip
+                  java-workflow-interpreter.zip
                   java-patterns-use-cases.zip
                   java-hello-world-gradle.zip
                   java-hello-world-maven.zip
