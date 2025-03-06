@@ -13,6 +13,7 @@ Common tasks and patterns implemented with Restate:
 - **[Payment State Machines (Advanced)](README.md#payment-state-machines)**: State machine example that tracks a payment process, ensuring consistent processing and cancellations. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/statemachinepayments/payment_processor.py)
 
 #### Scheduling
+- **[Scheduling Tasks](README.md#scheduling-tasks)**: Restate as scheduler: Schedule tasks for later and ensure the task is triggered and executed. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/schedulingtasks/payment_tracker.py)
 - **[Parallelizing Work](README.md#parallelizing-work)**: Execute a list of tasks in parallel and then gather their result. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/parallelizework/fan_out_worker.py)
 - **[Payment Signals (Advanced)](README.md#payment-signals)**: Handling async payment callbacks for slow payments, with Stripe. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/signalspayments/payment_service.py)
 
@@ -376,6 +377,75 @@ restate kv get PaymentProcessor some-string-id
             "amount_cents": 100
           }
  status   "CANCELLED"
+```
+
+</details>
+</details>
+
+## Scheduling Tasks
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/schedulingtasks/payment_tracker.py)
+
+An example of a handler that processes Stripe payment events.
+On payment failure, it sends reminder emails to the customer. After a certain number of reminders, it escalates the invoice to the support team.
+On payment success, it marks the invoice as paid.
+
+Restate tracks the timer across failures, and triggers execution.
+
+This example shows:
+- **Durable webhook callback event processing**
+- **Scheduling tasks and durable timers**: Sending reminder emails and escalating the invoice to the support team.
+- **Joining and correlating events**: The handler correlates the payment events with the invoice ID.
+- **Stateful service**: The handler keeps track of the number of reminders sent and the invoice status.
+
+<details>
+<summary><strong>Running the example</strong></summary>
+To run the example, you might want to reduce the time between scheduled calls to see the scheduling in action.
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/schedulingtasks/payment_tracker:app`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+Send some requests:
+
+- Send a payment failure event to the handler:
+  ```shell
+  curl -X POST localhost:8080/PaymentTracker/invoice123/onPaymentFailure --json '{
+        "type": "customer.subscription_created",
+        "created": 1633025000,
+        "data": {
+        "id": "evt_1JH2Y4F2eZvKYlo2C8b9",
+        "customer": "cus_J5K2Y4F2eZvKYlo2"
+        }
+    }'
+  ```
+
+- See how the reminder emails get sent
+- Then send a payment success event to the handler:
+  ```shell
+  curl -X POST localhost:8080/PaymentTracker/invoice123/onPaymentSuccess --json '{
+        "type": "customer.subscription_created",
+        "created": 1633025000,
+        "data": {
+        "id": "evt_1JH2Y4F2eZvKYlo2C8b9",
+        "customer": "cus_J5K2Y4F2eZvKYlo2"
+        }
+    }'
+  ```
+
+- Have a look at the state to see the invoice got paid:
+```shell
+restate kv get PaymentTracker invoice123
+```
+
+If we lower the time between scheduled calls, we can see the reminder emails being sent out and then the invoice getting escalated to the support team:
+<details>
+<summary>View logs</summary>
+
+```
+[2025-03-06 15:46:58,734] [111147] [INFO] - Payment reminder sent for event: evt_1JH2Y4F2eZvKYlo2C8b9
+[2025-03-06 15:46:59,745] [111147] [INFO] - Payment reminder sent for event: evt_1JH2Y4F2eZvKYlo2C8b9
+[2025-03-06 15:47:00,756] [111147] [INFO] - Payment reminder sent for event: evt_1JH2Y4F2eZvKYlo2C8b9
+[2025-03-06 15:47:01,766] [111147] [INFO] - Escalating invoice to support team for event: evt_1JH2Y4F2eZvKYlo2C8b9
 ```
 
 </details>
