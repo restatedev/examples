@@ -34,7 +34,7 @@ public class PaymentTracker {
         }
 
         int remindersCount = ctx.get(REMINDER_COUNT).orElse(0);
-        if(remindersCount < 3) {
+        if (remindersCount < 3) {
             ctx.set(REMINDER_COUNT, remindersCount + 1);
             ctx.run(() -> sendReminderEmail(event));
 
