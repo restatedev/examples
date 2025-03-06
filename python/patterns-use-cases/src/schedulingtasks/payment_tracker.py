@@ -1,16 +1,14 @@
-from datetime import timedelta
-
 import restate
+from datetime import timedelta
 from restate import VirtualObject, ObjectContext
-
-from src.schedulingtasks.utils import send_reminder_email, escalate_to_human, StripeEvent
+from utils import send_reminder_email, escalate_to_human, StripeEvent
 
 payment_tracker = VirtualObject("PaymentTracker") # one instance per invoice ID
 
 
 # Stripe sends us webhook events for invoice payment attempts
 @payment_tracker.handler("onPaymentSuccess")
-async def on_payment_success(ctx: ObjectContext, event: StripeEvent):
+async def on_payment_success(ctx: ObjectContext, _event: StripeEvent):
     ctx.set("paid", True)
 
 

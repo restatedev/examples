@@ -40,7 +40,7 @@ async def process_payment(ctx: Context, req: PaymentRequest):
 
     if payment_intent['status'] != "processing":
         # The call to Stripe completed immediately / synchronously: processing done
-        logger.info(f"Request {idempotency_key} was processed synchronously!")
+        logger.info("Request %s was processed synchronously!", idempotency_key)
         stripe_utils.ensure_success(payment_intent['status'])
         return
 
