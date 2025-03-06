@@ -94,6 +94,86 @@ dev.restate.sdk.common.TerminalException: Failed to reserve the trip: 👻 Payme
 </details>
 </details>
 
+## Scheduling Tasks
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/kotlin/my/example/schedulingtasks/PaymentTracker.kt)
+
+An example of a handler that processes Stripe payment events.
+On payment failure, it sends reminder emails to the customer. After a certain number of reminders, it escalates the invoice to the support team.
+On payment success, it marks the invoice as paid.
+
+Restate tracks the timer across failures, and triggers execution.
+
+This example shows:
+ - **Durable webhook callback event processing**
+ - **Scheduling tasks and durable timers**: Sending reminder emails and escalating the invoice to the support team.
+ - **Joining and correlating events**: The handler correlates the payment events with the invoice ID.
+ - **Stateful service**: The handler keeps track of the number of reminders sent and the invoice status.
+
+<details>
+<summary><strong>Running the example</strong></summary>
+
+To run the example, you might want to reduce the time between scheduled calls to see the scheduling in action.
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `./gradlew -PmainClass=my.example.schedulingtasks.PaymentTrackerKt run`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+Send some requests:
+
+- Send a payment failure event to the handler:
+  ```shell
+  curl -X POST localhost:8080/PaymentTracker/invoice123/onPaymentFailure --json '{
+        "type": "customer.subscription_created",
+        "created": 1633025000,
+        "data": {
+        "id": "evt_1JH2Y4F2eZvKYlo2C8b9",
+        "customer": "cus_J5K2Y4F2eZvKYlo2"
+        }
+    }'
+  ```
+
+- See how the reminder emails get sent
+- Then send a payment success event to the handler:
+  ```shell
+  curl -X POST localhost:8080/PaymentTracker/invoice123/onPaymentSuccess --json '{
+        "type": "customer.subscription_created",
+        "created": 1633025000,
+        "data": {
+        "id": "evt_1JH2Y4F2eZvKYlo2C8b9",
+        "customer": "cus_J5K2Y4F2eZvKYlo2"
+        }
+    }'
+  ```
+
+- Have a look at the state to see the invoice got paid:
+```shell
+restate kv get PaymentTracker invoice123
+```
+
+If we lower the time between scheduled calls, we can see the reminder emails being sent out and then the invoice getting escalated to the support team:
+
+<details>
+<summary>View logs</summary>
+
+```
+2025-03-06 13:53:55 INFO  [PaymentTracker/onPaymentFailure][inv_1hB0HkaqQZyG6Gq5nDhCYU7dO8sFS4f8Dv] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2025-03-06 13:53:55 INFO  [PaymentTracker/onPaymentFailure][inv_1hB0HkaqQZyG6Gq5nDhCYU7dO8sFS4f8Dv] PaymentTracker - Sending reminder email for event: evt_1JH2Y4F2eZvKYlo2C8b9
+2025-03-06 13:53:55 INFO  [PaymentTracker/onPaymentFailure][inv_1hB0HkaqQZyG6Gq5nDhCYU7dO8sFS4f8Dv] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2025-03-06 13:53:56 INFO  [PaymentTracker/onPaymentFailure][inv_1hB0HkaqQZyG6CC5s8BElVylAkzYnFEYxz] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2025-03-06 13:53:56 INFO  [PaymentTracker/onPaymentFailure][inv_1hB0HkaqQZyG6CC5s8BElVylAkzYnFEYxz] PaymentTracker - Sending reminder email for event: evt_1JH2Y4F2eZvKYlo2C8b9
+2025-03-06 13:53:56 INFO  [PaymentTracker/onPaymentFailure][inv_1hB0HkaqQZyG6CC5s8BElVylAkzYnFEYxz] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2025-03-06 13:53:57 INFO  [PaymentTracker/onPaymentFailure][inv_1hB0HkaqQZyG60EuuJFPWhMM1HMVvM2VQR] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2025-03-06 13:53:57 INFO  [PaymentTracker/onPaymentFailure][inv_1hB0HkaqQZyG60EuuJFPWhMM1HMVvM2VQR] PaymentTracker - Sending reminder email for event: evt_1JH2Y4F2eZvKYlo2C8b9
+2025-03-06 13:53:57 INFO  [PaymentTracker/onPaymentFailure][inv_1hB0HkaqQZyG60EuuJFPWhMM1HMVvM2VQR] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2025-03-06 13:53:58 INFO  [PaymentTracker/onPaymentFailure][inv_1hB0HkaqQZyG2yGntTp2f9zJOubDQGEDWV] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2025-03-06 13:53:58 INFO  [PaymentTracker/onPaymentFailure][inv_1hB0HkaqQZyG2yGntTp2f9zJOubDQGEDWV] PaymentTracker - Escalating to evt_1JH2Y4F2eZvKYlo2C8b9 invoice to support team
+2025-03-06 13:53:58 INFO  [PaymentTracker/onPaymentFailure][inv_1hB0HkaqQZyG2yGntTp2f9zJOubDQGEDWV] dev.restate.sdk.core.InvocationStateMachine - End invocation
+```
+
+</details>
+</details>
+
+
 ## Transactional Event Processing
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/kotlin/my/example/eventtransactions/UserFeed.kt)
 
