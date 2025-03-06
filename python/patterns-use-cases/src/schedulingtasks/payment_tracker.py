@@ -30,7 +30,7 @@ async def on_payment_failure(ctx: ObjectContext, event: StripeEvent):
             on_payment_failure, # this handler
             ctx.key(), # this object invoice id
             event,
-            send_delay=timedelta(seconds=1))
+            send_delay=timedelta(days=1))
     else:
         await ctx.run("escalate", lambda: escalate_to_human(event))
 
