@@ -13,6 +13,7 @@ To set up the example, use the following sequence of commands.
 Setup the virtual env:
 
 ```shell
+cd backend
 python3 -m venv .venv
 source .venv/bin/activate
 ```
@@ -45,7 +46,7 @@ restate dp register http://localhost:8000
 ## Interacting with the chatbot via the UI
 
 ```shell
-cd simple-chat
+cd ui
 npm i 
 npm run dev
 ```

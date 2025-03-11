@@ -4,7 +4,7 @@ import restate
 from datetime import datetime, timedelta
 from typing import Any
 
-from chatbot.utils.types import ReminderOpts, TaskSpec, TaskHandlers
+from utils.types import ReminderOpts, TaskSpec, TaskHandlers
 
 reminder_service = restate.Workflow("ReminderService")
 
