@@ -39,6 +39,7 @@ Complete applications built with Restate:
 
 - **[Food Ordering App](end-to-end-applications/food-ordering)**: A food delivery service (like DoorDash) that manages orders, restaurants, payments, and delivery drivers. The example mixes workflows (ordering) and stateful microservices (driver management), and uses Kafka as an event source for updates from delivery drivers.
 - **[RAG Ingestion](end-to-end-applications/rag-ingestion)**: Durably process webhook events when new files get uploaded to a bucket, and trigger workflows to process them, compute embeddings and put them in a vector database.
+- **[LLM-powered Chat Bot / Task Agent](end-to-end-applications/chat-bot)**: An LLM-powered chatbot that can be asked to handle tasks, like watching flight prices, or sending reminders.
 
 
 ## Templates
