@@ -1,12 +1,10 @@
-from typing import List
-
 import restate
 import time
 
 from chatbot.gpt import gpt_client
 from chatbot.gpt.gpt_parser import parse_to_command
 from chatbot.gpt.prompt_utils import to_prompt
-from chatbot.tasks.task_manager import execute_command
+from chatbot.utils.command_router import execute_command
 from chatbot.utils.types import TaskResult, ChatEntry
 
 """

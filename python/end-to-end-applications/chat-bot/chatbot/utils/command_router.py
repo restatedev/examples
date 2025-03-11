@@ -1,7 +1,9 @@
 """
-  The Task Manager has the map of available task workflows.
+  The command router routes the commands of the user to the correct task.
+  This can be to start, cancel, list, or get the status of a task.
+  It has the map of available task workflows.
   It maintains the mapping from task_type (name of the task type) to the
-  implementing workflow service, and has the utilities to start, cancel,
+  implementing task service, and has the utilities to start, cancel,
   and query them.
 """
 import json
