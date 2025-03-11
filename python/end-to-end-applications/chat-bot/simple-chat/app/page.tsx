@@ -8,8 +8,8 @@ import {randomUUID} from "node:crypto";
 // Simple message type
 type Message = {
   id: string
+  role: "user" | "assistant" | "system"
   content: string
-  sender: "user" | "assistant" | "system"
   timestamp: number
 }
 
@@ -33,8 +33,8 @@ export default function ChatApp() {
     // Add user message to the chat
     const userMessage: Message = {
       id: Date.now().toString(),
+      role: "user",
       content: inputMessage,
-      sender: "user",
       timestamp: Date.now(),
     }
 
@@ -48,24 +48,12 @@ export default function ChatApp() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ message: inputMessage }),
+        body: JSON.stringify({ role: "user", content: inputMessage, timestamp: userMessage.timestamp }),
       })
 
       if (!response.ok) {
         throw new Error("Failed to send message")
       }
-
-      const responseData = await response.json()
-
-      // Add response to the chat
-      const responseMessage: Message = {
-        id: Date.now().toString(),
-        content: responseData.message || "No response",
-        sender: "assistant",
-        timestamp: Date.now(),
-      }
-
-      setMessages((prev) => [...prev, responseMessage])
     } catch (error) {
       console.error("Error sending message:", error)
     }
@@ -92,9 +80,9 @@ export default function ChatApp() {
           console.log(msg)
           return {
             id: Date.now().toString() + Math.random(),
-            content: (msg["role"] == "assistant") ? JSON.parse(msg["content"])["message"] : msg["content"],
-            sender: msg["role"],
-            timestamp: Date.now(),
+            content: msg["content"],
+            role: msg["role"],
+            timestamp: msg["timestamp"],
           }
         })
 
@@ -133,17 +121,19 @@ export default function ChatApp() {
         {/* Messages container */}
         <div className="flex-1 overflow-y-auto mb-4 px-2">
           {messages.map((message) => (
-            <div key={message.id} className={`mb-3 max-w-[80%] ${message.sender === "user" ? "ml-auto" : "mr-auto"}`}>
+            <div key={message.id} className={`mb-3 max-w-[80%] ${message.role === "user" ? "ml-auto" : "mr-auto"}`}>
               <div
                 className={`p-3 rounded-2xl ${
-                  message.sender === "user"
+                  message.role === "user"
                     ? "bg-[#0a84ff] text-white rounded-tr-sm"
-                    : "bg-white dark:bg-[#2c2c2e] text-[#1d1d1f] dark:text-white rounded-tl-sm shadow-sm"
+                    : message.role === "assistant" 
+                          ? "bg-white dark:bg-[#2c2c2e] text-[#1d1d1f] dark:text-white rounded-tl-sm shadow-sm"
+                          : "bg-green-100 dark:bg-[#2c2c2e] text-[#1d1d1f] dark:text-white rounded-tl-sm shadow-sm"
                 }`}
               >
                 {message.content}
               </div>
-              <div className={`text-xs mt-1 text-[#86868b] ${message.sender === "user" ? "text-right" : "text-left"}`}>
+              <div className={`text-xs mt-1 text-[#86868b] ${message.role === "user" ? "text-right" : "text-left"}`}>
                 {new Date(message.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
               </div>
             </div>

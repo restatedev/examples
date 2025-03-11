@@ -1,65 +1,45 @@
-"""
-VirtualObject for chatbot, which manages the chat history and ongoing tasks.
-"""
-import logging
-from typing import Dict
-import typing
+from typing import List
+
 import restate
+import time
 
-from pydantic import BaseModel
+from chatbot.gpt import gpt_client
+from chatbot.gpt.gpt_parser import parse_to_command
+from chatbot.gpt.prompt_utils import to_prompt
+from chatbot.tasks.task_manager import execute_command
+from chatbot.utils.types import TaskResult, ChatEntry
 
-from chatbot.utils import gpt
-from chatbot.utils.gpt import ChatEntry
-from chatbot.utils.prompt import setup_prompt, tasks_to_prompt, parse_gpt_response
-from chatbot.utils.prompt import interpret_command, RunningTask
-from chatbot.utils.types import TaskResult
-
-class ChatMessage(BaseModel):
-    message: str
-
-class ChatHistory(BaseModel):
-    messages: typing.List[ChatEntry]
-
+"""
+Virtual Object representing a chat session which manages the chat history and its ongoing tasks.
+"""
 chat_session = restate.VirtualObject("ChatSession")
 
 @chat_session.handler("onMessage")
-async def on_message(ctx: restate.ObjectContext, req: ChatMessage):
+async def on_message(ctx: restate.ObjectContext, message: ChatEntry):
     """
     Manage the chat history and ongoing tasks, and call the GPT model to generate a response.
     """
-    # append the message to the chat history
-    chat_history: list[ChatEntry] = await ctx.get("chat_history") or []
-    chat_history.append(ChatEntry(role="user", content=req.message))
+    # Retrieve the session state
+    chat_history = await ctx.get("chat_history") or []
+    active_tasks = await ctx.get("active_tasks") or {}
+
+    # Append the message to the chat history
+    chat_history.append(message)
     ctx.set("chat_history", chat_history)
 
-    active_tasks: Dict[str, RunningTask] = await ctx.get("tasks") or {}
+    # Call LLM
+    gpt_response = await ctx.run("call GPT",
+                                 lambda: gpt_client.chat(to_prompt(chat_history, active_tasks, message)))
 
-    # call LLM
-    async def chat():
-        return await gpt.chat(
-            setup_prompt(),
-            chat_history,
-            [tasks_to_prompt(active_tasks), req.message]
-        )
-    gpt_response = await ctx.run("call GPT", chat)
-
-    # add the response to the chat history
-    chat_history.append(ChatEntry(role="assistant", content=gpt_response["response"]))
+    # Interpret the response and execute the command
+    command = parse_to_command(gpt_response)
+    output = await execute_command(ctx, ctx.key(), active_tasks, command)
+    ctx.set("active_tasks", output["new_active_tasks"])
+    chat_history.append(ChatEntry(
+        role="system",
+        content=command.message,
+        timestamp=await ctx.run("time", lambda: round(time.time() * 1000))))
     ctx.set("chat_history", chat_history)
-
-
-    # parse and interpret the command and fork tasks as indicated
-    command = parse_gpt_response(gpt_response["response"])
-    output = await interpret_command(ctx, ctx.key(), active_tasks, command)
-
-    # persist the new active tasks and updated history
-    if output["new_active_tasks"]:
-        ctx.set("tasks", output["new_active_tasks"])
-
-    return {
-        "message": command.message,
-        "quote": output["task_message"]
-    }
 
 
 @chat_session.handler("onTaskDone")
@@ -67,24 +47,21 @@ async def on_task_done(ctx: restate.ObjectContext, result: TaskResult):
     """
     Handle the completion of a task and notify the user.
     """
-    task_name = result["task_name"]
-    task_result = result["result"]
-
     # Remove task from list of active tasks
-    active_tasks: Dict[str, RunningTask] = await ctx.get("tasks") or {}
-    if task_name in active_tasks:
-        active_tasks.pop(task_name)
-    ctx.set("tasks", active_tasks)
+    active_tasks = await ctx.get("tasks") or {}
+    if result["task_name"] in active_tasks:
+        active_tasks.pop(result["task_name"])
+    ctx.set("active_tasks", active_tasks)
 
+    # Add the task result to the chat history
     chat_history = await ctx.get("chat_history")
-    chat_history.append(ChatEntry(role="system", content=f"The task with name '{task_name}' is finished."))
+    chat_history.append(ChatEntry(
+        role="system",
+        content=result["result"],
+        timestamp=result["timestamp"]))
     ctx.set("chat_history", chat_history)
-    logging.info(" --- NOTIFICATION from session %s --- : %s", ctx.key(), f"Task {task_name} says: {task_result}")
 
 
 @chat_session.handler("getChatHistory", kind="shared")
 async def get_chat_history(ctx: restate.ObjectSharedContext):
-    """
-    Get the chat history for the current chat session.
-    """
     return await ctx.get("chat_history") or []

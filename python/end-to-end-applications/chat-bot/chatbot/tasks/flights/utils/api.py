@@ -3,7 +3,6 @@ import random
 
 from chatbot.utils.types import RoundTripRouteDetails
 
-
 def get_best_quote(trip: RoundTripRouteDetails, price_threshold: float):
 
     # We want this to return a match on average every 5 tries, for the sake of

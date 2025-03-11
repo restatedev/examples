@@ -1,4 +1,4 @@
-from typing import Any, TypeVar
+from typing import TypeVar, Any
 
 
 def parse_currency(text: Any) -> int:

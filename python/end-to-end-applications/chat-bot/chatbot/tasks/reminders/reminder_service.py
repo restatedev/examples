@@ -1,22 +1,16 @@
 import logging
 import time
+import restate
 from datetime import datetime, timedelta
-from typing import TypedDict, Any
+from typing import Any
 
-from restate import Workflow, WorkflowContext, WorkflowSharedContext
+from chatbot.utils.types import ReminderOpts, TaskSpec, TaskHandlers
 
-from chatbot.tasks.task_workflow import TaskWorkflow, TaskSpec
-
-reminder_service = Workflow("ReminderService")
-
-
-class ReminderOpts(TypedDict):
-    timestamp: int
-    description: str
+reminder_service = restate.Workflow("ReminderService")
 
 
 @reminder_service.main()
-async def run(ctx: WorkflowContext, opts: ReminderOpts):
+async def run(ctx: restate.WorkflowContext, opts: ReminderOpts):
     logging.info(f"Running reminder workflow for: {opts}")
     ctx.set("timestamp", opts["timestamp"])
     time_now = await ctx.run("time", lambda: round(time.time() * 1000))
@@ -30,16 +24,16 @@ async def run(ctx: WorkflowContext, opts: ReminderOpts):
     if cancelled:
         return "The reminder has been cancelled"
 
-    return f"It is time{opts.get('description', '!')}"
+    return f"It is time: {opts.get('description', '!')}"
 
 
 @reminder_service.handler()
-async def cancel(ctx: WorkflowSharedContext):
+async def cancel(ctx: restate.WorkflowSharedContext):
     await ctx.promise("cancelled").resolve(True)
 
 
 @reminder_service.handler("getCurrentStatus")
-async def get_current_status(ctx: WorkflowSharedContext) -> dict:
+async def get_current_status(ctx: restate.WorkflowSharedContext) -> dict:
     timestamp = await ctx.get("timestamp")
     if not timestamp:
         return {"remaining_time": -1}
@@ -64,8 +58,9 @@ def params_parser(name: str, params: Any) -> ReminderOpts:
     return ReminderOpts(timestamp=timestamp, description=description)
 
 
-reminderTask = TaskSpec(
-    params_parser=params_parser,
+reminder_task = TaskSpec(
+    task_service_name = "ReminderService",
     task_type_name="reminder",
-    task_workflow=TaskWorkflow(run, cancel, get_current_status)
+    task_handlers=TaskHandlers(run=run, cancel=cancel, get_current_status=get_current_status),
+    params_parser=params_parser
 )

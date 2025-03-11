@@ -41,6 +41,32 @@ Register the service:
 restate dp register http://localhost:8000
 ```
 
+
+## Interacting with the chatbot via the UI
+
+```shell
+cd simple-chat
+npm i 
+npm run dev
+```
+
+Then open the browser at `http://localhost:3000/` and interact with the chatbot.
+
+For example, you can type:
+
+```
+Hey, I am Malik, can you set an alarm in one minute to drink water?
+```
+
+Or:
+
+```
+Hey, I am Malik, can you set an alarm for the flight price of start airport Berlin to destination airport Vilnius for next week Tuesday 6 August 2024 and return date 8 August 2024 in first class with a maximum of 200 euro as price threshold?
+```
+
+![img.png](img.png)
+
+## Interacting with the chatbot via HTTP
 Then interact with the chatbot via:
 
 ```shell
