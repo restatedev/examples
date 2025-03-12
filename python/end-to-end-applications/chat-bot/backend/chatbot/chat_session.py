@@ -43,7 +43,7 @@ async def on_message(ctx: restate.ObjectContext, message: ChatEntry):
 @chat_session.handler("onTaskDone")
 async def on_task_done(ctx: restate.ObjectContext, result: TaskResult):
     """
-    Handle the completion of a task and notify the user.
+    Handle the completion of an async task and attach the response to the chat history.
     """
     # Remove task from list of active tasks
     active_tasks = await ctx.get("tasks") or {}

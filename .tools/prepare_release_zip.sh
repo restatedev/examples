@@ -20,6 +20,8 @@ create_release_zip python/basics python-basics
 create_release_zip python/templates/python python-hello-world
 create_release_zip python/patterns-use-cases python-patterns-use-cases
 create_release_zip python/tutorials/tour-of-restate-python python-tour-of-restate
+create_release_zip python/end-to-end-applications/chat-bot python-chat-bot
+create_release_zip python/end-to-end-applications/rag-ingestion python-rag-ingestion
 create_release_zip python/end-to-end-applications/food-ordering python-food-ordering
 
 create_release_zip java/basics java-basics

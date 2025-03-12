@@ -28,6 +28,7 @@ jobs:
                   python-hello-world.zip
                   python-patterns-use-cases.zip
                   python-tour-of-restate.zip
+                  python-chat-bot.zip
                   python-food-ordering.zip
                   python-rag-ingestion.zip
                   java-basics.zip
