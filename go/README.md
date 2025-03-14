@@ -29,6 +29,9 @@
 - **[Transactional Event Processing](patterns-use-cases/README.md#transactional-event-processing)**: Process events from Kafka to update various downstream systems in a transactional way. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/src/eventtransactions/userfeed.go)
 - **[Event Enrichment / Joins](patterns-use-cases/README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/src/eventenrichment/packagetracker.go)
 
+#### Building coordination constructs (Advanced)
+- **[Rate Limiting](patterns-use-cases/README.md#rate-limiting)**: Example of implementing a token bucket rate limiter. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/ratelimit)
+
 ## Integrations
 
 Examples integrating Restate with other tools and frameworks:

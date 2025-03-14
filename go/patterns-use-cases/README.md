@@ -20,6 +20,11 @@ Common tasks and patterns implemented with Restate:
 - **[Transactional Event Processing](README.md#transactional-event-processing)**: Process events from Kafka to update various downstream systems in a transactional way. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventtransactions/userfeed.go)
 - **[Event Enrichment / Joins](README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventenrichment/packagetracker.go)
 
+#### Building coordination constructs (Advanced)
+Use Restate to build distributed coordination and synchronization constructs:
+- **[Rate Limiting](README.md#rate-limiting)**: Example of implementing a token bucket rate limiter. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/ratelimit)
+
+
 ## Durable RPC, Idempotency & Concurrency
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/durablerpc/client/client.go)
 
@@ -585,5 +590,32 @@ The Package Tracker Virtual Object tracks the package details and its location h
     ```
 
     </details>
+
+</details>
+
+## Rate limiting
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/ratelimit/service/limiter.go)
+
+An example of implementing a token bucket rate limiter using Restate state and the sleep primitive.
+
+
+<details>
+<summary><strong>Running the example</strong></summary>
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `go run ./src/ratelimit/example/main.go`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+4. Set up the limiter named `LimitedTask-RunTask` with a rate limit of 1 per second:
+  ```shell
+  curl localhost:8080/Limiter/LimitedTask-RunTask/SetRate -H 'content-type:application/json' -d '{"limit": 1, "burst": 1}'
+  ```
+5. Send some requests that are subject to the limiter:
+  ```shell
+  # send one request
+  curl localhost:8080/LimitedTask/RunTask
+  # send lots
+  for i in $(seq 1 30); do curl localhost:8080/LimitedTask/RunTask && echo "request completed"; done
+  ```
+  You should observe that only one request is processed per second. You can then try changing the limit or the burst and sending more requests.
 
 </details>
