@@ -28,6 +28,7 @@ import static utils.ExampleStubs.chargeBankAccount;
 @Service
 public class MyService {
 
+
     // This handler can be called over HTTP at http://restate:8080/MyService/handlerName
     // Use the context to access Restate's durable building blocks
     @Handler
