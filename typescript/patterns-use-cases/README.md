@@ -27,6 +27,7 @@ Common tasks and patterns implemented with Restate:
 Use Restate to build distributed coordination and synchronization constructs:
 - **[Durable Promises as a Service](README.md#durable-promises-as-a-service)**: Building Promises/Futures as a service, that can be exposed to external clients and are durable across processes and failures. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/promiseasaservice)
 - **[Priority Queue](README.md#priority-queue)**: Example of implementing a priority queue to manage task execution order. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/priorityqueue)
+- **[Rate Limiting](README.md#rate-limiting)**: Example of implementing a token bucket rate limiter. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/ratelimit)
 
 First, install the dependencies:
 
@@ -840,5 +841,34 @@ for i in $(seq 1 30); do curl localhost:8080/myService/expensiveMethod/send -H '
 As you do so, you can observe the logs; in flight requests will increase up to 10, beyond which items will be enqueued.
 
 You can write your own queue item selection logic in `selectAndPopItem`; doing so is outside the scope of this example.
+
+</details>
+
+## Rate limiting
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/ratelimit)
+
+An example of implementing a token bucket rate limiter using Restate state and the sleep primitive.
+
+
+<details>
+<summary><strong>Running the example</strong></summary>
+
+Run the example with `npx tsx watch ./src/ratelimit/app.ts`.
+
+Set up the limiter named `myService-expensiveMethod` with a rate limit of 1 per second:
+```shell
+curl localhost:8080/limiter/myService-expensiveMethod/setRate -H 'content-type:application/json' -d '{"newLimit": 1, "newBurst": 1}'
+```
+
+You can send requests that are subject to the limiter like this:
+```shell
+# send one request
+curl localhost:8080/myService/expensiveMethod
+# send lots
+for i in $(seq 1 30); do curl localhost:8080/myService/expensiveMethod && echo "request completed"; done
+```
+
+You should observe that only one request is processed per second. You can then try changing the limit or the burst
+and sending more requests.
 
 </details>
