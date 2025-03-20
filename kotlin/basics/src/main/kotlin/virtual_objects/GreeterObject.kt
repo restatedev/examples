@@ -24,7 +24,7 @@ class GreeterObject {
 
   companion object {
     // Reference to the K/V state stored in Restate
-    private val COUNT = KtStateKey.json<Int>("available-drivers")
+    private val COUNT = KtStateKey.json<Int>("greet-count")
   }
 
   @Handler
