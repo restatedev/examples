@@ -115,13 +115,51 @@ This is also the perfect place for sharing your feedback with us, learning more 
 
 ## Running the examples
 
-Some examples are just illustrations of code, but many are runnable. Their READMEs explain
-how to get them running. Here are the general steps:
+### Using docker compose
 
-### (1) Starting the Restate Server
+Easiest way to bring up and test an endpoint is using the docker compose setup. 
 
-To run an example locally, you need a running Restate Server instance.
-Some examples can be run with Docker Compose. Those already bring their own Restate server instance.
+- First install docker engine from [here](https://docs.docker.com/engine/install/).
+- Next, from the root of the repo, run
+
+```
+docker compose up -d
+```
+This will bring up 
+- restate server
+- [typescript example-0](typescript/basics/src/0_durable_execution.ts)
+- register the endpoint /service with restate 
+
+You can test the endpoint by calling 
+
+```
+curl --request POST \
+  --url http://127.0.0.1:8080/SubscriptionService/add \
+  --header 'Accept: application/json' \
+  --header 'Content-Type: application/json' \
+  --header 'idempotency-key: some-key-for-idempotentcy' \
+  --data '{
+    "userId": "Sam Beckett",
+    "creditCard": "1234-5678-9012-3456",
+    "subscriptions" : ["Netflix", "Disney+", "HBO Max"]
+}'
+
+```
+
+You can check that it succeeded by visiting http://localhost:9070/ui/invocations?service=SubscriptionService
+
+Now you can register additional endpoints onto restate. 
+
+Some examples are just illustrations of code, but many are runnable. Their READMEs explain how to get them running. Here are the general steps:
+
+### 
+
+### (1) Optional - Starting the Restate Server
+
+To run an example locally, you need a running Restate Server instance. 
+
+You can skip this step if you have the docker compose setup, shown above, having started the restate server.
+
 
 To install the Restate Server and CLI, have a look at the [installation instructions in the documentation](https://docs.restate.dev/develop/local_dev#running-restate-server--cli-locally).
 
