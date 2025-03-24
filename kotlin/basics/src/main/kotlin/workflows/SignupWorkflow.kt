@@ -21,8 +21,7 @@ class SignupWorkflow {
 
   companion object {
     // References to K/V state and promises stored in Restate
-    private val EMAIL_CLICKED = KtDurablePromiseKey.json<String>("email_clicked")
-    private val ONBOARDING_STATUS = KtStateKey.json<String>("status")
+    private val LINK_CLICKED = KtDurablePromiseKey.json<String>("email_clicked")
   }
 
   @Workflow
@@ -40,7 +39,7 @@ class SignupWorkflow {
     // Wait until user clicked email verification link
     // Promise gets resolved or rejected by the other handlers
     val clickSecret: String =
-      ctx.promise(EMAIL_CLICKED)
+      ctx.promise(LINK_CLICKED)
         .awaitable()
         .await()
 
@@ -51,7 +50,7 @@ class SignupWorkflow {
   @Shared
   suspend fun click(ctx: SharedWorkflowContext, secret: String) {
     // Send data to the workflow via a durable promise
-    ctx.promiseHandle(EMAIL_CLICKED).resolve(secret)
+    ctx.promiseHandle(LINK_CLICKED).resolve(secret)
   }
 }
 
