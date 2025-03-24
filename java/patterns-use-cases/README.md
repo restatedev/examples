@@ -11,6 +11,7 @@
 - **[Payment State Machines (Advanced)](README.md#payment-state-machines)**: State machine example that tracks a payment process, ensuring consistent processing and cancellations. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/statemachinepayments/PaymentProcessor.java)
 
 #### Scheduling
+- **[Scheduling Tasks](README.md#scheduling-tasks)**: Restate as scheduler: Schedule tasks for later and ensure the task is triggered and executed. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/schedulingtasks/PaymentTracker.java)
 - **[Parallelizing Work](README.md#parallelizing-work)**: Execute a list of tasks in parallel and then gather their result. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/parallelizework/FanOutWorker.java)
 - **[Payment Signals (Advanced)](README.md#payment-signals)**: Handling async payment callbacks for slow payments, with Stripe. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/signalspayments/PaymentService.java)
 
@@ -375,6 +376,84 @@ restate kv get PaymentProcessor some-string-id
 </details>
 </details>
 
+
+## Scheduling Tasks
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/schedulingtasks/PaymentTracker.java)
+
+An example of a handler that processes Stripe payment events.
+On payment failure, it sends reminder emails to the customer. After a certain number of reminders, it escalates the invoice to the support team.
+On payment success, it marks the invoice as paid.
+
+Restate tracks the timer across failures, and triggers execution.
+
+This example shows:
+- **Durable webhook callback event processing**
+- **Scheduling tasks and durable timers**: Sending reminder emails and escalating the invoice to the support team.
+- **Joining and correlating events**: The handler correlates the payment events with the invoice ID.
+- **Stateful service**: The handler keeps track of the number of reminders sent and the invoice status.
+
+<details>
+<summary><strong>Running the example</strong></summary>
+To run the example, you might want to reduce the time between scheduled calls to see the scheduling in action.
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `./gradlew -PmainClass=my.example.schedulingtasks.PaymentTracker run`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+Send some requests:
+
+- Send a payment failure event to the handler:
+  ```shell
+  curl -X POST localhost:8080/PaymentTracker/invoice123/onPaymentFailure --json '{
+        "type": "customer.subscription_created",
+        "created": 1633025000,
+        "data": {
+        "id": "evt_1JH2Y4F2eZvKYlo2C8b9",
+        "customer": "cus_J5K2Y4F2eZvKYlo2"
+        }
+    }'
+  ```
+
+- See how the reminder emails get sent
+- Then send a payment success event to the handler:
+  ```shell
+  curl -X POST localhost:8080/PaymentTracker/invoice123/onPaymentSuccess --json '{
+        "type": "customer.subscription_created",
+        "created": 1633025000,
+        "data": {
+        "id": "evt_1JH2Y4F2eZvKYlo2C8b9",
+        "customer": "cus_J5K2Y4F2eZvKYlo2"
+        }
+    }'
+  ```
+
+- Have a look at the state to see the invoice got paid:
+```shell
+restate kv get PaymentTracker invoice123
+```
+
+If we lower the time between scheduled calls, we can see the reminder emails being sent out and then the invoice getting escalated to the support team:
+<details>
+<summary>View logs</summary>
+
+```
+2025-03-06 15:06:35 INFO  [PaymentTracker/onPaymentFailure][inv_1epU7bYg3wIm4fkufFkwEDIprzflYpzjZT] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2025-03-06 15:06:35 INFO  [PaymentTracker/onPaymentFailure][inv_1epU7bYg3wIm4fkufFkwEDIprzflYpzjZT] my.example.schedulingtasks.utils.Utils - Sending reminder email for event evt_1JH2Y4F2eZvKYlo2C8b9
+2025-03-06 15:06:35 INFO  [PaymentTracker/onPaymentFailure][inv_1epU7bYg3wIm4fkufFkwEDIprzflYpzjZT] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2025-03-06 15:06:36 INFO  [PaymentTracker/onPaymentFailure][inv_1epU7bYg3wIm0f16sIBeSEZE139Ky4CuUF] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2025-03-06 15:06:36 INFO  [PaymentTracker/onPaymentFailure][inv_1epU7bYg3wIm0f16sIBeSEZE139Ky4CuUF] my.example.schedulingtasks.utils.Utils - Sending reminder email for event evt_1JH2Y4F2eZvKYlo2C8b9
+2025-03-06 15:06:36 INFO  [PaymentTracker/onPaymentFailure][inv_1epU7bYg3wIm0f16sIBeSEZE139Ky4CuUF] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2025-03-06 15:06:37 INFO  [PaymentTracker/onPaymentFailure][inv_1epU7bYg3wIm0Ghtu065SPPJn2W0u3bBCx] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2025-03-06 15:06:37 INFO  [PaymentTracker/onPaymentFailure][inv_1epU7bYg3wIm0Ghtu065SPPJn2W0u3bBCx] my.example.schedulingtasks.utils.Utils - Sending reminder email for event evt_1JH2Y4F2eZvKYlo2C8b9
+2025-03-06 15:06:37 INFO  [PaymentTracker/onPaymentFailure][inv_1epU7bYg3wIm0Ghtu065SPPJn2W0u3bBCx] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2025-03-06 15:06:38 INFO  [PaymentTracker/onPaymentFailure][inv_1epU7bYg3wIm574vNzXLyumBrDoOZDqocV] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2025-03-06 15:06:38 INFO  [PaymentTracker/onPaymentFailure][inv_1epU7bYg3wIm574vNzXLyumBrDoOZDqocV] my.example.schedulingtasks.utils.Utils - Escalating evt_1JH2Y4F2eZvKYlo2C8b9 invoice to support team
+2025-03-06 15:06:38 INFO  [PaymentTracker/onPaymentFailure][inv_1epU7bYg3wIm574vNzXLyumBrDoOZDqocV] dev.restate.sdk.core.InvocationStateMachine - End invocation
+```
+
+</details>
+</details>
+
 ## Parallelizing Work
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/parallelizework/FanOutWorker.java)
 
@@ -386,6 +465,48 @@ It then splits the task into subtasks, executes them in parallel, and then gathe
 
 Restate guarantees and manages the execution of all the subtasks across failures.
 You can run this on FaaS infrastructure, like AWS Lambda, and it will scale automatically.
+
+<details>
+<summary><strong>Running the example</strong></summary>
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `./gradlew -PmainClass=my.example.parallelizework.FanOutWorker run`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+Send a request:
+```shell
+curl -X POST http://localhost:8080/FanOutWorker/run -H "Content-Type: application/json" -d '{"description": "get out of bed,shower,make coffee,have breakfast"}'
+```
+
+Check in the logs how all tasks get spawned in parallel.
+
+<details>
+<summary>View logs</summary>
+
+```
+2025-03-06 12:53:43 INFO  [FanOutWorker/runSubtask][inv_1eR9VE9c7xfz4SKB2eCJy86XGFTrGJKWMp] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2025-03-06 12:53:43 INFO  [FanOutWorker/runSubtask][inv_1eR9VE9c7xfz4SKB2eCJy86XGFTrGJKWMp] my.example.parallelizework.utils.Utils - Started executing subtask: get out of bed
+2025-03-06 12:53:43 INFO  [FanOutWorker/runSubtask][inv_15hry2WSJRuS45Sunug6olrHpWpHUKs0Mx] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2025-03-06 12:53:43 INFO  [FanOutWorker/runSubtask][inv_15hry2WSJRuS45Sunug6olrHpWpHUKs0Mx] my.example.parallelizework.utils.Utils - Started executing subtask: make coffee
+2025-03-06 12:53:43 INFO  [FanOutWorker/runSubtask][inv_1edYMhniRwzc0kU2LZXKqS0yc516iofpfP] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2025-03-06 12:53:43 INFO  [FanOutWorker/runSubtask][inv_1edYMhniRwzc0kU2LZXKqS0yc516iofpfP] my.example.parallelizework.utils.Utils - Started executing subtask: shower
+2025-03-06 12:53:43 INFO  [FanOutWorker/runSubtask][inv_1beEP283Rozk4vTmbUgorTdxrDaJkCwPkZ] dev.restate.sdk.core.InvocationStateMachine - Start invocation
+2025-03-06 12:53:43 INFO  [FanOutWorker/runSubtask][inv_1beEP283Rozk4vTmbUgorTdxrDaJkCwPkZ] my.example.parallelizework.utils.Utils - Started executing subtask: have breakfast
+2025-03-06 12:53:43 INFO  [FanOutWorker/runSubtask][inv_15hry2WSJRuS45Sunug6olrHpWpHUKs0Mx] my.example.parallelizework.utils.Utils - Execution subtask finished: make coffee
+2025-03-06 12:53:43 INFO  [FanOutWorker/runSubtask][inv_15hry2WSJRuS45Sunug6olrHpWpHUKs0Mx] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2025-03-06 12:53:46 INFO  [FanOutWorker/runSubtask][inv_1eR9VE9c7xfz4SKB2eCJy86XGFTrGJKWMp] my.example.parallelizework.utils.Utils - Execution subtask finished: get out of bed
+2025-03-06 12:53:46 INFO  [FanOutWorker/runSubtask][inv_1eR9VE9c7xfz4SKB2eCJy86XGFTrGJKWMp] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2025-03-06 12:53:46 INFO  [FanOutWorker/runSubtask][inv_1beEP283Rozk4vTmbUgorTdxrDaJkCwPkZ] my.example.parallelizework.utils.Utils - Execution subtask finished: have breakfast
+2025-03-06 12:53:46 INFO  [FanOutWorker/runSubtask][inv_1beEP283Rozk4vTmbUgorTdxrDaJkCwPkZ] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2025-03-06 12:53:52 INFO  [FanOutWorker/runSubtask][inv_1edYMhniRwzc0kU2LZXKqS0yc516iofpfP] my.example.parallelizework.utils.Utils - Execution subtask finished: shower
+2025-03-06 12:53:52 INFO  [FanOutWorker/runSubtask][inv_1edYMhniRwzc0kU2LZXKqS0yc516iofpfP] dev.restate.sdk.core.InvocationStateMachine - End invocation
+2025-03-06 12:53:52 INFO  [FanOutWorker/run][inv_1eXFJRCIXMwr57UdPLLIRwARZFifnOusTL] my.example.parallelizework.utils.Utils - Aggregated result: get out of bed: DONE, shower: DONE, make coffee: DONE, have breakfast: DONE
+2025-03-06 12:53:52 INFO  [FanOutWorker/run][inv_1eXFJRCIXMwr57UdPLLIRwARZFifnOusTL] dev.restate.sdk.core.InvocationStateMachine - End invocation
+```
+
+</details>
+</details>
+
 
 ## Payment Signals
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/signalspayments/PaymentService.java)

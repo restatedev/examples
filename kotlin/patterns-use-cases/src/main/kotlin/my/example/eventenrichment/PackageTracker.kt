@@ -3,10 +3,9 @@ package my.example.eventenrichment
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.VirtualObject
-import dev.restate.sdk.common.StateKey
 import dev.restate.sdk.common.TerminalException
 import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
-import dev.restate.sdk.kotlin.KtSerdes
+import dev.restate.sdk.kotlin.KtStateKey
 import dev.restate.sdk.kotlin.ObjectContext
 import dev.restate.sdk.kotlin.SharedObjectContext
 import kotlinx.serialization.Serializable
@@ -20,7 +19,7 @@ data class LocationUpdate(val timestamp: String, val location: String)
 class PackageTracker {
 
     companion object {
-        private val PACKAGE_INFO = StateKey.of("package-info", KtSerdes.json<PackageInfo>())
+        private val PACKAGE_INFO = KtStateKey.json<PackageInfo>("package-info")
     }
 
     @Handler

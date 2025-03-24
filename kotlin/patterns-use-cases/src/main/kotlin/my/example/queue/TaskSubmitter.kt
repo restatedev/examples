@@ -19,7 +19,7 @@ class TaskSubmitter {
         private val restateClient: Client = Client.connect("http://localhost:8080")
     }
 
-    suspend fun scheduleTask(taskOpts: TaskOpts) {
+    suspend fun TaskOpts.scheduleTask() {
         // submit the task; similar to publishing a message to a queue
         // Restate ensures the task is executed exactly once
         val handle =
@@ -27,7 +27,7 @@ class TaskSubmitter {
                 // optionally add a delay to execute the task later
                 .send(/*5.days*/)
                 .runTask(
-                    taskOpts,
+                    this,
                     // use a stable uuid as an idempotency key; Restate deduplicates for us
                     CallRequestOptions.DEFAULT.withIdempotency("dQw4w9WgXcQ"),
                 )

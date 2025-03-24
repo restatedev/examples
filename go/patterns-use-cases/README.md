@@ -20,6 +20,11 @@ Common tasks and patterns implemented with Restate:
 - **[Transactional Event Processing](README.md#transactional-event-processing)**: Process events from Kafka to update various downstream systems in a transactional way. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventtransactions/userfeed.go)
 - **[Event Enrichment / Joins](README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventenrichment/packagetracker.go)
 
+#### Building coordination constructs (Advanced)
+Use Restate to build distributed coordination and synchronization constructs:
+- **[Rate Limiting](README.md#rate-limiting)**: Example of implementing a token bucket rate limiter. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/ratelimit)
+
+
 ## Durable RPC, Idempotency & Concurrency
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/durablerpc/client/client.go)
 
@@ -263,16 +268,84 @@ echo "executing..."
 </details>
 </details>
 
+
 ## Scheduling Tasks
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/schedulingtasks/paymentreminders.go)
 
-This example processes failed payment events from a payment provider.
-The service reminds the customer for 3 days to update their payment details, and otherwise escalates to support.
-
-To schedule the reminders, the handler uses Restate's durable timers and delayed calls.
-The handler calls itself three times in a row after a delay of one day, and then stops the loop and calls another handler.
+An example of a handler that processes Stripe payment events.
+On payment failure, it sends reminder emails to the customer. After a certain number of reminders, it escalates the invoice to the support team.
+On payment success, it marks the invoice as paid.
 
 Restate tracks the timer across failures, and triggers execution.
+
+This example shows:
+- **Durable webhook callback event processing**
+- **Scheduling tasks and durable timers**: Sending reminder emails and escalating the invoice to the support team.
+- **Joining and correlating events**: The handler correlates the payment events with the invoice ID.
+- **Stateful service**: The handler keeps track of the number of reminders sent and the invoice status.
+
+<details>
+<summary><strong>Running the example</strong></summary>
+To run the example, you might want to reduce the time between scheduled calls to see the scheduling in action.
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `go run ./src/schedulingtasks`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+Send some requests:
+
+- Send a payment failure event to the handler:
+  ```shell
+  curl -X POST localhost:8080/PaymentTracker/invoice12345/OnPaymentFailure --json '{
+        "type": "customer.subscription_created",
+        "created": 1633025000,
+        "data": {
+        "id": "evt_1JH2Y4F2eZvKYlo2C8b9",
+        "customer": "cus_J5K2Y4F2eZvKYlo2"
+        }
+    }'
+  ```
+
+- See how the reminder emails get sent
+- Then send a payment success event to the handler:
+  ```shell
+  curl -X POST localhost:8080/PaymentTracker/invoice123/OnPaymentSuccess --json '{
+        "type": "customer.subscription_created",
+        "created": 1633025000,
+        "data": {
+        "id": "evt_1JH2Y4F2eZvKYlo2C8b9",
+        "customer": "cus_J5K2Y4F2eZvKYlo2"
+        }
+    }'
+  ```
+
+- Have a look at the state to see the invoice got paid:
+```shell
+restate kv get PaymentTracker invoice123
+```
+
+If we lower the time between scheduled calls, we can see the reminder emails being sent out and then the invoice getting escalated to the support team:
+<details>
+<summary>View logs</summary>
+
+```
+2025/03/06 17:45:37 INFO Handling invocation method=PaymentTracker/OnPaymentFailure invocationID=inv_184O9BgtPLi20s8ZluTtTnlFDyw6zLxRcZ
+02025/03/06 17:45:37 INFO Sending reminder email for event evt_1JH2Y4F2eZvKYlo2C8b9
+2025/03/06 17:45:37 INFO Invocation completed successfully method=PaymentTracker/OnPaymentFailure invocationID=inv_184O9BgtPLi20s8ZluTtTnlFDyw6zLxRcZ
+2025/03/06 17:45:42 INFO Handling invocation method=PaymentTracker/OnPaymentFailure invocationID=inv_184O9BgtPLi25b8HqFLz7pVKupEch2CKel
+2025/03/06 17:45:42 INFO Sending reminder email for event evt_1JH2Y4F2eZvKYlo2C8b9
+2025/03/06 17:45:42 INFO Invocation completed successfully method=PaymentTracker/OnPaymentFailure invocationID=inv_184O9BgtPLi25b8HqFLz7pVKupEch2CKel
+2025/03/06 17:45:47 INFO Handling invocation method=PaymentTracker/OnPaymentFailure invocationID=inv_184O9BgtPLi21tRiMnWzN9dYNwum0ZhXhL
+2025/03/06 17:45:47 INFO Sending reminder email for event evt_1JH2Y4F2eZvKYlo2C8b9
+2025/03/06 17:45:47 INFO Invocation completed successfully method=PaymentTracker/OnPaymentFailure invocationID=inv_184O9BgtPLi21tRiMnWzN9dYNwum0ZhXhL
+2025/03/06 17:45:52 INFO Handling invocation method=PaymentTracker/OnPaymentFailure invocationID=inv_184O9BgtPLi22zrwoK0yKQSUifcHyeq0ed
+2025/03/06 17:45:52 INFO Escalating to human for event evt_1JH2Y4F2eZvKYlo2C8b9
+2025/03/06 17:45:52 INFO Invocation completed successfully method=PaymentTracker/OnPaymentFailure invocationID=inv_184O9BgtPLi22zrwoK0yKQSUifcHyeq0ed
+```
+
+</details>
+</details>
+
 
 ## Parallelizing work
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/parallelizework/fanoutworker.go)
@@ -517,5 +590,32 @@ The Package Tracker Virtual Object tracks the package details and its location h
     ```
 
     </details>
+
+</details>
+
+## Rate limiting
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/ratelimit/service/limiter.go)
+
+An example of implementing a token bucket rate limiter using Restate state and the sleep primitive.
+
+
+<details>
+<summary><strong>Running the example</strong></summary>
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `go run ./src/ratelimit/example/main.go`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+4. Set up the limiter named `LimitedTask-RunTask` with a rate limit of 1 per second:
+  ```shell
+  curl localhost:8080/Limiter/LimitedTask-RunTask/SetRate -H 'content-type:application/json' -d '{"limit": 1, "burst": 1}'
+  ```
+5. Send some requests that are subject to the limiter:
+  ```shell
+  # send one request
+  curl localhost:8080/LimitedTask/RunTask
+  # send lots
+  for i in $(seq 1 30); do curl localhost:8080/LimitedTask/RunTask && echo "request completed"; done
+  ```
+  You should observe that only one request is processed per second. You can then try changing the limit or the burst and sending more requests.
 
 </details>

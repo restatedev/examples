@@ -27,6 +27,7 @@ Common tasks and patterns implemented with Restate:
 Use Restate to build distributed coordination and synchronization constructs:
 - **[Durable Promises as a Service](README.md#durable-promises-as-a-service)**: Building Promises/Futures as a service, that can be exposed to external clients and are durable across processes and failures. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/promiseasaservice)
 - **[Priority Queue](README.md#priority-queue)**: Example of implementing a priority queue to manage task execution order. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/priorityqueue)
+- **[Rate Limiting](README.md#rate-limiting)**: Example of implementing a token bucket rate limiter. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/ratelimit)
 
 First, install the dependencies:
 
@@ -491,13 +492,71 @@ status   "CANCELLED"
 ## Scheduling Tasks
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/schedulingtasks/payment_reminders.ts)
 
-This example processes failed payment events from a payment provider.
-The service reminds the customer for 3 days to update their payment details, and otherwise escalates to support.
-
-To schedule the reminders, the handler uses Restate's durable timers and delayed calls.
-The handler calls itself three times in a row after a delay of one day, and then stops the loop and calls another handler.
+An example of a handler that processes Stripe payment events.
+On payment failure, it sends reminder emails to the customer. After a certain number of reminders, it escalates the invoice to the support team.
+On payment success, it marks the invoice as paid.
 
 Restate tracks the timer across failures, and triggers execution.
+
+This example shows:
+- **Durable webhook callback event processing**
+- **Scheduling tasks and durable timers**: Sending reminder emails and escalating the invoice to the support team.
+- **Joining and correlating events**: The handler correlates the payment events with the invoice ID.
+- **Stateful service**: The handler keeps track of the number of reminders sent and the invoice status.
+
+<details>
+<summary><strong>Running the example</strong></summary>
+To run the example, you might want to reduce the time between scheduled calls to see the scheduling in action.
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `npx tsx watch ./src/schedulingtasks/payment_reminders.ts`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+Send some requests:
+
+- Send a payment failure event to the handler:
+  ```shell
+  curl -X POST localhost:8080/PaymentTracker/invoice123/onPaymentFailure --json '{
+        "type": "customer.subscription_created",
+        "created": 1633025000,
+        "data": {
+        "id": "evt_1JH2Y4F2eZvKYlo2C8b9",
+        "customer": "cus_J5K2Y4F2eZvKYlo2"
+        }
+    }'
+  ```
+
+- See how the reminder emails get sent
+- Then send a payment success event to the handler:
+  ```shell
+  curl -X POST localhost:8080/PaymentTracker/invoice123/onPaymentSuccess --json '{
+        "type": "customer.subscription_created",
+        "created": 1633025000,
+        "data": {
+        "id": "evt_1JH2Y4F2eZvKYlo2C8b9",
+        "customer": "cus_J5K2Y4F2eZvKYlo2"
+        }
+    }'
+  ```
+
+- Have a look at the state to see the invoice got paid:
+```shell
+restate kv get PaymentTracker invoice123
+```
+
+If we lower the time between scheduled calls, we can see the reminder emails being sent out and then the invoice getting escalated to the support team:
+<details>
+<summary>View logs</summary>
+
+```
+Sending reminder email for event: evt_1JH2Y4F2eZvKYlo2C8b9
+Sending reminder email for event: evt_1JH2Y4F2eZvKYlo2C8b9
+Sending reminder email for event: evt_1JH2Y4F2eZvKYlo2C8b9
+Escalating to evt_1JH2Y4F2eZvKYlo2C8b9 invoice to support team
+```
+
+</details>
+</details>
 
 ## Parallelizing work
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/parallelizework/fan_out_worker.ts)
@@ -782,5 +841,34 @@ for i in $(seq 1 30); do curl localhost:8080/myService/expensiveMethod/send -H '
 As you do so, you can observe the logs; in flight requests will increase up to 10, beyond which items will be enqueued.
 
 You can write your own queue item selection logic in `selectAndPopItem`; doing so is outside the scope of this example.
+
+</details>
+
+## Rate limiting
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/ratelimit)
+
+An example of implementing a token bucket rate limiter using Restate state and the sleep primitive.
+
+
+<details>
+<summary><strong>Running the example</strong></summary>
+
+Run the example with `npx tsx watch ./src/ratelimit/app.ts`.
+
+Set up the limiter named `myService-expensiveMethod` with a rate limit of 1 per second:
+```shell
+curl localhost:8080/limiter/myService-expensiveMethod/setRate -H 'content-type:application/json' -d '{"newLimit": 1, "newBurst": 1}'
+```
+
+You can send requests that are subject to the limiter like this:
+```shell
+# send one request
+curl localhost:8080/myService/expensiveMethod
+# send lots
+for i in $(seq 1 30); do curl localhost:8080/myService/expensiveMethod && echo "request completed"; done
+```
+
+You should observe that only one request is processed per second. You can then try changing the limit or the burst
+and sending more requests.
 
 </details>

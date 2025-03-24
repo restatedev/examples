@@ -11,7 +11,7 @@ export const puppeteerService = restate.service({
             console.info(`Taking screenshot of website with parameters: ${wf}`)
             const puppeteerParams = wf.parameters as PuppeteerParams;
 
-            await ctx.run(async () => takeWebsiteScreenshot(ctx, wf.imgOutputPath!, puppeteerParams));
+            await ctx.run(async () => takeWebsiteScreenshot(wf.imgOutputPath!, puppeteerParams));
 
             return {
                 msg: `[Took screenshot of website with url: ${puppeteerParams.url}]`,
@@ -20,7 +20,7 @@ export const puppeteerService = restate.service({
     }
 })
 
-async function takeWebsiteScreenshot(ctx: restate.Context, imgOutputPath: string, params: PuppeteerParams) {
+async function takeWebsiteScreenshot(imgOutputPath: string, params: PuppeteerParams) {
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.setViewport({ width: params.viewport?.width ?? 1388, height: params.viewport?.height ?? 800 });

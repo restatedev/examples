@@ -49,7 +49,11 @@ async def make_payment(ctx: ObjectContext, payment: Payment) -> Result:
         return Result(success=False, message="Payment already completed in prior call")
 
     # Charge the target account
-    payment_result = await ctx.object_call(account_service.withdraw, key=payment.account_id, arg=payment.amount_cents)
+    payment_result = await ctx.object_call(
+        account_service.withdraw,
+        key=payment.account_id,
+        arg=payment.amount_cents
+    )
 
     # Remember only on success, so that on failure (when we didn't charge) the external
     # caller may retry this (with the same payment-id), for the sake of this example

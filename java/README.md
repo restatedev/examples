@@ -23,6 +23,7 @@
 - **[Payment State Machines (Advanced)](patterns-use-cases/README.md#payment-state-machines)**: State machine example that tracks a payment process, ensuring consistent processing and cancellations. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/src/main/java/my/example/statemachinepayments/PaymentProcessor.java)
 
 #### Scheduling
+- **[Scheduling Tasks](patterns-use-cases/README.md#scheduling-tasks)**: Restate as scheduler: Schedule tasks for later and ensure the task is triggered and executed. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/src/main/java/my/example/schedulingtasks/PaymentTracker.java)
 - **[Parallelizing Work](patterns-use-cases/README.md#parallelizing-work)**: Execute a list of tasks in parallel and then gather their result. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/src/main/java/my/example/parallelizework/FanOutWorker.java)
 - **[Payments: Async Signals](patterns-use-cases/README.md#payment-signals)**: Handling async payment callbacks for slow payments, with Stripe. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/src/main/java/my/example/signalspayments/PaymentService.java)
 
@@ -42,6 +43,7 @@ Complete applications built with Restate:
 
 - **[Food Ordering App](end-to-end-applications/food-ordering)**: A food delivery service (like DoorDash) that manages orders, restaurants, payments, and delivery drivers. The example mixes workflows (ordering) and stateful microservices (driver management), and uses Kafka as an event source for updates from delivery drivers.
 - **[Subway Fare Calculator](end-to-end-applications/subway-fare-calculator)**: A fare calculator for a subway system that calculates the fare based on distances traveled by customers. Implemented as Stateful Actors. 
+- **[Image Workflow Parser & Executor](end-to-end-applications/workflow-interpreter)**: A dynamic workflow interpreter (Spring Boot) that parses a JSON list of image processing commands and runs them through image processing libraries.
 
 ## Templates
 

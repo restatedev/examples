@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 class AsyncTaskService {
     @Handler
     suspend fun runTask(ctx: Context, params: TaskOpts): String {
-        return someHeavyWork(params)
+        return params.someHeavyWork()
     }
 }
 
@@ -21,6 +21,6 @@ fun main() {
 @Serializable
 class TaskOpts
 
-fun someHeavyWork(task: TaskOpts): String {
+fun TaskOpts.someHeavyWork(): String {
     return "someHeavyWork"
 }
