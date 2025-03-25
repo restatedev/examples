@@ -1,10 +1,9 @@
-import json
 import logging
 import os
 import sys
 
 import requests
-from chatbot.utils.types import ChatHistory, ChatEntry
+from chatbot.utils.types import ChatEntry
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
@@ -26,7 +25,7 @@ def chat(prompt: list[ChatEntry]) -> str:
         body = {
             "model": MODEL,
             "temperature": TEMPERATURE,
-            "messages": [entry.model_dump() for entry in prompt]
+            "messages": [entry.model_dump() for entry in prompt],
         }
 
         response = requests.post(

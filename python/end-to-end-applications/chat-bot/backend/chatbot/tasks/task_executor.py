@@ -15,11 +15,11 @@ async def execute(ctx: restate.Context, opts: dict) -> None:
     response: TaskResult
     try:
         result = await ctx.generic_call(
-                opts["task_service_name"],
-                "run",
-                arg=opts["task_params"].encode(),
-                key=opts["task_id"],
-            )
+            opts["task_service_name"],
+            "run",
+            arg=opts["task_params"].encode(),
+            key=opts["task_id"],
+        )
         timestamp = await ctx.run("time", lambda: round(time.time() * 1000))
         response = TaskResult(
             task_name=opts["task_name"], result=json.loads(result), timestamp=timestamp

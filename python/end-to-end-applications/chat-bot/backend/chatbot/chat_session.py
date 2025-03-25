@@ -39,7 +39,9 @@ async def on_message(ctx: restate.ObjectContext, message: ChatEntry):
     # Interpret the response and execute the command
     command = parse_to_command(gpt_response)
     output = await execute_command(ctx, ctx.key(), active_tasks, command)
-    ctx.set("active_tasks", output["new_active_tasks"], serde=PydanticJsonSerde(ActiveTasks))
+    ctx.set(
+        "active_tasks", output["new_active_tasks"], serde=PydanticJsonSerde(ActiveTasks)
+    )
     chat_history.entries.append(
         ChatEntry(
             role="system",
@@ -68,15 +70,13 @@ async def on_task_done(ctx: restate.ObjectContext, result: TaskResult):
         "chat_history", serde=PydanticJsonSerde(ChatHistory)
     ) or ChatHistory(entries=[])
     chat_history.entries.append(
-        ChatEntry(
-            role="system", content=result.result, timestamp=result.timestamp
-        )
+        ChatEntry(role="system", content=result.result, timestamp=result.timestamp)
     )
     ctx.set("chat_history", chat_history, serde=PydanticJsonSerde(ChatHistory))
 
 
 @chat_session.handler("getChatHistory", kind="shared")
-async def get_chat_history(ctx: restate.ObjectSharedContext)-> ChatHistory:
+async def get_chat_history(ctx: restate.ObjectSharedContext) -> ChatHistory:
     return await ctx.get(
         "chat_history", serde=PydanticJsonSerde(ChatHistory)
     ) or ChatHistory(entries=[])
