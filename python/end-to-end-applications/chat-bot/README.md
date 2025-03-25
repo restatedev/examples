@@ -24,9 +24,10 @@ Install the requirements:
 pip install -r requirements.txt
 ```
 
-Start the app as follows:
+Export you OpenAI key and then start the app as follows:
 
 ```shell
+export OPENAI_API_KEY=your_openai_key
 python3 -m hypercorn --config hypercorn-config.toml chatbot/app:app
 ```
 
@@ -39,7 +40,7 @@ restate-server
 Register the service:
 
 ```shell
-restate dp register http://localhost:8000
+restate dp register http://localhost:9080
 ```
 
 
@@ -68,7 +69,9 @@ Hey, I am Malik, can you set an alarm for the flight price of start airport Berl
 ![img.png](img.png)
 
 ## Interacting with the chatbot via HTTP
-Then interact with the chatbot via:
+You can also interact with the chatbot via HTTP, but you won't be able to receive async responses.
+
+For example, you can use `curl` to send a message to the chatbot:
 
 ```shell
 curl localhost:8080/ChatSession/Malik/onMessage  --json '"Hey, I am Malik, can you set an alarm in one minute to drink water?"'

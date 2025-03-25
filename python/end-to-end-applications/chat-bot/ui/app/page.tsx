@@ -75,8 +75,8 @@ export default function ChatApp() {
 
       console.log(data)
 
-      if (data && data.length > 0) {
-        const newMessages = data.map((msg: any) => {
+      if (data["entries"] && data["entries"].length > 0) {
+        const newMessages = data["entries"].map((msg: any) => {
           console.log(msg)
           return {
             id: Date.now().toString() + Math.random(),

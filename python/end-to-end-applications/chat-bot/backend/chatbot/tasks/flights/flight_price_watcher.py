@@ -9,7 +9,12 @@ from typing import Any
 
 from chatbot.tasks.flights.utils.api import get_best_quote
 from chatbot.tasks.flights.utils.utils import parse_currency, check_field
-from chatbot.utils.types import FlightPriceOpts, RoundTripRouteDetails, TaskSpec, TaskHandlers
+from chatbot.utils.types import (
+    FlightPriceOpts,
+    RoundTripRouteDetails,
+    TaskSpec,
+    TaskHandlers,
+)
 
 POLL_INTERVAL = 10000
 
@@ -23,14 +28,16 @@ async def run(ctx: restate.WorkflowContext, opts: FlightPriceOpts):
     attempt = 0
 
     while not await cancelled.peek():
-        best_offer_so_far = await ctx.run("Probing prices #" + str(attempt + 1),
-                                          lambda: get_best_quote(opts["trip"], opts["price_threshold_usd"]))
+        attempt += 1
+        best_offer_so_far = await ctx.run(
+            "Probing prices #" + str(attempt),
+            lambda: get_best_quote(opts.trip, opts.price_threshold_usd),
+        )
 
-        if best_offer_so_far["price"] <= opts["price_threshold_usd"]:
-            return "Found an offer matching the price for" + opts["name"] + " " + str(best_offer_so_far)
+        if best_offer_so_far["price"] <= opts.price_threshold_usd:
+            return f"Found an offer matching the price for {opts.name} {str(best_offer_so_far)}"
 
         ctx.set("last_quote", best_offer_so_far)
-
         await ctx.sleep(timedelta(milliseconds=POLL_INTERVAL))
 
     return "(cancelled)"
@@ -48,6 +55,7 @@ async def get_current_status(ctx: restate.WorkflowSharedContext) -> float | None
 
 def params_parser(name: str, params: Any) -> FlightPriceOpts:
     description = params.get("description")
+    print(description)
     if not isinstance(description, str):
         description = None
 
@@ -58,20 +66,22 @@ def params_parser(name: str, params: Any) -> FlightPriceOpts:
         destination=check_field(params, "destination_airport"),
         outbound_date=check_field(params, "outbound_date"),
         return_date=check_field(params, "return_date"),
-        travel_class=check_field(params, "travel_class")
+        travel_class=check_field(params, "travel_class"),
     )
 
     return FlightPriceOpts(
         name=name,
         description=description,
         trip=trip,
-        price_threshold_usd=price_threshold_usd
+        price_threshold_usd=price_threshold_usd,
     )
 
 
 flight_task = TaskSpec(
-    task_service_name = "FlightPriceWatcher",
+    task_service_name="FlightPriceWatcher",
     task_type_name="flight_price",
-    task_handlers=TaskHandlers(run=run, cancel=cancel, get_current_status=get_current_status),
-    params_parser=params_parser
+    task_handlers=TaskHandlers(
+        run=run, cancel=cancel, get_current_status=get_current_status
+    ),
+    params_parser=params_parser,
 )

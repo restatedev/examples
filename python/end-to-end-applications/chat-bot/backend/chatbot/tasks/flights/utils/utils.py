@@ -11,7 +11,7 @@ def parse_currency(text: Any) -> int:
     raise ValueError(f"Unknown type: {type(text)}")
 
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 def check_field(spec: Any, field_name: str) -> T:

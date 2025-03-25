@@ -4,7 +4,7 @@ import restate
 from datetime import datetime, timedelta
 from typing import Any
 
-from utils.types import ReminderOpts, TaskSpec, TaskHandlers
+from chatbot.utils.types import ReminderOpts, TaskSpec, TaskHandlers
 
 reminder_service = restate.Workflow("ReminderService")
 
@@ -12,10 +12,10 @@ reminder_service = restate.Workflow("ReminderService")
 @reminder_service.main()
 async def run(ctx: restate.WorkflowContext, opts: ReminderOpts):
     logging.info(f"Running reminder workflow for: {opts}")
-    ctx.set("timestamp", opts["timestamp"])
+    ctx.set("timestamp", opts.timestamp)
     time_now = await ctx.run("time", lambda: round(time.time() * 1000))
 
-    delay = opts["timestamp"] - time_now
+    delay = opts.timestamp - time_now
 
     await ctx.sleep(timedelta(milliseconds=delay))
 
@@ -24,7 +24,7 @@ async def run(ctx: restate.WorkflowContext, opts: ReminderOpts):
     if cancelled:
         return "The reminder has been cancelled"
 
-    return f"It is time: {opts.get('description', '!')}"
+    return f"It is time. {opts.description}"
 
 
 @reminder_service.handler()
@@ -46,7 +46,9 @@ async def get_current_status(ctx: restate.WorkflowSharedContext) -> dict:
 def params_parser(name: str, params: Any) -> ReminderOpts:
     date_string = params.get("date")
     if not isinstance(date_string, str):
-        raise ValueError("Missing string field 'date' in parameters for task type 'reminder'")
+        raise ValueError(
+            "Missing string field 'date' in parameters for task type 'reminder'"
+        )
 
     date = datetime.fromisoformat(date_string)
     timestamp = int(date.timestamp() * 1000)
@@ -59,8 +61,10 @@ def params_parser(name: str, params: Any) -> ReminderOpts:
 
 
 reminder_task = TaskSpec(
-    task_service_name = "ReminderService",
+    task_service_name="ReminderService",
     task_type_name="reminder",
-    task_handlers=TaskHandlers(run=run, cancel=cancel, get_current_status=get_current_status),
-    params_parser=params_parser
+    task_handlers=TaskHandlers(
+        run=run, cancel=cancel, get_current_status=get_current_status
+    ),
+    params_parser=params_parser,
 )

@@ -2,4 +2,5 @@ restate_sdk
 hypercorn
 requests
 types-requests
-slack_sdk
+pydantic
+black
