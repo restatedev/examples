@@ -10,9 +10,9 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import dev.restate.sdk.client.Client;
-import dev.restate.sdk.common.Serde;
+import dev.restate.client.Client;
+import dev.restate.serde.TypeTag;
+import dev.restate.serde.jackson.JacksonSerdeFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -42,7 +42,7 @@ public class RestaurantMain {
     private static final ScheduledExecutorService DELAY_EXECUTOR =
         Executors.newSingleThreadScheduledExecutor();
 
-    private final Client ingressClient = Client.connect(RESTATE_RUNTIME_ENDPOINT);
+    private final Client ingressClient = Client.connect(RESTATE_RUNTIME_ENDPOINT, new JacksonSerdeFactory());
 
     @Override
     public void handle(HttpExchange t) throws IOException {
@@ -55,7 +55,7 @@ public class RestaurantMain {
 
       Runnable orderReadyNotification = () -> {
         logger.info("Order {} prepared and ready for shipping", orderId);
-        ingressClient.awakeableHandle(callbackId).resolve(Serde.VOID, null);
+        ingressClient.awakeableHandle(callbackId).resolve(TypeTag.of(Void.TYPE), null);
       };
       DELAY_EXECUTOR.schedule(orderReadyNotification, 3, TimeUnit.SECONDS);
 

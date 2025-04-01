@@ -11,16 +11,13 @@
 
 package dev.restate.sdk.examples;
 
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.Serde;
-import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.examples.types.*;
 import dev.restate.sdk.examples.utils.GeoUtils;
-import dev.restate.sdk.serde.jackson.JacksonSerdes;
+import dev.restate.sdk.types.StateKey;
+import dev.restate.sdk.types.TerminalException;
 
 /**
  * Manages the delivery of the order to the customer. Keyed by the order ID (similar to the
@@ -31,9 +28,7 @@ public class DeliveryManager {
 
   // State key to store all relevant information about the delivery.
   private static final StateKey<DeliveryInformation> DELIVERY_INFO =
-      StateKey.of("delivery-info", JacksonSerdes.of(DeliveryInformation.class));
-
-  private static final Serde<Location> locationSerde = JacksonSerdes.of(Location.class);
+      StateKey.of("delivery-info", DeliveryInformation.class);
 
   /**
    * Finds a driver, assigns the delivery job to the driver, and updates the status of the order.
@@ -44,8 +39,8 @@ public class DeliveryManager {
     String orderId = ctx.key();
 
     // Temporary placeholder: random location
-    var restaurantLocation = ctx.run(locationSerde, GeoUtils::randomLocation);
-    var customerLocation = ctx.run(locationSerde, GeoUtils::randomLocation);
+    var restaurantLocation = ctx.run(Location.class, GeoUtils::randomLocation);
+    var customerLocation = ctx.run(Location.class, GeoUtils::randomLocation);
 
     // Store the delivery information in Restate's state store
     DeliveryInformation deliveryInfo =
@@ -59,7 +54,7 @@ public class DeliveryManager {
     ctx.set(DELIVERY_INFO, deliveryInfo);
 
     // Acquire a driver
-    var driverAwakeable = ctx.awakeable(JsonSerdes.STRING);
+    var driverAwakeable = ctx.awakeable(String.class);
     DriverDeliveryMatcherClient.fromContext(ctx, GeoUtils.DEMO_REGION)
         .send()
         .requestDriverForDelivery(driverAwakeable.id());
@@ -119,7 +114,7 @@ public class DeliveryManager {
     ctx.clear(DELIVERY_INFO);
 
     // Notify the OrderService that the delivery has been completed
-    ctx.awakeableHandle(delivery.getCallbackId()).resolve(Serde.VOID, null);
+    ctx.awakeableHandle(delivery.getCallbackId()).resolve(Void.class, null);
   }
 
   /**

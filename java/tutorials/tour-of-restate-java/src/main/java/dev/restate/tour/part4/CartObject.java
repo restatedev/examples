@@ -11,12 +11,11 @@
 
 package dev.restate.tour.part4;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.serde.jackson.JacksonSerdes;
+import dev.restate.sdk.types.StateKey;
+import dev.restate.serde.TypeRef;
 import dev.restate.tour.auxiliary.CheckoutRequest;
 
 import java.time.Duration;
@@ -26,7 +25,7 @@ import java.util.Set;
 @VirtualObject
 public class CartObject {
 
-    public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", JacksonSerdes.of(new TypeReference<>() {}));
+    public static final StateKey<Set<String>> STATE_KEY = StateKey.of("tickets", new TypeRef<>() {});
 
     @Handler
     public boolean addTicket(ObjectContext ctx, String ticketId) {
@@ -39,8 +38,8 @@ public class CartObject {
             ctx.set(STATE_KEY, tickets);
 
             CartObjectClient.fromContext(ctx, ctx.key())
-                    .send(Duration.ofMinutes(15))
-                    .expireTicket(ticketId);
+                    .send()
+                    .expireTicket(ticketId, Duration.ofMinutes(15));
         }
 
         return reservationSuccess;

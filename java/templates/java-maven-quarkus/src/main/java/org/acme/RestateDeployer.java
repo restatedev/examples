@@ -1,6 +1,7 @@
 package org.acme;
 
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
 import io.quarkus.runtime.StartupEvent;
 import io.vertx.mutiny.core.Vertx;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -11,11 +12,11 @@ public class RestateDeployer {
 
     public void init(@Observes StartupEvent e, Vertx vertx, Greeter greeterSvc) {
         // Start the restate server
-        RestateHttpEndpointBuilder
-                .builder(vertx.getDelegate())
-                // Bind the greeter service
-                .bind(greeterSvc)
-                // Starts on port defined with env variable PORT, or default 9080
-                .buildAndListen();
+        RestateHttpServer
+                .fromEndpoint(vertx.getDelegate(),
+                        // Bind the greeter service
+                        Endpoint.bind(greeterSvc))
+                // Starts on 9080
+                .listen(9080);
     }
 }

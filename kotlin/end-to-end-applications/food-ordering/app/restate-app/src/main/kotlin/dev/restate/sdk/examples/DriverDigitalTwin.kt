@@ -13,10 +13,8 @@ package dev.restate.sdk.examples
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.VirtualObject
-import dev.restate.sdk.common.TerminalException
-import dev.restate.sdk.kotlin.KtStateKey
-import dev.restate.sdk.kotlin.ObjectContext
-import dev.restate.sdk.kotlin.SharedObjectContext
+import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.types.TerminalException
 
 /**
  * Digital twin for the driver. Represents a driver and his status, assigned delivery, and location.
@@ -27,13 +25,13 @@ import dev.restate.sdk.kotlin.SharedObjectContext
 class DriverDigitalTwin {
   companion object {
     // Current status of the driver: idle, waiting for work, or delivering
-    private val DRIVER_STATUS = KtStateKey.json<DriverStatus>("driver-status")
+    private val DRIVER_STATUS = stateKey<DriverStatus>("driver-status")
 
     // Only set if the driver is currently doing a delivery
-    private val ASSIGNED_DELIVERY = KtStateKey.json<AssignedDelivery>("assigned-delivery")
+    private val ASSIGNED_DELIVERY = stateKey<AssignedDelivery>("assigned-delivery")
 
     // Current location of the driver
-    private val DRIVER_LOCATION = KtStateKey.json<Location>("driver-location")
+    private val DRIVER_LOCATION = stateKey<Location>("driver-location")
   }
 
   /**

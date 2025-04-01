@@ -30,8 +30,8 @@ public class CartObject {
         if (reservationSuccess) {
             // !mark(1:3)
             CartObjectClient.fromContext(ctx, ctx.key())
-                    .send(Duration.ofMinutes(15))
-                    .expireTicket(ticketId);
+                    .send()
+                    .expireTicket(ticketId, Duration.ofMinutes(15));
         }
 
         return reservationSuccess;

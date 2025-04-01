@@ -1,12 +1,12 @@
 package my.example.syncasync;
 
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.SharedWorkflowContext;
 import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
-import dev.restate.sdk.common.DurablePromiseKey;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
+import dev.restate.sdk.types.DurablePromiseKey;
 import my.example.syncasync.utils.EmailClient;
 
 import static my.example.syncasync.utils.DataOperations.createS3Bucket;
@@ -16,11 +16,11 @@ import static my.example.syncasync.utils.DataOperations.uploadData;
 public class DataUploadService {
 
   private static final DurablePromiseKey<String> URL_PROMISE =
-      DurablePromiseKey.of("url", JsonSerdes.STRING);
+      DurablePromiseKey.of("url", String.class);
 
   @Workflow
   public String run(WorkflowContext ctx) {
-    String url = ctx.run(JsonSerdes.STRING, () -> createS3Bucket());
+    String url = ctx.run(String.class, () -> createS3Bucket());
     ctx.run(() -> uploadData(url));
 
     ctx.promiseHandle(URL_PROMISE).resolve(url);
@@ -29,11 +29,11 @@ public class DataUploadService {
 
   @Shared
   public void resultAsEmail(SharedWorkflowContext ctx, String email) {
-    String url = ctx.promise(URL_PROMISE).awaitable().await();
+    String url = ctx.promise(URL_PROMISE).future().await();
     ctx.run(() -> EmailClient.send(url, email));
   }
 
   public static void main(String[] args) {
-     RestateHttpEndpointBuilder.builder().bind(new DataUploadService()).buildAndListen();
+     RestateHttpServer.listen(Endpoint.bind(new DataUploadService()));
   }
 }

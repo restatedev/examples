@@ -11,14 +11,17 @@
 package dev.restate.sdk.examples
 
 import dev.restate.sdk.examples.external.DriverMobileAppSimulator
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
+import dev.restate.sdk.http.vertx.RestateHttpServer
+import dev.restate.sdk.kotlin.endpoint.endpoint
 
 fun main() {
-  RestateHttpEndpointBuilder.builder()
-      .bind(OrderWorkflow())
-      .bind(OrderETAService())
-      .bind(DriverDeliveryMatcher())
-      .bind(DriverDigitalTwin())
-      .bind(DriverMobileAppSimulator()) // external mobile app on driver's phone
-      .buildAndListen()
+    RestateHttpServer.listen(endpoint {
+        bind(OrderWorkflow())
+        bind(OrderETAService())
+        bind(DriverDeliveryMatcher())
+        bind(DriverDigitalTwin())
+
+        // external mobile app on driver's phone
+        bind(DriverMobileAppSimulator())
+    })
 }

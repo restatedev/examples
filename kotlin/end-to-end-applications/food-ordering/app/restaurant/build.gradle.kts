@@ -3,20 +3,20 @@ plugins {
   id("com.google.cloud.tools.jib") version "3.4.0"
 }
 
-repositories { mavenCentral() }
+repositories {
+  mavenCentral()
+}
 
-val restateVersion = "1.2.0"
+val restateVersion = "2.0.0"
 
 dependencies {
   // Kafka
   implementation("org.apache.kafka:kafka-clients:3.6.1")
 
-  // SDK common (contains the restate http client)
-  implementation("dev.restate:sdk-common:$restateVersion")
-  implementation("dev.restate:sdk-api-kotlin:$restateVersion")
+  implementation("dev.restate:client-kotlin:$restateVersion")
 
-  // Logging
-  implementation("org.apache.logging.log4j:log4j-core:2.24.1")
+  // Need this to deserialize input http requests
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
 }
 
 // Set main class

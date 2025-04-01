@@ -1,51 +1,20 @@
 package com.example.restatestarter.types;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Stream;
 
-public final class WorkflowStatus {
-    private String status;
-    private String imgName;
-    private List<String> output;
+public record WorkflowStatus(
+        String status,
+        String imgName,
+        List<String> output
+) {
 
-    public WorkflowStatus(
-            String status,
-            String imgName,
-            List<String> output
-    ) {
-        this.status = status;
-        this.imgName = imgName;
-        this.output = output;
+    public WorkflowStatus withStatus(String newStatus) {
+        return new WorkflowStatus(newStatus, this.imgName, this.output);
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public WorkflowStatus withNewOutput(String output) {
+        return new WorkflowStatus(this.status, this.imgName, Stream.concat(this.output().stream(), Stream.of(output)).toList());
     }
 
-    public void addToOutput(String output) {
-        this.output.add(output);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (WorkflowStatus) obj;
-        return Objects.equals(this.status, that.status) &&
-                Objects.equals(this.imgName, that.imgName) &&
-                Objects.equals(this.output, that.output);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(status, imgName, output);
-    }
-
-    @Override
-    public String toString() {
-        return "WorkflowStatus[" +
-                "status=" + status + ", " +
-                "imgName=" + imgName + ", " +
-                "output=" + output + ']';
-    }
 }

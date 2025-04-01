@@ -11,7 +11,6 @@
 
 package dev.restate.tour.part4;
 
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
@@ -27,7 +26,7 @@ public class CheckoutService {
         double totalPrice = request.getTickets().size() * 40.0;
 
         String idempotencyKey = ctx.random().nextUUID().toString();
-        boolean success = ctx.run(JsonSerdes.BOOLEAN, () ->
+        boolean success = ctx.run(Boolean.class, () ->
                 PaymentClient.get().call(idempotencyKey, totalPrice));
 
         if (success) {
