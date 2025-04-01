@@ -11,21 +11,15 @@ repositories {
   mavenCentral()
 }
 
-val restateVersion = "1.2.0"
+val restateVersion = "2.0.0"
 
 dependencies {
   // Annotation processor
   ksp("dev.restate:sdk-api-kotlin-gen:$restateVersion")
 
   // Restate SDK
-  implementation("dev.restate:sdk-api-kotlin:$restateVersion")
-  implementation("dev.restate:sdk-http-vertx:$restateVersion")
-
-  // Logging (optional)
-  implementation("org.apache.logging.log4j:log4j-core:2.24.1")
-
-  // Kotlinx serialization (optional)
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+  implementation("dev.restate:sdk-kotlin-http:$restateVersion")
+  implementation("org.apache.logging.log4j:log4j-api:2.24.1")
 }
 
 // Setup Java/Kotlin compiler target

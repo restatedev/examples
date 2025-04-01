@@ -1,6 +1,6 @@
 package my.example.statemachinepayments.types;
 
-import dev.restate.sdk.common.TerminalException;
+import dev.restate.sdk.types.TerminalException;
 
 public class Payment {
   private final String accountId;

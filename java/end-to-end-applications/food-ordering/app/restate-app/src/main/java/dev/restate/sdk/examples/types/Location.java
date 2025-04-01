@@ -11,12 +11,7 @@
 
 package dev.restate.sdk.examples.types;
 
-import dev.restate.sdk.common.Serde;
-import dev.restate.sdk.serde.jackson.JacksonSerdes;
-
 public class Location {
-
-  public static final Serde<Location> SERDE = JacksonSerdes.of(Location.class);
 
   private final double lon;
   private final double lat;

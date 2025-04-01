@@ -3,15 +3,15 @@ package dev.restate.sdk.examples
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpHandler
 import com.sun.net.httpserver.HttpServer
-import dev.restate.sdk.client.Client
-import dev.restate.sdk.kotlin.KtSerdes
-import java.net.InetSocketAddress
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
+import dev.restate.client.Client
+import dev.restate.serde.kotlinx.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
+import java.net.InetSocketAddress
 
 /**
  * Restaurant POS system (HTTP server) that receives preparation requests for orders from the
@@ -35,13 +35,13 @@ fun main() {
 
 /** Preparation request handler. */
 internal class PrepareHandler : HttpHandler {
-  private val ingressClient: Client = Client.connect(RESTATE_RUNTIME_ENDPOINT)
+  private val ingressClient: Client = Client.connect(RESTATE_RUNTIME_ENDPOINT, KotlinSerializationSerdeFactory())
 
   @OptIn(ExperimentalSerializationApi::class)
   override fun handle(t: HttpExchange) {
     val input = JSON.decodeFromStream<Input>(t.requestBody)
 
-    ingressClient.awakeableHandle(input.cb).resolve(KtSerdes.UNIT, Unit)
+    ingressClient.awakeableHandle(input.cb).resolve(typeTag(), Unit)
     LOGGER.info("Order {} prepared and ready for shipping", input.orderId)
 
     t.sendResponseHeaders(200, -1)

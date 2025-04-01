@@ -1,7 +1,7 @@
 package my.example.signalspayments.utils;
 
 import com.stripe.model.Event;
-import dev.restate.sdk.common.TerminalException;
+import dev.restate.sdk.types.TerminalException;
 import my.example.signalspayments.PaymentService;
 
 public class PaymentUtils {

@@ -1,6 +1,7 @@
 package com.example.restatestarter.utils;
 
-import dev.restate.sdk.common.TerminalException;
+
+import dev.restate.sdk.types.TerminalException;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

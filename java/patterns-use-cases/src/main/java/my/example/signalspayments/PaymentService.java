@@ -9,9 +9,10 @@ import dev.restate.sdk.annotation.Accept;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Raw;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.common.Serde;
-import dev.restate.sdk.common.TerminalException;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
+import dev.restate.sdk.types.TerminalException;
+import dev.restate.serde.Serde;
 import my.example.signalspayments.utils.PaymentUtils;
 import my.example.signalspayments.utils.StripeUtils;
 import org.apache.logging.log4j.LogManager;
@@ -116,6 +117,6 @@ public class PaymentService {
   }
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder().bind(new PaymentService()).buildAndListen();
+    RestateHttpServer.listen(Endpoint.bind(new PaymentService()));
   }
 }

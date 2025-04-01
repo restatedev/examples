@@ -1,10 +1,10 @@
 package building_blocks;
 
 import dev.restate.sdk.Context;
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
 import virtual_objects.GreeterObjectClient;
 
 import java.time.Duration;
@@ -45,12 +45,12 @@ public class MyService {
 
         // 4. DURABLE PROMISES: tracked by Restate, can be moved between processes and survive failures
         // Awakeables: block the workflow until notified by another handler
-        var awakeable = ctx.awakeable(JsonSerdes.STRING);
+        var awakeable = ctx.awakeable(String.class);
         // Wait on the promise
         // If the process crashes while waiting, Restate will recover the promise somewhere else
         String greeting = awakeable.await();
         // Another process can resolve the awakeable via its ID
-        ctx.awakeableHandle(awakeable.id()).resolve(JsonSerdes.STRING, "hello");
+        ctx.awakeableHandle(awakeable.id()).resolve(String.class, "hello");
 
         // 5. DURABLE TIMERS: sleep or wait for a timeout, tracked by Restate and recoverable
         // When this runs on FaaS, the handler suspends and the timer is tracked by Restate
@@ -71,8 +71,6 @@ public class MyService {
     }
 
     public static void main(String[] args) {
-        RestateHttpEndpointBuilder.builder()
-                .bind(new MyService())
-                .buildAndListen();
+        RestateHttpServer.listen(Endpoint.bind(new MyService()));
     }
 }

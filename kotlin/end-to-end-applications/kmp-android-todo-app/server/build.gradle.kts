@@ -8,7 +8,7 @@ plugins {
 group = "dev.restate.examples.noteapp"
 version = "1.0.0"
 
-val restateVersion = "1.1.0"
+val restateVersion = "2.0.0"
 
 kotlin {
     jvmToolchain(17)
@@ -21,8 +21,7 @@ dependencies {
     ksp("dev.restate:sdk-api-kotlin-gen:$restateVersion")
 
     // Restate SDK
-    implementation("dev.restate:sdk-api-kotlin:$restateVersion")
-    implementation("dev.restate:sdk-http-vertx:$restateVersion")
+    implementation("dev.restate:sdk-kotlin-http:$restateVersion")
 
     implementation("org.apache.logging.log4j:log4j-core:2.24.1")
 }

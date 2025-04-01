@@ -21,10 +21,12 @@ public class Greeter {
     // Durably execute a set of steps; resilient against failures
     String greetingId = ctx.random().nextUUID().toString();
     ctx.run(() -> sendNotification(greetingId, name));
-    ctx.sleep(Duration.ofMillis(1000));
+    ctx.sleep(Duration.ofSeconds(1));
     ctx.run(() -> sendReminder(greetingId));
 
     // Respond to caller
     return "You said " + greetingPrefix + " to " + name + "!";
   }
 }
+
+

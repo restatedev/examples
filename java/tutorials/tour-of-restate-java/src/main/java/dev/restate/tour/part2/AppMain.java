@@ -11,14 +11,16 @@
 
 package dev.restate.tour.part2;
 
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
 
 public class AppMain {
     public static void main(String[] args) {
-        RestateHttpEndpointBuilder.builder()
+        RestateHttpServer.listen(
+            Endpoint
                 .bind(new CheckoutService())
                 .bind(new TicketObject())
                 .bind(new CartObject())
-                .buildAndListen();
+        );
     }
 }

@@ -7,16 +7,13 @@ repositories {
   mavenCentral()
 }
 
-val restateVersion = "1.2.0"
+val restateVersion = "2.0.0"
 
 dependencies {
   annotationProcessor("dev.restate:sdk-api-gen:$restateVersion")
 
   // Restate SDK
-  implementation("dev.restate:sdk-api:$restateVersion")
-  implementation("dev.restate:sdk-http-vertx:$restateVersion")
-  // To use Jackson to read/write state entries (optional)
-  implementation("dev.restate:sdk-serde-jackson:$restateVersion")
+  implementation("dev.restate:sdk-java-http:$restateVersion")
 
   // Jackson parameter names
   // https://github.com/FasterXML/jackson-modules-java8/tree/2.14/parameter-names
@@ -29,8 +26,8 @@ dependencies {
   implementation("com.stripe:stripe-java:25.7.0")
   implementation("com.google.code.gson:gson:2.10.1")
 
-  // Logging (optional)
-  implementation("org.apache.logging.log4j:log4j-core:2.24.1")
+  // Logging
+  implementation("org.apache.logging.log4j:log4j-api:2.24.1")
 }
 
 // Set main class

@@ -15,7 +15,7 @@
         <quarkus.platform.version>3.15.1</quarkus.platform.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.3.1</surefire-plugin.version>
-        <restate.version>1.2.0</restate.version>
+        <restate.version>2.0.0</restate.version>
     </properties>
 
     <dependencyManagement>
@@ -42,12 +42,7 @@
 
         <dependency>
             <groupId>dev.restate</groupId>
-            <artifactId>sdk-api</artifactId>
-            <version>${restate.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>dev.restate</groupId>
-            <artifactId>sdk-http-vertx</artifactId>
+            <artifactId>sdk-java-http</artifactId>
             <version>${restate.version}</version>
         </dependency>
 
@@ -56,18 +51,6 @@
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
             <version>4.27.0</version>
-        </dependency>
-
-        <!-- Jackson serde used by Restate -->
-        <dependency>
-            <groupId>dev.restate</groupId>
-            <artifactId>sdk-serde-jackson</artifactId>
-            <version>${restate.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.15.3</version>
         </dependency>
 
         <!-- Log4j2 -->

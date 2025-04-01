@@ -1,6 +1,6 @@
 package my.example.syncasync;
 
-import dev.restate.sdk.client.Client;
+import dev.restate.client.Client;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,7 +28,8 @@ public class UploadClient {
       // Wait for the workflow to complete or timeout
       url = uploadClient.workflowHandle().attachAsync()
               .orTimeout(5, TimeUnit.SECONDS)
-              .join();
+              .join()
+              .response();
     } catch (Exception e) {
       if (e.getCause() instanceof TimeoutException) {
         logger.info("Slow upload... Mail the link later");

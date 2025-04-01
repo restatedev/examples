@@ -15,37 +15,20 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
-    <restate.version>1.2.0</restate.version>
+    <restate.version>2.0.0</restate.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>dev.restate</groupId>
-      <artifactId>sdk-api</artifactId>
+      <artifactId>sdk-java-http</artifactId>
       <version>${restate.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>dev.restate</groupId>
-      <artifactId>sdk-http-vertx</artifactId>
-      <version>${restate.version}</version>
-    </dependency>
-
-    <!-- Jackson serde -->
-    <dependency>
-      <groupId>dev.restate</groupId>
-      <artifactId>sdk-serde-jackson</artifactId>
-      <version>${restate.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.15.3</version>
     </dependency>
 
     <!-- Log4j2 -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
+      <artifactId>log4j-api</artifactId>
       <version>2.24.1</version>
     </dependency>
 

@@ -12,9 +12,7 @@ package dev.restate.sdk.examples
 
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.VirtualObject
-import dev.restate.sdk.kotlin.KtStateKey
-import dev.restate.sdk.kotlin.ObjectContext
-import dev.restate.sdk.kotlin.resolve
+import dev.restate.sdk.kotlin.*
 
 /**
  * Links available drivers to delivery requests Keyed by the region. Each region has a pool of
@@ -26,10 +24,10 @@ class DriverDeliveryMatcher {
 
   companion object {
     // Deliveries that are waiting for a driver to become available
-    private val PENDING_DELIVERIES = KtStateKey.json<MutableList<String>>("pending-deliveries")
+    private val PENDING_DELIVERIES = stateKey<MutableList<String>>("pending-deliveries")
 
     // Drivers that are waiting for new delivery requests
-    private val AVAILABLE_DRIVERS = KtStateKey.json<MutableList<String>>("available-drivers")
+    private val AVAILABLE_DRIVERS = stateKey<MutableList<String>>("available-drivers")
   }
 
   /**
