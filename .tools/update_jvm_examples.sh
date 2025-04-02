@@ -19,6 +19,7 @@ search_and_replace_version_maven $PROJECT_ROOT/java/templates/java-maven
 search_and_replace_version_maven $PROJECT_ROOT/java/templates/java-maven-quarkus
 search_and_replace_version_maven $PROJECT_ROOT/java/templates/java-maven-spring-boot
 search_and_replace_version_gradle $PROJECT_ROOT/kotlin/templates/kotlin-gradle
+search_and_replace_version_gradle $PROJECT_ROOT/kotlin/templates/kotlin-gradle-spring-boot
 
 search_and_replace_version_gradle $PROJECT_ROOT/java/integrations/java-spring
 search_and_replace_version_gradle $PROJECT_ROOT/kotlin/integrations/kotlin-gradle-lambda-cdk/lambda
