@@ -1,7 +1,9 @@
+<!-- markdown-link-check-disable -->
 [![Documentation](https://img.shields.io/badge/doc-reference-blue)](https://docs.restate.dev)
 [![Discord](https://img.shields.io/discord/1128210118216007792?logo=discord)](https://discord.gg/skW3AZ6uGd)
-[![Slack](https://img.shields.io/discord/1128210118216007792?logo=discord)](https://join.slack.com/t/restatecommunity/shared_invite/zt-2v9gl005c-WBpr167o5XJZI1l7HWKImA)
-[![Twitter](https://img.shields.io/twitter/follow/restatedev.svg?style=social&label=Follow)](https://twitter.com/intent/follow?screen_name=restatedev)
+[![Slack](https://img.shields.io/badge/Slack-4A154B?logo=slack&logoColor=fff)](https://join.slack.com/t/restatecommunity/shared_invite/zt-2v9gl005c-WBpr167o5XJZI1l7HWKImA)
+[![Twitter](https://img.shields.io/twitter/follow/restatedev.svg?style=social&label=Follow)](https://x.com/intent/follow?screen_name=restatedev)
+<!-- markdown-link-check-enable -->
 
 # Restate examples
 
@@ -10,7 +12,7 @@ challenges.
 
 * **Basics:** Small examples highlighting the basic building blocks, like
   durable execution or virtual objects.
- 
+
 * **Use Cases and Patterns:** Small specific use cases, like webhooks,
   workflows, asynchronous task queuing.
 
@@ -27,7 +29,7 @@ challenges.
 * **Tutorials:** A step-by-step guide that builds an application and introduces
   the Restate concepts on the way.
 
-## Example catalogs 
+## Example catalogs
 
 Have a look at the example catalog for your preferred SDK language:
 
