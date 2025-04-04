@@ -35,7 +35,7 @@ fun main() {
 
 /** Preparation request handler. */
 internal class PrepareHandler : HttpHandler {
-  private val ingressClient: Client = Client.connect(RESTATE_RUNTIME_ENDPOINT, KotlinSerializationSerdeFactory())
+  private val ingressClient: Client = Client.connect(RESTATE_RUNTIME_ENDPOINT)
 
   @OptIn(ExperimentalSerializationApi::class)
   override fun handle(t: HttpExchange) {

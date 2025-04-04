@@ -12,7 +12,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import dev.restate.client.Client;
 import dev.restate.serde.TypeTag;
-import dev.restate.serde.jackson.JacksonSerdeFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -42,7 +41,7 @@ public class RestaurantMain {
     private static final ScheduledExecutorService DELAY_EXECUTOR =
         Executors.newSingleThreadScheduledExecutor();
 
-    private final Client ingressClient = Client.connect(RESTATE_RUNTIME_ENDPOINT, new JacksonSerdeFactory());
+    private final Client ingressClient = Client.connect(RESTATE_RUNTIME_ENDPOINT);
 
     @Override
     public void handle(HttpExchange t) throws IOException {

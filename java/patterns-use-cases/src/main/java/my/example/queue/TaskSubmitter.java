@@ -1,8 +1,6 @@
 package my.example.queue;
 
 import dev.restate.client.Client;
-import dev.restate.client.SendResponse;
-import dev.restate.serde.jackson.JacksonSerdeFactory;
 
 /*
  * Restate is as a sophisticated task queue, with extra features like:
