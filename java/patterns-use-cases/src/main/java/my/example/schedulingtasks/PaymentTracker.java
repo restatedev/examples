@@ -28,7 +28,7 @@ public class PaymentTracker {
     @Handler
     public void onPaymentFailure(ObjectContext ctx, StripeEvent event) {
         // Already paid, no need to send reminders
-        if(ctx.get(PAID).orElse(false)) {
+        if (ctx.get(PAID).orElse(false)) {
             return;
         }
 
