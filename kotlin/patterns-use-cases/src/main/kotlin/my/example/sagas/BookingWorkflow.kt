@@ -1,10 +1,10 @@
 package my.example.sagas
 
 import dev.restate.sdk.annotation.Workflow
-import dev.restate.sdk.common.TerminalException
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
+import dev.restate.sdk.http.vertx.RestateHttpServer
 import dev.restate.sdk.kotlin.*
-import dev.restate.sdk.kotlin.WorkflowContext
+import dev.restate.sdk.kotlin.endpoint.endpoint
+import dev.restate.sdk.types.TerminalException
 import kotlinx.serialization.Serializable
 import my.example.sagas.activities.CarRentalBookingRequest
 import my.example.sagas.activities.CarRentalService
@@ -96,10 +96,9 @@ class BookingWorkflow {
 }
 
 fun main() {
-    RestateHttpEndpointBuilder
-        .builder()
-        .bind(BookingWorkflow())
-        .bind(FlightService())
-        .bind(CarRentalService())
-        .buildAndListen()
+    RestateHttpServer.listen(endpoint {
+        bind(BookingWorkflow())
+        bind(FlightService())
+        bind(CarRentalService())
+    })
 }
