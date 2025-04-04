@@ -5,12 +5,9 @@ plugins {
 
 repositories {
   mavenCentral()
-  maven {
-    url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-  }
 }
 
-val restateVersion = "2.0.0-SNAPSHOT"
+val restateVersion = "2.0.0"
 
 dependencies {
   annotationProcessor("dev.restate:sdk-api-gen:$restateVersion")
