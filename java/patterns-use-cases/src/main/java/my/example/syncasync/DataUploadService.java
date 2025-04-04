@@ -24,6 +24,7 @@ public class DataUploadService {
     ctx.run(() -> uploadData(url));
 
     ctx.promiseHandle(URL_PROMISE).resolve(url);
+
     return url;
   }
 
