@@ -25,7 +25,7 @@ In short, you can run the different parts of the code via:
 ```
 npm install
 npm run build
-npm run app
+npm run app-dev
 npm run part1
 npm run part2
 npm run part3
