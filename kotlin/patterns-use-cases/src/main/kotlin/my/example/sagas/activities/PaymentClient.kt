@@ -1,6 +1,6 @@
 package my.example.sagas.activities
 
-import dev.restate.sdk.common.TerminalException
+import dev.restate.sdk.types.TerminalException
 import kotlinx.serialization.Serializable
 import org.apache.logging.log4j.LogManager
 
