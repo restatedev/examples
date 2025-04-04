@@ -10,6 +10,7 @@ pushd $PROJECT_ROOT/java/templates/java-maven && mvn verify && popd
 pushd $PROJECT_ROOT/java/templates/java-maven-quarkus && mvn verify && popd
 pushd $PROJECT_ROOT/java/templates/java-maven-spring-boot && mvn verify && popd
 pushd $PROJECT_ROOT/kotlin/templates/kotlin-gradle && ./gradlew --console=plain check && popd
+pushd $PROJECT_ROOT/kotlin/templates/kotlin-gradle-spring-boot && ./gradlew --console=plain check && popd
 
 pushd $PROJECT_ROOT/java/basics && ./gradlew --console=plain check && popd
 pushd $PROJECT_ROOT/kotlin/basics && ./gradlew --console=plain check && popd

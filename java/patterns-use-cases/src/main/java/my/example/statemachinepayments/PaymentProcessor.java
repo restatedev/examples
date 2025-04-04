@@ -1,13 +1,11 @@
 package my.example.statemachinepayments;
 
 import static my.example.statemachinepayments.types.PaymentStatus.*;
-import static my.example.statemachinepayments.types.PaymentStatus.*;
 
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.serde.jackson.JacksonSerdes;
+import dev.restate.sdk.types.StateKey;
 import my.example.statemachinepayments.accounts.AccountClient;
 import my.example.statemachinepayments.types.*;
 
@@ -29,11 +27,11 @@ public class PaymentProcessor {
 
   /** The key under which we store the status. */
   private static final StateKey<PaymentStatus> STATUS =
-      StateKey.of("status", JacksonSerdes.of(PaymentStatus.class));
+      StateKey.of("status", PaymentStatus.class);
 
   /** The key under which we store the original payment request. */
   private static final StateKey<Payment> PAYMENT =
-      StateKey.of("payment", JacksonSerdes.of(Payment.class));
+      StateKey.of("payment", Payment.class);
 
   private static final Duration EXPIRY_TIMEOUT = Duration.ofDays(1);
 
@@ -60,7 +58,7 @@ public class PaymentProcessor {
     if (paymentResult.isSuccess()) {
       ctx.set(STATUS, COMPLETED_SUCCESSFULLY);
       ctx.set(PAYMENT, payment);
-      PaymentProcessorClient.fromContext(ctx, paymentId).send(EXPIRY_TIMEOUT).expire();
+      PaymentProcessorClient.fromContext(ctx, paymentId).send().expire(EXPIRY_TIMEOUT);
     }
 
     return paymentResult;
@@ -75,7 +73,7 @@ public class PaymentProcessor {
         // not seen this payment-id before, mark as canceled, in case the cancellation
         // overtook the actual payment request (on the external caller's side)
         ctx.set(STATUS, CANCELLED);
-        PaymentProcessorClient.fromContext(ctx, ctx.key()).send(EXPIRY_TIMEOUT).expire();
+        PaymentProcessorClient.fromContext(ctx, ctx.key()).send().expire(EXPIRY_TIMEOUT);
       }
 
       case CANCELLED -> {}

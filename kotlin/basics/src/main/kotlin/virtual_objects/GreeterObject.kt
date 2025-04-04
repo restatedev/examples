@@ -2,9 +2,9 @@ package virtual_objects
 
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.VirtualObject
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
-import dev.restate.sdk.kotlin.KtStateKey
-import dev.restate.sdk.kotlin.ObjectContext
+import dev.restate.sdk.http.vertx.RestateHttpServer
+import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.kotlin.endpoint.endpoint
 
 // Virtual Objects are services that hold K/V state. Its handlers interact with the object state.
 // An object is identified by a unique id - only one object exists per id.
@@ -24,7 +24,7 @@ class GreeterObject {
 
   companion object {
     // Reference to the K/V state stored in Restate
-    private val COUNT = KtStateKey.json<Int>("greet-count")
+    private val COUNT = stateKey<Int>("greet-count")
   }
 
   @Handler
@@ -52,9 +52,9 @@ class GreeterObject {
 
 
 fun main() {
-  RestateHttpEndpointBuilder.builder()
-    .bind(GreeterObject())
-    .buildAndListen()
+  RestateHttpServer.listen(endpoint {
+    bind(GreeterObject())
+  })
 }
 
 /*

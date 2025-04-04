@@ -11,11 +11,11 @@
 
  package dev.restate.sdk.examples
 
+import dev.restate.sdk.endpoint.Endpoint
 import dev.restate.sdk.lambda.BaseRestateLambdaHandler
-import dev.restate.sdk.lambda.RestateLambdaEndpointBuilder
 
 class LambdaHandler : BaseRestateLambdaHandler() {
-    override fun register(builder: RestateLambdaEndpointBuilder) {
+    override fun register(builder: Endpoint.Builder) {
         builder.bind(Greeter())
     }
 }

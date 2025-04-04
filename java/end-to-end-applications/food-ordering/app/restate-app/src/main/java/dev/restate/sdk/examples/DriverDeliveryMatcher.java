@@ -12,13 +12,13 @@
 package dev.restate.sdk.examples;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.common.TerminalException;
-import dev.restate.sdk.serde.jackson.JacksonSerdes;
+import dev.restate.sdk.types.StateKey;
+import dev.restate.sdk.types.TerminalException;
+import dev.restate.serde.TypeRef;
+
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -32,11 +32,11 @@ public class DriverDeliveryMatcher {
 
   // Deliveries that are waiting for a driver to become available
   private static final StateKey<Queue<String>> PENDING_DELIVERIES =
-      StateKey.of("pending-deliveries", JacksonSerdes.of(new TypeReference<>() {}));
+      StateKey.of("pending-deliveries", new TypeRef<>() {});
 
   // Drivers that are waiting for new delivery requests
   private static final StateKey<Queue<String>> AVAILABLE_DRIVERS =
-      StateKey.of("available-drivers", JacksonSerdes.of(new TypeReference<>() {}));
+      StateKey.of("available-drivers", new TypeRef<>() {});
 
   /**
    * Gets called when a new driver becomes available. Links the driver to the next delivery waiting
@@ -52,7 +52,7 @@ public class DriverDeliveryMatcher {
       // Update the queue in state. Delivery was removed.
       ctx.set(PENDING_DELIVERIES, pendingDeliveries);
       // Notify that delivery is ongoing
-      ctx.awakeableHandle(nextDelivery).resolve(JsonSerdes.STRING, driverId);
+      ctx.awakeableHandle(nextDelivery).resolve(String.class, driverId);
       return;
     }
 
@@ -77,7 +77,7 @@ public class DriverDeliveryMatcher {
       // Remove driver from the pool
       ctx.set(AVAILABLE_DRIVERS, availableDrivers);
       // Notify that delivery is ongoing
-      ctx.awakeableHandle(deliveryCallbackId).resolve(JsonSerdes.STRING, nextAvailableDriver);
+      ctx.awakeableHandle(deliveryCallbackId).resolve(String.class, nextAvailableDriver);
       return;
     }
 

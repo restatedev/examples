@@ -24,6 +24,6 @@ class Greeter {
 
   @Handler
   suspend fun greet(ctx: Context, name: String): String {
-    return "Hello, ${name ?: "Restate"}!"
+    return "Hello, $name!"
   }
 }

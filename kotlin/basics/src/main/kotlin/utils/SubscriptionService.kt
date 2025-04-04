@@ -8,13 +8,10 @@ import dev.restate.sdk.kotlin.ObjectContext
 class SubscriptionService {
 
     @Handler
-    fun create(ctx: ObjectContext, userId: String): String {
-        // Implementation here
-        return "SUCCESS"
-    }
+    fun create(ctx: ObjectContext, userId: String): String =
+        "SUCCESS"
 
     @Handler
-    fun cancel(ctx: ObjectContext) {
+    fun cancel(ctx: ObjectContext) =
         println("Cancelling all subscriptions for user ${ctx.key()}")
-    }
 }

@@ -12,16 +12,15 @@
 package dev.restate.sdk.examples;
 
 import dev.restate.sdk.Context;
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.common.Serde;
-import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.examples.clients.PaymentClient;
 import dev.restate.sdk.examples.clients.RestaurantClient;
 import dev.restate.sdk.examples.types.DeliveryRequest;
 import dev.restate.sdk.examples.types.OrderRequest;
 import dev.restate.sdk.examples.types.StatusEnum;
+import dev.restate.sdk.types.TerminalException;
+
 import java.time.Duration;
 
 /**
@@ -48,7 +47,7 @@ public class OrderWorkflow {
     boolean paid =
         ctx.run(
             "process payment",
-            JsonSerdes.BOOLEAN,
+            Boolean.TYPE,
             () -> paymentClnt.charge(id, token, order.getTotalCost()));
 
     if (!paid) {
@@ -62,7 +61,7 @@ public class OrderWorkflow {
     ctx.sleep(Duration.ofMillis(order.getDeliveryDelay()));
 
     // 4. Trigger preparation
-    var preparationFuture = ctx.awakeable(Serde.VOID);
+    var preparationFuture = ctx.awakeable(Void.class);
     ctx.run("notify restaurant", () -> restaurant.prepare(id, preparationFuture.id()));
 
     orderStatusService.setStatus(StatusEnum.IN_PREPARATION);
@@ -70,7 +69,7 @@ public class OrderWorkflow {
     orderStatusService.setStatus(StatusEnum.SCHEDULING_DELIVERY);
 
     // 5. Find a driver and start delivery
-    var deliveryAwakeable = ctx.awakeable(Serde.VOID);
+    var deliveryAwakeable = ctx.awakeable(Void.class);
 
     DeliveryManagerClient.fromContext(ctx, id)
         .send()

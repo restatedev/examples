@@ -2,8 +2,9 @@ package workflows
 
 import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.Workflow
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
+import dev.restate.sdk.http.vertx.RestateHttpServer
 import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.kotlin.endpoint.endpoint
 import utils.*
 
 // Workflow are a special type of Virtual Object with a run handler that runs once per ID.
@@ -21,8 +22,8 @@ class SignupWorkflow {
 
   companion object {
     // References to K/V state and promises stored in Restate
-    private val EMAIL_CLICKED = KtDurablePromiseKey.json<String>("email_clicked")
-    private val ONBOARDING_STATUS = KtStateKey.json<String>("status")
+    private val EMAIL_CLICKED = durablePromiseKey<String>("email_clicked")
+    private val ONBOARDING_STATUS = stateKey<String>("status")
   }
 
   @Workflow
@@ -41,7 +42,7 @@ class SignupWorkflow {
     // Promise gets resolved or rejected by the other handlers
     val clickSecret: String =
       ctx.promise(EMAIL_CLICKED)
-        .awaitable()
+        .future()
         .await()
 
     return clickSecret == secret
@@ -56,9 +57,9 @@ class SignupWorkflow {
 }
 
 fun main() {
-  RestateHttpEndpointBuilder.builder()
-    .bind(SignupWorkflow())
-    .buildAndListen()
+  RestateHttpServer.listen(endpoint {
+    bind(SignupWorkflow())
+  })
 }
 
 /*

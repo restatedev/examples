@@ -10,14 +10,13 @@
  */
 package workflows;
 
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.SharedWorkflowContext;
 import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
-import dev.restate.sdk.common.DurablePromiseKey;
-import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
+import dev.restate.sdk.types.DurablePromiseKey;
 import utils.User;
 
 import static utils.ExampleStubs.createUserEntry;
@@ -38,7 +37,7 @@ public class SignupWorkflow {
 
     // References to K/V state and promises stored in Restate
     private static final DurablePromiseKey<String> EMAIL_CLICKED =
-            DurablePromiseKey.of("email_clicked", JsonSerdes.STRING);
+            DurablePromiseKey.of("email_clicked", String.class);
 
     // --- The workflow logic ---
     @Workflow
@@ -57,7 +56,7 @@ public class SignupWorkflow {
         // Promise gets resolved or rejected by the other handlers
         String clickSecret =
                 ctx.promise(EMAIL_CLICKED)
-                        .awaitable()
+                        .future()
                         .await();
 
         return clickSecret.equals(secret);
@@ -72,9 +71,7 @@ public class SignupWorkflow {
     }
 
     public static void main(String[] args) {
-        RestateHttpEndpointBuilder.builder()
-                .bind(new SignupWorkflow())
-                .buildAndListen();
+        RestateHttpServer.listen(Endpoint.bind(new SignupWorkflow()));
     }
 }
 

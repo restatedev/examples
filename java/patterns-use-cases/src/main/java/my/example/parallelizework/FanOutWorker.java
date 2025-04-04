@@ -1,12 +1,12 @@
 package my.example.parallelizework;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import dev.restate.sdk.Awaitable;
 import dev.restate.sdk.Context;
+import dev.restate.sdk.DurableFuture;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
-import dev.restate.sdk.serde.jackson.JacksonSerdes;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
+import dev.restate.serde.TypeRef;
 import my.example.parallelizework.utils.Result;
 import my.example.parallelizework.utils.SubTask;
 import my.example.parallelizework.utils.SubTaskResult;
@@ -44,16 +44,15 @@ public class FanOutWorker {
   @Handler
   public Result run(Context ctx, Task task) {
     // Split the task in subtasks
-    List<SubTask> subTasks = ctx.run(JacksonSerdes.of(new TypeReference<>() {}),
-            () -> split(task));
+    List<SubTask> subTasks = ctx.run(new TypeRef<>() {}, () -> split(task));
 
     // Fan out the subtasks - run them in parallel
-    List<Awaitable<?>> resultFutures = new ArrayList<>();
+    List<DurableFuture<?>> resultFutures = new ArrayList<>();
     for (SubTask subTask : subTasks) {
       resultFutures.add(FanOutWorkerClient.fromContext(ctx).runSubtask(subTask));
     }
 
-    Awaitable.all(resultFutures).await();
+    DurableFuture.all(resultFutures).await();
 
     // Fan in - Aggregate the results
     var results = resultFutures.stream()
@@ -71,6 +70,6 @@ public class FanOutWorker {
   }
 
   public static void main(String[] args) {
-     RestateHttpEndpointBuilder.builder().bind(new FanOutWorker()).buildAndListen();
+    RestateHttpServer.listen(Endpoint.bind(new FanOutWorker()));
   }
 }

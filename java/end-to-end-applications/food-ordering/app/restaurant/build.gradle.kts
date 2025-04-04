@@ -10,21 +10,18 @@ repositories {
     mavenCentral()
 }
 
-val restateVersion = "1.2.0"
+val restateVersion = "2.0.0"
 
 dependencies {
     // Kafka
     implementation("org.apache.kafka:kafka-clients:3.6.1")
 
-    // SDK common (contains the restate http client)
-    implementation("dev.restate:sdk-common:$restateVersion")
+    implementation("dev.restate:client:$restateVersion")
 
-    // Jackson
     implementation("com.fasterxml.jackson.core:jackson-core:2.15.2")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
 
-    // Logging (optional)
-    implementation("org.apache.logging.log4j:log4j-core:2.24.1")
+    implementation("org.apache.logging.log4j:log4j-api:2.24.1")
 }
 
 

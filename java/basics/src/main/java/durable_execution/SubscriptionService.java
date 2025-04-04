@@ -1,10 +1,10 @@
 package durable_execution;
 
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
 import utils.SubscriptionRequest;
 
 import static utils.ExampleStubs.*;
@@ -40,7 +40,7 @@ public class SubscriptionService {
 
         // ctx.run persists results of successful actions and skips execution on retries
         // Failed actions (timeouts, API downtime, etc.) get retried
-        var payRef = ctx.run(JsonSerdes.STRING, () ->
+        var payRef = ctx.run(String.class, () ->
                 createRecurringPayment(req.creditCard(), paymentId));
 
         for (String subscription : req.subscriptions()) {
@@ -50,9 +50,7 @@ public class SubscriptionService {
 
     public static void main(String[] args) {
         // Create an HTTP endpoint to serve your services
-        RestateHttpEndpointBuilder.builder()
-                .bind(new SubscriptionService())
-                .buildAndListen();
+        RestateHttpServer.listen(Endpoint.bind(new SubscriptionService()));
     }
 }
 

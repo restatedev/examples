@@ -2,9 +2,9 @@ package durable_execution
 
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Service
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
-import dev.restate.sdk.kotlin.Context
+import dev.restate.sdk.http.vertx.RestateHttpServer
 import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.kotlin.endpoint.endpoint
 import utils.SubscriptionRequest
 import utils.createRecurringPayment
 import utils.createSubscription
@@ -54,9 +54,9 @@ class SubscriptionService {
 
 fun main() {
     // Create an HTTP endpoint to serve your services
-    RestateHttpEndpointBuilder.builder()
-        .bind(SubscriptionService())
-        .buildAndListen()
+    RestateHttpServer.listen(endpoint {
+        bind(SubscriptionService())
+    })
 }
 
 /*

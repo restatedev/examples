@@ -11,21 +11,21 @@ repositories {
   mavenCentral()
 }
 
-val restateVersion = "1.2.0"
+val restateVersion = "2.0.0-SNAPSHOT"
 
 dependencies {
   // Annotation processor
   ksp("dev.restate:sdk-api-kotlin-gen:$restateVersion")
 
   // Restate SDK
-  implementation("dev.restate:sdk-api-kotlin:$restateVersion")
-  implementation("dev.restate:sdk-http-vertx:$restateVersion")
+  implementation("dev.restate:sdk-kotlin-http:$restateVersion")
 
   // Logging (optional)
-  implementation("org.apache.logging.log4j:log4j-core:2.24.1")
-
-  // Kotlinx serialization (optional)
+  implementation("org.apache.logging.log4j:log4j-api:2.24.1")
+  // Kotlinx serialization
   implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+  // For the delay function
+  implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
 }
 
 // Setup Java/Kotlin compiler target
