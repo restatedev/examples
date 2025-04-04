@@ -16,7 +16,7 @@ impl Greeter for GreeterImpl {
         // Durably execute a set of steps; resilient against failures
         let greeting_id = ctx.rand_uuid().to_string();
         ctx.run(|| send_notification(&greeting_id, &name)).await?;
-        ctx.sleep(Duration::from_millis(1000)).await?;
+        ctx.sleep(Duration::from_secs(1)).await?;
         ctx.run(|| send_reminder(&greeting_id)).await?;
 
         // Respond to caller
