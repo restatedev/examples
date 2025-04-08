@@ -1,16 +1,12 @@
 import restate
-from dataclasses import dataclass
 from enum import Enum
 from typing import (
-    TypedDict,
-    Optional,
     Literal,
     TypeVar,
     Callable,
     Generic,
     Any,
     Awaitable,
-    List,
 )
 from pydantic import BaseModel
 
@@ -18,11 +14,11 @@ from pydantic import BaseModel
 class ChatEntry(BaseModel):
     role: Literal["user", "assistant", "system"]
     content: str
-    timestamp: int
+    timestamp: int | None = None
 
 
 class ChatHistory(BaseModel):
-    entries: list[ChatEntry]
+    entries: list[ChatEntry] = list()
 
 
 class TaskOpts(BaseModel):
@@ -48,9 +44,9 @@ class Action(Enum):
 class GptTaskCommand(BaseModel):
     action: Action
     message: str
-    task_name: Optional[str] = None
-    task_type: Optional[str] = None
-    task_spec: Optional[dict] = None
+    task_name: str | None = None
+    task_type: str | None = None
+    task_spec: dict[str, Any] | None = None
 
 
 class RunningTask(BaseModel):
@@ -61,7 +57,7 @@ class RunningTask(BaseModel):
 
 
 class ActiveTasks(BaseModel):
-    tasks: dict[str, RunningTask]
+    tasks: dict[str, RunningTask] = dict()
 
 
 class RoundTripRouteDetails(BaseModel):
@@ -76,12 +72,12 @@ class FlightPriceOpts(BaseModel):
     name: str
     trip: RoundTripRouteDetails
     price_threshold_usd: float
-    description: str | None
+    description: str | None = None
 
 
 class ReminderOpts(BaseModel):
     timestamp: int
-    description: str | None
+    description: str | None = None
 
 
 P = TypeVar("P")
@@ -94,7 +90,6 @@ class TaskHandlers(BaseModel, Generic[P]):
     """
 
     run: Callable[[restate.WorkflowContext, P], Awaitable[str]]
-    cancel: Callable[[restate.WorkflowSharedContext, None], Awaitable[None]]
     get_current_status: Callable[[restate.WorkflowSharedContext, None], Awaitable[Any]]
 
 

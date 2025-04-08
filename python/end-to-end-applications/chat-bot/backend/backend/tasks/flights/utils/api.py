@@ -1,7 +1,7 @@
 from datetime import datetime
 import random
 
-from chatbot.utils.types import RoundTripRouteDetails
+from utils.types import RoundTripRouteDetails
 
 
 def get_best_quote(trip: RoundTripRouteDetails, price_threshold: float):

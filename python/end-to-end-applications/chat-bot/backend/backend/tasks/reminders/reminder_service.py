@@ -1,10 +1,10 @@
 import logging
-import time
 import restate
 from datetime import datetime, timedelta
 from typing import Any
 
-from chatbot.utils.types import ReminderOpts, TaskSpec, TaskHandlers
+from utils.types import ReminderOpts, TaskSpec, TaskHandlers
+from utils.utils import time_now
 
 reminder_service = restate.Workflow("ReminderService")
 
@@ -13,24 +13,11 @@ reminder_service = restate.Workflow("ReminderService")
 async def run(ctx: restate.WorkflowContext, opts: ReminderOpts):
     logging.info(f"Running reminder workflow for: {opts}")
     ctx.set("timestamp", opts.timestamp)
-    time_now = await ctx.run("time", lambda: round(time.time() * 1000))
+    timestamp = await time_now(ctx)
 
-    delay = opts.timestamp - time_now
-
-    await ctx.sleep(timedelta(milliseconds=delay))
-
-    # Replace this by ctx.race, once the SDK supports promise combinators
-    cancelled = await ctx.promise("cancelled").peek()
-    if cancelled:
-        return "The reminder has been cancelled"
+    await ctx.sleep(timedelta(milliseconds=opts.timestamp - timestamp))
 
     return f"It is time. {opts.description}"
-
-
-@reminder_service.handler()
-async def cancel(ctx: restate.WorkflowSharedContext):
-    await ctx.promise("cancelled").resolve(True)
-
 
 @reminder_service.handler("getCurrentStatus")
 async def get_current_status(ctx: restate.WorkflowSharedContext) -> dict:
@@ -38,7 +25,7 @@ async def get_current_status(ctx: restate.WorkflowSharedContext) -> dict:
     if not timestamp:
         return {"remaining_time": -1}
 
-    current_time = ctx.run("time", lambda: round(time.time() * 1000))
+    current_time = await time_now(ctx)
     time_remaining = timestamp - current_time
     return {"remaining_time": time_remaining if time_remaining > 0 else 0}
 
@@ -64,7 +51,7 @@ reminder_task = TaskSpec(
     task_service_name="ReminderService",
     task_type_name="reminder",
     task_handlers=TaskHandlers(
-        run=run, cancel=cancel, get_current_status=get_current_status
+        run=run, get_current_status=get_current_status
     ),
     params_parser=params_parser,
 )

@@ -1,9 +1,9 @@
 import logging
 import os
 import sys
+import httpx
 
-import requests
-from chatbot.utils.types import ChatEntry
+from utils.types import ChatEntry
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
@@ -28,7 +28,7 @@ def chat(prompt: list[ChatEntry]) -> str:
             "messages": [entry.model_dump() for entry in prompt],
         }
 
-        response = requests.post(
+        response = httpx.post(
             OPENAI_ENDPOINT,
             headers={
                 "Authorization": f"Bearer {OPENAI_API_KEY}",
@@ -38,7 +38,7 @@ def chat(prompt: list[ChatEntry]) -> str:
             timeout=60,  # wait for up to 60 seconds for a response
         )
 
-        if not response.ok:
+        if response.is_error:
             raise ValueError(f"{response.status_code} : {response.text}")
 
         data = response.json()

@@ -4,9 +4,9 @@ Interprets the commands from the user and generates the appropriate responses.
 
 # pylint: disable=line-too-long
 import datetime
-from typing import Optional
 
-from chatbot.utils.types import ChatEntry, ActiveTasks, ChatHistory
+from typing import Optional
+from utils.types import ChatEntry, ActiveTasks, ChatHistory
 
 
 def to_prompt(
@@ -15,16 +15,10 @@ def to_prompt(
     """
     Set up the prompt and chat with the model using the given user prompts.
     """
-    prompt = [ChatEntry(role="system", content=setup_prompt(), timestamp=0)]
-    # print("Initial prompt:", prompt)
+    prompt = [ChatEntry(role="system", content=setup_prompt())]
     prompt.extend(history.entries)
-    # print("Prompt after extending with history:", prompt)
-    prompt.append(
-        ChatEntry(role="user", content=tasks_to_prompt(active_tasks), timestamp=0)
-    )
-    # print("Prompt after adding active tasks:", prompt)
+    prompt.append(ChatEntry(role="user", content=tasks_to_prompt(active_tasks)))
     prompt.append(message)
-    # print("Final prompt before returning:", prompt)
     return prompt
 
 

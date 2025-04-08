@@ -1,10 +1,10 @@
 import json
 import logging
-import time
 import restate
 
 from restate.exceptions import TerminalError
-from chatbot.utils.types import TaskResult
+from utils.types import TaskResult
+from utils.utils import time_now
 
 task_executor = restate.Service("TaskExecutor")
 
@@ -20,12 +20,12 @@ async def execute(ctx: restate.Context, opts: dict) -> None:
             arg=opts["task_params"].encode(),
             key=opts["task_id"],
         )
-        timestamp = await ctx.run("time", lambda: round(time.time() * 1000))
+        timestamp = await time_now(ctx)
         response = TaskResult(
             task_name=opts["task_name"], result=json.loads(result), timestamp=timestamp
         )
     except TerminalError as e:
-        timestamp = await ctx.run("time", lambda: round(time.time() * 1000))
+        timestamp = await time_now(ctx)
         response = TaskResult(
             task_name=opts["task_name"],
             result=f"Task failed: {str(e)}",
