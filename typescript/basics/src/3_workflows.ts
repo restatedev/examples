@@ -32,7 +32,7 @@ const signupWorkflow = restate.workflow({
 
       // Wait until user clicked email verification link
       // Promise gets resolved or rejected by the other handlers
-      const clickSecret = await ctx.promise<string>("email-link");
+      const clickSecret = await ctx.promise<string>("link-clicked");
       return clickSecret === secret;
     },
 
@@ -42,7 +42,7 @@ const signupWorkflow = restate.workflow({
       request: { secret: string },
     ) => {
       // Send data to the workflow via a durable promise
-      await ctx.promise<string>("email-link").resolve(request.secret);
+      await ctx.promise<string>("link-clicked").resolve(request.secret);
     },
   },
 });
