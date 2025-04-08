@@ -99,7 +99,7 @@ async def execute_command(
             case Action.OTHER:
                 return CommandResult()
             case _:
-                raise TerminalError(f"Unknown action type")
+                raise ValueError(f"Unknown action type")
 
     except Exception as e:
         if not isinstance(e, restate.vm.SuspendedException):
