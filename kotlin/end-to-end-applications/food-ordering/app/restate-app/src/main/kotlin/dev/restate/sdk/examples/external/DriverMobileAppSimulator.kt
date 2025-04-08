@@ -18,7 +18,7 @@ import dev.restate.sdk.examples.Location
 import dev.restate.sdk.examples.clients.KafkaPublisher
 import dev.restate.sdk.examples.utils.GeoUtils
 import dev.restate.sdk.kotlin.*
-import dev.restate.sdk.types.TerminalException
+import dev.restate.sdk.common.TerminalException
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

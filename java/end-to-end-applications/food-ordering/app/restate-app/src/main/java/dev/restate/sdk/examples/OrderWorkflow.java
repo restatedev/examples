@@ -19,7 +19,7 @@ import dev.restate.sdk.examples.clients.RestaurantClient;
 import dev.restate.sdk.examples.types.DeliveryRequest;
 import dev.restate.sdk.examples.types.OrderRequest;
 import dev.restate.sdk.examples.types.StatusEnum;
-import dev.restate.sdk.types.TerminalException;
+import dev.restate.sdk.common.TerminalException;
 
 import java.time.Duration;
 

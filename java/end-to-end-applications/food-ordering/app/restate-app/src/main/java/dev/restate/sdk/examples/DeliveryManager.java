@@ -16,8 +16,8 @@ import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.examples.types.*;
 import dev.restate.sdk.examples.utils.GeoUtils;
-import dev.restate.sdk.types.StateKey;
-import dev.restate.sdk.types.TerminalException;
+import dev.restate.sdk.common.StateKey;
+import dev.restate.sdk.common.TerminalException;
 
 /**
  * Manages the delivery of the order to the customer. Keyed by the order ID (similar to the

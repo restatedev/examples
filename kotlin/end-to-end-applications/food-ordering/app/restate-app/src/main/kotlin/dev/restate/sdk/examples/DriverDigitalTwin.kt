@@ -14,7 +14,7 @@ import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.VirtualObject
 import dev.restate.sdk.kotlin.*
-import dev.restate.sdk.types.TerminalException
+import dev.restate.sdk.common.TerminalException
 
 /**
  * Digital twin for the driver. Represents a driver and his status, assigned delivery, and location.

@@ -15,7 +15,7 @@ import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.VirtualObject
 import dev.restate.sdk.examples.utils.GeoUtils
 import dev.restate.sdk.kotlin.*
-import dev.restate.sdk.types.TerminalException
+import dev.restate.sdk.common.TerminalException
 
 /** Virtual object tracking the ETA, keyed by order-id */
 @VirtualObject

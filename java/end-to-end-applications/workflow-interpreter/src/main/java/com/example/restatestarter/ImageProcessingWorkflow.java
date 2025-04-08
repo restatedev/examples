@@ -8,7 +8,7 @@ import dev.restate.common.Request;
 import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.springboot.RestateWorkflow;
-import dev.restate.sdk.types.StateKey;
+import dev.restate.sdk.common.StateKey;
 import dev.restate.serde.TypeTag;
 
 import java.util.*;

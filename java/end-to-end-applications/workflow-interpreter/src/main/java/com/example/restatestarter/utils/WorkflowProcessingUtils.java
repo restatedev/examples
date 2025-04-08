@@ -3,7 +3,7 @@ package com.example.restatestarter.utils;
 import com.example.restatestarter.types.ProcessorType;
 import com.example.restatestarter.types.WorkflowStep;
 import com.example.restatestarter.types.WorkflowStepProcessor;
-import dev.restate.sdk.types.TerminalException;
+import dev.restate.sdk.common.TerminalException;
 
 import java.io.IOException;
 import java.nio.file.Files;

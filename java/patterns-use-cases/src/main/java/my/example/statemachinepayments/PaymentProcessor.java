@@ -5,7 +5,7 @@ import static my.example.statemachinepayments.types.PaymentStatus.*;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.types.StateKey;
+import dev.restate.sdk.common.StateKey;
 import my.example.statemachinepayments.accounts.AccountClient;
 import my.example.statemachinepayments.types.*;
 

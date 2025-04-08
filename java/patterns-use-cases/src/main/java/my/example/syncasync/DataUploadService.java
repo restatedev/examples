@@ -6,7 +6,7 @@ import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.endpoint.Endpoint;
 import dev.restate.sdk.http.vertx.RestateHttpServer;
-import dev.restate.sdk.types.DurablePromiseKey;
+import dev.restate.sdk.common.DurablePromiseKey;
 import my.example.syncasync.utils.EmailClient;
 
 import static my.example.syncasync.utils.DataOperations.createS3Bucket;

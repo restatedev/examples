@@ -14,7 +14,7 @@ package dev.restate.tour.part3;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.types.StateKey;
+import dev.restate.sdk.common.StateKey;
 import dev.restate.tour.auxiliary.TicketStatus;
 
 @VirtualObject

@@ -18,8 +18,8 @@ import dev.restate.sdk.examples.types.AssignDeliveryRequest;
 import dev.restate.sdk.examples.types.AssignedDelivery;
 import dev.restate.sdk.examples.types.DriverStatus;
 import dev.restate.sdk.examples.types.Location;
-import dev.restate.sdk.types.StateKey;
-import dev.restate.sdk.types.TerminalException;
+import dev.restate.sdk.common.StateKey;
+import dev.restate.sdk.common.TerminalException;
 
 import java.util.Optional;
 

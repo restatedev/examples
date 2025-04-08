@@ -2,8 +2,8 @@ package dev.restate.example;
 
 import dev.restate.example.apis.PaymentApi;
 import dev.restate.sdk.Context;
-import dev.restate.sdk.types.RetryPolicy;
-import dev.restate.sdk.types.TerminalException;
+import dev.restate.sdk.common.RetryPolicy;
+import dev.restate.sdk.common.TerminalException;
 
 import java.time.Duration;
 

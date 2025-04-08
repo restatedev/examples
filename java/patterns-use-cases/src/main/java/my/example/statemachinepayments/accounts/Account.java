@@ -3,8 +3,8 @@ package my.example.statemachinepayments.accounts;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.types.StateKey;
-import dev.restate.sdk.types.TerminalException;
+import dev.restate.sdk.common.StateKey;
+import dev.restate.sdk.common.TerminalException;
 import my.example.statemachinepayments.types.Result;
 
 //

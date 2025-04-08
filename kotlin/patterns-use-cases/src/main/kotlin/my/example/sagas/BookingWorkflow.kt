@@ -4,7 +4,7 @@ import dev.restate.sdk.annotation.Workflow
 import dev.restate.sdk.http.vertx.RestateHttpServer
 import dev.restate.sdk.kotlin.*
 import dev.restate.sdk.kotlin.endpoint.endpoint
-import dev.restate.sdk.types.TerminalException
+import dev.restate.sdk.common.TerminalException
 import kotlinx.serialization.Serializable
 import my.example.sagas.activities.CarRentalBookingRequest
 import my.example.sagas.activities.CarRentalService

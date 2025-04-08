@@ -10,7 +10,7 @@
  */
 package dev.restate.sdk.examples.clients
 
-import dev.restate.sdk.types.TerminalException
+import dev.restate.sdk.common.TerminalException
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest

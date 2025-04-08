@@ -5,7 +5,7 @@ import dev.restate.examples.repository.ProductRepository;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.springboot.RestateVirtualObject;
-import dev.restate.sdk.types.TerminalException;
+import dev.restate.sdk.common.TerminalException;
 
 @RestateVirtualObject
 public class ProductService {

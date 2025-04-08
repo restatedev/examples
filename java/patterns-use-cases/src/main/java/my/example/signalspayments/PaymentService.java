@@ -11,7 +11,7 @@ import dev.restate.sdk.annotation.Raw;
 import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.endpoint.Endpoint;
 import dev.restate.sdk.http.vertx.RestateHttpServer;
-import dev.restate.sdk.types.TerminalException;
+import dev.restate.sdk.common.TerminalException;
 import dev.restate.serde.Serde;
 import my.example.signalspayments.utils.PaymentUtils;
 import my.example.signalspayments.utils.StripeUtils;

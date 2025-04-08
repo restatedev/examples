@@ -6,8 +6,8 @@ import dev.restate.sdk.annotation.VirtualObject
 import dev.restate.sdk.kotlin.*
 import dev.restate.sdk.kotlin.endpoint.endpoint
 import dev.restate.sdk.http.vertx.RestateHttpServer
-import dev.restate.sdk.types.StateKey
-import dev.restate.sdk.types.TerminalException
+import dev.restate.sdk.common.StateKey
+import dev.restate.sdk.common.TerminalException
 
 @VirtualObject
 class Todos {
