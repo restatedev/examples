@@ -33,13 +33,9 @@ async def on_message(ctx: restate.ObjectContext, message: ChatEntry):
     # Interpret the response and execute the command
     command = parse_to_command(gpt_response)
     output = await execute_command(ctx, ctx.key(), active_tasks, command)
-    ctx.set("active_tasks", output["new_active_tasks"])
+    ctx.set("active_tasks", output.new_active_tasks)
     chat_history.entries.append(
-        ChatEntry(
-            role="system",
-            content=command.message,
-            timestamp=await time_now(ctx)
-        )
+        ChatEntry(role="system", content=command.message, timestamp=await time_now(ctx))
     )
     ctx.set("chat_history", chat_history)
 

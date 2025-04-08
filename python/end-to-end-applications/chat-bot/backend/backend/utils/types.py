@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import restate
 from enum import Enum
 from typing import (
@@ -8,7 +10,9 @@ from typing import (
     Any,
     Awaitable,
 )
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
+from tasks.flights.utils.utils import parse_currency
 
 
 class ChatEntry(BaseModel):
@@ -22,9 +26,9 @@ class ChatHistory(BaseModel):
 
 
 class TaskOpts(BaseModel):
-    name: str
+    task_name: str
     task_type: str
-    params: dict
+    params: dict[str, Any] | None
 
 
 class TaskResult(BaseModel):
@@ -46,11 +50,11 @@ class GptTaskCommand(BaseModel):
     message: str
     task_name: str | None = None
     task_type: str | None = None
-    task_spec: dict[str, Any] | None = None
+    params: dict[str, Any]
 
 
 class RunningTask(BaseModel):
-    name: str
+    task_name: str
     task_id: str
     task_type: str
     params: dict
@@ -60,23 +64,31 @@ class ActiveTasks(BaseModel):
     tasks: dict[str, RunningTask] = dict()
 
 
-class RoundTripRouteDetails(BaseModel):
-    start: str
-    destination: str
-    outbound_date: str
-    return_date: str
-    travel_class: str
+class CommandResult(BaseModel):
+    new_active_tasks: ActiveTasks = ActiveTasks()
+    task_message: str | None = None
 
 
 class FlightPriceOpts(BaseModel):
-    name: str
-    trip: RoundTripRouteDetails
-    price_threshold_usd: float
+    start_airport: str
+    destination_airport: str
+    outbound_date: str
+    return_date: str
+    travel_class: str
+    price_threshold: float
+    price_threshold_usd: float = Field(
+        default_factory=lambda data: parse_currency(data["price_threshold"])
+    )
     description: str | None = None
 
 
 class ReminderOpts(BaseModel):
-    timestamp: int
+    date: str
+    timestamp: int = Field(
+        default_factory=lambda data: int(
+            datetime.fromisoformat(data["date"]).timestamp() * 1000
+        )
+    )
     description: str | None = None
 
 
@@ -101,4 +113,4 @@ class TaskSpec(BaseModel, Generic[P]):
     task_service_name: str
     task_type_name: str
     task_handlers: TaskHandlers[P]
-    params_parser: Callable[[str, dict], P]
+    params_parser: Callable[[dict], P]

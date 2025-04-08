@@ -1,10 +1,10 @@
 from datetime import datetime
 import random
 
-from utils.types import RoundTripRouteDetails
+from utils.types import FlightPriceOpts
 
 
-def get_best_quote(trip: RoundTripRouteDetails, price_threshold: float):
+def get_best_quote(trip: FlightPriceOpts, price_threshold: float):
 
     # We want this to return a match on average every 5 tries, for the sake of
     # using this in an interactive demo.

@@ -19,6 +19,7 @@ async def run(ctx: restate.WorkflowContext, opts: ReminderOpts):
 
     return f"It is time. {opts.description}"
 
+
 @reminder_service.handler("getCurrentStatus")
 async def get_current_status(ctx: restate.WorkflowSharedContext) -> dict:
     timestamp = await ctx.get("timestamp")
@@ -30,28 +31,13 @@ async def get_current_status(ctx: restate.WorkflowSharedContext) -> dict:
     return {"remaining_time": time_remaining if time_remaining > 0 else 0}
 
 
-def params_parser(name: str, params: Any) -> ReminderOpts:
-    date_string = params.get("date")
-    if not isinstance(date_string, str):
-        raise ValueError(
-            "Missing string field 'date' in parameters for task type 'reminder'"
-        )
-
-    date = datetime.fromisoformat(date_string)
-    timestamp = int(date.timestamp() * 1000)
-
-    description = params.get("description")
-    if not isinstance(description, str):
-        description = None
-
-    return ReminderOpts(timestamp=timestamp, description=description)
+def params_parser(params: Any) -> ReminderOpts:
+    return ReminderOpts(**params)
 
 
 reminder_task = TaskSpec(
     task_service_name="ReminderService",
     task_type_name="reminder",
-    task_handlers=TaskHandlers(
-        run=run, get_current_status=get_current_status
-    ),
+    task_handlers=TaskHandlers(run=run, get_current_status=get_current_status),
     params_parser=params_parser,
 )

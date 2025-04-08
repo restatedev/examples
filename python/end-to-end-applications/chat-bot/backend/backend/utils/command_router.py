@@ -21,10 +21,11 @@ from utils.types import (
     GptTaskCommand,
     Action,
     ActiveTasks,
+    CommandResult,
+    TaskSpec,
 )
 from tasks.flights.flight_price_watcher import flight_task
 from tasks.reminders.reminder_service import reminder_task
-from utils.types import TaskSpec
 
 TASK_TYPES: dict[str, TaskSpec] = {
     reminder_task.task_type_name: reminder_task,
@@ -37,74 +38,71 @@ async def execute_command(
     session_id: str,
     active_tasks: ActiveTasks,
     command: GptTaskCommand,
-):
+) -> CommandResult:
     """
     Interprets the command and generates the appropriate response.
     """
     try:
         match command.action:
             case Action.CREATE:
-                name = check_action_field(Action.CREATE, command, "task_name")
-                task_type = check_action_field(Action.CREATE, command, "task_type")
-                params = check_action_field(Action.CREATE, command, "task_spec")
+                print(command)
+                task_opts = TaskOpts(**command.model_dump())
 
-                if name in active_tasks.tasks:
-                    raise ValueError(f"Task with name {name} already exists.")
+                if task_opts.task_name in active_tasks.tasks:
+                    raise ValueError(
+                        f"Task with name {task_opts.task_name} already exists."
+                    )
 
-                task_id = await start_task(
-                    ctx, session_id, TaskOpts(name=name, task_type=task_type, params=params)
-                )
+                task_id = await start_task(ctx, session_id, task_opts)
 
                 new_active_tasks = active_tasks.model_copy()
-                new_active_tasks.tasks[name] = RunningTask(
-                    name=name, task_id=task_id, task_type=task_type, params=params
+                new_active_tasks.tasks[task_opts.task_name] = RunningTask(
+                    task_id=task_id, **command.model_dump()
                 )
-                return {
-                    "new_active_tasks": new_active_tasks,
-                    "task_message": f"The task '{name}' of type {task_type} has been successfully created in the system: {json.dumps(params, indent=4)}",
-                }
+                return CommandResult(
+                    new_active_tasks=new_active_tasks,
+                    task_message=f"The task '{task_opts.task_name}' of type {task_opts.task_type} has been successfully created in the system: {json.dumps(task_opts.params, indent=4)}",
+                )
 
             case Action.CANCEL:
-                name = check_action_field(Action.CANCEL, command, "task_name")
-                task = active_tasks.tasks.get(name)
+                task = active_tasks.tasks.get(command.task_name)
                 if task is None:
-                    return {
-                        "new_active_tasks": ActiveTasks(),
-                        "task_message": f"No task with name '{name}' is currently active.",
-                    }
+                    return CommandResult(
+                        task_message=f"No task with name '{command.task_name}' is currently active."
+                    )
 
-                await cancel_task(ctx, task["task_type"], task["task_id"])
+                await cancel_task(ctx, task.task_type, task.task_id)
 
                 new_active_tasks = active_tasks.model_copy()
-                del new_active_tasks.tasks[name]
-                return {
-                    "new_active_tasks": new_active_tasks,
-                    "task_message": f"Removed task '{name}'",
-                }
+                del new_active_tasks.tasks[command.task_name]
+                return CommandResult(
+                    new_active_tasks=new_active_tasks,
+                    task_message=f"Removed task '{command.task_name}'",
+                )
 
             case Action.LIST:
-                return {
-                    "new_active_tasks": ActiveTasks(),
-                    "task_message": "tasks = " + active_tasks.model_dump_json(indent=4),
-                }
+                return CommandResult(
+                    task_message="tasks = " + active_tasks.model_dump_json(indent=4)
+                )
 
             case Action.STATUS:
-                name = check_action_field(Action.STATUS, command, "task_name")
-                task = active_tasks.tasks.get(name)
+                task = active_tasks.tasks.get(command.task_name)
                 if task is None:
-                    return {
-                        "new_active_tasks": ActiveTasks(),
-                        "task_message": f"No task with name '{name}' is currently active.",
-                    }
+                    return CommandResult(
+                        task_message=f"No task with name '{command.task_name}' is currently active."
+                    )
 
                 status = await get_task_status(ctx, task.task_type, task.task_id)
-                return {
-                    "new_active_tasks": ActiveTasks(),
-                    "task_message": f"{name}.status = {json.dumps(status, indent=4)}",
-                }
+                return CommandResult(
+                    task_message=f"{command.task_name}.status = {json.dumps(status, indent=4)}"
+                )
 
             case Action.OTHER:
-                return {"new_active_tasks": ActiveTasks(), "task_message": None}
+                return CommandResult()
+            case _:
+                raise TerminalError(
+                    f"Unknown action type"
+                )
 
     except TerminalError as e:
         # pylint: disable=raise-missing-from
@@ -115,25 +113,18 @@ async def execute_command(
         )
 
 
-def check_action_field(action: Action, command: GptTaskCommand, field_name: str):
-    value = getattr(command, field_name, None)
-    if value is None:
-        raise ValueError(f"Missing required field '{field_name}' for action '{action}'")
-    return value
-
-
 async def start_task(ctx: restate.Context, session_id: str, task_opts: TaskOpts) -> str:
     task = TASK_TYPES.get(task_opts.task_type)
     if not task:
         raise ValueError(f"Unknown task type: {task_opts.task_type}")
 
-    task_params = task.params_parser(task_opts.name, task_opts.params)
+    task_params = task.params_parser(task_opts.params)
     task_id = await ctx.run("task_id", lambda: str(uuid.uuid4()))
 
     ctx.service_send(
         task_executor.execute,
         {
-            "task_name": task_opts.name,
+            "task_name": task_opts.task_name,
             "task_service_name": task.task_service_name,
             "task_params": task_params.model_dump_json(),
             "task_id": task_id,

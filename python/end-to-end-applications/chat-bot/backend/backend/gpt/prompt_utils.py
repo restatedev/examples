@@ -34,7 +34,7 @@ def setup_prompt():
           - "message": the response message to the user.
           - "task_name": optionally, if the user is interacting with a task, this field holds the unique name that identifies that task
           - "task_type": optionally, if the user is interacting with a task, this fields holds the type of the task 
-          - "task_spec": optionally, if the user is interacting with a task, this nested JSON object holds the details of the task, a variable set of fields depending on the specific task type
+          - "params": optionally, if the user is interacting with a task, this nested JSON object holds the details of the task, a variable set of fields depending on the specific task type
         Respond only with the raw JSON object, don't enclose it in quotes of any kind.
         
         The "action" property can take one of the following values:
@@ -50,12 +50,12 @@ def setup_prompt():
         
         The concrete tasks you can create are:
         (1) Scheduling a reminder for later. This task has a "task_type" value of "reminder".
-            The task needs a future date for the reminder, which you must add as field "date" to the "task_spec" property, encoded in ISO date format.
+            The task needs a future date for the reminder, which you must add as field "date" to the "params" property, encoded in ISO date format.
             The future date may also be a relative time duration, such as "in 2 minutes" or "in one hour". Use the current date and time to convert such relative times.
             If the user specifies a date and time in the past, don't create this task.
-            Any other optional information provided by the user shall go into a field called "description" of the "task_spec" property. 
+            Any other optional information provided by the user shall go into a field called "description" of the "params" property. 
         (2) Watching the prices of a flight route and notifying the user when the price drops below a certain value. This task has a "task_type" value of "flight_price".
-            When creating a new task, the user needs to provide the following details, which you shall add as fields with the same name in the "task_spec" property:
+            When creating a new task, the user needs to provide the following details, which you shall add as fields with the same name in the "params" property:
             "start_airport", "destination_airport", "outbound_date", "return_date", "travel_class", "price_threshold".
         
         When the user asks to create a task, but some of the required details are not specified, do not create the task, and instead respond with a description of what is missing.
