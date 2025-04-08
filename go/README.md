@@ -30,7 +30,7 @@
 - **[Event Enrichment / Joins](patterns-use-cases/README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/src/eventenrichment/packagetracker.go)
 
 #### Building coordination constructs (Advanced)
-- **[Rate Limiting](patterns-use-cases/README.md#rate-limiting)**: Example of implementing a token bucket rate limiter. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/ratelimit)
+- **[Rate Limiting](patterns-use-cases/README.md#rate-limiting)**: Example of implementing a token bucket rate limiter. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/src/ratelimit/service/limiter.go)
 
 ## Integrations
 

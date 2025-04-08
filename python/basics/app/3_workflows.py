@@ -40,7 +40,7 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
 
     # Wait until user clicked email verification link
     # Promise gets resolved or rejected by the other handlers
-    click_secret = await ctx.promise("email_link").value()
+    click_secret = await ctx.promise("link_clicked").value()
     return click_secret == secret
 
 
@@ -48,7 +48,7 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
 @user_signup.handler()
 async def click(ctx: WorkflowSharedContext, secret: str):
     # Send data to the workflow via a durable promise
-    await ctx.promise("email_link").resolve(secret)
+    await ctx.promise("link_clicked").resolve(secret)
 
 app = restate.app(services=[user_signup])
 
