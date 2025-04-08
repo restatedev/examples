@@ -45,11 +45,10 @@ async def execute_command(
     try:
         match command.action:
             case Action.CREATE:
-                print(command)
                 task_opts = TaskOpts(**command.model_dump())
 
                 if task_opts.task_name in active_tasks.tasks:
-                    raise ValueError(
+                    raise TerminalError(
                         f"Task with name {task_opts.task_name} already exists."
                     )
 
@@ -100,17 +99,15 @@ async def execute_command(
             case Action.OTHER:
                 return CommandResult()
             case _:
-                raise TerminalError(
-                    f"Unknown action type"
-                )
+                raise TerminalError(f"Unknown action type")
 
-    except TerminalError as e:
-        # pylint: disable=raise-missing-from
-        # print stacktrace
-        print(e)
-        raise TerminalError(
-            f"Failed to interpret command: {str(e)}\nCommand:\n{command}"
-        )
+    except Exception as e:
+        if not isinstance(e, restate.vm.SuspendedException):
+            raise TerminalError(
+                f"Failed to interpret command: {str(e)}\nCommand:\n{command}"
+            )
+        else:
+            raise e
 
 
 async def start_task(ctx: restate.Context, session_id: str, task_opts: TaskOpts) -> str:
