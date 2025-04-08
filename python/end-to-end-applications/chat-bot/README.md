@@ -28,7 +28,7 @@ Export you OpenAI key and then start the app as follows:
 
 ```shell
 export OPENAI_API_KEY=your_openai_key
-python3 -m hypercorn --config hypercorn-config.toml chatbot/app:app
+python3 backend/main.py
 ```
 
 Start the Restate Server ([other options here](https://docs.restate.dev/develop/local_dev)):
