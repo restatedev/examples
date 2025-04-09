@@ -10,7 +10,7 @@
     "format": "prettier --write \"src/*.+(js|ts|json)\""
   },
   "dependencies": {
-    "@restatedev/restate-sdk-cloudflare-workers": "^1.5.2"
+    "@restatedev/restate-sdk-cloudflare-workers": "^1.5.3"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240605.0",

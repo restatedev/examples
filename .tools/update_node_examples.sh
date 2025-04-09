@@ -40,7 +40,6 @@ function bump_ts_sdk_clients() {
 }
 
 bump_ts_sdk_clients $PROJECT_ROOT/typescript/basics
-bump_ts_sdk_clients $PROJECT_ROOT/typescript/patterns-use-cases/durable-promises
 bump_ts_sdk_clients $PROJECT_ROOT/typescript/end-to-end-applications/food-ordering/webui
 
 

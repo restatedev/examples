@@ -13,7 +13,7 @@
     "app-dev": "tsx watch ./src/app.ts"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.4.0"
+    "@restatedev/restate-sdk": "^1.5.3"
   },
   "devDependencies": {
     "@types/node": "^20.14.2",

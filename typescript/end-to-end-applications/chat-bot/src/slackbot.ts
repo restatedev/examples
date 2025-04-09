@@ -116,12 +116,7 @@ const eventDeduperSvc = restate.object({
     }
 });
 
-export const services: restate.ServiceBundle = {
-    registerServices(endpoint: restate.RestateEndpoint) {
-        endpoint.bind(slackBotService);
-        endpoint.bind(eventDeduperSvc);
-    }
-}
+export const services = [slackBotService, eventDeduperSvc]
 
 // ----------------------------------------------------------------------------
 //                            Slack API Helpers
