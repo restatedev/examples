@@ -8,18 +8,18 @@
     "build": "tsc --noEmitOnError"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.4.0",
+    "@restatedev/restate-sdk": "^1.5.2",
     "@restatedev/restate-sdk-clients": "^1.4.0",
     "express": "^5.0.0",
+    "pg": "^8.10.0",
     "sequelize": "^6.30.0",
-    "stripe": "^14.15.0",
-    "pg": "^8.10.0"
+    "stripe": "^14.15.0"
   },
   "devDependencies": {
-    "@types/node": "^20.14.2",
     "@types/express": "^5.0.0",
-    "esbuild": "^0.21.5",
+    "@types/node": "^20.14.2",
     "@types/sequelize": "^4.28.20",
+    "esbuild": "^0.21.5",
     "tsx": "^4.19.2",
     "typescript": "^5.4.5"
   }

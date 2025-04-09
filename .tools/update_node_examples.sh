@@ -10,11 +10,11 @@ function bump_ts_sdk() {
     npm --prefix $1 install @restatedev/restate-sdk@^$NEW_VERSION
 }
 
-bump_ts_sdk $PROJECT_ROOT/basics
+bump_ts_sdk $PROJECT_ROOT/typescript/basics
 
-bump_ts_sdk $PROJECT_ROOT/typescript/templates/typescript
+bump_ts_sdk $PROJECT_ROOT/typescript/templates/node
 bump_ts_sdk $PROJECT_ROOT/typescript/templates/typescript-testing
-bump_ts_sdk $PROJECT_ROOT/typescript/integrations/typescript-lambda-cdk
+bump_ts_sdk $PROJECT_ROOT/typescript/integrations/deployment-lambda-cdk
 bump_ts_sdk $PROJECT_ROOT/typescript/templates/bun
 
 # Cloudflare workers has a different module
@@ -23,10 +23,10 @@ npm --prefix $PROJECT_ROOT/typescript/templates/cloudflare-worker install @resta
 # deno bump - it doesn't use a package.json, only import strings
 # -i works differently in gnu sed and mac (bsd) sed - best avoided
 tmp=$(mktemp)
-sed "s#\"npm:@restatedev/restate-sdk@^.*/fetch\"#\"npm:@restatedev/restate-sdk@^${NEW_VERSION}/fetch\"#g" $PROJECT_ROOT/templates/deno/main.ts > $tmp
+sed "s#\"npm:@restatedev/restate-sdk@^.*/fetch\"#\"npm:@restatedev/restate-sdk@^${NEW_VERSION}/fetch\"#g" $PROJECT_ROOT/typescript/templates/deno/main.ts > $tmp
 mv $tmp $PROJECT_ROOT/typescript/templates/deno/main.ts
 
-bump_ts_sdk $PROJECT_ROOT/tutorials/tour-of-restate-typescript
+bump_ts_sdk $PROJECT_ROOT/typescript/tutorials/tour-of-restate-typescript
 
 bump_ts_sdk $PROJECT_ROOT/typescript/patterns-use-cases
 
@@ -39,8 +39,8 @@ function bump_ts_sdk_clients() {
     npm --prefix $1 install @restatedev/restate-sdk-clients@^$NEW_VERSION
 }
 
-bump_ts_sdk_clients $PROJECT_ROOT/basics
-bump_ts_sdk_clients $PROJECT_ROOT/patterns-use-cases/durable-promises/durable-promises-typescript
+bump_ts_sdk_clients $PROJECT_ROOT/typescript/basics
+bump_ts_sdk_clients $PROJECT_ROOT/typescript/patterns-use-cases/durable-promises
 bump_ts_sdk_clients $PROJECT_ROOT/typescript/end-to-end-applications/food-ordering/webui
 
 
