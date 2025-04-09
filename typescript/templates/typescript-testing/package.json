@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "@restatedev/restate-sdk": "^1.5.3",
-    "@restatedev/restate-sdk-testcontainers": "^1.5.3"
+    "@restatedev/restate-sdk-testcontainers": "^1.5.3",
+    "testcontainers": "^10.24.1"
   },
   "devDependencies": {
     "@types/jest": "^29.4.0",
