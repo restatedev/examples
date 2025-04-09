@@ -8,7 +8,8 @@ PROJECT_ROOT="$(dirname "$SELF_PATH")/.."
 
 function bump_rust_sdk() {
     pushd $1
-    cargo update restate-sdk@$NEW_VERSION
+    # This is using https://github.com/killercup/cargo-edit
+    cargo upgrade -p restate-sdk@$NEW_VERSION
     popd
 }
 
