@@ -32,7 +32,7 @@ impl CartObject for CartObjectImpl {
             // !mark(1:3)
             ctx.object_client::<CartObjectClient>(ctx.key())
                 .expire_ticket(ticket_id.clone())
-                .send_with_delay(Duration::from_millis(15 * 60 * 1000));
+                .send_after(Duration::from_secs(15 * 60));
         }
 
         Ok(reservation_success)
