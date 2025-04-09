@@ -23,7 +23,7 @@ const endpoint = restate.endpoint()
 // (3) add slackbot, if in slack mode
 
 if (mode === "SLACK") {
-    endpoint.bindBundle(slackbot.services)
+    slackbot.services.forEach(endpoint.bind)
     chat.notificationHandler(slackbot.notificationHandler)
 }
 

@@ -23,7 +23,7 @@ Use Restate as a queue. Schedule tasks for now or later and ensure the task is o
    - The **send requests** put the tasks in Restate's queue. The task submitter does not wait for the task response.
    - The **idempotency key** in the header is used by Restate to deduplicate requests.
    - If a delay is set, the task will be executed later and Restate will track the timer durably, like a **delayed task queue**.
-- [Async Task Worker](src/main/kotlin/my/example/queue/AsyncTaskWorker.kt): gets invoked by Restate for each task in the queue.
+- [Async Task Worker](src/main/kotlin/my/example/queue/AsyncTaskService.kt): gets invoked by Restate for each task in the queue.
 
 ## Sagas
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/kotlin/my/example/sagas/BookingWorkflow.kt)
