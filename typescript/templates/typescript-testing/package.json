@@ -16,13 +16,12 @@
   "dependencies": {
     "@restatedev/restate-sdk": "^1.5.3",
     "@restatedev/restate-sdk-testcontainers": "^1.5.3",
-    "testcontainers": "^10.24.1"
   },
   "devDependencies": {
-    "@types/jest": "^29.4.0",
+    "@types/jest": "^29.5.14",
     "@types/node": "^20.14.2",
     "esbuild": "^0.21.5",
-    "ts-jest": "^29.0.5",
+    "ts-jest": "^29.3.1",
     "tsx": "^4.19.2",
     "typescript": "^5.4.5"
   }
