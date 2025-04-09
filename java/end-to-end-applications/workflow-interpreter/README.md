@@ -58,8 +58,6 @@ You can clone the example repository (`git clone https://github.com/restatedev/e
 
 - **CLI:** `restate example java-workflow-interpreter`
 
-- **Zip archive:** https://github.com/restatedev/examples/releases/latest/download/java-workflow-interpreter.zip
-
 ## Running the example
 
 1. Start Restate Server in a separate shell: `restate-server`
