@@ -53,15 +53,15 @@ describe("ExampleObject", () => {
         expect(await state.get("count")).toBeNull();
 
         // Setting state is an eventually consistent operation, so retrying might be needed
-        let i = 0;
+        let retry = 0;
         while(true) {
             try {
                 await state.set("count", 123)
                 break
             } catch (e) {
                 await setTimeout(1000)
-                i++
-                if (i > 10) {
+                retry++
+                if (retry > 10) {
                     throw new Error("Unable to set state 'count'")
                 }
             }
