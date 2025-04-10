@@ -23,7 +23,7 @@ dependencies {
 }
 
 kotlin {
-  jvmToolchain(17)
+  jvmToolchain(21)
 }
 
 // Configure main class

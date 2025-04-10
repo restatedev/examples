@@ -1,5 +1,3 @@
-import java.net.URI
-
 plugins {
   java
   application
@@ -25,6 +23,12 @@ dependencies {
   // Jackson java8 types
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.16.1")
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.1")
+}
+
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(21))
+  }
 }
 
 // Set main class

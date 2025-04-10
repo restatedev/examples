@@ -30,6 +30,12 @@ dependencies {
   implementation("org.apache.logging.log4j:log4j-api:2.24.1")
 }
 
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(21))
+  }
+}
+
 // Set main class
 application {
   if (project.hasProperty("mainClass")) {
@@ -47,10 +53,4 @@ tasks.withType<JavaCompile> {
 
 tasks.named<Test>("test") {
   useJUnitPlatform()
-}
-
-java {
-  toolchain {
-    languageVersion.set(JavaLanguageVersion.of(17))
-  }
 }

@@ -8,3 +8,4 @@ lambda/build
 *.d.ts
 *.class
 cdk.context.json
+.kotlin
