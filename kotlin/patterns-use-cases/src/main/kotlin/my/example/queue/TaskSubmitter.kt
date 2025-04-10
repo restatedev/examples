@@ -1,7 +1,7 @@
 package my.example.queue
 
 import dev.restate.client.Client
-import dev.restate.serde.kotlinx.jsonSerde
+import dev.restate.client.kotlin.*
 
 /*
  * Restate is as a sophisticated task queue, with extra features like:
@@ -32,17 +32,13 @@ class TaskSubmitter {
                     // use a stable uuid as an idempotency key; Restate deduplicates for us
                     idempotencyKey = "dQw4w9WgXcQ"
                 }
-                .invocationHandle
 
 
         // ... do other things while the task is being processed ...
 
         // await the handler's result; optionally from another process
         val result =
-            restateClient.invocationHandle(
-                handle.invocationId(),
-                jsonSerde<String>(),
-            )
-                .attach()
+            handle
+                .attachSuspend()
     }
 }

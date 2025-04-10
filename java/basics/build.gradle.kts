@@ -15,7 +15,9 @@ dependencies {
   annotationProcessor("dev.restate:sdk-api-gen:$restateVersion")
 
   // Restate SDK
-  implementation("dev.restate:sdk-http-java:$restateVersion")
+  implementation("dev.restate:sdk-java-http:$restateVersion")
+
+  implementation("org.apache.logging.log4j:log4j-api:2.24.1")
 
   // Jackson parameter names
   // https://github.com/FasterXML/jackson-modules-java8/tree/2.14/parameter-names

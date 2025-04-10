@@ -60,7 +60,7 @@ public class MyService {
         // Example of waiting on a promise (call/awakeable/...) or a timeout
         awakeable.await(Duration.ofSeconds(5000));
         // Example of scheduling a handler for later on
-        GreeterObjectClient.fromContext(ctx, "my-obj-key").send(Duration.ofDays(1)).ungreet();
+        GreeterObjectClient.fromContext(ctx, "my-obj-key").send().ungreet(Duration.ofDays(1));
 
         // 7. PERSIST RESULTS: avoid re-execution of actions on retries
         // Use this for non-deterministic actions or interaction with APIs, DBs, ...

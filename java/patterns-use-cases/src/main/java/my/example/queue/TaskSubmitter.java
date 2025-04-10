@@ -31,9 +31,7 @@ public class TaskSubmitter {
                                 // Duration.ofDays(1),
                                 // use a stable uuid as an idempotency key; Restate deduplicates for us
                                 opts -> opts.idempotencyKey("dQw4w9WgXcQ")
-                        )
-                        // Get handle to interact with running invocation
-                        .invocationHandle();
+                        );
 
         // ... do other things while the task is being processed ...
 

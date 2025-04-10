@@ -21,8 +21,7 @@ dependencies {
   ksp("dev.restate:sdk-api-kotlin-gen:$restateVersion")
 
   // Restate SDK
-  implementation("dev.restate:sdk-api-kotlin:$restateVersion")
-  implementation("dev.restate:sdk-lambda:$restateVersion")
+  implementation("dev.restate:sdk-kotlin-lambda:$restateVersion")
 
   // AWS Lambda-specific logging, see https://docs.aws.amazon.com/lambda/latest/dg/java-logging.html#java-logging-log4j2
   val log4j2version = "2.23.1"
