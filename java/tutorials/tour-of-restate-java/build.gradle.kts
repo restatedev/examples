@@ -22,6 +22,12 @@ dependencies {
   implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.1")
 }
 
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(21))
+  }
+}
+
 // Set main class
 application {
   if (project.hasProperty("mainClass")) {

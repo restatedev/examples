@@ -1,6 +1,6 @@
 plugins {
 	java
-    application
+	application
 	id("org.springframework.boot") version "3.3.1"
 	id("io.spring.dependency-management") version "1.1.5"
 	id("com.diffplug.spotless") version "6.25.0"
@@ -35,7 +35,7 @@ dependencies {
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
+		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
 

@@ -23,6 +23,12 @@ dependencies {
   testImplementation("dev.restate:sdk-testing:$restateVersion")
 }
 
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(21))
+  }
+}
+
 // Set main class
 application {
   mainClass.set("my.example.Greeter")
@@ -30,10 +36,4 @@ application {
 
 tasks.named<Test>("test") {
   useJUnitPlatform()
-}
-
-java {
-  toolchain {
-    languageVersion.set(JavaLanguageVersion.of(17))
-  }
 }
