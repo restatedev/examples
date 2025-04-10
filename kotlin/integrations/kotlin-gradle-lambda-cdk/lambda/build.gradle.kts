@@ -1,5 +1,3 @@
-import java.net.URI
-
 plugins {
   kotlin("jvm") version "2.0.0"
   // Kotlinx serialization (optional)

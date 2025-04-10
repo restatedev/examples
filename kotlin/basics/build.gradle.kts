@@ -1,9 +1,7 @@
 plugins {
   application
   kotlin("jvm") version "2.0.0"
-  // Kotlinx serialization (optional)
   kotlin("plugin.serialization") version "2.0.0"
-
   id("com.google.devtools.ksp") version "2.0.0-1.0.21"
 }
 
@@ -22,11 +20,8 @@ dependencies {
   implementation("org.apache.logging.log4j:log4j-api:2.24.1")
 }
 
-// Setup Java/Kotlin compiler target
-java {
-  toolchain {
-    languageVersion.set(JavaLanguageVersion.of(17))
-  }
+kotlin {
+  jvmToolchain(21)
 }
 
 // Set main class

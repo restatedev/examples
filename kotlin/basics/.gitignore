@@ -31,5 +31,7 @@ build
 .idea
 *.iml
 
+.kotlin
+
 # Unignore the gradle wrapper
 !gradle/wrapper/gradle-wrapper.jar
