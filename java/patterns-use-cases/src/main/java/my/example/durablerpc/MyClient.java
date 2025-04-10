@@ -1,7 +1,8 @@
 package my.example.durablerpc;
 
-import dev.restate.sdk.client.CallRequestOptions;
-import dev.restate.sdk.client.Client;
+import dev.restate.client.Client;
+
+import java.util.Optional;
 
 public class MyClient {
 
@@ -14,18 +15,17 @@ public class MyClient {
         // Restate registers the request and makes sure runs to completion exactly once
         boolean reserved = ProductServiceClient.fromClient(restateClient, productId)
                 // Restate deduplicates requests with the same idempotency key
-                .reserve(CallRequestOptions.DEFAULT.withIdempotency(reservationId));
+                .reserve(opts -> opts.idempotencyKey(reservationId));
 
         return reserved;
     }
 
+    // To run from CLI
+    // ./gradlew run -PmainClass=my.example.durablerpc.MyClient --args="productId123 reservationId123"
     public static void main(String[] args) {
-        if (args.length < 2) {
-            System.err.println("Specify the productId and reservationId as the arguments: " +
-                    "./gradlew run -PmainClass=my.example.durablerpc.MyClient --args=\"productId123 reservationId123\"");
-            System.exit(1);
-        }
-        boolean reserved = new MyClient().reserveProduct(args[0], args[1]);
+        String productId = Optional.ofNullable(args[0]).orElse("productId123");
+        String reservationId = Optional.ofNullable(args[1]).orElse("reservationId123");
+        boolean reserved = new MyClient().reserveProduct(productId, reservationId);
         System.out.println("Product reserved: " + reserved);
     }
 }

@@ -8,7 +8,7 @@
 // https://github.com/restatedev/sdk-java/blob/main/LICENSE
 package com.example.restatestarter;
 
-import dev.restate.sdk.client.Client;
+import dev.restate.client.Client;
 import dev.restate.sdk.testing.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;

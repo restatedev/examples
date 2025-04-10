@@ -3,18 +3,17 @@ package dev.restate.examples.noteapp
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.VirtualObject
+import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.kotlin.endpoint.endpoint
+import dev.restate.sdk.http.vertx.RestateHttpServer
 import dev.restate.sdk.common.StateKey
 import dev.restate.sdk.common.TerminalException
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
-import dev.restate.sdk.kotlin.KtStateKey
-import dev.restate.sdk.kotlin.ObjectContext
-import dev.restate.sdk.kotlin.SharedObjectContext
 
 @VirtualObject
 class Todos {
 
     companion object {
-        private val TODOS = KtStateKey.json<Map<String, TodoItem>>("todos")
+        private val TODOS = stateKey<Map<String, TodoItem>>("todos")
     }
 
     @Handler
@@ -50,8 +49,7 @@ private suspend fun <T: Any> ObjectContext.update(stateKey: StateKey<T>, fn: (T?
     this.set(stateKey, fn(this.get(stateKey)))
 
 fun main() {
-    RestateHttpEndpointBuilder
-        .builder()
-        .bind(Todos())
-        .buildAndListen()
+    RestateHttpServer.listen(endpoint {
+        bind(Todos())
+    })
 }

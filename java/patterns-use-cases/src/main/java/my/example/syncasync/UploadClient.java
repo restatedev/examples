@@ -1,9 +1,11 @@
 package my.example.syncasync;
 
-import dev.restate.sdk.client.Client;
+import dev.restate.client.Client;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -15,7 +17,7 @@ public class UploadClient {
 
   private static final String RESTATE_URL = "http://localhost:8080";
 
-  public void uploadData(String userId, String email) {
+  public void uploadData(String userId, String email) throws Exception {
     logger.info("Uploading data for user {}", userId);
 
     // Submit the workflow
@@ -27,15 +29,12 @@ public class UploadClient {
     try {
       // Wait for the workflow to complete or timeout
       url = uploadClient.workflowHandle().attachAsync()
-              .orTimeout(5, TimeUnit.SECONDS)
-              .join();
-    } catch (Exception e) {
-      if (e.getCause() instanceof TimeoutException) {
-        logger.info("Slow upload... Mail the link later");
-        uploadClient.resultAsEmail(email);
-        return;
-      }
-      throw e;
+              .get(5, TimeUnit.SECONDS)
+              .response();
+    } catch (TimeoutException e) {
+      logger.info("Slow upload... Mail the link later");
+      uploadClient.resultAsEmail(email);
+      return;
     }
 
     // ... process directly ...
@@ -45,12 +44,10 @@ public class UploadClient {
   //--------------------------------------------------------------------------------
   // This client would be used in some other part of the system.
   // For the sake of this example, we are calling it here from the main method, so you can test the example.
-  public static void main(String[] args) {
-    if (args.length < 1) {
-      System.err.println("Specify the userId as the argument: " +
-              "./gradlew run -PmainClass=my.example.UploadClient --args=\"userId123\"");
-      System.exit(1);
-    }
-    new UploadClient().uploadData(args[0], args[0] + "@example.com");
+  // To run from CLI:
+  // ./gradlew run -PmainClass=my.example.UploadClient --args="userId123"
+  public static void main(String[] args) throws Exception {
+    String userId = Optional.ofNullable(args[0]).orElse("user123");
+    new UploadClient().uploadData(userId, userId + "@example.com");
   }
 }

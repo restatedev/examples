@@ -2,11 +2,9 @@ package my.example.parallelizework
 
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Service
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
-import dev.restate.sdk.kotlin.Awaitable
-import dev.restate.sdk.kotlin.Context
-import dev.restate.sdk.kotlin.awaitAll
-import dev.restate.sdk.kotlin.runBlock
+import dev.restate.sdk.http.vertx.RestateHttpServer
+import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.kotlin.endpoint.endpoint
 
 /*
  * Restate makes it easy to parallelize async work by fanning out tasks.
@@ -53,5 +51,7 @@ class FanOutWorker {
 }
 
 fun main() {
-    RestateHttpEndpointBuilder.builder().bind(FanOutWorker()).buildAndListen()
+    RestateHttpServer.listen(endpoint {
+        bind(FanOutWorker())
+    })
 }

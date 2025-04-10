@@ -14,13 +14,13 @@ package dev.restate.sdk.examples;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.examples.types.AssignDeliveryRequest;
 import dev.restate.sdk.examples.types.AssignedDelivery;
 import dev.restate.sdk.examples.types.DriverStatus;
 import dev.restate.sdk.examples.types.Location;
-import dev.restate.sdk.serde.jackson.JacksonSerdes;
+import dev.restate.sdk.common.StateKey;
+import dev.restate.sdk.common.TerminalException;
+
 import java.util.Optional;
 
 /**
@@ -33,15 +33,15 @@ public class DriverDigitalTwin {
 
   // Current status of the driver: idle, waiting for work, or delivering
   private static final StateKey<DriverStatus> DRIVER_STATUS =
-      StateKey.of("driver-status", JacksonSerdes.of(DriverStatus.class));
+      StateKey.of("driver-status", DriverStatus.class);
 
   // Only set if the driver is currently doing a delivery
   private static final StateKey<AssignedDelivery> ASSIGNED_DELIVERY =
-      StateKey.of("assigned-delivery", JacksonSerdes.of(AssignedDelivery.class));
+      StateKey.of("assigned-delivery", AssignedDelivery.class);
 
   // Current location of the driver
   private static final StateKey<Location> DRIVER_LOCATION =
-      StateKey.of("driver-location", JacksonSerdes.of(Location.class));
+      StateKey.of("driver-location", Location.class);
 
   /**
    * When the driver starts his work day or finishes a delivery, his application

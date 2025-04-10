@@ -4,18 +4,11 @@ import dev.restate.examples.model.Product;
 import dev.restate.examples.repository.ProductRepository;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
-import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.Serde;
-import dev.restate.sdk.common.TerminalException;
-import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import dev.restate.sdk.springboot.RestateVirtualObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import dev.restate.sdk.common.TerminalException;
 
 @RestateVirtualObject
 public class ProductService {
-
-  private static final Serde<Product> productSerde = JacksonSerdes.of(Product.class);
 
   private final ProductRepository productRepository;
 
@@ -26,7 +19,7 @@ public class ProductService {
   @Handler
   public Product getProductInformation(ObjectContext ctx) {
     return ctx.run(
-        productSerde,
+        Product.class,
         () ->
             productRepository
                 .findById(ctx.key())
@@ -39,7 +32,7 @@ public class ProductService {
 
     Product product =
         ctx.run(
-            productSerde,
+            Product.class,
             () ->
                 productRepository
                     .findById(productId)
@@ -58,7 +51,7 @@ public class ProductService {
     String productId = ctx.key();
     Product product =
         ctx.run(
-            productSerde,
+            Product.class,
             () ->
                 productRepository
                     .findById(productId)

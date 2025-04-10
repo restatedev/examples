@@ -3,7 +3,8 @@ package my.example.queue;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
 
 @Service
 public class AsyncTaskWorker {
@@ -20,6 +21,6 @@ public class AsyncTaskWorker {
     }
 
     public static void main(String[] args) {
-         RestateHttpEndpointBuilder.builder().bind(new AsyncTaskWorker()).buildAndListen();
+        RestateHttpServer.listen(Endpoint.bind(new AsyncTaskWorker()));
     }
 }

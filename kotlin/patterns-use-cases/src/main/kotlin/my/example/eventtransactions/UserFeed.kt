@@ -2,9 +2,9 @@ package my.example.eventtransactions
 
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.VirtualObject
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
-import dev.restate.sdk.kotlin.ObjectContext
-import dev.restate.sdk.kotlin.runBlock
+import dev.restate.sdk.http.vertx.RestateHttpServer
+import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.kotlin.endpoint.endpoint
 import kotlinx.serialization.Serializable
 import my.example.eventtransactions.utils.createPost
 import my.example.eventtransactions.utils.getPostStatus
@@ -32,6 +32,8 @@ class UserFeed {
 }
 
 fun main() {
-    RestateHttpEndpointBuilder.builder().bind(UserFeed()).buildAndListen()
+    RestateHttpServer.listen(endpoint {
+        bind(UserFeed())
+    })
 }
 

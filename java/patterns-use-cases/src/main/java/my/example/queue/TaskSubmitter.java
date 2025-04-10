@@ -1,9 +1,6 @@
 package my.example.queue;
 
-import dev.restate.sdk.JsonSerdes;
-import dev.restate.sdk.client.CallRequestOptions;
-import dev.restate.sdk.client.Client;
-import dev.restate.sdk.client.SendResponse;
+import dev.restate.client.Client;
 
 /*
  * Restate is as a sophisticated task queue, with extra features like:
@@ -18,25 +15,27 @@ import dev.restate.sdk.client.SendResponse;
 public class TaskSubmitter {
 
     private static final String RESTATE_URL = "http://localhost:8080";
-    private static final Client restateClient = Client.connect(RESTATE_URL);
 
     public void submitAndAwaitTasks(AsyncTaskWorker.TaskOpts taskOpts) {
+        Client restateClient = Client.connect(RESTATE_URL);
 
         // submit the task; similar to publishing a message to a queue
         // Restate ensures the task is executed exactly once
-        SendResponse handle =
+        var handle =
                 AsyncTaskWorkerClient.fromClient(restateClient)
                         // optionally add a delay to execute the task later
-                        .send(/*Duration.ofDays(1)*/)
+                        .send()
                         .runTask(
                                 taskOpts,
+                                // optionally add a delay to execute the task later
+                                // Duration.ofDays(1),
                                 // use a stable uuid as an idempotency key; Restate deduplicates for us
-                                CallRequestOptions.DEFAULT.withIdempotency("dQw4w9WgXcQ")
+                                opts -> opts.idempotencyKey("dQw4w9WgXcQ")
                         );
 
         // ... do other things while the task is being processed ...
 
         // await the handler's result; optionally from another process
-        String result = restateClient.invocationHandle(handle.getInvocationId(), JsonSerdes.STRING).attach();
+        String result = handle.attach().response();
     }
 }

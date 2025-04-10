@@ -40,6 +40,7 @@ create_release_zip kotlin/end-to-end-applications/kmp-android-todo-app kotlin-km
 create_release_zip kotlin/integrations/kotlin-gradle-lambda-cdk kotlin-hello-world-lambda-cdk
 create_release_zip kotlin/patterns-use-cases kotlin-patterns-use-cases
 create_release_zip kotlin/templates/kotlin-gradle kotlin-hello-world-gradle
+create_release_zip kotlin/templates/kotlin-gradle-spring-boot kotlin-hello-world-gradle-spring-boot
 
 create_release_zip typescript/basics typescript-basics
 create_release_zip typescript/end-to-end-applications/food-ordering typescript-food-ordering

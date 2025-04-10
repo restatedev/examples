@@ -13,19 +13,17 @@ package dev.restate.sdk.examples
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.VirtualObject
-import dev.restate.sdk.common.TerminalException
 import dev.restate.sdk.examples.utils.GeoUtils
-import dev.restate.sdk.kotlin.KtStateKey
-import dev.restate.sdk.kotlin.ObjectContext
-import dev.restate.sdk.kotlin.SharedObjectContext
+import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.common.TerminalException
 
 /** Virtual object tracking the ETA, keyed by order-id */
 @VirtualObject
 class OrderETAService {
   companion object {
-    private val ORDER_ETA = KtStateKey.json<Long>("order-eta")
-    private val DELIVERY_LOCATIONS = KtStateKey.json<DeliveryLocations>("delivery-locations")
-    private val DELIVERY_IS_PICKED_UP = KtStateKey.json<Unit>("order-is-picked-up")
+    private val ORDER_ETA = stateKey<Long>("order-eta")
+    private val DELIVERY_LOCATIONS = stateKey<DeliveryLocations>("delivery-locations")
+    private val DELIVERY_IS_PICKED_UP = stateKey<Unit>("order-is-picked-up")
   }
 
   /** Gets called by the webUI frontend to display the status of an order. */

@@ -10,12 +10,12 @@
  */
 package virtual_objects;
 
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
 import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 
 // Virtual Objects are services that hold K/V state. Its handlers interact with the object state.
 // An object is identified by a unique id - only one object exists per id.
@@ -35,7 +35,7 @@ public class GreeterObject {
 
     // Reference to the K/V state stored in Restate
     private static final StateKey<Integer> COUNT =
-            StateKey.of("count", JsonSerdes.INT);
+            StateKey.of("count", Integer.TYPE);
 
     @Handler
     public String greet(ObjectContext ctx, String greeting) {
@@ -61,9 +61,7 @@ public class GreeterObject {
     }
 
     public static void main(String[] args) {
-        RestateHttpEndpointBuilder.builder()
-            .bind(new GreeterObject())
-            .buildAndListen();
+        RestateHttpServer.listen(Endpoint.bind(new GreeterObject()));
     }
 }
 

@@ -1,14 +1,11 @@
 package my.example.statefulactors;
 
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
 import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
-import dev.restate.sdk.serde.jackson.JacksonSerdes;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import static my.example.statefulactors.utils.MachineOperations.bringUpMachine;
 import static my.example.statefulactors.utils.MachineOperations.tearDownMachine;
@@ -27,7 +24,7 @@ import static my.example.statefulactors.utils.MachineOperations.tearDownMachine;
 public class MachineOperator {
 
     enum Status { UP, DOWN }
-    private static final StateKey<Status> STATUS = StateKey.of("state", JacksonSerdes.of(Status.class));
+    private static final StateKey<Status> STATUS = StateKey.of("state", Status.class);
 
     @Handler
     public String setUp(ObjectContext ctx) {
@@ -63,6 +60,6 @@ public class MachineOperator {
     }
 
     public static void main(String[] args) {
-        RestateHttpEndpointBuilder.builder().bind(new MachineOperator()).buildAndListen();
+        RestateHttpServer.listen(Endpoint.bind(new MachineOperator()));
     }
 }

@@ -1,15 +1,14 @@
 package dev.restate.example;
 
 import dev.restate.example.apis.CardStatusServiceApi;
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.SharedObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.VirtualObject;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
 import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
-import dev.restate.sdk.serde.jackson.JacksonSerdes;
 
 import java.util.Optional;
 
@@ -19,9 +18,9 @@ import static dev.restate.example.apis.Utils.delayTillEndOfDay;
 public class CardTracker {
 
   // References to K/V state stored in Restate
-  private static final StateKey<Boolean> AUTHORIZED = StateKey.of("authorized", JsonSerdes.BOOLEAN);
-  private static final StateKey<String> ONGOING_JOURNEY = StateKey.of("journey_start", JsonSerdes.STRING);
-  private static final StateKey<DailyFare> TOTAL_FARE_TODAY = StateKey.of("fare", JacksonSerdes.of(DailyFare.class));
+  private static final StateKey<Boolean> AUTHORIZED = StateKey.of("authorized", Boolean.TYPE);
+  private static final StateKey<String> ONGOING_JOURNEY = StateKey.of("journey_start", String.class);
+  private static final StateKey<DailyFare> TOTAL_FARE_TODAY = StateKey.of("fare", DailyFare.class);
 
   @Handler
   public String badgeIn(ObjectContext ctx, String station) {
@@ -48,8 +47,8 @@ public class CardTracker {
 
     // ensure this journey finishes by end of operations
     CardTrackerClient.fromContext(ctx, cardId)
-        .send(delayTillEndOfDay())
-        .finalizeAllJourneys();
+        .send()
+        .finalizeAllJourneys(delayTillEndOfDay());
 
     return "OK";
   }
@@ -109,8 +108,6 @@ public class CardTracker {
   }
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder()
-            .bind(new CardTracker())
-            .buildAndListen(9080);
+    RestateHttpServer.listen(Endpoint.bind(new CardTracker()));
   }
 }

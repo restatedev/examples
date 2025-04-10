@@ -33,7 +33,7 @@ An example of a trip reservation workflow, using the saga pattern to undo previo
 Durable Execution's guarantee to run code to the end in the presence of failures, and to deterministically recover previous steps from the journal, makes sagas easy.
 Every step pushes a compensation action (an undo operation) to a stack. In the case of an error, those operations are run.
 
-The main requirement is that steps are implemented as journaled operations, like `ctx.run()` or RPC/messaging.
+The main requirement is that steps are implemented as journaled operations, like `ctx.runBlock()` or RPC/messaging.
 
 The example shows two ways you can implement the compensation, depending on the characteristics of the API/system you interact with.
 1. **Two-phase commit**: The reservation is created and then confirmed or cancelled. The compensation executes 'cancel' and is added after the reservation is created.

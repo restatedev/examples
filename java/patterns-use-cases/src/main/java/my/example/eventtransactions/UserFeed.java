@@ -3,11 +3,11 @@ package my.example.eventtransactions;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
 
 import java.time.Duration;
 
-import static dev.restate.sdk.JsonSerdes.STRING;
 import static my.example.eventtransactions.utils.Stubs.createPost;
 import static my.example.eventtransactions.utils.Stubs.getPostStatus;
 import static my.example.eventtransactions.utils.Stubs.updateUserFeed;
@@ -26,21 +26,19 @@ public class UserFeed {
         String userId = ctx.key();
 
         // Durable side effects: Restate persists intermediate results and replays them on failure.
-        String postId = ctx.run(STRING, () -> createPost(userId, post));
+        String postId = ctx.run(String.class, () -> createPost(userId, post));
 
         // No restrictions on the handler code: loops, sleeps, etc.
-        while(ctx.run(STRING, () -> getPostStatus(postId)).equals("PENDING")) {
+        while(ctx.run(String.class, () -> getPostStatus(postId)).equals("PENDING")) {
             // Delay processing until content moderation is complete (handler suspends when on FaaS).
             // This only blocks other posts for this user (Virtual Object), not for other users.
-            ctx.sleep(Duration.ofMillis(5000));
+            ctx.sleep(Duration.ofSeconds(5));
         }
 
         ctx.run(() -> updateUserFeed(userId, postId));
     }
 
     public static void main(String[] args) {
-        RestateHttpEndpointBuilder.builder()
-                .bind(new UserFeed())
-                .buildAndListen();
+        RestateHttpServer.listen(Endpoint.bind(new UserFeed()));
     }
 }

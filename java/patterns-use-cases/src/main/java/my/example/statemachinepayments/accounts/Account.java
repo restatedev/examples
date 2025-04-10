@@ -1,6 +1,5 @@
 package my.example.statemachinepayments.accounts;
 
-import dev.restate.sdk.JsonSerdes;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
@@ -16,7 +15,7 @@ import my.example.statemachinepayments.types.Result;
 @VirtualObject
 public class Account {
 
-  private static final StateKey<Long> BALANCE = StateKey.of("balance", JsonSerdes.LONG);
+  private static final StateKey<Long> BALANCE = StateKey.of("balance", Long.TYPE);
 
   @Handler
   public void deposit(ObjectContext ctx, Long amountCents) {

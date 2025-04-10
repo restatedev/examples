@@ -1,8 +1,7 @@
 package my.example.queue
 
-import dev.restate.sdk.client.CallRequestOptions
-import dev.restate.sdk.client.Client
-import dev.restate.sdk.kotlin.KtSerdes
+import dev.restate.client.Client
+import dev.restate.client.kotlin.*
 
 /*
  * Restate is as a sophisticated task queue, with extra features like:
@@ -24,23 +23,22 @@ class TaskSubmitter {
         // Restate ensures the task is executed exactly once
         val handle =
             AsyncTaskServiceClient.fromClient(restateClient)
-                // optionally add a delay to execute the task later
-                .send(/*5.days*/)
+                .send()
                 .runTask(
                     this,
+                    // optionally add a delay to execute the task later
+                    // delay = 5.days,
+                ) {
                     // use a stable uuid as an idempotency key; Restate deduplicates for us
-                    CallRequestOptions.DEFAULT.withIdempotency("dQw4w9WgXcQ"),
-                )
+                    idempotencyKey = "dQw4w9WgXcQ"
+                }
 
 
         // ... do other things while the task is being processed ...
 
         // await the handler's result; optionally from another process
         val result =
-            restateClient.invocationHandle(
-                handle.invocationId,
-                KtSerdes.json<String>(),
-            )
-                .attach()
+            handle
+                .attachSuspend()
     }
 }
