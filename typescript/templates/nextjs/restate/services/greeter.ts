@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import {sendNotification, sendReminder} from "@/restate/services/utils";
+import { sendNotification, sendReminder } from "@/restate/services/utils";
 
 export const greeter = restate.service({
   name: "Greeter",
