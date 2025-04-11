@@ -34,7 +34,7 @@ restate deployments register http://localhost:3000/restate/v1 --use-http1.1
 
 Check out the UI at `http://localhost:3000` and send a greeting.
 
-<img src="next_ui.png" alt="NextJS UI" width="300px"/>
+<img src="next_ui.png" alt="Next.js UI" width="300px"/>
 
 You should see the greeting response `You said hi to Bob!` in the UI.
 
