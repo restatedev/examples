@@ -32,7 +32,7 @@ Register Restate services, in `app/restate/[[...services]]/route.ts`:
 restate deployments register http://localhost:3000/restate/v1 --use-http1.1
 ```
 
-Check out the UI at http://localhost:3000 and send a greeting.
+Check out the UI at `http://localhost:3000` and send a greeting.
 
 <img src="next_ui.png" alt="NextJS UI" width="300px"/>
 
@@ -50,7 +50,7 @@ If you run the app, with the `SIMULATE_FAILURES=true` it will crash repeatedly o
 SIMULATE_FAILURES=true npm run dev
 ```
 
-Submit another greeting from the UI and then check the invocation tab of the Restate UI to see the retries: http://localhost:9070
+Submit another greeting from the UI and then check the invocation tab of the Restate UI to see the retries: `http://localhost:9070`
 
 <img src="restate_ui.png" alt="Restate UI" width="1000px"/>
 
