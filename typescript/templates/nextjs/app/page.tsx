@@ -36,9 +36,7 @@ export default function Home() {
                 placeholder="Enter a name"
                 label="Name"
             />
-              <div className="font-medium text-sm">
-                <Response>{greetAnswer}</Response>
-              </div>
+            <Response>{greetAnswer}</Response>
             <SubmitButton>Greet</SubmitButton>
           </Form>
       </section>
@@ -52,5 +50,5 @@ function Response({children}: PropsWithChildren) {
     return null
   }
 
-  return <>Response: <Badge>{pending ? "…" : children}</Badge></>
+  return <div className="font-medium text-sm">Response: <Badge>{pending ? "…" : children}</Badge></div>
 }
