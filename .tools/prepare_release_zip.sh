@@ -27,6 +27,7 @@ create_release_zip python/end-to-end-applications/food-ordering python-food-orde
 create_release_zip java/basics java-basics
 create_release_zip java/end-to-end-applications/food-ordering java-food-ordering
 create_release_zip java/end-to-end-applications/subway-fare-calculator java-subway-fare-calculator
+create_release_zip java/integrations/java-gradle-lambda-cdk java-hello-world-lambda-cdk
 create_release_zip java/patterns-use-cases java-patterns-use-cases
 create_release_zip java/templates/java-gradle java-hello-world-gradle
 create_release_zip java/templates/java-maven java-hello-world-maven
