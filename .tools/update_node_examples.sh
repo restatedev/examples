@@ -16,6 +16,7 @@ bump_ts_sdk $PROJECT_ROOT/typescript/templates/node
 bump_ts_sdk $PROJECT_ROOT/typescript/templates/typescript-testing
 bump_ts_sdk $PROJECT_ROOT/typescript/integrations/deployment-lambda-cdk
 bump_ts_sdk $PROJECT_ROOT/typescript/templates/bun
+bump_ts_sdk $PROJECT_ROOT/typescript/templates/nextjs
 
 # Cloudflare workers has a different module
 npm --prefix $PROJECT_ROOT/typescript/templates/cloudflare-worker install @restatedev/restate-sdk-cloudflare-workers@^$NEW_VERSION

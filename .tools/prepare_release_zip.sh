@@ -52,6 +52,7 @@ create_release_zip typescript/templates/node typescript-hello-world
 create_release_zip typescript/templates/bun typescript-bun-hello-world
 create_release_zip typescript/templates/cloudflare-worker typescript-cloudflare-worker-hello-world
 create_release_zip typescript/templates/deno typescript-deno-hello-world
+create_release_zip typescript/templates/nextjs typescript-nextjs-hello-world
 create_release_zip typescript/tutorials/tour-of-restate-typescript typescript-tour-of-restate
 
 create_release_zip go/basics go-basics

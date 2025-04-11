@@ -68,6 +68,7 @@ Starter templates for new projects:
 - **[Bun Template](templates/bun)** 
 - **[CloudFlare Workers Template](templates/cloudflare-worker)**
 - **[Deno Template](templates/deno)**
+- **[Next.js Template](templates/nextjs)**
 
 ## Tutorials
 
