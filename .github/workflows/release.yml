@@ -47,6 +47,7 @@ jobs:
                   kotlin-hello-world-lambda-cdk.zip
                   kotlin-patterns-use-cases.zip
                   kotlin-hello-world-gradle.zip
+                  kotlin-hello-world-gradle-spring-boot.zip
                   typescript-basics.zip
                   typescript-food-ordering.zip
                   typescript-chat-bot.zip

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eufx -o pipefail
+
 NEW_VERSION=$1
 SELF_PATH=${BASH_SOURCE[0]:-"$(command -v -- "$0")"}
 PROJECT_ROOT="$(dirname "$SELF_PATH")/.."
@@ -17,6 +19,7 @@ search_and_replace_version_maven $PROJECT_ROOT/java/templates/java-maven
 search_and_replace_version_maven $PROJECT_ROOT/java/templates/java-maven-quarkus
 search_and_replace_version_maven $PROJECT_ROOT/java/templates/java-maven-spring-boot
 search_and_replace_version_gradle $PROJECT_ROOT/kotlin/templates/kotlin-gradle
+search_and_replace_version_gradle $PROJECT_ROOT/kotlin/templates/kotlin-gradle-spring-boot
 
 search_and_replace_version_gradle $PROJECT_ROOT/java/integrations/java-spring
 search_and_replace_version_gradle $PROJECT_ROOT/kotlin/integrations/kotlin-gradle-lambda-cdk/lambda
@@ -32,7 +35,7 @@ search_and_replace_version_gradle $PROJECT_ROOT/java/tutorials/tour-of-restate-j
 search_and_replace_version_gradle $PROJECT_ROOT/java/end-to-end-applications/subway-fare-calculator
 search_and_replace_version_gradle $PROJECT_ROOT/java/end-to-end-applications/food-ordering/app/restate-app
 search_and_replace_version_gradle $PROJECT_ROOT/java/end-to-end-applications/food-ordering/app/restaurant
-search_and_replace_version_gradle $PROJECT_ROOT/java/end-to-end-applications/workflow-interpreter
+search_and_replace_version_maven $PROJECT_ROOT/java/end-to-end-applications/workflow-interpreter
 search_and_replace_version_gradle $PROJECT_ROOT/kotlin/end-to-end-applications/food-ordering/app/restate-app
 search_and_replace_version_gradle $PROJECT_ROOT/kotlin/end-to-end-applications/food-ordering/app/restaurant
 search_and_replace_version_gradle $PROJECT_ROOT/kotlin/end-to-end-applications/kmp-android-todo-app/server

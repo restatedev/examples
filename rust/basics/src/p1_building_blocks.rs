@@ -66,7 +66,7 @@ impl MyService for MyServiceImpl {
         // Example of scheduling a handler for later on
         ctx.object_client::<SubscriptionServiceClient>("my-sub-123")
             .cancel()
-            .send_with_delay(Duration::from_secs(5));
+            .send_after(Duration::from_secs(5));
 
         // ---
         // 7. PERSIST RESULTS: avoid re-execution of actions on retries

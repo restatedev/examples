@@ -10,15 +10,13 @@
  */
 package my.example.statemachinepayments;
 
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
 import my.example.statemachinepayments.accounts.Account;
 
 public class AppMain {
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder()
-        .bind(new Account())
-        .bind(new PaymentProcessor())
-        .buildAndListen();
+    RestateHttpServer.listen(Endpoint.bind(new Account()).bind(new PaymentProcessor()));
   }
 }

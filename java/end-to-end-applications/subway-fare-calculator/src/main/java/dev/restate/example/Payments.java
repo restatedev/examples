@@ -7,8 +7,6 @@ import dev.restate.sdk.common.TerminalException;
 
 import java.time.Duration;
 
-import static dev.restate.sdk.JsonSerdes.BOOLEAN;
-
 public class Payments {
 
   private static final int AUTH_ATTEMPTS = 3;
@@ -19,7 +17,7 @@ public class Payments {
 
   public static boolean authorizeCard(Context ctx, String cardRef) {
     try {
-      return ctx.run("auth attempt", BOOLEAN, retryThreeTimes, () -> PaymentApi.runAuthorization(cardRef));
+      return ctx.run("auth attempt", Boolean.TYPE, retryThreeTimes, () -> PaymentApi.runAuthorization(cardRef));
     } catch (TerminalException e) {
       return false;
     }
@@ -27,7 +25,7 @@ public class Payments {
 
   public static boolean chargeCard(Context ctx, String cardRef, long amountCents) {
       try {
-        return ctx.run("charge attempt", BOOLEAN, retryThreeTimes, () -> PaymentApi.makePayment(cardRef, amountCents));
+        return ctx.run("charge attempt", Boolean.TYPE, retryThreeTimes, () -> PaymentApi.makePayment(cardRef, amountCents));
       } catch (TerminalException e) {
         return false;
       }

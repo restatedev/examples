@@ -14,16 +14,17 @@ package dev.restate.sdk.examples.external;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.common.TerminalException;
+import dev.restate.sdk.endpoint.Endpoint;
 import dev.restate.sdk.examples.*;
 import dev.restate.sdk.examples.clients.KafkaPublisher;
 import dev.restate.sdk.examples.types.AssignedDelivery;
 import dev.restate.sdk.examples.types.Location;
 import dev.restate.sdk.examples.utils.GeoUtils;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
-import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import java.time.Duration;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
+import dev.restate.sdk.common.StateKey;
+import dev.restate.sdk.common.TerminalException;
+import dev.restate.serde.jackson.JacksonSerdes;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -46,10 +47,10 @@ public class DriverMobileAppSimulator {
   private static final long PAUSE_BETWEEN_DELIVERIES = 2000;
 
   private final StateKey<Location> CURRENT_LOCATION =
-      StateKey.of("current-location", Location.SERDE);
+      StateKey.of("current-location", Location.class);
 
   private final StateKey<AssignedDelivery> ASSIGNED_DELIVERY =
-      StateKey.of("assigned-delivery", JacksonSerdes.of(AssignedDelivery.class));
+      StateKey.of("assigned-delivery", AssignedDelivery.class);
 
   /** Mimics the driver setting himself to available in the app */
   @Handler
@@ -60,9 +61,9 @@ public class DriverMobileAppSimulator {
     }
 
     logger.info("Starting driver " + ctx.key());
-    var location = ctx.run(Location.SERDE, GeoUtils::randomLocation);
+    var location = ctx.run(Location.class, GeoUtils::randomLocation);
     ctx.set(CURRENT_LOCATION, location);
-    producer.sendDriverUpdate(ctx.key(), Location.SERDE.serialize(location));
+    producer.sendDriverUpdate(ctx.key(), JacksonSerdes.of(Location.class).serialize(location).toByteArray());
 
     // Tell the digital twin of the driver in the food ordering app, that he is available
     DriverDigitalTwinClient.fromContext(ctx, ctx.key())
@@ -87,7 +88,7 @@ public class DriverMobileAppSimulator {
 
     // If there is no job, ask again after a short delay
     if (optionalAssignedDelivery.isEmpty()) {
-      thisDriverSim.send(Duration.ofMillis(POLL_INTERVAL)).pollForWork();
+      thisDriverSim.send().pollForWork(Duration.ofMillis(POLL_INTERVAL));
       return;
     }
 
@@ -103,7 +104,7 @@ public class DriverMobileAppSimulator {
     ctx.set(ASSIGNED_DELIVERY, newAssignedDelivery);
 
     // Start moving to the delivery pickup location
-    thisDriverSim.send(Duration.ofMillis(MOVE_INTERVAL)).move();
+    thisDriverSim.send().move(Duration.ofMillis(MOVE_INTERVAL));
   }
 
   /** Periodically lets the food ordering app know the new location */
@@ -126,7 +127,7 @@ public class DriverMobileAppSimulator {
     // Move to the next location
     var newLocation = GeoUtils.moveToDestination(currentLocation, nextDestination);
     ctx.set(CURRENT_LOCATION, newLocation);
-    producer.sendDriverUpdate(ctx.key(), Location.SERDE.serialize(newLocation));
+    producer.sendDriverUpdate(ctx.key(), JacksonSerdes.of(Location.class).serialize(newLocation).toByteArray());
 
     // If we reached the destination, notify the food ordering app
     if (newLocation.equals(nextDestination)) {
@@ -160,12 +161,11 @@ public class DriverMobileAppSimulator {
     }
 
     // Call this method again after a short delay
-    thisDriverSim.send(Duration.ofMillis(MOVE_INTERVAL)).move();
+    thisDriverSim.send().move(Duration.ofMillis(MOVE_INTERVAL));
   }
 
   public static void main(String[] args) {
-    RestateHttpEndpointBuilder.builder()
-        .bind(new DriverMobileAppSimulator()) // external mobile app on driver's phone
-        .buildAndListen(9081);
+    // external mobile app on driver's phone
+    RestateHttpServer.listen(Endpoint.bind(new DriverMobileAppSimulator()), 9081);
   }
 }

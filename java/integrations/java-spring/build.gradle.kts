@@ -1,6 +1,6 @@
 plugins {
 	java
-    application
+	application
 	id("org.springframework.boot") version "3.3.1"
 	id("io.spring.dependency-management") version "1.1.5"
 	id("com.diffplug.spotless") version "6.25.0"
@@ -9,17 +9,11 @@ plugins {
 group = "dev.restate.examples"
 version = "0.0.1-SNAPSHOT"
 
-val restateVersion = "1.2.0"
-
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
-}
-
 repositories {
 	mavenCentral()
 }
+
+val restateVersion = "2.0.0"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
@@ -32,12 +26,17 @@ dependencies {
 
 	// Restate SDK
 	implementation("dev.restate:sdk-spring-boot-starter:$restateVersion")
-	implementation("dev.restate:sdk-serde-jackson:$restateVersion")
 
 	implementation("org.postgresql", "postgresql")
 
 	// Logging (optional)
 	implementation("org.apache.logging.log4j:log4j-core:2.24.1")
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
 }
 
 // Set main class

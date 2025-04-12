@@ -25,5 +25,4 @@ hs_err_pid*
 # Ignore target
 greeter/target
 
-.idea
 *.iml

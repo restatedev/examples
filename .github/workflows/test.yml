@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        jvm-version: [ 17 ]
+        jvm-version: [ 21 ]
 
     steps:
       - uses: actions/checkout@v3
@@ -63,6 +63,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Pull restate-server docker image
+        run: docker pull docker.io/restatedev/restate:latest
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:

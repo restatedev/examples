@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eufx -o pipefail
+
 NEW_VERSION=$1
 SELF_PATH=${BASH_SOURCE[0]:-"$(command -v -- "$0")"}
 PROJECT_ROOT="$(dirname "$SELF_PATH")/.."
@@ -14,6 +16,6 @@ function bump_go_sdk() {
 bump_go_sdk $PROJECT_ROOT/go/basics
 bump_go_sdk $PROJECT_ROOT/go/templates/go
 bump_go_sdk $PROJECT_ROOT/go/integrations/knative-go
-bump_go_sdk $PROJECT_ROOT/go/integrations/go-lambdka-cdk/lambda
+bump_go_sdk $PROJECT_ROOT/go/integrations/go-lambda-cdk/lambda
 bump_go_sdk $PROJECT_ROOT/go/tutorials/tour-of-restate-go
 bump_go_sdk $PROJECT_ROOT/go/patterns-use-cases

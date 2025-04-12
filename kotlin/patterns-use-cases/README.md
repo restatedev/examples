@@ -23,7 +23,7 @@ Use Restate as a queue. Schedule tasks for now or later and ensure the task is o
    - The **send requests** put the tasks in Restate's queue. The task submitter does not wait for the task response.
    - The **idempotency key** in the header is used by Restate to deduplicate requests.
    - If a delay is set, the task will be executed later and Restate will track the timer durably, like a **delayed task queue**.
-- [Async Task Worker](src/main/kotlin/my/example/queue/AsyncTaskWorker.kt): gets invoked by Restate for each task in the queue.
+- [Async Task Worker](src/main/kotlin/my/example/queue/AsyncTaskService.kt): gets invoked by Restate for each task in the queue.
 
 ## Sagas
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/kotlin/my/example/sagas/BookingWorkflow.kt)
@@ -33,7 +33,7 @@ An example of a trip reservation workflow, using the saga pattern to undo previo
 Durable Execution's guarantee to run code to the end in the presence of failures, and to deterministically recover previous steps from the journal, makes sagas easy.
 Every step pushes a compensation action (an undo operation) to a stack. In the case of an error, those operations are run.
 
-The main requirement is that steps are implemented as journaled operations, like `ctx.run()` or RPC/messaging.
+The main requirement is that steps are implemented as journaled operations, like `ctx.runBlock()` or RPC/messaging.
 
 The example shows two ways you can implement the compensation, depending on the characteristics of the API/system you interact with.
 1. **Two-phase commit**: The reservation is created and then confirmed or cancelled. The compensation executes 'cancel' and is added after the reservation is created.

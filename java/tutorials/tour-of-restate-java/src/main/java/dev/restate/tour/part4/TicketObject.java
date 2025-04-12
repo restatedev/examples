@@ -15,13 +15,12 @@ import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.serde.jackson.JacksonSerdes;
 import dev.restate.tour.auxiliary.TicketStatus;
 
 @VirtualObject
 public class TicketObject {
 
-    public static final StateKey<TicketStatus> STATE_KEY = StateKey.of("status", JacksonSerdes.of(TicketStatus.class));
+    public static final StateKey<TicketStatus> STATE_KEY = StateKey.of("status", TicketStatus.class);
 
     @Handler
     public boolean reserve(ObjectContext ctx) {

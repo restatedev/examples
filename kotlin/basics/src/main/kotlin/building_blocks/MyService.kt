@@ -3,8 +3,8 @@ package building_blocks
 import dev.restate.sdk.kotlin.*
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Service
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
-import dev.restate.sdk.kotlin.Context
+import dev.restate.sdk.http.vertx.RestateHttpServer
+import dev.restate.sdk.kotlin.endpoint.endpoint
 import utils.SubscriptionService
 import utils.SubscriptionServiceClient
 import utils.chargeBankAccount
@@ -58,10 +58,9 @@ class MyService {
         // If the service crashes two seconds later, Restate will invoke it after another 3 seconds
         ctx.sleep(5.seconds)
         // Example of waiting on a promise (call/awakeable/...) or a timeout
-        val timeout = ctx.timer(5.seconds)
-        Awaitable.any(awakeable, timeout).await()
+        awakeable.await(5.seconds)
         // Example of scheduling a handler for later on
-        SubscriptionServiceClient.fromContext(ctx, "my-sub-123").send(1.days).cancel()
+        SubscriptionServiceClient.fromContext(ctx, "my-sub-123").send().cancel(1.days)
 
         // 7. PERSIST RESULTS: avoid re-execution of actions on retries
         // Use this for non-deterministic actions or interaction with APIs, DBs, ...
@@ -73,8 +72,8 @@ class MyService {
 }
 
 fun main() {
-    RestateHttpEndpointBuilder.builder()
-        .bind(MyService())
-        .bind(SubscriptionService())
-        .buildAndListen()
+    RestateHttpServer.listen(endpoint {
+        bind(MyService())
+        bind(SubscriptionService())
+    })
 }

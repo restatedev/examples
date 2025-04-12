@@ -1,5 +1,3 @@
-import java.net.URI
-
 plugins {
   kotlin("jvm") version "2.0.0"
   // Kotlinx serialization (optional)
@@ -14,18 +12,14 @@ repositories {
   mavenCentral()
 }
 
-val restateVersion = "1.2.0"
+val restateVersion = "2.0.0"
 
 dependencies {
   // Annotation processor
   ksp("dev.restate:sdk-api-kotlin-gen:$restateVersion")
 
   // Restate SDK
-  implementation("dev.restate:sdk-api-kotlin:$restateVersion")
-  implementation("dev.restate:sdk-lambda:$restateVersion")
-
-  // Kotlinx serialization (optional)
-  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+  implementation("dev.restate:sdk-kotlin-lambda:$restateVersion")
 
   // AWS Lambda-specific logging, see https://docs.aws.amazon.com/lambda/latest/dg/java-logging.html#java-logging-log4j2
   val log4j2version = "2.23.1"

@@ -68,7 +68,7 @@ jobs:
         if: github.event.inputs.sdkJavaVersion != ''
         with:
           distribution: "temurin"
-          java-version: "17"
+          java-version: "21"
       - name: Setup Gradle
         if: github.event.inputs.sdkJavaVersion != ''
         uses: gradle/actions/setup-gradle@v3
@@ -112,6 +112,9 @@ jobs:
         with:
           components: clippy
           rustflags: ""
+      - name: Install cargo-edit
+        if: github.event.inputs.sdkRustVersion != ''
+        run: cargo install -f --no-default-features --features upgrade cargo-edit@0.13.2
       - name: Bump sdk-rust
         if: github.event.inputs.sdkRustVersion != ''
         run: ./.tools/update_rust_examples.sh ${{ inputs.sdkRustVersion }}

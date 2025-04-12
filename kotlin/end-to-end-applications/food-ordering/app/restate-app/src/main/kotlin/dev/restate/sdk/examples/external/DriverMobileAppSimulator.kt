@@ -12,15 +12,13 @@ package dev.restate.sdk.examples.external
 
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.VirtualObject
-import dev.restate.sdk.common.TerminalException
 import dev.restate.sdk.examples.AssignedDelivery
 import dev.restate.sdk.examples.DriverDigitalTwinClient
 import dev.restate.sdk.examples.Location
 import dev.restate.sdk.examples.clients.KafkaPublisher
 import dev.restate.sdk.examples.utils.GeoUtils
-import dev.restate.sdk.kotlin.KtStateKey
-import dev.restate.sdk.kotlin.ObjectContext
-import dev.restate.sdk.kotlin.runBlock
+import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.common.TerminalException
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -38,8 +36,8 @@ import org.apache.logging.log4j.Logger
 @VirtualObject
 class DriverMobileAppSimulator {
   companion object {
-    private val CURRENT_LOCATION = KtStateKey.json<Location>("current-location")
-    private val ASSIGNED_DELIVERY = KtStateKey.json<AssignedDelivery>("assigned-delivery")
+    private val CURRENT_LOCATION = stateKey<Location>("current-location")
+    private val ASSIGNED_DELIVERY = stateKey<AssignedDelivery>("assigned-delivery")
 
     private val logger: Logger = LogManager.getLogger(DriverMobileAppSimulator::class.java)
 
@@ -84,7 +82,7 @@ class DriverMobileAppSimulator {
 
     // If there is no job, ask again after a short delay
     if (getAssignedDeliveryResult.assignedDelivery == null) {
-      thisDriverSim.send(POLL_INTERVAL.milliseconds).pollForWork()
+      thisDriverSim.send().pollForWork(POLL_INTERVAL.milliseconds)
       return
     }
 
@@ -99,7 +97,7 @@ class DriverMobileAppSimulator {
     ctx.set(ASSIGNED_DELIVERY, newAssignedDelivery)
 
     // Start moving to the delivery pickup location
-    thisDriverSim.send(MOVE_INTERVAL.milliseconds).move()
+    thisDriverSim.send().move(MOVE_INTERVAL.milliseconds)
   }
 
   /** Periodically lets the food ordering app know the new location */
@@ -153,6 +151,6 @@ class DriverMobileAppSimulator {
     }
 
     // Call this method again after a short delay
-    thisDriverSim.send(MOVE_INTERVAL.milliseconds).move()
+    thisDriverSim.send().move(MOVE_INTERVAL.milliseconds)
   }
 }

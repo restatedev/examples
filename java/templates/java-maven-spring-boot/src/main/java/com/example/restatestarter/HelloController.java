@@ -1,6 +1,6 @@
 package com.example.restatestarter;
 
-import dev.restate.sdk.client.Client;
+import dev.restate.client.Client;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 

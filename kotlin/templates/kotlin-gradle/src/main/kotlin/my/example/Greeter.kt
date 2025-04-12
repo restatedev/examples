@@ -2,9 +2,9 @@ package my.example
 
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Service
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
-import dev.restate.sdk.kotlin.Context
-import dev.restate.sdk.kotlin.runBlock
+import dev.restate.sdk.http.vertx.RestateHttpServer
+import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.kotlin.endpoint.endpoint
 import kotlin.time.Duration.Companion.seconds
 
 @Service
@@ -24,8 +24,7 @@ class Greeter {
 }
 
 fun main() {
-  RestateHttpEndpointBuilder
-          .builder()
-          .bind(Greeter())
-          .buildAndListen()
+  RestateHttpServer.listen(endpoint {
+    bind(Greeter())
+  })
 }

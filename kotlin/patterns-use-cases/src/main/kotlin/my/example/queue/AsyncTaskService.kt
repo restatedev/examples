@@ -2,8 +2,9 @@ package my.example.queue
 
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Service
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
-import dev.restate.sdk.kotlin.Context
+import dev.restate.sdk.http.vertx.RestateHttpServer
+import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.kotlin.endpoint.endpoint
 import kotlinx.serialization.Serializable
 
 @Service
@@ -15,7 +16,9 @@ class AsyncTaskService {
 }
 
 fun main() {
-     RestateHttpEndpointBuilder.builder().bind(AsyncTaskService()).buildAndListen()
+    RestateHttpServer.listen(endpoint {
+        bind(AsyncTaskService())
+    })
 }
 
 @Serializable

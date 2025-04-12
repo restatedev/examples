@@ -3,11 +3,10 @@ package my.example.eventenrichment
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.VirtualObject
+import dev.restate.sdk.http.vertx.RestateHttpServer
+import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.kotlin.endpoint.endpoint
 import dev.restate.sdk.common.TerminalException
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder
-import dev.restate.sdk.kotlin.KtStateKey
-import dev.restate.sdk.kotlin.ObjectContext
-import dev.restate.sdk.kotlin.SharedObjectContext
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -19,7 +18,7 @@ data class LocationUpdate(val timestamp: String, val location: String)
 class PackageTracker {
 
     companion object {
-        private val PACKAGE_INFO = KtStateKey.json<PackageInfo>("package-info")
+        private val PACKAGE_INFO = stateKey<PackageInfo>("package-info")
     }
 
     @Handler
@@ -44,5 +43,5 @@ class PackageTracker {
 }
 
 fun main() {
-    RestateHttpEndpointBuilder.builder().bind(PackageTracker()).buildAndListen()
+    RestateHttpServer.listen(endpoint { bind(PackageTracker()) })
 }

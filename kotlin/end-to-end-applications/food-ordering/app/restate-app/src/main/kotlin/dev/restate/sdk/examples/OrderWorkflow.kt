@@ -13,11 +13,11 @@ package dev.restate.sdk.examples
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.VirtualObject
-import dev.restate.sdk.common.TerminalException
 import dev.restate.sdk.examples.clients.PaymentClient
 import dev.restate.sdk.examples.clients.RestaurantClient
 import dev.restate.sdk.examples.utils.GeoUtils
 import dev.restate.sdk.kotlin.*
+import dev.restate.sdk.common.TerminalException
 import kotlin.time.Duration.Companion.milliseconds
 
 /**
@@ -29,9 +29,9 @@ import kotlin.time.Duration.Companion.milliseconds
 class OrderWorkflow {
 
   companion object {
-    private val STATUS = KtStateKey.json<Status>("order-status")
-    private val PICKUP_CALLBACK_ID = KtStateKey.json<String>("pickup-callback-id")
-    private val DELIVERY_CALLBACK_ID = KtStateKey.json<String>("delivery-callback-id")
+    private val STATUS = stateKey<Status>("order-status")
+    private val PICKUP_CALLBACK_ID = stateKey<String>("pickup-callback-id")
+    private val DELIVERY_CALLBACK_ID = stateKey<String>("delivery-callback-id")
   }
 
   @Handler
