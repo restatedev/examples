@@ -32,7 +32,7 @@ PaymentStatus = typing.Literal["NEW", "COMPLETED_SUCCESSFULLY", "CANCELED"]
 
 
 @payment_processor.handler("makePayment")
-async def make_payment(ctx: restate.ObjectContext, payment: Payment):
+async def make_payment(ctx: restate.ObjectContext, payment: Payment) -> str:
     payment_id = ctx.key()
     status = await ctx.get(STATUS, type_hint=PaymentStatus) or "NEW"
 
