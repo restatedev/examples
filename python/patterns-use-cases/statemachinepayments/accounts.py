@@ -1,8 +1,12 @@
 import random
-
 import restate
-from restate.exceptions import TerminalError
 
+from restate.exceptions import TerminalError
+from pydantic import BaseModel
+
+class Result(BaseModel):
+    success: bool
+    message: str
 
 # A simple virtual object, to track accounts.
 # This is for simplicity to make this example work self-contained.

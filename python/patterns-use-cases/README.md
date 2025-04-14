@@ -21,7 +21,7 @@ Common tasks and patterns implemented with Restate:
 - **[Transactional Event Processing](README.md#transactional-event-processing)**: Processing events (from Kafka) to update various downstream systems in a transactional way. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](eventtransactions/app.py)
 - **[Event Enrichment / Joins](README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](eventenrichment/app.py)
 
-To get started, create a venv and install the requirements file:
+To get started, create a venv and install the requirements file (Python >= 3.11):
 
 ```shell
 python3 -m venv .venv
@@ -47,7 +47,7 @@ Every request gets processed durably, and deduplicated based on the idempotency 
 <summary><strong>Running the example</strong></summary>
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `python3 durablerpc/app.py`
+2. Start the service: `python durablerpc/app.py`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 Run the client to let it send a request to reserve a product:
@@ -92,7 +92,7 @@ Files to look at:
 2. Start the service: `python queue/app.py`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
-Submit a task with a delay: `python queue/client.py task123`
+Submit a task with a delay: `python queue/client.py task12345`
 
 You will see the task executed after
 ```
@@ -129,7 +129,7 @@ If the upload takes too long, however, the client asks the upload service to sen
 2. Start the service: `python syncasync/app.py`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
-Run the upload client with a userId: `python syncasync/client.py my_user_id12`
+Run the upload client with a userId: `python syncasync/client.py my_user_id123`
 
 This will submit an upload workflow to the data upload service.
 The workflow will run only once per ID, so you need to provide a new ID for each run.
@@ -289,15 +289,15 @@ echo "executing..."
 ```shell
 [2024-12-19 17:07:31,572] [698757] [INFO] - Beginning transition of a to up
 [2024-12-19 17:07:31,749] [698759] [INFO] - Beginning transition of b to up
-[2024-12-19 17:07:31,749] [698759] [ERROR] - A failure happened!
+[2024-12-19 17:07:31,749] [698759] [ERROR] - [👻 SIMULATED] A failure happened!
 ... rest of trace ...
 Exception: A failure happened!
 [2024-12-19 17:07:31,809] [698759] [INFO] - Beginning transition of b to up
-[2024-12-19 17:07:31,809] [698759] [ERROR] - A failure happened!
+[2024-12-19 17:07:31,809] [698759] [ERROR] - [👻 SIMULATED] A failure happened!
 ... rest of trace ...
 Exception: A failure happened!
 [2024-12-19 17:07:31,931] [698759] [INFO] - Beginning transition of b to up
-[2024-12-19 17:07:31,931] [698759] [ERROR] - A failure happened!
+[2024-12-19 17:07:31,931] [698759] [ERROR] - [👻 SIMULATED] A failure happened!
 ... rest of trace ...
 Exception: A failure happened!
 [2024-12-19 17:07:32,183] [698759] [INFO] - Beginning transition of b to up
@@ -703,8 +703,7 @@ The Package Tracker Virtual Object tracks the package details and its location h
 
 6. Register a new package via the RPC handler:
     ```shell
-    curl localhost:8080/package-tracker/package1/registerPackage \
-      --json '{"final_destination": "Bridge 6, Amsterdam"}'
+    curl localhost:8080/package-tracker/package1/registerPackage --json '{"final_destination": "Bridge 6, Amsterdam"}'
     ```
 
 7. Start a Kafka producer and publish some messages to update the location of the package on the `package-location-updates` topic:

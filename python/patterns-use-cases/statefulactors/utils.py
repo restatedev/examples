@@ -29,5 +29,5 @@ async def tear_down_machine(ctx: restate.Context, machine_id: str):
 
 def maybe_crash(probability: float = 0.5) -> None:
     if random.random() < probability:
-        logging.error("A failure happened!")
-        raise Exception("A failure happened!")
+        logging.error("[👻 SIMULATED] A failure happened!")
+        raise Exception("[👻 SIMULATED] A failure happened!")

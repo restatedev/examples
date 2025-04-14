@@ -8,6 +8,7 @@ logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(process)d] [%(l
 logger = logging.getLogger(__name__)
 
 RESTATE_URL = "http://localhost:8080"
+RESTATE_ADMIN_URL = "http://localhost:9070"
 
 
 def submit_and_await_task(task: TaskOpts):
@@ -25,13 +26,14 @@ def submit_and_await_task(task: TaskOpts):
     # ... Do something else, with task running in the background ...
 
     # Attach back to the task to retrieve the result
-    attach_url = f"{RESTATE_URL}/restate/invocation/AsyncTaskWorker/run/{idempotency_key}/attach"
-    response = httpx.get(attach_url)
+    response = httpx.get(f"{RESTATE_URL}/restate/invocation/AsyncTaskWorker/run/{idempotency_key}/attach")
     logging.info(f"Task result: {response.json()}")
 
     # Or cancel it
     invocation_id = handle.json().get("invocationId")
-    response = httpx.delete(f"{RESTATE_URL}/invocations/{invocation_id}")
+    response = httpx.delete(f"{RESTATE_ADMIN_URL}/invocations/{invocation_id}")
+    if response.status_code == 202:
+        logging.info(f"Task {invocation_id} cancelled successfully")
 
 
 

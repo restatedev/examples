@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import restate
 
 from pydantic import BaseModel
@@ -13,6 +15,7 @@ async_task_worker = restate.Service("AsyncTaskWorker")
 @async_task_worker.handler()
 async def run(ctx: restate.Context, params: TaskOpts):
     # ... some heavy work ...
+    await ctx.sleep(timedelta(minutes=5))
     return f"Finished work on task: {params.id}"
 
 

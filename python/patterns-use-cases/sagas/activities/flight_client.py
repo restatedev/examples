@@ -12,16 +12,16 @@ class FlightBookingRequest(BaseModel):
     passenger_name: str
 
 
-async def reserve(self, request: FlightBookingRequest) -> str:
+async def reserve(request: FlightBookingRequest) -> str:
     """Reserves a flight."""
     booking_id = str(uuid.uuid4())
     logger.info(f"Flight reservation created with id: {booking_id}")
     return booking_id
 
-async def confirm(self, flight_booking_id: str):
+async def confirm(flight_booking_id: str):
     """Confirms a flight booking."""
     logger.info(f"Flight reservation confirmed with id: {flight_booking_id}")
 
-async def cancel(self, flight_booking_id: str):
+async def cancel(flight_booking_id: str):
     """Cancels a flight booking."""
     logger.info(f"Flight reservation cancelled with id: {flight_booking_id}")

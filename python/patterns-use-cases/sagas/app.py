@@ -67,10 +67,10 @@ async def run(ctx: restate.WorkflowContext, req: BookingRequest):
         payment_id = await ctx.run("payment_id", lambda: str(uuid.uuid4()))
 
         # Register the refund as a compensation, using the idempotency key
-        compensations.append(lambda: ctx.run("refund", payment_client.refund, args=(payment_id,)))
+        compensations.append(lambda: ctx.run("Refund", payment_client.refund, args=(payment_id,)))
 
         # Do the payment using the idempotency key
-        await ctx.run("charge", payment_client.charge, args=(req.payment_info, payment_id,))
+        await ctx.run("Charge", payment_client.charge, args=(req.payment_info, payment_id,))
 
         # Confirm the flight and car reservations
         await ctx.run("Confirm flight", flight_client.confirm, args=(flight_booking_id,))
