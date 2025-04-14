@@ -32,11 +32,14 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
     # Durably executed action; write to other system
     async def create_user():
         return await create_user_entry(user)
+
     await ctx.run("create_user", create_user)
 
     # Send the email with the verification link
     secret = await ctx.run("secret", lambda: str(uuid.uuid4()))
-    await ctx.run("send_email", lambda: send_email_with_link(user_id, user.email, secret))
+    await ctx.run(
+        "send_email", lambda: send_email_with_link(user_id, user.email, secret)
+    )
 
     # Wait until user clicked email verification link
     # Promise gets resolved or rejected by the other handlers
@@ -49,6 +52,7 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
 async def click(ctx: WorkflowSharedContext, secret: str):
     # Send data to the workflow via a durable promise
     await ctx.promise("link_clicked").resolve(secret)
+
 
 app = restate.app(services=[user_signup])
 

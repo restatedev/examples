@@ -27,4 +27,6 @@ async def checkout(ctx: ObjectContext) -> bool:
 @cart.handler("expireTicket")
 async def expire_ticket(ctx: ObjectContext, ticket_id: str):
     return
+
+
 # <end_user_session>

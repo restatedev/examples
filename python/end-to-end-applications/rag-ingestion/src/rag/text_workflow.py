@@ -2,12 +2,13 @@ import restate
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from . types import NewTextDocument
-from . object_store import get_object_store_client
-from . vector_store import get_vector_store
-from . embeddings import get_embeddings_model
+from .types import NewTextDocument
+from .object_store import get_object_store_client
+from .vector_store import get_vector_store
+from .embeddings import get_embeddings_model
 
-text_workflow = restate.Workflow('text')
+text_workflow = restate.Workflow("text")
+
 
 @text_workflow.main()
 async def process_text(ctx: restate.WorkflowContext, request: NewTextDocument):
@@ -18,7 +19,9 @@ async def process_text(ctx: restate.WorkflowContext, request: NewTextDocument):
 
     async def download() -> str:
         object_store = get_object_store_client()
-        text_bytes = await object_store.aget_object(request["bucket_name"], request["object_name"])
+        text_bytes = await object_store.aget_object(
+            request["bucket_name"], request["object_name"]
+        )
         return text_bytes.decode("utf-8")
 
     text: str = await ctx.run("Download", download)
@@ -45,7 +48,10 @@ async def process_text(ctx: restate.WorkflowContext, request: NewTextDocument):
     #
 
     async def add_documents():
-        metadata = { "object_name": request["object_name"], "bucket_name": request["bucket_name"] }
+        metadata = {
+            "object_name": request["object_name"],
+            "bucket_name": request["bucket_name"],
+        }
         store = get_vector_store()
         await store.aupsert(chunks, vectors, metadata)
 

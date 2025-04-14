@@ -41,7 +41,9 @@ async def start_driver(ctx: ObjectContext):
 
     location = await ctx.run("random_location", lambda: geo.random_location())
     ctx.set(CURRENT_LOCATION, location)
-    await ctx.run("sending_location_to_kafka", lambda: send_location_to_kafka(ctx.key(), location))
+    await ctx.run(
+        "sending_location_to_kafka", lambda: send_location_to_kafka(ctx.key(), location)
+    )
 
     ctx.object_send(driver_digital_twin.set_driver_available, ctx.key(), DEMO_REGION)
     ctx.object_send(poll_for_work, ctx.key(), arg=None)
@@ -49,14 +51,15 @@ async def start_driver(ctx: ObjectContext):
 
 @mobile_app_object.handler()
 async def poll_for_work(ctx: ObjectContext):
-    optional_assigned_delivery = await ctx.object_call(driver_digital_twin.get_assigned_delivery, ctx.key(), arg=None)
+    optional_assigned_delivery = await ctx.object_call(
+        driver_digital_twin.get_assigned_delivery, ctx.key(), arg=None
+    )
     if optional_assigned_delivery is None:
         ctx.object_send(poll_for_work, ctx.key(), arg=None, send_delay=POLL_INTERVAL)
         return
 
     delivery = DeliveryState(
-        current_delivery=optional_assigned_delivery,
-        order_picked_up=False
+        current_delivery=optional_assigned_delivery, order_picked_up=False
     )
     ctx.set(ASSIGNED_DELIVERY, delivery)
 
@@ -68,25 +71,37 @@ async def move(ctx: ObjectContext):
     current_location = await ctx.get(CURRENT_LOCATION)
     assigned_delivery = await ctx.get(ASSIGNED_DELIVERY)
 
-    next_target = assigned_delivery["current_delivery"]["customer_location"] if assigned_delivery["order_picked_up"] \
+    next_target = (
+        assigned_delivery["current_delivery"]["customer_location"]
+        if assigned_delivery["order_picked_up"]
         else assigned_delivery["current_delivery"]["restaurant_location"]
+    )
 
     new_location, arrived = update_location(current_location, next_target)
 
     ctx.set(CURRENT_LOCATION, new_location)
-    await ctx.run("send_location_to_kafka", lambda: send_location_to_kafka(ctx.key(), current_location))
+    await ctx.run(
+        "send_location_to_kafka",
+        lambda: send_location_to_kafka(ctx.key(), current_location),
+    )
 
     if arrived:
         if assigned_delivery["order_picked_up"]:
             ctx.clear(ASSIGNED_DELIVERY)
-            await ctx.object_call(driver_digital_twin.notify_delivery_delivered, ctx.key(), arg=None)
+            await ctx.object_call(
+                driver_digital_twin.notify_delivery_delivered, ctx.key(), arg=None
+            )
             await ctx.sleep(PAUSE_BETWEEN_DELIVERIES)
-            ctx.object_send(driver_digital_twin.set_driver_available, ctx.key(), DEMO_REGION)
+            ctx.object_send(
+                driver_digital_twin.set_driver_available, ctx.key(), DEMO_REGION
+            )
             ctx.object_send(poll_for_work, ctx.key(), arg=None)
             return
 
         assigned_delivery["order_picked_up"] = True
         ctx.set(ASSIGNED_DELIVERY, assigned_delivery)
-        await ctx.object_call(driver_digital_twin.notify_delivery_pickup, ctx.key(), arg=None)
+        await ctx.object_call(
+            driver_digital_twin.notify_delivery_pickup, ctx.key(), arg=None
+        )
 
     ctx.object_send(move, ctx.key(), arg=None, send_delay=MOVE_INTERVAL)

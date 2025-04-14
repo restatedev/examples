@@ -6,3 +6,4 @@ langchain_community
 langchain-ollama
 langchain-qdrant
 pypdf
+black
