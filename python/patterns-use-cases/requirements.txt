@@ -1,5 +1,6 @@
 hypercorn
 restate_sdk==0.6.0
 pydantic
-requests
+httpx
 stripe
+black

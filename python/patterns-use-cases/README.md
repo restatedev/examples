@@ -3,25 +3,25 @@
 Common tasks and patterns implemented with Restate:
 
 #### Communication
-- **[Durable RPC, Idempotency and Concurrency](README.md#durable-rpc-idempotency--concurrency)**: Restate persists requests and makes sure they execute exactly-once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/durablerpc/client.py)
-- **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/queue/task_submitter.py)
-- **[Convert Sync Tasks to Async](README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/syncasync/client.py)
+- **[Durable RPC, Idempotency and Concurrency](README.md#durable-rpc-idempotency--concurrency)**: Restate persists requests and makes sure they execute exactly-once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](durablerpc/client.py)
+- **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](queue/client.py)
+- **[Convert Sync Tasks to Async](README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](syncasync/client.py)
 
 #### Orchestration patterns
-- **[Sagas](README.md#sagas)**: Preserve consistency by tracking undo actions and running them when code fails halfway through. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/sagas/booking_workflow.py)
-- **[Stateful Actors and State Machines](README.md#stateful-actors-and-state-machines)**: State machine with a set of transitions, built as a Restate Virtual Object for automatic state persistence. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/statefulactors/machine_operator.py)
-- **[Payment State Machines (Advanced)](README.md#payment-state-machines)**: State machine example that tracks a payment process, ensuring consistent processing and cancellations. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/statemachinepayments/payment_processor.py)
+- **[Sagas](README.md#sagas)**: Preserve consistency by tracking undo actions and running them when code fails halfway through. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](sagas/app.py)
+- **[Stateful Actors and State Machines](README.md#stateful-actors-and-state-machines)**: State machine with a set of transitions, built as a Restate Virtual Object for automatic state persistence. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](statefulactors/app.py)
+- **[Payment State Machines (Advanced)](README.md#payment-state-machines)**: State machine example that tracks a payment process, ensuring consistent processing and cancellations. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](statemachinepayments/payment_processor.py)
 
 #### Scheduling
-- **[Scheduling Tasks](README.md#scheduling-tasks)**: Restate as scheduler: Schedule tasks for later and ensure the task is triggered and executed. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/schedulingtasks/payment_tracker.py)
-- **[Parallelizing Work](README.md#parallelizing-work)**: Execute a list of tasks in parallel and then gather their result. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/parallelizework/fan_out_worker.py)
-- **[Payment Signals (Advanced)](README.md#payment-signals)**: Handling async payment callbacks for slow payments, with Stripe. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/signalspayments/payment_service.py)
+- **[Scheduling Tasks](README.md#scheduling-tasks)**: Restate as scheduler: Schedule tasks for later and ensure the task is triggered and executed. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](schedulingtasks/app.py)
+- **[Parallelizing Work](README.md#parallelizing-work)**: Execute a list of tasks in parallel and then gather their result. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](parallelizework/app.py)
+- **[Payment Signals (Advanced)](README.md#payment-signals)**: Handling async payment callbacks for slow payments, with Stripe. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](signalspayments/app.py)
 
 #### Event processing
-- **[Transactional Event Processing](README.md#transactional-event-processing)**: Processing events (from Kafka) to update various downstream systems in a transactional way. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventtransactions/user_feed.py)
-- **[Event Enrichment / Joins](README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/eventenrichment/package_tracker.py)
+- **[Transactional Event Processing](README.md#transactional-event-processing)**: Processing events (from Kafka) to update various downstream systems in a transactional way. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](eventtransactions/app.py)
+- **[Event Enrichment / Joins](README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](eventenrichment/app.py)
 
-To get started, create a venv and install the requirements file:
+To get started, create a venv and install the requirements file (Python >= 3.11):
 
 ```shell
 python3 -m venv .venv
@@ -30,7 +30,7 @@ pip install -r requirements.txt
 ```
 
 ## Durable RPC, Idempotency & Concurrency
-[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/durablerpc/client.py)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](durablerpc/client.py)
 
 This example shows:
 - **Durable RPC**: once a request has reached Restate, it is guaranteed to be processed
@@ -40,59 +40,59 @@ This example shows:
 The example shows how you can programmatically submit a requests to a Restate service.
 Every request gets processed durably, and deduplicated based on the idempotency key.
 
-- The [client](src/durablerpc/client.py) that receives product reservation requests and forwards them to the product service.
-- The [Product service](src/durablerpc/product_service.py) is a Restate service that durably processes the reservation requests and deduplicates them. Each product can be reserved only once.
+- The [client](durablerpc/client.py) that receives product reservation requests and forwards them to the product service.
+- The [Product service](durablerpc/app.py) is a Restate service that durably processes the reservation requests and deduplicates them. Each product can be reserved only once.
 
 <details>
 <summary><strong>Running the example</strong></summary>
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/durablerpc/product_service:app`
+2. Start the service: `python durablerpc/app.py`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 Run the client to let it send a request to reserve a product:
 ```shell
-python src/durablerpc/client.py product1 reservation1
+python durablerpc/client.py product1 reservation1
 ```
 
 This will give us `{"reserved": True}`.
 
 Let's change the reservation ID and run the request again:
 ```shell
-python src/durablerpc/client.py product1 reservation2
+python durablerpc/client.py product1 reservation2
 ```
 
 This will give us `{"reserved": False}` because this product is already reserved, so we can't reserve it again.
 
 However, if we run the first request again with same reservation ID, we will get `{"reserved": True}` again:
 ```shell
-python src/durablerpc/client.py product1 reservation1
+python durablerpc/client.py product1 reservation1
 ```
 Restate deduplicated the request (with the reservation ID as idempotency key) and returned the first response.
 
 </details>
 
 ## (Delayed) Message Queue
-[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/queue/task_submitter.py)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](queue/client.py)
 
 Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.
 
 Files to look at:
-- [Task Submitter](src/queue/task_submitter.py): schedules tasks via send requests with and idempotency key.
+- [Task Submitter](queue/client.py): schedules tasks via send requests with and idempotency key.
     - The **send requests** put the tasks in Restate's queue. The task submitter does not wait for the task response.
     - The **idempotency key** in the header is used by Restate to deduplicate requests.
     - If a delay is set, the task will be executed later and Restate will track the timer durably, like a **delayed task queue**.
-- [Async Task Worker](src/queue/async_task_worker.py): gets invoked by Restate for each task in the queue.
+- [Async Task Worker](queue/app.py): gets invoked by Restate for each task in the queue.
 
 
 <details>
 <summary><strong>Running the example</strong></summary>
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/queue/async_task_worker:app`
+2. Start the service: `python queue/app.py`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
-Submit a task with a delay: `python src/queue/task_submitter.py task123`
+Submit a task with a delay: `python queue/client.py task12345`
 
 You will see the task executed after
 ```
@@ -101,7 +101,7 @@ Task submitted: {'invocationId': 'inv_1lloi4vK3cnG0T2Tsteh8rd99NrGpgtsYh', 'stat
 Task result: Finished work on task: task123
 ```
 
-If we resubmit the same task: `python src/queue/task_submitter.py task123`,
+If we resubmit the same task: `python queue/client.py task123`,
 you will see that the task is not executed again (signals `PreviouslyAccepted`), but the same result is returned:
 ```
 Submitting task with idempotency key: task123
@@ -112,13 +112,13 @@ Task result: Finished work on task: task123
 </details>
 
 ## Convert Sync Tasks to Async
-[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/syncasync/client.py)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](syncasync/client.py)
 
 This example shows how to use the Restate SDK to **kick of a synchronous task and turn it into an asynchronous one if it takes too long**.
 
-The example implements a [data upload service](src/syncasync/data_upload_service.py), that creates a bucket, uploads data to it, and then returns the URL.
+The example implements a [data upload service](syncasync/app.py), that creates a bucket, uploads data to it, and then returns the URL.
 
-The [client](src/syncasync/client.py) does a synchronous request to upload the file, and the server will respond with the URL.
+The [client](syncasync/client.py) does a synchronous request to upload the file, and the server will respond with the URL.
 
 If the upload takes too long, however, the client asks the upload service to send the URL later in an email.
 
@@ -126,10 +126,10 @@ If the upload takes too long, however, the client asks the upload service to sen
 <summary><strong>Running the example</strong></summary>
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/syncasync/data_upload_service:app`
+2. Start the service: `python syncasync/app.py`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
-Run the upload client with a userId: `python src/syncasync/client.py my_user_id12`
+Run the upload client with a userId: `python syncasync/client.py my_user_id123`
 
 This will submit an upload workflow to the data upload service.
 The workflow will run only once per ID, so you need to provide a new ID for each run.
@@ -175,7 +175,7 @@ You see the call to `resultAsEmail` after the upload took too long, and the send
 </details>
 
 ## Sagas
-[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/sagas/booking_workflow.py)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](sagas/app.py)
 
 An example of a trip reservation workflow, using the saga pattern to undo previous steps in case of an error.
 
@@ -194,14 +194,14 @@ Note that the compensating actions need to be idempotent.
 <summary><strong>Running the example</strong></summary>
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/sagas/booking_workflow:app`
+2. Start the service: `python sagas/app.py`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 Have a look at the logs to see how the compensations run in case of a terminal error.
 
 Start the workflow:
 ```shell
-curl -X POST localhost:8080/BookingWorkflow/trip123/run -H 'content-type: application/json' -d '{
+curl localhost:8080/BookingWorkflow/trip123/run --json '{
   "flights": {
     "flight_id": "12345",
     "passenger_name": "John Doe"
@@ -230,7 +230,7 @@ Have a look at the logs to see the cancellations of the flight and car booking i
 </details>
 
 ## Stateful Actors and State Machines
-[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/statefulactors/machine_operator.py)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](statefulactors/app.py)
 
 This example implements a State Machine with a Virtual Object.
 
@@ -257,7 +257,7 @@ avoiding accidental state corruption and concurrency issues.
 <summary><strong>Running the example</strong></summary>
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/statefulactors/machine_operator:app`
+2. Start the service: `python statefulactors/app.py`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 ### Demo scenario
@@ -289,15 +289,15 @@ echo "executing..."
 ```shell
 [2024-12-19 17:07:31,572] [698757] [INFO] - Beginning transition of a to up
 [2024-12-19 17:07:31,749] [698759] [INFO] - Beginning transition of b to up
-[2024-12-19 17:07:31,749] [698759] [ERROR] - A failure happened!
+[2024-12-19 17:07:31,749] [698759] [ERROR] - [👻 SIMULATED] A failure happened!
 ... rest of trace ...
 Exception: A failure happened!
 [2024-12-19 17:07:31,809] [698759] [INFO] - Beginning transition of b to up
-[2024-12-19 17:07:31,809] [698759] [ERROR] - A failure happened!
+[2024-12-19 17:07:31,809] [698759] [ERROR] - [👻 SIMULATED] A failure happened!
 ... rest of trace ...
 Exception: A failure happened!
 [2024-12-19 17:07:31,931] [698759] [INFO] - Beginning transition of b to up
-[2024-12-19 17:07:31,931] [698759] [ERROR] - A failure happened!
+[2024-12-19 17:07:31,931] [698759] [ERROR] - [👻 SIMULATED] A failure happened!
 ... rest of trace ...
 Exception: A failure happened!
 [2024-12-19 17:07:32,183] [698759] [INFO] - Beginning transition of b to up
@@ -313,7 +313,7 @@ Exception: A failure happened!
 </details>
 
 ## Payment State Machines
-[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/statemachinepayments/payment_processor.py)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](statemachinepayments/payment_processor.py)
 
 This example shows how to build a reliable payment state machine.
 
@@ -340,15 +340,14 @@ and failures.
 <summary><strong>Running the example</strong></summary>
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/statemachinepayments/payment_processor:app`
+2. Start the service: `python statemachinepayments/app.py`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 Send some requests:
 
 - Make a payment
   ```shell
-  curl -X POST localhost:8080/PaymentProcessor/some-string-id/makePayment -H 'content-type: application/json' \
-   -d '{  "account_id": "abc", "amount_cents": 100 }'
+  curl localhost:8080/PaymentProcessor/some-string-id/makePayment --json '{  "account_id": "abc", "amount_cents": 100 }'
   ```
 
 - Cancel a payment. The 'key' parameter is the idempotency token, there is no further request data.
@@ -383,7 +382,7 @@ restate kv get PaymentProcessor some-string-id
 </details>
 
 ## Scheduling Tasks
-[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/schedulingtasks/payment_tracker.py)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](schedulingtasks/app.py)
 
 An example of a handler that processes Stripe payment events.
 On payment failure, it sends reminder emails to the customer. After a certain number of reminders, it escalates the invoice to the support team.
@@ -402,7 +401,7 @@ This example shows:
 To run the example, you might want to reduce the time between scheduled calls to see the scheduling in action.
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/schedulingtasks/payment_tracker:app`
+2. Start the service: `python schedulingtasks/app.py`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 Send some requests:
@@ -452,19 +451,51 @@ If we lower the time between scheduled calls, we can see the reminder emails bei
 </details>
 
 ## Parallelizing work
-[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/parallelizework/fan_out_worker.py)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](parallelizework/app.py)
 
 This example shows how to use the Restate SDK to **execute a list of tasks in parallel and then gather their result**.
 Also known as fan-out, fan-in.
 
-The example implements a [worker service](src/parallelizework/fan_out_worker.py), that takes a task as input.
+The example implements a [worker service](parallelizework/app.py), that takes a task as input.
 It then splits the task into subtasks, executes them in parallel, and then gathers the results.
 
 Restate guarantees and manages the execution of all the subtasks across failures.
 You can run this on FaaS infrastructure, like AWS Lambda, and it will scale automatically.
 
+<details>
+<summary><strong>Running the example</strong></summary>
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `python parallelizework/app.py`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+Send a request:
+```shell
+curl localhost:8080/FanOutWorker/run --json '{"description": "get out of bed,shower,make coffee,have breakfast"}'
+```
+
+Check in the logs how all the tasks get spawned in parallel.
+
+<details>
+<summary>View logs</summary>
+
+```
+[2025-04-11 17:29:29,056] [672424] [INFO] - Started executing subtask: have breakfast
+[2025-04-11 17:29:29,057] [672424] [INFO] - Started executing subtask: shower
+[2025-04-11 17:29:29,057] [672424] [INFO] - Started executing subtask: make coffee
+[2025-04-11 17:29:29,057] [672424] [INFO] - Started executing subtask: get out of bed
+[2025-04-11 17:29:34,057] [672424] [INFO] - Execution subtask finished: description='get out of bed'
+[2025-04-11 17:29:37,057] [672424] [INFO] - Execution subtask finished: description='shower'
+[2025-04-11 17:29:37,058] [672424] [INFO] - Execution subtask finished: description='have breakfast'
+[2025-04-11 17:29:39,057] [672424] [INFO] - Execution subtask finished: description='make coffee'
+[2025-04-11 17:29:39,065] [672424] [INFO] - Aggregated result: description='get out of bed': DONE,description='shower': DONE,description='make coffee': DONE,description='have breakfast': DONE
+```
+
+</details>
+</details>
+
 ## Payment Signals
-[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/signalspayments/payment_service.py)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](signalspayments/app.py)
 
 This example issues a payment request to Stripe.
 When calling Stripe, the result often comes synchronously as a response API call.
@@ -488,14 +519,14 @@ If you want to run everything locally, you also need a tool like _ngrok_ to forw
 webhooks to your local machine.
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `python -m hypercorn --config hypercorn-config.toml src/signalspayments/payment_service:app`
+2. Start the service: `python signalspayments/app.py`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 4. Create a free Stripe test account. This requires no verification, but you can only work
    with test data, not make real payments. Good enough for this example.
 
 5. In the [Stripe UI](https://dashboard.stripe.com), go to ["Developers" -> "API Keys"](https://dashboard.stripe.com/test/apikeys) and copy the _secret key_ (`sk_test_...`).
-   Add it to the [stripe_utils.py](src/signalspayments/stripe_utils.py) file. Because this is a dev-only
+   Add it to the [stripe_utils.py](signalspayments/stripe_utils.py) file. Because this is a dev-only
    API key, it supports only test data, so it isn't super sensitive.
 
 6. Run launch _ngrok_:
@@ -511,14 +542,14 @@ webhooks to your local machine.
          Example: `https://<some random numbers>.ngrok-free.app/payments/processWebhook`
    - Select all _"Payment Intent"_ event types.
 
-8. Put the webhook secret (`whsec_...`) in the [stripe_utils.py](src/signalspayments/stripe_utils.py) file.
+8. Put the webhook secret (`whsec_...`) in the [stripe_utils.py](signalspayments/stripe_utils.py) file.
 
 Use as test data `pm_card_visa` for a successful payment and `pm_card_visa_chargeDeclined` for a declined payment.
 Because the test data rarely triggers an async response, this example's tools can mimic that
 if you add `"delayedStatus": true` to the request.
 
 ```shell
-curl localhost:8080/payments/processPayment -H 'content-type: application/json' -d '{
+curl localhost:8080/payments/processPayment --json '{
         "payment_method_id": "pm_card_visa",
         "amount": 109,
         "delayed_status": true
@@ -537,7 +568,7 @@ You will see the synchronous response and the webhook call in the logs:
 
 And for declined payments
 ```shell
-curl localhost:8080/payments/processPayment -H 'content-type: application/json' -d '{
+curl localhost:8080/payments/processPayment --json '{
         "payment_method_id": "pm_card_visa_chargeDeclined",
         "amount": 109,
         "delayed_status": true
@@ -565,7 +596,7 @@ A few notes:
 </details>
 
 ## Transactional Event Processing
-[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/eventtransactions/user_feed.py)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](eventtransactions/app.py)
 
 Processing events (from Kafka) to update various downstream systems.
 - Durable side effects with retries and recovery of partial progress
@@ -581,12 +612,11 @@ Processing events (from Kafka) to update various downstream systems.
 
 1. Start the Kafka broker via Docker Compose: `docker compose up -d`.
 2. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) with the Kafka broker configuration in a separate shell: `restate-server --config-file restate.toml`
-3. Start the service: `python -m hypercorn --config hypercorn-config.toml src/eventtransactions/user_feed:app`
+3. Start the service: `python eventtransactions/app.py`
 4. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 5. Let Restate subscribe to the Kafka topic `social-media-posts` and invoke `UserFeed/processPost` on each message.
     ```shell
-    curl localhost:9070/subscriptions -H 'content-type: application/json' \
-    -d '{
+    curl localhost:9070/subscriptions --json '{
         "source": "kafka://my-cluster/social-media-posts",
         "sink": "service://UserFeed/processPost",
         "options": {"auto.offset.reset": "earliest"}
@@ -643,7 +673,7 @@ You can try it out by killing Restate or the service halfway through processing 
 </details>
 
 ## Event Enrichment / Joins
-[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/eventenrichment/package_tracker.py)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](eventenrichment/app.py)
 
 This example shows an example of:
 - **Event enrichment** over different sources: RPC and Kafka
@@ -660,12 +690,11 @@ The Package Tracker Virtual Object tracks the package details and its location h
 
 1. Start the Kafka broker via Docker Compose: `docker compose up -d`.
 2. Start Restate Server with the Kafka broker configuration in a separate shell: `restate-server --config-file restate.toml`
-3. Start the service: `python -m hypercorn --config hypercorn-config.toml src/eventenrichment/package_tracker:app`
+3. Start the service: `python eventenrichment/app.py`
 4. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 5. Let Restate subscribe to the Kafka topic `package-location-updates` and invoke `package-tracker/updateLocation` on each message.
     ```shell
-    curl localhost:9070/subscriptions -H 'content-type: application/json' \
-    -d '{
+    curl localhost:9070/subscriptions --json '{
         "source": "kafka://my-cluster/package-location-updates",
         "sink": "service://package-tracker/updateLocation",
         "options": {"auto.offset.reset": "earliest"}
@@ -674,8 +703,7 @@ The Package Tracker Virtual Object tracks the package details and its location h
 
 6. Register a new package via the RPC handler:
     ```shell
-    curl localhost:8080/package-tracker/package1/registerPackage \
-      -H 'content-type: application/json' -d '{"final_destination": "Bridge 6, Amsterdam"}'
+    curl localhost:8080/package-tracker/package1/registerPackage --json '{"final_destination": "Bridge 6, Amsterdam"}'
     ```
 
 7. Start a Kafka producer and publish some messages to update the location of the package on the `package-location-updates` topic:
