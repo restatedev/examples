@@ -3,7 +3,10 @@ import uuid
 
 from pydantic import BaseModel
 
-logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(process)d] [%(levelname)s] - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] [%(process)d] [%(levelname)s] - %(message)s",
+)
 
 
 class CarRentalRequest(BaseModel):
@@ -18,6 +21,7 @@ async def reserve(request: CarRentalRequest) -> str:
     booking_id = str(uuid.uuid4())
     logging.info(f"Car rental reservation created with id: {booking_id}")
     return booking_id
+
 
 async def confirm(booking_id: str):
     # this should implement the communication with the rental

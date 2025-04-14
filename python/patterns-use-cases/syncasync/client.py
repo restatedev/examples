@@ -2,7 +2,10 @@ import argparse
 import logging
 import httpx
 
-logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(process)d] [%(levelname)s] - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] [%(process)d] [%(levelname)s] - %(message)s",
+)
 logger = logging.getLogger(__name__)
 
 

@@ -22,6 +22,7 @@ PAYMENT = "payment"
 
 EXPIRY_TIMEOUT = timedelta(days=1)
 
+
 class Payment(BaseModel):
     account_id: str
     amount_cents: int
@@ -42,9 +43,7 @@ async def make_payment(ctx: restate.ObjectContext, payment: Payment):
 
     # Charge the target account
     payment_result = await ctx.object_call(
-        withdraw,
-        key=payment.account_id,
-        arg=payment.amount_cents
+        withdraw, key=payment.account_id, arg=payment.amount_cents
     )
 
     # Remember only on success, so that on failure (when we didn't charge) the external
@@ -82,5 +81,3 @@ async def cancel_payment(ctx: restate.ObjectContext):
 @payment_processor.handler()
 async def expire(ctx: restate.ObjectContext):
     ctx.clear_all()
-
-

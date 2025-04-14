@@ -1,8 +1,7 @@
-from datetime import timedelta
-
 import restate
 
 from pydantic import BaseModel
+from datetime import timedelta
 
 
 class TaskOpts(BaseModel):
@@ -24,6 +23,7 @@ app = restate.app([async_task_worker])
 if __name__ == "__main__":
     import hypercorn
     import asyncio
+
     conf = hypercorn.Config()
     conf.bind = ["0.0.0.0:9080"]
     asyncio.run(hypercorn.asyncio.serve(app, conf))

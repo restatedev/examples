@@ -4,7 +4,10 @@ import logging
 from pydantic import BaseModel
 from random import randint
 
-logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(process)d] [%(levelname)s] - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] [%(process)d] [%(levelname)s] - %(message)s",
+)
 logger = logging.getLogger(__name__)
 
 
@@ -31,7 +34,11 @@ class Result(BaseModel):
 async def split(task: Task) -> SubTaskList:
     # Split the task into subTasks
     subtask_descriptions = task.description.split(",")
-    sub_tasks = SubTaskList(subtasks=[SubTask(description=description) for description in subtask_descriptions])
+    sub_tasks = SubTaskList(
+        subtasks=[
+            SubTask(description=description) for description in subtask_descriptions
+        ]
+    )
     return sub_tasks
 
 

@@ -2,7 +2,7 @@ import restate
 from datetime import timedelta
 from utils import send_reminder_email, escalate_to_human, StripeEvent
 
-payment_tracker = restate.VirtualObject("PaymentTracker") # one instance per invoice ID
+payment_tracker = restate.VirtualObject("PaymentTracker")  # one instance per invoice ID
 
 
 # Stripe sends us webhook events for invoice payment attempts
@@ -23,12 +23,14 @@ async def on_payment_failure(ctx: restate.ObjectContext, event: StripeEvent):
 
         # Schedule next reminder via a delayed self call
         ctx.object_send(
-            on_payment_failure, # this handler
-            ctx.key(), # this object invoice id
+            on_payment_failure,  # this handler
+            ctx.key(),  # this object invoice id
             event,
-            send_delay=timedelta(days=1))
+            send_delay=timedelta(days=1),
+        )
     else:
         await ctx.run("escalate", lambda: escalate_to_human(event))
+
 
 app = restate.app([payment_tracker])
 
@@ -36,6 +38,7 @@ app = restate.app([payment_tracker])
 if __name__ == "__main__":
     import hypercorn
     import asyncio
+
     conf = hypercorn.Config()
     conf.bind = ["0.0.0.0:9080"]
     asyncio.run(hypercorn.asyncio.serve(app, conf))

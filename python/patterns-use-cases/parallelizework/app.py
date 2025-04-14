@@ -37,7 +37,10 @@ async def run(ctx: restate.Context, task: Task) -> Result:
     subtasks = await ctx.run("split task", split, args=(task,))
 
     # Fan out the subtasks - run them in parallel
-    result_promises = [ctx.run(f"execute {subtask}", execute_subtask, args=(subtask,)) for subtask in subtasks.subtasks]
+    result_promises = [
+        ctx.run(f"execute {subtask}", execute_subtask, args=(subtask,))
+        for subtask in subtasks.subtasks
+    ]
 
     # Fan in - Aggregate the results
     results_done = await restate.gather(*result_promises)
@@ -45,11 +48,13 @@ async def run(ctx: restate.Context, task: Task) -> Result:
 
     return aggregate(results)
 
+
 app = restate.app([fan_out_worker])
 
 if __name__ == "__main__":
     import hypercorn
     import asyncio
+
     conf = hypercorn.Config()
     conf.bind = ["0.0.0.0:9080"]
     asyncio.run(hypercorn.asyncio.serve(app, conf))

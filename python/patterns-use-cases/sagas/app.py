@@ -53,27 +53,50 @@ async def run(ctx: restate.WorkflowContext, req: BookingRequest):
     try:
         # Reserve the flights; Restate remembers the reservation ID
         # This sends an HTTP request via Restate to the Restate flights service
-        flight_booking_id = await ctx.run("Reserve flights", flight_client.reserve, args=(req.flights,))
+        flight_booking_id = await ctx.run(
+            "Reserve flights", flight_client.reserve, args=(req.flights,)
+        )
         # Use the flightBookingId to register the undo action for the flight reservation,
         # or later confirm the reservation.
-        compensations.append(lambda: ctx.run("Cancel flights", flight_client.cancel, args=(flight_booking_id,)))
+        compensations.append(
+            lambda: ctx.run(
+                "Cancel flights", flight_client.cancel, args=(flight_booking_id,)
+            )
+        )
 
         # Reserve the car and let Restate remember the reservation ID
-        car_booking_id = await ctx.run("Reserve car", car_rental_client.reserve, args=(req.car,))
+        car_booking_id = await ctx.run(
+            "Reserve car", car_rental_client.reserve, args=(req.car,)
+        )
         # Register the undo action for the car rental.
-        compensations.append(lambda: ctx.run("Cancel car", car_rental_client.cancel, args=(car_booking_id,)))
+        compensations.append(
+            lambda: ctx.run(
+                "Cancel car", car_rental_client.cancel, args=(car_booking_id,)
+            )
+        )
 
         # Generate an idempotency key for the payment
         payment_id = await ctx.run("payment_id", lambda: str(uuid.uuid4()))
 
         # Register the refund as a compensation, using the idempotency key
-        compensations.append(lambda: ctx.run("Refund", payment_client.refund, args=(payment_id,)))
+        compensations.append(
+            lambda: ctx.run("Refund", payment_client.refund, args=(payment_id,))
+        )
 
         # Do the payment using the idempotency key
-        await ctx.run("Charge", payment_client.charge, args=(req.payment_info, payment_id,))
+        await ctx.run(
+            "Charge",
+            payment_client.charge,
+            args=(
+                req.payment_info,
+                payment_id,
+            ),
+        )
 
         # Confirm the flight and car reservations
-        await ctx.run("Confirm flight", flight_client.confirm, args=(flight_booking_id,))
+        await ctx.run(
+            "Confirm flight", flight_client.confirm, args=(flight_booking_id,)
+        )
         await ctx.run("Confirm car", car_rental_client.confirm, args=(car_booking_id,))
 
     # Terminal errors tell Restate not to retry, but to compensate and fail the workflow
@@ -91,6 +114,7 @@ app = restate.app([booking_workflow])
 if __name__ == "__main__":
     import hypercorn
     import asyncio
+
     conf = hypercorn.Config()
     conf.bind = ["0.0.0.0:9080"]
     asyncio.run(hypercorn.asyncio.serve(app, conf))

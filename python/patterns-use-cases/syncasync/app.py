@@ -3,7 +3,10 @@ import restate
 
 from utils import upload_data, create_s3_bucket, send_email
 
-logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(process)d] [%(levelname)s] - %(message)s')
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(asctime)s] [%(process)d] [%(levelname)s] - %(message)s",
+)
 logger = logging.getLogger(__name__)
 
 data_upload_service = restate.Workflow("DataUploadService")
@@ -23,7 +26,14 @@ async def run(ctx: restate.WorkflowContext) -> str:
 async def result_as_email(ctx: restate.WorkflowSharedContext, email: str):
     logging.info("Slow upload: client requested to be notified via email")
     url = await ctx.promise("url").value()
-    await ctx.run("email", send_email, args=(email, url,))
+    await ctx.run(
+        "email",
+        send_email,
+        args=(
+            email,
+            url,
+        ),
+    )
 
 
 app = restate.app([data_upload_service])
@@ -32,6 +42,7 @@ app = restate.app([data_upload_service])
 if __name__ == "__main__":
     import hypercorn
     import asyncio
+
     conf = hypercorn.Config()
     conf.bind = ["0.0.0.0:9080"]
     asyncio.run(hypercorn.asyncio.serve(app, conf))

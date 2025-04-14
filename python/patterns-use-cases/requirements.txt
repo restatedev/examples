@@ -3,3 +3,4 @@ restate_sdk==0.6.0
 pydantic
 httpx
 stripe
+black

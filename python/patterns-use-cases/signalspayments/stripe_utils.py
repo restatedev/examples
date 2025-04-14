@@ -17,7 +17,7 @@ class PaymentRequest(BaseModel):
 
 
 def is_payment_intent(event: stripe.Event):
-    return event['type'].startswith("payment_intent")
+    return event["type"].startswith("payment_intent")
 
 
 def parse_webhook_call(request_body, signature):
@@ -25,9 +25,7 @@ def parse_webhook_call(request_body, signature):
         raise TerminalError("Missing 'stripe-signature' header.", status_code=400)
     try:
         return stripe.Webhook.construct_event(
-            payload=request_body,
-            sig_header=signature,
-            secret=webhook_secret
+            payload=request_body, sig_header=signature, secret=webhook_secret
         )
     except Exception as err:
         raise TerminalError(f"Webhook Error: {err}", status_code=400)
@@ -35,34 +33,36 @@ def parse_webhook_call(request_body, signature):
 
 async def create_payment_intent(request) -> dict:
     request_options = {
-        'idempotency_key': request['idempotency_key'],
+        "idempotency_key": request["idempotency_key"],
     }
 
     try:
         payment_intent = stripe.PaymentIntent.create(
-            amount=request['amount'],
+            amount=request["amount"],
             currency="usd",
-            payment_method=request['payment_method_id'],
+            payment_method=request["payment_method_id"],
             confirm=True,
             confirmation_method="automatic",
             return_url="https://restate.dev/",
             metadata={
-                RESTATE_CALLBACK_ID: request['intent_webhook_id'],
+                RESTATE_CALLBACK_ID: request["intent_webhook_id"],
             },
-            **request_options
+            **request_options,
         )
 
-        if request.get('delayed_status'):
-            payment_intent['status'] = "processing"
+        if request.get("delayed_status"):
+            payment_intent["status"] = "processing"
 
         return payment_intent
     except stripe.error.CardError as error:
         payment_intent = error.error.payment_intent
-        if request.get('delayed_status') and payment_intent:
-            payment_intent['status'] = "processing"
+        if request.get("delayed_status") and payment_intent:
+            payment_intent["status"] = "processing"
             return payment_intent
         else:
-            raise TerminalError(f"Payment declined: {payment_intent.get('status')} - {error.user_message}")
+            raise TerminalError(
+                f"Payment declined: {payment_intent.get('status')} - {error.user_message}"
+            )
     except Exception as error:
         raise error
 

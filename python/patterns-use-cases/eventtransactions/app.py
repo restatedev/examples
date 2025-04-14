@@ -2,7 +2,13 @@ import restate
 
 from datetime import timedelta
 
-from utils import create_post, get_post_status, update_user_feed, SocialMediaPost, Status
+from utils import (
+    create_post,
+    get_post_status,
+    update_user_feed,
+    SocialMediaPost,
+    Status,
+)
 
 # Processing events (from Kafka) to update various downstream systems
 #  - Journaling actions in Restate and driving retries from Restate, recovering
@@ -26,7 +32,9 @@ async def process_post(ctx: restate.ObjectContext, post: SocialMediaPost):
     # Delay processing until content moderation is complete (handler suspends when on FaaS).
     # This only blocks other posts for this user (Virtual Object), not for other users.
 
-    while await ctx.run("post status", lambda: get_post_status(post_id)) == Status.PENDING:
+    while (
+        await ctx.run("post status", lambda: get_post_status(post_id)) == Status.PENDING
+    ):
         await ctx.sleep(timedelta(seconds=5))
 
     await ctx.run("update feed", lambda: update_user_feed(user_id, post_id))
@@ -37,6 +45,7 @@ app = restate.app(services=[user_feed])
 if __name__ == "__main__":
     import hypercorn
     import asyncio
+
     conf = hypercorn.Config()
     conf.bind = ["0.0.0.0:9080"]
     asyncio.run(hypercorn.asyncio.serve(app, conf))
