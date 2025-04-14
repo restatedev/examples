@@ -7,6 +7,7 @@
 # in the root directory of this repository or package or at
 # https://github.com/restatedev/examples/
 
+
 class EmailClient:
 
     def notify_user_of_payment_success(self, user_id: str):

@@ -17,7 +17,9 @@ from threading import Thread
 # This file contains the logic for the Point of Sales API server of the restaurant.
 # It responds to requests to create, cancel and prepare orders.
 
-RESTATE_RUNTIME_ENDPOINT = os.getenv("RESTATE_RUNTIME_ENDPOINT", "http://localhost:8080")
+RESTATE_RUNTIME_ENDPOINT = os.getenv(
+    "RESTATE_RUNTIME_ENDPOINT", "http://localhost:8080"
+)
 RESTATE_TOKEN = os.getenv("RESTATE_RUNTIME_TOKEN")
 
 app = Flask(__name__)
@@ -26,7 +28,10 @@ app = Flask(__name__)
 @app.route("/prepare", methods=["POST"])
 def prepare_order():
     order_id = request.json["order_id"]
-    print(f"{log_prefix()} Started preparation of order {order_id}; expected duration: 5 seconds", flush=True)
+    print(
+        f"{log_prefix()} Started preparation of order {order_id}; expected duration: 5 seconds",
+        flush=True,
+    )
     response = jsonify({}), 200
 
     resolve_cb(order_id)
@@ -34,13 +39,18 @@ def prepare_order():
 
 
 def resolve_cb(order_id):
-    print(f"{log_prefix()} Order {order_id} prepared and ready for shipping", flush=True)
+    print(
+        f"{log_prefix()} Order {order_id} prepared and ready for shipping", flush=True
+    )
     headers = {
         "Content-Type": "application/json",
     }
     if RESTATE_TOKEN:
         headers["Authorization"] = f"Bearer {RESTATE_TOKEN}"
-    requests.post(f"{RESTATE_RUNTIME_ENDPOINT}/order-workflow/{order_id}/finishedPreparation/send?delay=5s", headers=headers)
+    requests.post(
+        f"{RESTATE_RUNTIME_ENDPOINT}/order-workflow/{order_id}/finishedPreparation/send?delay=5s",
+        headers=headers,
+    )
 
 
 def log_prefix():

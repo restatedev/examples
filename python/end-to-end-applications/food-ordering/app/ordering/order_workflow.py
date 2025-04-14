@@ -31,7 +31,11 @@ class Order(TypedDict):
 
 @order_workflow.main()
 async def run(ctx: WorkflowContext, order: Order):
-    id, total_cost, delivery_delay = ctx.key(), order["total_cost"], order["delivery_delay"]
+    id, total_cost, delivery_delay = (
+        ctx.key(),
+        order["total_cost"],
+        order["delivery_delay"],
+    )
 
     ctx.set("status", Status.CREATED)
 

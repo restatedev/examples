@@ -24,5 +24,5 @@ class RestaurantClient:
         requests.post(
             f"{RESTAURANT_ENDPOINT}/prepare",
             json={"order_id": order_id},
-            headers=headers
+            headers=headers,
         )

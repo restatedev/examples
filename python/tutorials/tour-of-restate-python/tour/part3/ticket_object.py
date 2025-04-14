@@ -24,6 +24,8 @@ async def reserve(ctx: ObjectContext) -> bool:
         return True
     else:
         return False
+
+
 # <end_reserve>
 
 
@@ -34,6 +36,8 @@ async def unreserve(ctx: ObjectContext):
 
     if status != "SOLD":
         ctx.clear("status")
+
+
 # <end_unreserve>
 
 
@@ -44,4 +48,6 @@ async def mark_as_sold(ctx: ObjectContext):
 
     if status == "RESERVED":
         ctx.set("status", "SOLD")
+
+
 # <end_mark_as_sold>

@@ -44,12 +44,16 @@ async def add(ctx: Context, req: SubscriptionRequest):
 
     # ctx.run persists results of successful actions and skips execution on retries
     # Failed actions (timeouts, API downtime, etc.) get retried
-    pay_ref = await ctx.run("recurring payment",
-                            lambda: create_recurring_payment(req.credit_card, payment_id))
+    pay_ref = await ctx.run(
+        "recurring payment",
+        lambda: create_recurring_payment(req.credit_card, payment_id),
+    )
 
     for subscription in req.subscriptions:
-        await ctx.run("subscription",
-                      lambda: create_subscription(req.user_id, subscription, pay_ref))
+        await ctx.run(
+            "subscription",
+            lambda: create_subscription(req.user_id, subscription, pay_ref),
+        )
 
 
 # Create an HTTP endpoint to serve your services on port 9080

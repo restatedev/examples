@@ -30,4 +30,6 @@ checkout = Service("CheckoutService")
 @checkout.handler()
 async def handle(ctx: ObjectContext, order: Order) -> bool:
     return True
+
+
 # <end_checkout>

@@ -1,8 +1,9 @@
 import restate
 
-from . embeddings import get_embeddings_model
+from .embeddings import get_embeddings_model
 
-embeddings_service = restate.Service('embeddings')
+embeddings_service = restate.Service("embeddings")
+
 
 @embeddings_service.handler()
 async def compute_embedding(_ctx, text: str):

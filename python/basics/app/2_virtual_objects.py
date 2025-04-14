@@ -36,6 +36,7 @@ async def ungreet(ctx: ObjectContext) -> str:
     ctx.set("count", count)
     return f"Goodbye {ctx.key()}, taking one greeting back: {count}."
 
+
 app = restate.app(services=[greeter_object])
 
 """

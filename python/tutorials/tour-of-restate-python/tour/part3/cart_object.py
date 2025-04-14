@@ -29,9 +29,16 @@ async def add_ticket(ctx: ObjectContext, ticket_id: str) -> bool:
         tickets.append(ticket_id)
         ctx.set("tickets", tickets)
 
-        ctx.object_send(expire_ticket, key=ctx.key(), arg=ticket_id, send_delay=timedelta(minutes=15))
+        ctx.object_send(
+            expire_ticket,
+            key=ctx.key(),
+            arg=ticket_id,
+            send_delay=timedelta(minutes=15),
+        )
 
     return reserved
+
+
 # <end_add_ticket>
 
 
@@ -45,8 +52,9 @@ async def checkout(ctx: ObjectContext) -> bool:
     if len(tickets) == 0:
         return False
 
-    success = await ctx.service_call(handle, arg={'user_id': ctx.key(),
-                                                  'tickets': tickets})
+    success = await ctx.service_call(
+        handle, arg={"user_id": ctx.key(), "tickets": tickets}
+    )
 
     if success:
         # !mark(1:2)
@@ -56,6 +64,8 @@ async def checkout(ctx: ObjectContext) -> bool:
         ctx.clear("tickets")
 
     return success
+
+
 # <end_checkout>
 
 
@@ -74,4 +84,6 @@ async def expire_ticket(ctx: ObjectContext, ticket_id: str):
         ctx.set("tickets", tickets)
 
         ctx.object_send(unreserve, key=ticket_id, arg=None)
+
+
 # <end_expire_ticket>

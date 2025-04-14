@@ -7,12 +7,13 @@ from langchain_community.document_loaders.parsers import PyPDFParser
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.document_loaders.blob_loaders import Blob
 
-from . types import NewPdfDocument
-from . object_store import get_object_store_client
-from . vector_store import get_vector_store
-from . embeddings_service import compute_embedding
+from .types import NewPdfDocument
+from .object_store import get_object_store_client
+from .vector_store import get_vector_store
+from .embeddings_service import compute_embedding
 
-pdf_workflow = restate.Workflow('pdf')
+pdf_workflow = restate.Workflow("pdf")
+
 
 def extract_pdf_text_snippets(pdf_bytes: bytes) -> List[str]:
     """Extract text from PDF"""
@@ -21,6 +22,7 @@ def extract_pdf_text_snippets(pdf_bytes: bytes) -> List[str]:
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
     chunks = text_splitter.split_documents(docs)
     return [chunk.page_content for chunk in chunks]
+
 
 @pdf_workflow.main()
 async def process_pdf(ctx: restate.WorkflowContext, request: NewPdfDocument):
@@ -31,7 +33,9 @@ async def process_pdf(ctx: restate.WorkflowContext, request: NewPdfDocument):
 
     async def download_pdf() -> bytes:
         object_store = get_object_store_client()
-        return await object_store.aget_object(request["bucket_name"], request["object_name"])
+        return await object_store.aget_object(
+            request["bucket_name"], request["object_name"]
+        )
 
     pdf_bytes = await ctx.run("Download PDF", download_pdf, serde=BytesSerde())
 
@@ -53,7 +57,10 @@ async def process_pdf(ctx: restate.WorkflowContext, request: NewPdfDocument):
     #
 
     async def add_documents():
-        metadata = { "object_name": request["object_name"], "bucket_name": request["bucket_name"] }
+        metadata = {
+            "object_name": request["object_name"],
+            "bucket_name": request["bucket_name"],
+        }
         store = get_vector_store()
         await store.aupsert(texts, vectors, metadata)
 
