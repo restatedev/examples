@@ -1,30 +1,30 @@
-# Go Lambda (CDK) example
+# Hello world - Java Lambda (CDK) example
 
-Sample project deploying a Go-based Restate service to AWS Lambda using the AWS Cloud Development Kit (CDK).
-The stack uses the Restate CDK constructs library to register the service with a Restate Cloud environment.
+Sample project deploying a Java-based Restate service to AWS Lambda using the AWS Cloud Development Kit (CDK).
+The stack uses the Restate CDK constructs library to register the service with against a Restate Cloud environment.
 
 For more information on CDK, please see [Getting started with the AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html).
 
-* [CDK app entry point `go-lambda-cdk.ts`](bin/go-lambda-cdk.ts)
-* [CDK stack consisting of a Lambda function and providing Restate service registration](cdk/go-lambda-cdk-stack.ts)
-* [Go Lambda handler](lambda) - based on [`go` template](../../templates/go)
+* [CDK app entry point `lambda-jvm-cdk.ts`](bin/lambda-jvm-cdk.ts)
+* [CDK stack consisting of a Lambda function and providing Restate service registration](cdk/lambda-jvm-cdk-stack.ts)
+* [Java Lambda handler](lambda) - based on [`hello-world-java`](../../templates/java-gradle)
 
 ## Download the example
 
 - Via the CLI:
     ```shell
-    restate example go-lambda-cdk && cd go-lambda-cdk
+    restate example java-hello-world-lambda-cdk && cd java-hello-world-lambda-cdk
     ```
 
 - Via git clone:
     ```shell
     git clone git@github.com:restatedev/examples.git
-    cd examples/go/integrations/go-lambda-cdk
+    cd examples/java/integrations/java-gradle-lambda-cdk
     ```
 
 - Via `wget`:
     ```shell
-    wget https://github.com/restatedev/examples/releases/latest/download/go-lambda-cdk.zip && unzip go-lambda-cdk.zip -d go-lambda-cdk && rm go-lambda-cdk.zip
+    wget https://github.com/restatedev/examples/releases/latest/download/java-hello-world-lambda-cdk.zip && unzip java-hello-world-lambda-cdk.zip -d java-hello-world-lambda-cdk && rm java-hello-world-lambda-cdk.zip
     ```
 
 ## Deploy
@@ -32,7 +32,8 @@ For more information on CDK, please see [Getting started with the AWS CDK](https
 **Pre-requisites:**
 
 * npm
-* Go >= 1.21
+* gradle
+* JDK >= 21
 * AWS account, bootstrapped for CDK use
 * valid AWS credentials with sufficient privileges to create the necessary resources
 * an existing [Restate Cloud](https://restate.dev) environment (environment id + API key)
@@ -43,7 +44,7 @@ Install npm dependencies:
 npm install
 ```
 
-To deploy the stack, export the Restate Cloud environment id and admin API key, and run `cdk deploy`:
+To deploy the stack, export the Restate Cloud environment id and API key, and run `cdk deploy`:
 
 ```shell
 export RESTATE_ENV_ID=env_... RESTATE_API_KEY=key_...
@@ -57,7 +58,7 @@ The stack output will print out the Restate server ingress URL.
 You can send a test request to the Restate ingress endpoint to call the newly deployed service:
 
 ```shell
-curl -k ${restateIngressUrl}/Greeter/Greet \
+curl -k ${restateIngressUrl}/Greeter/greet \
   -H "Authorization: Bearer $RESTATE_API_KEY" \
   -H 'content-type: application/json' -d '"Restate"'
 ```

@@ -20,7 +20,7 @@ For more information on CDK, please see [Getting started with the AWS CDK](https
 - Via git clone:
     ```shell
     git clone git@github.com:restatedev/examples.git
-    cd examples/templates/typescript-lambda-cdk
+    cd examples/typescript/integrations/deployment-lambda-cdk
     ```
 
 - Via `wget`:
@@ -44,7 +44,7 @@ npm install
 ```
 
 To deploy the stack, export the Restate Cloud environment id and API key, and run `cdk deploy`:
-              
+
 ```shell
 export RESTATE_ENV_ID=env_... RESTATE_API_KEY=key_...
 npx cdk deploy
