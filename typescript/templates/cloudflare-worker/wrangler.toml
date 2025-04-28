@@ -2,3 +2,7 @@ name = "restate-cloudflare-worker"
 main = "./src/index.ts"
 compatibility_date = "2024-05-13"
 compatibility_flags = [ "nodejs_compat" ]
+
+# DO NOT ENABLE MINIFICATION
+# The CF Worker minifier incorrectly removes parts of the Restate SDK
+minify = false
