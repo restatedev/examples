@@ -4,7 +4,7 @@ version = "0.0.1"
 edition = "2021"
 
 [dependencies]
-restate-sdk = "0.4.0"
+restate-sdk = "0.5.0"
 tokio = { version = "1", features = ["full"] }
 tracing-subscriber = "0.3"
 serde = { version = "1", features = ["derive"] }
