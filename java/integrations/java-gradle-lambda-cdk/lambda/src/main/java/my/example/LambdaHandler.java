@@ -9,16 +9,16 @@
  * https://github.com/restatedev/examples/
  */
 
- package my.example;
+package my.example;
 
- import dev.restate.sdk.lambda.BaseRestateLambdaHandler;
- import dev.restate.sdk.lambda.RestateLambdaEndpointBuilder;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.lambda.BaseRestateLambdaHandler;
 
- import my.example.Greeter;
+import my.example.Greeter;
 
- public class LambdaHandler extends BaseRestateLambdaHandler {
-     @Override
-     public void register(RestateLambdaEndpointBuilder builder) {
-         builder.bind(new Greeter());
-     }
- }
+public class LambdaHandler extends BaseRestateLambdaHandler {
+    @Override
+    public void register(Endpoint.Builder builder) {
+        builder.bind(new Greeter());
+    }
+}

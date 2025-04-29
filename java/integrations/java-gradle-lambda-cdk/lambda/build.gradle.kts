@@ -1,5 +1,3 @@
-import java.net.URI
-
 plugins {
   java
 }
@@ -8,18 +6,14 @@ repositories {
   mavenCentral()
 }
 
-val restateVersion = "1.2.0"
+val restateVersion = "2.0.0"
 
 dependencies {
   // Annotation processor
   annotationProcessor("dev.restate:sdk-api-gen:$restateVersion")
 
   // Restate SDK
-  implementation("dev.restate:sdk-api:$restateVersion")
-  implementation("dev.restate:sdk-http-vertx:$restateVersion")
-  implementation("dev.restate:sdk-lambda:$restateVersion")
-  // To use Jackson to read/write state entries (optional)
-  implementation("dev.restate:sdk-serde-jackson:$restateVersion")
+  implementation("dev.restate:sdk-java-lambda:$restateVersion")
 
   testImplementation(platform("org.junit:junit-bom:5.11.3"))
   testImplementation("org.junit.jupiter:junit-jupiter")
@@ -35,7 +29,7 @@ dependencies {
 // Setup Java compiler target
 java {
   toolchain {
-    languageVersion.set(JavaLanguageVersion.of(17))
+    languageVersion.set(JavaLanguageVersion.of(21))
   }
 }
 

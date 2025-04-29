@@ -15,6 +15,7 @@ pushd $PROJECT_ROOT/kotlin/templates/kotlin-gradle-spring-boot && ./gradlew --co
 pushd $PROJECT_ROOT/java/basics && ./gradlew --console=plain check && popd
 pushd $PROJECT_ROOT/kotlin/basics && ./gradlew --console=plain check && popd
 
+pushd $PROJECT_ROOT/java/integrations/java-gradle-lambda-cdk/lambda && ./gradlew --console=plain check && popd
 pushd $PROJECT_ROOT/kotlin/integrations/kotlin-gradle-lambda-cdk/lambda && ./gradlew --console=plain check && popd
 
 pushd $PROJECT_ROOT/java/patterns-use-cases && ./gradlew --console=plain check && popd
