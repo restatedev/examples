@@ -18,6 +18,6 @@ search_and_replace_version $PROJECT_ROOT/python/templates/python
 search_and_replace_version $PROJECT_ROOT/python/basics
 search_and_replace_version $PROJECT_ROOT/python/patterns-use-cases
 search_and_replace_version $PROJECT_ROOT/python/tutorials/tour-of-restate-python
-search_and_replace_version $PROJECT_ROOT/python/end-to-end-applications/chat-bot/chatbot
+search_and_replace_version $PROJECT_ROOT/python/end-to-end-applications/chat-bot/backend
 search_and_replace_version $PROJECT_ROOT/python/end-to-end-applications/rag-ingestion
 search_and_replace_version $PROJECT_ROOT/python/end-to-end-applications/food-ordering/app
