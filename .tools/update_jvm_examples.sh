@@ -22,6 +22,7 @@ search_and_replace_version_gradle $PROJECT_ROOT/kotlin/templates/kotlin-gradle
 search_and_replace_version_gradle $PROJECT_ROOT/kotlin/templates/kotlin-gradle-spring-boot
 
 search_and_replace_version_gradle $PROJECT_ROOT/java/integrations/java-spring
+search_and_replace_version_gradle $PROJECT_ROOT/java/integrations/java-gradle-lambda-cdk/lambda
 search_and_replace_version_gradle $PROJECT_ROOT/kotlin/integrations/kotlin-gradle-lambda-cdk/lambda
 
 search_and_replace_version_gradle $PROJECT_ROOT/java/basics

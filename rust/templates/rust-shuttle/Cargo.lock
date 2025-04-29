@@ -1429,9 +1429,9 @@ dependencies = [
 
 [[package]]
 name = "restate-sdk"
-version = "0.4.0"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a48993bf6d55be977e15e4a48c9d9ddb801eca815ae81799a26d857f2df699c8"
+checksum = "dd27f68ee68bcf70525ec5aa0a56cf5ac0f1983cbd3f0cf6285e5618b37f8a7f"
 dependencies = [
  "bytes",
  "futures",
@@ -1459,9 +1459,9 @@ dependencies = [
 
 [[package]]
 name = "restate-sdk-macros"
-version = "0.4.0"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "26f6a31445c6ab263c0fb2cc3f5173b79962389701079dc9fe66fcebd94c75f1"
+checksum = "d1eb121934c6525c2c073ecc957ca4d39a165497e958ff68ac9af1ecdc25e6c2"
 dependencies = [
  "proc-macro2",
  "quote",

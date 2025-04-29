@@ -2,7 +2,7 @@ module github.com/restatedev/examples/go/templates/go
 
 go 1.22.5
 
-require github.com/restatedev/sdk-go v0.16.0
+require github.com/restatedev/sdk-go v0.17.0
 
 require (
 	github.com/bahlo/generic-list-go v0.2.0 // indirect
