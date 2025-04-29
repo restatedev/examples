@@ -8,7 +8,7 @@
     "build": "tsc --noEmitOnError"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.5.3",
+    "@restatedev/restate-sdk": "^1.5.4",
     "@restatedev/restate-sdk-clients": "^1.4.0",
     "express": "^5.0.0",
     "pg": "^8.10.0",
