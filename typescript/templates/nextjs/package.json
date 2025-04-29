@@ -9,24 +9,24 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.5.3",
+    "@restatedev/restate-sdk": "^1.5.4",
     "@restatedev/restate-sdk-clients": "^1.5.3",
     "@tailwindcss/forms": "^0.5.9",
+    "next": "15.2.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "next": "15.2.4",
     "swr": "2.3.3"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "postcss": "^8",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
-    "typescript": "^5",
     "eslint-config-next": "15.2.4",
-    "@eslint/eslintrc": "^3"
+    "postcss": "^8",
+    "tailwindcss": "^4",
+    "typescript": "^5"
   }
 }

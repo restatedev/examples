@@ -115,7 +115,7 @@ const simpledbAccess = restate.service({
          * For an example that use Restate to add consistency, see the examples
          * further below.
          */
-        update: async (_ctx: restate.ObjectContext, update: { userId: string, newName: string }) => {
+        update: async (_ctx: restate.Context, update: { userId: string, newName: string }) => {
             const { userId, newName } = update;
             
             // Update row - we execute this statement directly, because it is the only
