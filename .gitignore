@@ -16,6 +16,7 @@ target
 out
 **/src/main/generated
 hs_err_pid*
+**/pom.xml.versionsBackup
 
 # Restate Server
 restate-data
