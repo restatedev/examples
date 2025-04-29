@@ -6,7 +6,6 @@ import static my.example.Utils.sendReminder;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.http.vertx.RestateHttpEndpointBuilder;
 import java.time.Duration;
 
 @Service
