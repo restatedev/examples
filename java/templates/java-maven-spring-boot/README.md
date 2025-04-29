@@ -11,3 +11,6 @@ To start the service, simply run:
 ```shell
 $ mvn compile spring-boot:run
 ```
+
+Restate SDK uses annotation processing to generate client classes.
+When modifying the annotated services in Intellij, it is suggested to run **CTRL + F9** to re-generate the client classes.
