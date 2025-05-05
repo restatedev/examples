@@ -26,3 +26,5 @@ npm_install_check $PROJECT_ROOT/typescript/patterns-use-cases
 npm_install_check $PROJECT_ROOT/typescript/end-to-end-applications/ai-image-workflows
 npm_install_check $PROJECT_ROOT/typescript/end-to-end-applications/food-ordering/app
 npm_install_check $PROJECT_ROOT/typescript/end-to-end-applications/chat-bot
+
+RESTATE_ENV_ID=env_test RESTATE_API_KEY=key_test npm_install_check $PROJECT_ROOT/python/integrations/deployment-lambda-cdk

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
+ * Copyright (c) 2025 - Restate Software, Inc., Restate GmbH
  *
  * This file is part of the Restate examples,
  * which is released under the MIT license.
@@ -13,26 +13,30 @@ import * as restate from "@restatedev/restate-cdk";
 import * as cdk from "aws-cdk-lib";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as secrets from "aws-cdk-lib/aws-secretsmanager";
-import * as go from "@aws-cdk/aws-lambda-go-alpha";
 import { Construct } from "constructs";
+import * as path from "path";
 
-export class GoLambdaCdkStack extends cdk.Stack {
+export class LambdaPythonStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: cdk.StackProps) {
     super(scope, id, props);
 
-    const handler = new go.GoFunction(
-      this,
-      "GreeterService",
-      {
-        runtime: lambda.Runtime.PROVIDED_AL2023,
-        architecture: lambda.Architecture.ARM_64,
-        entry: "lambda",
-        timeout: cdk.Duration.seconds(10),
-        loggingFormat: lambda.LoggingFormat.JSON,
-        applicationLogLevelV2: lambda.ApplicationLogLevel.DEBUG,
-        systemLogLevelV2: lambda.SystemLogLevel.INFO,
-      },
-    );
+    const handler = new lambda.Function(this, "GreeterService", {
+      runtime: lambda.Runtime.PYTHON_3_13,
+      handler: "handler.app",
+      code: lambda.Code.fromAsset(path.join(__dirname, "lambda"), {
+        bundling: {
+          image: lambda.Runtime.PYTHON_3_13.bundlingImage,
+          command: [
+            'bash', '-c', [
+              'pip install -r requirements.txt -t /asset-output',
+              'cp -r . /asset-output',
+            ].join(' && ')
+          ],
+        },
+      }),
+      architecture: lambda.Architecture.ARM_64,
+      timeout: cdk.Duration.seconds(30),
+    });
 
     // If you would prefer to manually register the Lambda service with your Restate environment,
     // you can remove or comment the rest of the code below this line.
@@ -44,21 +48,15 @@ export class GoLambdaCdkStack extends cdk.Stack {
 
     // This construct automatically creates an invoker role that Restate Cloud will be able to assume to invoke handlers
     // on behalf of your environment. See https://docs.restate.dev/deploy/cloud for more information.
-    const restateEnvironment = new restate.RestateCloudEnvironment(
-      this,
-      "RestateCloud",
-      {
-        environmentId: process.env.RESTATE_ENV_ID! as restate.EnvironmentId,
-        // Warning: this will result in the API key being baked into the CloudFormation template!
-        // For improved security, pre-populate the secret and pass it to the construct as a reference.
-        // See: https://docs.aws.amazon.com/secretsmanager/latest/userguide/cdk.html
-        apiKey: new secrets.Secret(this, "RestateCloudApiKey", {
-          secretStringValue: cdk.SecretValue.unsafePlainText(
-            process.env.RESTATE_API_KEY!,
-          ),
-        }),
-      },
-    );
+    const restateEnvironment = new restate.RestateCloudEnvironment(this, "RestateCloud", {
+      environmentId: process.env.RESTATE_ENV_ID! as restate.EnvironmentId,
+      // Warning: this will result in the API key being baked into the CloudFormation template!
+      // For improved security, pre-populate the secret and pass it to the construct as a reference.
+      // See: https://docs.aws.amazon.com/secretsmanager/latest/userguide/cdk.html
+      apiKey: new secrets.Secret(this, "RestateCloudApiKey", {
+        secretStringValue: cdk.SecretValue.unsafePlainText(process.env.RESTATE_API_KEY!),
+      }),
+    });
     const deployer = new restate.ServiceDeployer(this, "ServiceDeployer");
 
     // Alternatively, you can deploy a standalone Restate server using the SingleNodeRestateDeployment construct.
@@ -73,13 +71,7 @@ export class GoLambdaCdkStack extends cdk.Stack {
     //   securityGroups: [restateEnvironment.adminSecurityGroup],
     // });
 
-    deployer.deployService(
-      "Greeter",
-      handler.currentVersion,
-      restateEnvironment,
-    );
-    new cdk.CfnOutput(this, "restateIngressUrl", {
-      value: restateEnvironment.ingressUrl,
-    });
+    deployer.deployService("Greeter", handler.latestVersion, restateEnvironment);
+    new cdk.CfnOutput(this, "restateIngressUrl", { value: restateEnvironment.ingressUrl });
   }
 }

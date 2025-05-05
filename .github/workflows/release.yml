@@ -26,6 +26,7 @@ jobs:
           files: |
                   python-basics.zip
                   python-hello-world.zip
+                  python-hello-world-lambda-cdk.zip
                   python-patterns-use-cases.zip
                   python-tour-of-restate.zip
                   python-chat-bot.zip

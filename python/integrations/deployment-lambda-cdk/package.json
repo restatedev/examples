@@ -1,0 +1,31 @@
+{
+  "name": "@restatedev/typescript-lambda-cdk",
+  "version": "0.1.0",
+  "bin": {
+    "lambda-ts-cdk": "bin/lambda-ts-cdk.js"
+  },
+  "scripts": {
+    "lint": "eslint --ignore-path .eslintignore --ext .ts .",
+    "build": "npx cdk synth",
+    "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
+    "verify": "npm run format -- --check && npm run lint && npm run build",
+    "deploy": "npm run build && npx cdk deploy",
+    "destroy": "npx cdk destroy"
+  },
+  "devDependencies": {
+    "@restatedev/restate-cdk": "^1.2",
+    "@types/node": "22.5.2",
+    "@typescript-eslint/eslint-plugin": "^8.3.0",
+    "aws-cdk": "^2",
+    "esbuild": "^0.23.1",
+    "prettier": "^3.3.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "^1.5.4",
+    "aws-cdk-lib": "^2",
+    "constructs": "^10",
+    "source-map-support": "^0.5.21"
+  }
+}

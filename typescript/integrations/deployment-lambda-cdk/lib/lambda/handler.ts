@@ -11,8 +11,8 @@
 
 import * as restate from "@restatedev/restate-sdk/lambda";
 
-const greet = async (ctx: restate.Context, name: string) => {
-  return `Hello, ${name ?? "Restate user"}!`;
+const greet = async (_ctx: restate.Context, name: string) => {
+  return `Hello, ${name ?? "Restate"}, from AWS Lambda!`;
 };
 
 // Create the Restate server to accept requests
