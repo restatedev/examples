@@ -13,3 +13,4 @@ function bump_cdk() {
 bump_cdk $PROJECT_ROOT/go/integrations/go-lambda-cdk
 bump_cdk $PROJECT_ROOT/kotlin/integrations/kotlin-gradle-lambda-cdk
 bump_cdk $PROJECT_ROOT/typescript/integrations/deployment-lambda-cdk
+bump_cdk $PROJECT_ROOT/python/integrations/deployment-lambda-cdk

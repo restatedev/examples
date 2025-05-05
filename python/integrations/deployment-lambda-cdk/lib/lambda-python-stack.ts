@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
+ * Copyright (c) 2025 - Restate Software, Inc., Restate GmbH
  *
  * This file is part of the Restate examples,
  * which is released under the MIT license.
@@ -12,22 +12,30 @@
 import * as restate from "@restatedev/restate-cdk";
 import * as cdk from "aws-cdk-lib";
 import * as lambda from "aws-cdk-lib/aws-lambda";
-import * as lambda_nodejs from "aws-cdk-lib/aws-lambda-nodejs";
 import * as secrets from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
+import * as path from "path";
 
-export class LambdaTsCdkStack extends cdk.Stack {
+export class LambdaPythonStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: cdk.StackProps) {
     super(scope, id, props);
 
-    const handler = new lambda_nodejs.NodejsFunction(this, "GreeterService", {
-      runtime: lambda.Runtime.NODEJS_20_X,
-      entry: "lib/lambda/handler.ts",
+    const handler = new lambda.Function(this, "GreeterService", {
+      runtime: lambda.Runtime.PYTHON_3_13,
+      handler: "handler.app",
+      code: lambda.Code.fromAsset(path.join(__dirname, "lambda"), {
+        bundling: {
+          image: lambda.Runtime.PYTHON_3_13.bundlingImage,
+          command: [
+            'bash', '-c', [
+              'pip install -r requirements.txt -t /asset-output',
+              'cp -r . /asset-output',
+            ].join(' && ')
+          ],
+        },
+      }),
       architecture: lambda.Architecture.ARM_64,
-      bundling: {
-        minify: true,
-        sourceMap: true,
-      },
+      timeout: cdk.Duration.seconds(30),
     });
 
     // If you would prefer to manually deploy the Lambda service to your Restate environment, you
@@ -59,7 +67,7 @@ export class LambdaTsCdkStack extends cdk.Stack {
     //   securityGroups: [restateEnvironment.adminSecurityGroup],
     // });
 
-    deployer.deployService("Greeter", handler.currentVersion, restateEnvironment);
+    deployer.deployService("Greeter", handler.latestVersion, restateEnvironment);
     new cdk.CfnOutput(this, "restateIngressUrl", { value: restateEnvironment.ingressUrl });
   }
 }
