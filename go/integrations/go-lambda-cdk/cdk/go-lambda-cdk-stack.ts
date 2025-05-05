@@ -34,7 +34,14 @@ export class GoLambdaCdkStack extends cdk.Stack {
       },
     );
 
-    // Set the RESTATE_ENV_ID and RESTATE_API_KEY environment variables to point to your Restate Cloud environment.
+    // If you would prefer to manually register the Lambda service with your Restate environment,
+    // you can remove or comment the rest of the code below this line.
+    if (!process.env.RESTATE_ENV_ID || !process.env.RESTATE_API_KEY) {
+      throw new Error(
+        "Required environment variables RESTATE_ENV_ID and RESTATE_API_KEY are not set, please see README."
+      );
+    }
+
     // This construct automatically creates an invoker role that Restate Cloud will be able to assume to invoke handlers
     // on behalf of your environment. See https://docs.restate.dev/deploy/cloud for more information.
     const restateEnvironment = new restate.RestateCloudEnvironment(
