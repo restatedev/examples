@@ -1,0 +1,18 @@
+{
+  "name": "websockets",
+  "version": "0.1.0",
+  "scripts": {
+    "server": "tsx src/server.ts",
+    "socket": "tsx src/socket.ts"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "^1.5.4",
+    "@restatedev/restate-sdk-clients": "^1.5.4",
+    "uuid": "^11.1.0",
+    "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.52.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.17",
+    "tsx": "^4.19.4"
+  }
+}
