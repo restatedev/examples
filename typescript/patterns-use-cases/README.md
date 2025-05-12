@@ -9,6 +9,7 @@ Common tasks and patterns implemented with Restate:
 - **[Database Interaction Patterns](README.md#database-interaction-patterns)**: Recommended approaches for reading from and writing to databases using Restate handlers. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/database/main.ts)
 - **[Convert Sync Tasks to Async](README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/syncasync/client.ts)
 - **[Batching](README.md#batching)**: Group RPCs into batches of a particular size, subject to a max wait time [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/batching/batcher.ts)
+- **[Coalesce workflows](README.md#coalesce-workflows)**: Combine incoming workflow submissions into a single in-flight workflow at a time. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/coalesce/coalesce.ts)
 - **[Payments signals (Advanced)](README.md#payment-signals)**: Combining fast synchronous responses and slow async callbacks for payments, with Stripe. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/signalspayments/payment_service.ts)
 
 #### Orchestration patterns
@@ -230,6 +231,35 @@ for i in $(seq 1 31); do curl localhost:8080/batcher/myKey/receive -H 'content-t
 ```
 
 Have a look at the service logs to see how your messages are grouped together into batches.
+
+</details>
+
+## Coalesce Workflows
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/coalesce/coalesce.ts)
+
+This example shows how incoming requests can be deduplicated such that all concurrent clients see the same result.
+It relies on the ability to attach to a Restate workflow execution and retrieve its result. However, the same
+technique can be used for other types of Restate services if you provide an idempotency key when calling them, which
+allows the resulting invocation ID to be attached to.
+
+A client submits work to the `submit` handler of the `coalesce` object, which then checks to see if there is a workflow
+already in flight. If there is, it attaches to the existing run so the client will receive that result. Otherwise, a new
+workflow run is kicked off and attached to.
+
+<details>
+<summary><strong>Running the example</strong></summary>
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `npx tsx watch ./src/coalesce/coalesce.ts`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+Do some work concurrently:
+```shell
+# the first group of requests will all see the same result
+curl --parallel --parallel-immediate localhost:8080/coalesce/my-key/submit localhost:8080/coalesce/my-key/submit localhost:8080/coalesce/my-key/submit
+# once that is done, new requests will see a new result
+curl --parallel --parallel-immediate localhost:8080/coalesce/my-key/submit localhost:8080/coalesce/my-key/submit localhost:8080/coalesce/my-key/submit
+```
 
 </details>
 
