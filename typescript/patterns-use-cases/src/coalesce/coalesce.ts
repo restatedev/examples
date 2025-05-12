@@ -22,6 +22,45 @@ const targetWorkflow = restate.workflow({
 export type TargetWorkflow = typeof targetWorkflow;
 const TargetWorkflow: TargetWorkflow = { name: "targetWorkflow" };
 
+interface Target {
+  service: string;
+  handler: string;
+  key?: string;
+}
+
+// supervisor watches an invocation (must be from a workflow or with an idempotency key) for its completion and then calls back
+const supervisor = restate.service({
+  name: "supervisor",
+  handlers: {
+    watch: async (
+      ctx: restate.Context,
+      input: { invocationId: restate.InvocationId; target: Target },
+    ): Promise<void> => {
+      const done = () =>
+        ctx.genericSend({
+          service: input.target.service,
+          method: input.target.handler,
+          key: input.target.key,
+          parameter: input.invocationId,
+          inputSerde: restate.serde.json,
+        });
+
+      try {
+        await ctx.attach(input.invocationId, restate.serde.binary);
+      } catch (e) {
+        if (e instanceof restate.TerminalError) {
+          done();
+        }
+        throw e;
+      }
+      done();
+    },
+  },
+});
+
+type Supervisor = typeof supervisor;
+const Supervisor: Supervisor = { name: "supervisor" };
+
 interface CoalesceState {
   invocationId: restate.InvocationId;
   count: number;
@@ -65,33 +104,21 @@ const coalesce = restate.object({
         .run(input);
       invocationId = await handle.invocationId;
 
-      ctx.objectSendClient(Coalesce, ctx.key).awaitCompletion(invocationId);
+      ctx.serviceSendClient(Supervisor).watch({
+        invocationId,
+        target: {
+          service: "coalesce",
+          handler: "onCompletion",
+          key: ctx.key,
+        },
+      });
 
       ctx.set("invocationId", invocationId);
       ctx.set("count", count + 1);
 
       return invocationId;
     },
-    awaitCompletion: restate.handlers.object.shared(
-      async (
-        ctx: restate.ObjectSharedContext<CoalesceState>,
-        invocationId: restate.InvocationId,
-      ) => {
-        try {
-          // wait for it to finish, but don't bother deserialising the result
-          await ctx.attach(invocationId, restate.serde.binary);
-        } catch (e) {
-          if (e instanceof restate.TerminalError) {
-            // attach can throw if the invocation itself, or if it wasn't found (eg somehow we are past the retention period)
-            // either way, we are completed.
-            ctx.objectSendClient(Coalesce, ctx.key).completed(invocationId);
-          }
-          throw e;
-        }
-        ctx.objectSendClient(Coalesce, ctx.key).completed(invocationId);
-      },
-    ),
-    completed: async (
+    onCompletion: async (
       ctx: restate.ObjectContext<CoalesceState>,
       invocationId: restate.InvocationId,
     ) => {
@@ -105,4 +132,9 @@ const coalesce = restate.object({
 type Coalesce = typeof coalesce;
 const Coalesce: Coalesce = { name: "coalesce" };
 
-restate.endpoint().bind(targetWorkflow).bind(coalesce).listen();
+restate
+  .endpoint()
+  .bind(targetWorkflow)
+  .bind(supervisor)
+  .bind(coalesce)
+  .listen();

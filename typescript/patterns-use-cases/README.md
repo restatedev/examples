@@ -246,6 +246,9 @@ A client submits work to the `submit` handler of the `coalesce` object, which th
 already in flight. If there is, it attaches to the existing run so the client will receive that result. Otherwise, a new
 workflow run is kicked off and attached to.
 
+Under the hood, the `coalesce` object uses a separate service, `supervisor`, to send a callback when an invocation finishes. This is optional
+but is a useful pattern.
+
 <details>
 <summary><strong>Running the example</strong></summary>
 
