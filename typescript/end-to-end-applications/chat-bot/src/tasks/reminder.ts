@@ -21,7 +21,7 @@ const reminderSvc = restate.workflow({
 
             const cancelled = ctx.promise<boolean>("cancelled");
 
-            await restate.CombineablePromise.race([sleep, cancelled.get()]);
+            await restate.RestatePromise.race([sleep, cancelled.get()]);
             if (await cancelled.peek()) {
                 return "The reminder has been cancelled";
             }
