@@ -14,8 +14,8 @@
     "example-3": "ts-node-dev --transpile-only src/3_workflows.ts"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.5.4",
-    "@restatedev/restate-sdk-clients": "^1.5.4"
+    "@restatedev/restate-sdk": "^1.6.0",
+    "@restatedev/restate-sdk-clients": "^1.6.0"
   },
   "devDependencies": {
     "@types/node": "^20.12.12",

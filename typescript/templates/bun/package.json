@@ -9,7 +9,7 @@
     "format": "prettier --write \"src/*.+(js|ts|json)\""
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.5.4"
+    "@restatedev/restate-sdk": "^1.6.0"
   },
   "devDependencies": {
     "@types/bun": "^1.1.5",
