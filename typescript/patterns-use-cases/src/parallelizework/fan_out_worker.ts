@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import {CombineablePromise, Context} from "@restatedev/restate-sdk";
+import {RestatePromise, Context} from "@restatedev/restate-sdk";
 import {aggregate, executeSubtask, Result, split, SubTask, SubTaskResult, Task} from "./utils";
 
 /*
@@ -42,7 +42,7 @@ const fanOutWorker = restate.service({
             }
 
             // Fan in - Aggregate the results
-            const results = await CombineablePromise.all(resultPromises);
+            const results = await RestatePromise.all(resultPromises);
             return aggregate(ctx, results);
         },
 
