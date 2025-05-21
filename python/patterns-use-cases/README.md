@@ -21,6 +21,9 @@ Common tasks and patterns implemented with Restate:
 - **[Transactional Event Processing](README.md#transactional-event-processing)**: Processing events (from Kafka) to update various downstream systems in a transactional way. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](eventtransactions/app.py)
 - **[Event Enrichment / Joins](README.md#event-enrichment--joins)**: Stateful functions/actors connected to Kafka and callable over RPC. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](eventenrichment/app.py)
 
+#### AI: agents, A2A, MCP,...
+[Go to AI examples repository](https://github.com/restatedev/ai-examples)
+
 To get started, create a venv and install the requirements file (Python >= 3.11):
 
 ```shell

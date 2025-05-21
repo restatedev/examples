@@ -14,6 +14,9 @@ Learn the key concepts of Restate:
 
 ## Use Cases and Patterns
 
+#### AI: agents, A2A, MCP,...
+[Go to AI examples repository](https://github.com/restatedev/ai-examples)
+
 #### Communication
 - **[Durable RPC, Idempotency and Concurrency](patterns-use-cases/README.md#durable-rpc-idempotency--concurrency)**, Idempotency \& Concurrency: Restate persists requests and makes sure they execute exactly-once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/durablerpc/client.py)
 - **[(Delayed) Message Queue](patterns-use-cases/README.md#delayed-message-queue)**: Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/queue/client.py)
