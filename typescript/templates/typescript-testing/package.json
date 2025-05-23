@@ -7,8 +7,8 @@
   "scripts": {
     "build": "tsc --noEmitOnError",
     "prebundle": "rm -rf dist",
-    "bundle": "esbuild src/app.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
-    "postbundle": "cd dist && zip -r index.zip index.js*",
+    "bundle": "esbuild src/app.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/app.js",
+    "postbundle": "cd dist && zip -r app.zip app.js*",
     "app": "node ./dist/app.js",
     "app-dev": "tsx watch ./src/app.ts",
     "test": "TESTCONTAINERS_RYUK_DISABLED=true DEBUG=testcontainers,testcontainers:exec,testcontainers:containers jest --maxWorkers=1 --detectOpenHandles"
@@ -21,7 +21,7 @@
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "@types/node": "^20.14.2",
-    "esbuild": "^0.21.5",
+    "esbuild": "^0.25.4",
     "ts-jest": "^29.3.1",
     "tsx": "^4.19.2",
     "typescript": "^5.4.5"
