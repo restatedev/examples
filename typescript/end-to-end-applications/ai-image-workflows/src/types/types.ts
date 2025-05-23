@@ -1,7 +1,7 @@
 import { ImageFormat } from "puppeteer";
 
 export type WorkflowStep = {
-    imgInputPath?: string;
+    imgInputPath?: `${string}.${ImageFormat}`;
     imgOutputPath?: `${string}.${ImageFormat}`;
     action: string;
     parameters: any;
