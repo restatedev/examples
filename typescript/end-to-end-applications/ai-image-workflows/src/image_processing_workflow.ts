@@ -93,11 +93,11 @@ function addImgPathToSteps(wfSteps: WorkflowStep[], imgName: string) {
 
     return wfSteps.map((step, index) => {
         // If it's the first step, and it already contains an input path then just take the raw input, otherwise take the output path of the previous step as input path
-        const imgInputPath = index === 0 ? step.imgInputPath : `${OUTPUT_DIR}/${imgName}-${index - 1}.png`;
+        const imgInputPath = index === 0 ? step.imgInputPath : `${OUTPUT_DIR}/${imgName}-${index - 1}.png` as const;
         return {
             ...step,
             imgInputPath: imgInputPath,
             imgOutputPath: `${OUTPUT_DIR}/${imgName}-${index}.png`
-        }
+        } as const
     })
 }

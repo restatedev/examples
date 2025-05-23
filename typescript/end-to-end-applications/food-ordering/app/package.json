@@ -1,16 +1,17 @@
 {
   "name": "@restatedev/examples-e2e-food-ordering",
   "version": "0.8.0",
-  "description": "A food ordering app, implented in Restate",
+  "description": "A food ordering app, implemented in Restate",
   "main": "app.js",
   "type": "commonjs",
   "scripts": {
     "build": "tsc --noEmitOnError",
     "prebundle": "rm -rf dist",
-    "bundle": "esbuild src/delivery-app/app.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/index.js",
-    "postbundle": "cd dist && zip -r index.zip index.js*",
+    "bundle-order": "esbuild src/order-app/app.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/order-app/app.js",
+    "bundle-restaurant": "esbuild src/restaurant/server.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/restaurant/server.js",
+    "bundle": "npm run bundle-order && npm run bundle-restaurant",
+    "postbundle": "cd dist/order-app && zip -r app.zip app.js* && cd ../restaurant && zip -r server.zip server.js*",
     "order-app": "node ./dist/order-app/app.js",
-    "delivery-app": "node ./dist/delivery-app/app.js",
     "restaurant-app": "node ./dist/restaurant/server.js",
     "app-dev": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --watch src --respawn --transpile-only src/order-app/app.ts"
   },
@@ -25,7 +26,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.3",
-    "esbuild": "^0.18.12",
+    "esbuild": "^0.25.4",
     "prettier": "^2.8.4",
     "ts-node-dev": "^1.1.1",
     "typescript": "^5.0.2"
