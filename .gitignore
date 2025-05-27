@@ -27,3 +27,5 @@ restate-data
 # Python
 uv.lock
 .python-version
+
+**/bin

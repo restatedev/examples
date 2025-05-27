@@ -20,7 +20,7 @@ export const puppeteerService = restate.service({
     }
 })
 
-async function takeWebsiteScreenshot(imgOutputPath: string, params: PuppeteerParams) {
+async function takeWebsiteScreenshot(imgOutputPath: `${string}.${puppeteer.ImageFormat}`, params: PuppeteerParams) {
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
     await page.setViewport({ width: params.viewport?.width ?? 1388, height: params.viewport?.height ?? 800 });
