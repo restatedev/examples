@@ -180,6 +180,7 @@ If we lower the time between scheduled calls, we can see the reminder emails bei
 
 ## Parallelizing work
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/kotlin/my/example/parallelizework/FanOutWorker.kt)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/read-guide.svg">](https://docs.restate.dev/guides/parallelizing-work)
 
 This example shows how to use the Restate SDK to **execute a list of tasks in parallel and then gather their result**.
 Also known as fan-out, fan-in.

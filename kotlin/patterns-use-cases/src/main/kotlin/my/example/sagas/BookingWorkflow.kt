@@ -27,12 +27,13 @@ data class BookingRequest(
 
 /*
 Trip reservation workflow using sagas:
-Restate infinitely retries failures, and recovers previous progress.
-But for some types of failures, we don't want to retry but want to undo the previous actions and finish.
+Restate infinitely retries failures and recovers previous progress.
+But for some types of failures (terminal exceptions), we don't want to retry
+but want to undo the previous actions and finish.
 
 Restate guarantees the execution of your code. This makes it very easy to implement sagas.
-We execute actions, and keep track of a list of undo actions.
-When a terminal exception occurs (an exception we do not want to retry), Restate ensures execution of all compensations.
+We execute actions and keep a list of undo actions.
+When a terminal exception occurs, Restate ensures execution of all compensations.
 
 +------ Initialize compensations list ------+
                      |
@@ -55,7 +56,7 @@ class BookingWorkflow {
   @Handler
   suspend fun run(ctx: Context, req: BookingRequest) {
 
-    // Create a list of compensations to run in case of a failure or cancellation.
+    // Create a list of undo actions
     val compensations = mutableListOf<suspend () -> Unit>()
 
     try {
@@ -68,12 +69,10 @@ class BookingWorkflow {
       compensations.add { ctx.runBlock("Cancel hotel") { cancelHotel(req.customerId) } }
       ctx.runBlock("Hotel reservation") { bookHotel(req.customerId, req.hotel) }
     }
-    // Terminal errors tell Restate not to retry, but to compensate and fail the workflow
+    // Terminal errors are not retried by Restate, so undo previous actions and fail the workflow
     catch (e: TerminalException) {
-      // Undo all the steps up to this point by running the compensations
       // Restate guarantees that all compensations are executed
       compensations.reversed().forEach { it() }
-
       throw e
     }
   }
