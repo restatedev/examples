@@ -150,9 +150,7 @@ This way, you can ensure that your system remains consistent even in the presenc
 
 Restate guarantees that sagas run to completion. It will handle retries and failures, and ensure that compensations are executed successfully.
 
-The example shows two ways you can implement the compensation, depending on the characteristics of the API/system you interact with.
-1. **Two-phase commit**: The reservation is created and then confirmed or cancelled. The compensation executes 'cancel' and is added after the reservation is created.
-2. **Idempotency key**: The payment is made in one shot and supplies an ID. The compensation is added before the payment is made and uses the same ID.
+<img src="img/saga_diagram.svg" width="500" alt="Saga Workflow">
 
 Note that the compensating actions need to be idempotent.
 

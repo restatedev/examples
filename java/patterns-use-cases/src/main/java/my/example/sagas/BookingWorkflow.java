@@ -9,11 +9,11 @@ import dev.restate.sdk.http.vertx.RestateHttpServer;
 import java.util.ArrayList;
 import java.util.List;
 import my.example.sagas.clients.CarRentalClient;
-import my.example.sagas.clients.CarRentalClient.CarRentalRequest;
+import my.example.sagas.clients.CarRentalClient.CarRequest;
 import my.example.sagas.clients.FlightClient;
-import my.example.sagas.clients.FlightClient.FlightBookingRequest;
-import my.example.sagas.clients.PaymentClient;
-import my.example.sagas.clients.PaymentClient.PaymentInfo;
+import my.example.sagas.clients.FlightClient.FlightRequest;
+import my.example.sagas.clients.HotelClient;
+import my.example.sagas.clients.HotelClient.HotelRequest;
 
 /*
 Trip reservation workflow using sagas:
@@ -31,10 +31,7 @@ When a terminal exception occurs, Restate ensures execution of all compensations
 +------------------ Try --------------------+
 | 1. Reserve Flights & Register Undo        |
 | 2. Reserve Car & Register Undo            |
-| 3. Generate Payment ID & Register Refund  |
-| 4. Perform Payment                        |
-| 5. Confirm Flight Reservation             |
-| 6. Confirm Car Reservation                |
+| 3. Reserve Hotel & Register Cancel        |
 +------------------ Catch ------------------+
 | If TerminalException:                     |
 |   Execute compensations in reverse order  |
@@ -48,7 +45,7 @@ Note: that the compensation logic is purely implemented in user code (no special
 public class BookingWorkflow {
 
   public record BookingRequest(
-      FlightBookingRequest flights, CarRentalRequest car, PaymentInfo paymentInfo) {}
+      String customerId, FlightRequest flights, CarRequest car, HotelRequest hotel) {}
 
   @Handler
   public void run(Context ctx, BookingRequest req) throws TerminalException {
@@ -56,29 +53,16 @@ public class BookingWorkflow {
     List<Runnable> compensations = new ArrayList<>();
 
     try {
-      // Reserve the flights; Restate remembers the reservation ID
-      String flightBookingId =
-          ctx.run("Flight reservation", String.class, () -> FlightClient.reserve(req.flights()));
-      // Register the undo action for the flight reservation with the flightBookingId
-      compensations.add(() -> ctx.run("Cancel flight", () -> FlightClient.cancel(flightBookingId)));
+      compensations.add(() -> ctx.run("Cancel flight", () -> FlightClient.cancel(req.customerId)));
+      ctx.run("Flight reservation", () -> FlightClient.book(req.customerId, req.flights()));
 
-      // Do the same for the car rental
-      String carBookingId =
-          ctx.run("Car reservation", String.class, () -> CarRentalClient.reserve(req.car()));
-      compensations.add(() -> ctx.run("Cancel car", () -> CarRentalClient.cancel(carBookingId)));
+      compensations.add(() -> ctx.run("Cancel car", () -> CarRentalClient.cancel(req.customerId)));
+      ctx.run("Car reservation", () -> CarRentalClient.book(req.customerId, req.car()));
 
-      // Do the payment; Generate a payment ID and store it in Restate
-      String paymentId = ctx.random().nextUUID().toString();
-      // Register the refund as a compensation, using the idempotency key
-      compensations.add(() -> ctx.run("Refund", () -> PaymentClient.refund(paymentId)));
-      // Do the payment using the paymentId as idempotency key
-      ctx.run("Execute payment", () -> PaymentClient.charge(req.paymentInfo(), paymentId));
-
-      // Confirm the flight and car reservations
-      ctx.run("Confirm flight", () -> FlightClient.confirm(flightBookingId));
-      ctx.run("Confirm car", () -> CarRentalClient.confirm(carBookingId));
+      compensations.add(() -> ctx.run("Cancel hotel", () -> HotelClient.cancel(req.customerId)));
+      ctx.run("Hotel reservation", () -> HotelClient.book(req.customerId, req.hotel()));
     }
-    // Terminal errors tell Restate not to retry but to undo previous actions and fail the workflow
+    // Terminal errors are not retried by Restate, so undo previous actions and fail the workflow
     catch (TerminalException e) {
       // Restate guarantees that all compensations are executed
       for (Runnable compensation : compensations) {

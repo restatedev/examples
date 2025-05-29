@@ -43,7 +43,7 @@ public class FanOutWorker {
   @Handler
   public Result run(Context ctx, Task task) {
     // Split the task in subtasks
-    List<SubTask> subTasks = ctx.run(new TypeRef<>() {}, () -> split(task));
+    var subTasks = ctx.run(new TypeRef<>() {}, () -> split(task));
 
     // Fan out the subtasks - run them in parallel
     List<DurableFuture<?>> resultFutures = new ArrayList<>();
