@@ -1,5 +1,7 @@
 package my.example.parallelizework;
 
+import static my.example.parallelizework.utils.Utils.*;
+
 import dev.restate.sdk.Context;
 import dev.restate.sdk.DurableFuture;
 import dev.restate.sdk.annotation.Handler;
@@ -7,15 +9,12 @@ import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.endpoint.Endpoint;
 import dev.restate.sdk.http.vertx.RestateHttpServer;
 import dev.restate.serde.TypeRef;
+import java.util.ArrayList;
+import java.util.List;
 import my.example.parallelizework.utils.Result;
 import my.example.parallelizework.utils.SubTask;
 import my.example.parallelizework.utils.SubTaskResult;
 import my.example.parallelizework.utils.Task;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static my.example.parallelizework.utils.Utils.*;
 
 /*
  * Restate makes it easy to parallelize async work by fanning out tasks.
@@ -36,7 +35,7 @@ import static my.example.parallelizework.utils.Utils.*;
  *          | Aggregate  |
  *          +------------+
  * Durable Execution ensures that the fan-out and fan-in steps happen reliably exactly once.
-*/
+ */
 
 @Service
 public class FanOutWorker {
@@ -55,9 +54,7 @@ public class FanOutWorker {
     DurableFuture.all(resultFutures).await();
 
     // Fan in - Aggregate the results
-    var results = resultFutures.stream()
-            .map(future -> (SubTaskResult) future.await())
-            .toList();
+    var results = resultFutures.stream().map(future -> (SubTaskResult) future.await()).toList();
     return aggregate(results);
   }
 
