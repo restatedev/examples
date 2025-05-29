@@ -1,4 +1,4 @@
-package my.example.sagas.activities;
+package my.example.sagas.clients;
 
 import java.util.UUID;
 import org.apache.logging.log4j.LogManager;

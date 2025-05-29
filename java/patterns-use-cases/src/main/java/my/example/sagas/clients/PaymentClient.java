@@ -1,4 +1,4 @@
-package my.example.sagas.activities;
+package my.example.sagas.clients;
 
 import dev.restate.sdk.common.TerminalException;
 import org.apache.logging.log4j.LogManager;
@@ -13,18 +13,8 @@ public class PaymentClient {
     // This should implement the actual payment processing, or communication
     // to the external provider's APIs.
     // Here, we just simulate payment failure to show how the compensations run.
-
-    if (Math.random() < 0.5) {
-      logger.error("[👻 SIMULATED] This credit card is not valid! Aborting booking.");
-      throw new TerminalException("[👻 SIMULATED] This credit card is not valid!");
-    }
-
-    if (Math.random() < 0.8) {
-      logger.error("[👻 SIMULATED] External payment API down! Will retry...");
-      throw new RuntimeException("[👻 SIMULATED] External payment API down! Will retry...");
-    }
-
-    logger.info("Payment with id {} was successful!", paymentId);
+    logger.error("[👻 SIMULATED] This credit card is not valid!");
+    throw new TerminalException("[👻 SIMULATED] This credit card is not valid!");
   }
 
   public static void refund(String paymentId) {

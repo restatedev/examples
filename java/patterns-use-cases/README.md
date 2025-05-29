@@ -153,6 +153,7 @@ The example shows two ways you can implement the compensation, depending on the 
 
 Note that the compensating actions need to be idempotent.
 
+<img src="img/saga_journal.png" width="1200px" alt="Saga Journal">
 
 <details>
 <summary><strong>Running the example</strong></summary>
@@ -187,16 +188,17 @@ Have a look at the logs to see the cancellations of the flight and car booking i
 <summary><strong>View logs</strong></summary>
 
 ```shell
-2025-05-29 10:48:33 INFO  [BookingWorkflow/run][inv_1ellSF3s1jra29xZxC89jEWB3Ifaus2jAd] my.example.sagas.activities.FlightClient - Flight reservation created with id: 8890ec2f-da0e-4445-a624-819b09229009
-2025-05-29 10:48:33 INFO  [BookingWorkflow/run][inv_1ellSF3s1jra29xZxC89jEWB3Ifaus2jAd] my.example.sagas.activities.CarRentalClient - Car rental reservation created with id: e0f89909-225a-46ae-8790-f85ade57ef8b
-2025-05-29 10:48:33 ERROR [BookingWorkflow/run][inv_1ellSF3s1jra29xZxC89jEWB3Ifaus2jAd] my.example.sagas.activities.PaymentClient - [👻 SIMULATED] This credit card is not valid! Aborting booking.
-2025-05-29 10:48:33 INFO  [BookingWorkflow/run][inv_1ellSF3s1jra29xZxC89jEWB3Ifaus2jAd] my.example.sagas.activities.FlightClient - Flight reservation cancelled with id: 8890ec2f-da0e-4445-a624-819b09229009
-2025-05-29 10:48:33 INFO  [BookingWorkflow/run][inv_1ellSF3s1jra29xZxC89jEWB3Ifaus2jAd] my.example.sagas.activities.CarRentalClient - Car rental reservation cancelled with id: e0f89909-225a-46ae-8790-f85ade57ef8b
-2025-05-29 10:48:33 INFO  [BookingWorkflow/run][inv_1ellSF3s1jra29xZxC89jEWB3Ifaus2jAd] my.example.sagas.activities.PaymentClient - Refunding payment with id: a56d42a4-0359-712c-882b-67ab658da082
-2025-05-29 10:48:33 WARN  [BookingWorkflow/run][inv_1ellSF3s1jra29xZxC89jEWB3Ifaus2jAd] dev.restate.sdk.core.RequestProcessorImpl - Error when processing the invocation
-dev.restate.sdk.common.TerminalException: [👻 SIMULATED] Payment could not be accepted!
+2025-05-29 11:08:09 INFO  [BookingWorkflow/run] dev.restate.sdk.core.statemachine.State - Start invocation
+2025-05-29 11:08:09 INFO  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] my.example.sagas.clients.FlightClient - Flight reservation created with id: d643fa74-b265-49b1-9b65-3f75c4e10039
+2025-05-29 11:08:09 INFO  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] my.example.sagas.clients.CarRentalClient - Car rental reservation created with id: 0ce92e7b-1d55-4c99-bbe3-1bb89695ccfd
+2025-05-29 11:08:09 ERROR [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] my.example.sagas.clients.PaymentClient - [👻 SIMULATED] This credit card is not valid!
+2025-05-29 11:08:09 INFO  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] my.example.sagas.clients.FlightClient - Flight reservation cancelled with id: d643fa74-b265-49b1-9b65-3f75c4e10039
+2025-05-29 11:08:09 INFO  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] my.example.sagas.clients.CarRentalClient - Car rental reservation cancelled with id: 0ce92e7b-1d55-4c99-bbe3-1bb89695ccfd
+2025-05-29 11:08:09 INFO  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] my.example.sagas.clients.PaymentClient - Refunding payment with id: 93f00948-5c62-e7c8-a6e7-9c47df149bb2
+2025-05-29 11:08:20 WARN  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] dev.restate.sdk.core.RequestProcessorImpl - Error when processing the invocation
+dev.restate.sdk.common.TerminalException: [👻 SIMULATED] This credit card is not valid!
 ... rest of trace ...
-2025-05-29 10:48:33 INFO  [BookingWorkflow/run][inv_1ellSF3s1jra29xZxC89jEWB3Ifaus2jAd] dev.restate.sdk.core.statemachine.State - Invocation ended
+2025-05-29 11:08:20 INFO  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] dev.restate.sdk.core.statemachine.State - Invocation ended
 ```
 
 </details>

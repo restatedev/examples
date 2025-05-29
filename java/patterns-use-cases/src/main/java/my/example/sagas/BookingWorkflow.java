@@ -8,18 +8,21 @@ import dev.restate.sdk.endpoint.Endpoint;
 import dev.restate.sdk.http.vertx.RestateHttpServer;
 import java.util.ArrayList;
 import java.util.List;
-import my.example.sagas.activities.CarRentalClient;
-import my.example.sagas.activities.FlightClient;
-import my.example.sagas.activities.PaymentClient;
+import my.example.sagas.clients.CarRentalClient;
+import my.example.sagas.clients.CarRentalClient.CarRentalRequest;
+import my.example.sagas.clients.FlightClient;
+import my.example.sagas.clients.FlightClient.FlightBookingRequest;
+import my.example.sagas.clients.PaymentClient;
+import my.example.sagas.clients.PaymentClient.PaymentInfo;
 
 /*
 Trip reservation workflow using sagas:
-Restate infinitely retries failures, and recovers previous progress.
+Restate infinitely retries failures and recovers previous progress.
 But for some types of failures (terminal exceptions), we don't want to retry
 but want to undo the previous actions and finish.
 
 Restate guarantees the execution of your code. This makes it very easy to implement sagas.
-We execute actions, and keep track of a list of undo actions.
+We execute actions and keep a list of undo actions.
 When a terminal exception occurs, Restate ensures execution of all compensations.
 
 +------ Initialize compensations list ------+
@@ -40,13 +43,12 @@ When a terminal exception occurs, Restate ensures execution of all compensations
 
 Note: that the compensation logic is purely implemented in user code (no special Restate API)
  */
+
 @Service
 public class BookingWorkflow {
 
   public record BookingRequest(
-      FlightClient.FlightBookingRequest flights,
-      CarRentalClient.CarRentalRequest car,
-      PaymentClient.PaymentInfo paymentInfo) {}
+      FlightBookingRequest flights, CarRentalRequest car, PaymentInfo paymentInfo) {}
 
   @Handler
   public void run(Context ctx, BookingRequest req) throws TerminalException {
@@ -76,15 +78,12 @@ public class BookingWorkflow {
       ctx.run("Confirm flight", () -> FlightClient.confirm(flightBookingId));
       ctx.run("Confirm car", () -> CarRentalClient.confirm(carBookingId));
     }
-    // Terminal errors tell Restate not to retry, but to compensate and fail the workflow
+    // Terminal errors tell Restate not to retry but to undo previous actions and fail the workflow
     catch (TerminalException e) {
-      // Undo all the steps up to this point by running the compensations
       // Restate guarantees that all compensations are executed
       for (Runnable compensation : compensations) {
         compensation.run();
       }
-
-      // Fail this workflow
       throw e;
     }
   }
