@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 public class HotelClient {
   private static final Logger logger = LogManager.getLogger(HotelClient.class);
 
-  public record HotelRequest(String arrivalData, String departureDate, int nbGuests) {}
+  public record HotelRequest(String arrivalDate, String departureDate) {}
 
   public static void book(String customerId, HotelRequest request) {
     // this should implement the communication with the flight provider's APIs

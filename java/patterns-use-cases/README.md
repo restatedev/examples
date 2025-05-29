@@ -159,9 +159,18 @@ Note that the compensating actions need to be idempotent.
 <details>
 <summary><strong>Running the example</strong></summary>
 
-1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `./gradlew -PmainClass=my.example.sagas.BookingWorkflow run`
-3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080` 
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell:
+```
+restate-server
+```
+2. Start the service: 
+```shell
+./gradlew -PmainClass=my.example.sagas.BookingWorkflow run
+```
+3. Register the services (with `--force` to override the endpoint during **development**): 
+```shell
+restate -y deployments register --force localhost:9080
+```
 
 Have a look at the logs to see how the compensations run in case of a terminal error.
 
@@ -176,9 +185,9 @@ curl localhost:8080/BookingWorkflow/run --json '{
     "pickupLocation": "Airport",
     "rentalDate": "2024-12-16"
   },
-  "paymentInfo": {
-    "cardNumber": "4111111111111111",
-    "amount": 1500
+  "hotel": {
+    "arrivalDate": "2024-12-16",
+    "departureDate": "2024-12-20"
   }
 }'
 ```
@@ -189,17 +198,17 @@ Have a look at the logs to see the cancellations of the flight and car booking i
 <summary><strong>View logs</strong></summary>
 
 ```shell
-2025-05-29 11:08:09 INFO  [BookingWorkflow/run] dev.restate.sdk.core.statemachine.State - Start invocation
-2025-05-29 11:08:09 INFO  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] my.example.sagas.clients.FlightClient - Flight reservation created with id: d643fa74-b265-49b1-9b65-3f75c4e10039
-2025-05-29 11:08:09 INFO  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] my.example.sagas.clients.CarRentalClient - Car rental reservation created with id: 0ce92e7b-1d55-4c99-bbe3-1bb89695ccfd
-2025-05-29 11:08:09 ERROR [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] my.example.sagas.clients.PaymentClient - [👻 SIMULATED] This credit card is not valid!
-2025-05-29 11:08:09 INFO  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] my.example.sagas.clients.FlightClient - Flight reservation cancelled with id: d643fa74-b265-49b1-9b65-3f75c4e10039
-2025-05-29 11:08:09 INFO  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] my.example.sagas.clients.CarRentalClient - Car rental reservation cancelled with id: 0ce92e7b-1d55-4c99-bbe3-1bb89695ccfd
-2025-05-29 11:08:09 INFO  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] my.example.sagas.clients.PaymentClient - Refunding payment with id: 93f00948-5c62-e7c8-a6e7-9c47df149bb2
-2025-05-29 11:08:20 WARN  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] dev.restate.sdk.core.RequestProcessorImpl - Error when processing the invocation
-dev.restate.sdk.common.TerminalException: [👻 SIMULATED] This credit card is not valid!
-... rest of trace ...
-2025-05-29 11:08:20 INFO  [BookingWorkflow/run][inv_17GXsdM5pHmU2G6oBG6yNk9PyiEj67ZJMB] dev.restate.sdk.core.statemachine.State - Invocation ended
+2025-05-29 14:41:01 INFO  [BookingWorkflow/run] dev.restate.sdk.core.statemachine.State - Start invocation
+2025-05-29 14:41:01 INFO  [BookingWorkflow/run][inv_1hSq1uuWb0SM6MGyZoCtFoxE5o3nduXo41] my.example.sagas.clients.FlightClient - Flight reservation created for customer: null
+2025-05-29 14:41:01 INFO  [BookingWorkflow/run][inv_1hSq1uuWb0SM6MGyZoCtFoxE5o3nduXo41] my.example.sagas.clients.CarRentalClient - Car rental reservation created for customer: null
+2025-05-29 14:41:01 INFO  [BookingWorkflow/run][inv_1hSq1uuWb0SM6MGyZoCtFoxE5o3nduXo41] my.example.sagas.clients.HotelClient - Hotel reservation created for customer id: null
+2025-05-29 14:41:01 ERROR [BookingWorkflow/run][inv_1hSq1uuWb0SM6MGyZoCtFoxE5o3nduXo41] my.example.sagas.clients.HotelClient - [👻 SIMULATED] This hotel is fully booked!
+2025-05-29 14:41:01 INFO  [BookingWorkflow/run][inv_1hSq1uuWb0SM6MGyZoCtFoxE5o3nduXo41] my.example.sagas.clients.FlightClient - Flight reservation cancelled for customer id: null
+2025-05-29 14:41:01 INFO  [BookingWorkflow/run][inv_1hSq1uuWb0SM6MGyZoCtFoxE5o3nduXo41] my.example.sagas.clients.CarRentalClient - Car rental reservation cancelled with id: null
+2025-05-29 14:41:01 INFO  [BookingWorkflow/run][inv_1hSq1uuWb0SM6MGyZoCtFoxE5o3nduXo41] my.example.sagas.clients.HotelClient - Hotel reservation cancelled for customer id: null
+2025-05-29 14:41:01 WARN  [BookingWorkflow/run][inv_1hSq1uuWb0SM6MGyZoCtFoxE5o3nduXo41] dev.restate.sdk.core.RequestProcessorImpl - Error when processing the invocation
+dev.restate.sdk.common.TerminalException: [👻 SIMULATED] This hotel is fully booked!
+... rest of stacktrace ... 
 ```
 
 </details>
