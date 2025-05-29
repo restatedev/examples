@@ -165,7 +165,7 @@ Have a look at the logs to see how the compensations run in case of a terminal e
 
 Start the workflow:
 ```shell
-curl -X POST localhost:8080/BookingWorkflow/trip12883/run -H 'content-type: application/json' -d '{
+curl localhost:8080/BookingWorkflow/run --json '{
   "flights": {
     "flightId": "12345",
     "passengerName": "John Doe"
@@ -187,24 +187,16 @@ Have a look at the logs to see the cancellations of the flight and car booking i
 <summary><strong>View logs</strong></summary>
 
 ```shell
-2024-12-18 11:35:48 INFO  [BookingWorkflow/run][inv_12ogPnVefk1c3clc9wNhEa4pMxxRh9IRyx] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-18 11:35:49 INFO  [Flights/reserve][inv_1ccelXW8IxuW6QpLWQu9ykt5aMAqRTl7pL] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-18 11:35:49 INFO  [Flights/reserve][inv_1ccelXW8IxuW6QpLWQu9ykt5aMAqRTl7pL] dev.restate.patterns.activities.Flights - Flight reservation created with id: 35ab7c68-6f32-48f6-adb9-a2a74076f4df
-2024-12-18 11:35:49 INFO  [Flights/reserve][inv_1ccelXW8IxuW6QpLWQu9ykt5aMAqRTl7pL] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-12-18 11:35:49 INFO  [CarRentals/reserve][inv_13cgaqr4XecK2ztj72BfVPuscdL1SJwMCZ] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-18 11:35:49 INFO  [CarRentals/reserve][inv_13cgaqr4XecK2ztj72BfVPuscdL1SJwMCZ] dev.restate.patterns.activities.CarRentals - Car rental reservation created with id: c103022e-9dda-4a34-a6ef-0c95d2911b2c
-2024-12-18 11:35:49 INFO  [CarRentals/reserve][inv_13cgaqr4XecK2ztj72BfVPuscdL1SJwMCZ] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-12-18 11:35:49 ERROR [BookingWorkflow/run][inv_12ogPnVefk1c3clc9wNhEa4pMxxRh9IRyx] dev.restate.patterns.clients.PaymentClient - This payment should never be accepted! Aborting booking.
-2024-12-18 11:35:49 INFO  [Flights/cancel][inv_19STR0U1v5Xo5W2UsYS3rhZEI02VGDVJM5] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-18 11:35:49 INFO  [Flights/cancel][inv_19STR0U1v5Xo5W2UsYS3rhZEI02VGDVJM5] dev.restate.patterns.activities.Flights - Flight reservation cancelled with id: 35ab7c68-6f32-48f6-adb9-a2a74076f4df
-2024-12-18 11:35:49 INFO  [Flights/cancel][inv_19STR0U1v5Xo5W2UsYS3rhZEI02VGDVJM5] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-12-18 11:35:49 INFO  [CarRentals/cancel][inv_14PS98BWOeNn1zw3yn2RqJ0wSp7V5sEJMd] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-18 11:35:49 INFO  [CarRentals/cancel][inv_14PS98BWOeNn1zw3yn2RqJ0wSp7V5sEJMd] dev.restate.patterns.activities.CarRentals - Car rental reservation cancelled with id: c103022e-9dda-4a34-a6ef-0c95d2911b2c
-2024-12-18 11:35:49 INFO  [CarRentals/cancel][inv_14PS98BWOeNn1zw3yn2RqJ0wSp7V5sEJMd] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-12-18 11:35:49 INFO  [BookingWorkflow/run][inv_12ogPnVefk1c3clc9wNhEa4pMxxRh9IRyx] dev.restate.patterns.clients.PaymentClient - Refunding payment with id: 1a640cda-bd5f-9751-b6b9-274817549b58
-2024-12-18 11:35:49 WARN  [BookingWorkflow/run][inv_12ogPnVefk1c3clc9wNhEa4pMxxRh9IRyx] dev.restate.sdk.core.ResolvedEndpointHandlerImpl - Error when processing the invocation
-dev.restate.sdk.common.TerminalException: Payment could not be accepted!
+2025-05-29 10:48:33 INFO  [BookingWorkflow/run][inv_1ellSF3s1jra29xZxC89jEWB3Ifaus2jAd] my.example.sagas.activities.FlightClient - Flight reservation created with id: 8890ec2f-da0e-4445-a624-819b09229009
+2025-05-29 10:48:33 INFO  [BookingWorkflow/run][inv_1ellSF3s1jra29xZxC89jEWB3Ifaus2jAd] my.example.sagas.activities.CarRentalClient - Car rental reservation created with id: e0f89909-225a-46ae-8790-f85ade57ef8b
+2025-05-29 10:48:33 ERROR [BookingWorkflow/run][inv_1ellSF3s1jra29xZxC89jEWB3Ifaus2jAd] my.example.sagas.activities.PaymentClient - [👻 SIMULATED] This credit card is not valid! Aborting booking.
+2025-05-29 10:48:33 INFO  [BookingWorkflow/run][inv_1ellSF3s1jra29xZxC89jEWB3Ifaus2jAd] my.example.sagas.activities.FlightClient - Flight reservation cancelled with id: 8890ec2f-da0e-4445-a624-819b09229009
+2025-05-29 10:48:33 INFO  [BookingWorkflow/run][inv_1ellSF3s1jra29xZxC89jEWB3Ifaus2jAd] my.example.sagas.activities.CarRentalClient - Car rental reservation cancelled with id: e0f89909-225a-46ae-8790-f85ade57ef8b
+2025-05-29 10:48:33 INFO  [BookingWorkflow/run][inv_1ellSF3s1jra29xZxC89jEWB3Ifaus2jAd] my.example.sagas.activities.PaymentClient - Refunding payment with id: a56d42a4-0359-712c-882b-67ab658da082
+2025-05-29 10:48:33 WARN  [BookingWorkflow/run][inv_1ellSF3s1jra29xZxC89jEWB3Ifaus2jAd] dev.restate.sdk.core.RequestProcessorImpl - Error when processing the invocation
+dev.restate.sdk.common.TerminalException: [👻 SIMULATED] Payment could not be accepted!
 ... rest of trace ...
+2025-05-29 10:48:33 INFO  [BookingWorkflow/run][inv_1ellSF3s1jra29xZxC89jEWB3Ifaus2jAd] dev.restate.sdk.core.statemachine.State - Invocation ended
 ```
 
 </details>
