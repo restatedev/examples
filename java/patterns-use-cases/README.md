@@ -139,13 +139,16 @@ You see the call to `resultAsEmail` after the upload took too long, and the send
 
 ## Sagas
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/sagas/BookingWorkflow.java)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/read-guide.svg">](https://docs.restate.dev/guides/sagas)
 
-An example of a trip reservation workflow, using the saga pattern to undo previous steps in case of an error.
+When building distributed systems, it is crucial to ensure that the system remains consistent even in the presence of failures. 
+One way to achieve this is by using the Saga pattern.
 
-Durable Execution's guarantee to run code to the end in the presence of failures, and to deterministically recover previous steps from the journal, makes sagas easy.
-Every step pushes a compensation action (an undo operation) to a stack. In the case of an error, those operations are run.
+Sagas are a way to manage transactions that span multiple services. 
+They allow you to run compensations when your code crashes halfway through. 
+This way, you can ensure that your system remains consistent even in the presence of failures.
 
-The main requirement is that steps are implemented as journaled operations, like `ctx.run()` or RPC/messaging.
+Restate guarantees that sagas run to completion. It will handle retries and failures, and ensure that compensations are executed successfully.
 
 The example shows two ways you can implement the compensation, depending on the characteristics of the API/system you interact with.
 1. **Two-phase commit**: The reservation is created and then confirmed or cancelled. The compensation executes 'cancel' and is added after the reservation is created.
@@ -450,6 +453,7 @@ If we lower the time between scheduled calls, we can see the reminder emails bei
 
 ## Parallelizing Work
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/parallelizework/FanOutWorker.java)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/read-guide.svg">](https://docs.restate.dev/guides/parallelizing-work)
 
 This example shows how to use the Restate SDK to **execute a list of tasks in parallel and then gather their result**.
 Also known as fan-out, fan-in.
