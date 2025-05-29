@@ -12,7 +12,6 @@ public class HotelClient {
   public static void book(String customerId, HotelRequest request) {
     // this should implement the communication with the flight provider's APIs
     // just return a mock random id representing the reservation
-    logger.info("Hotel reservation created for customer id: {}", customerId);
     logger.error("[👻 SIMULATED] This hotel is fully booked!");
     throw new TerminalException("[👻 SIMULATED] This hotel is fully booked!");
   }
