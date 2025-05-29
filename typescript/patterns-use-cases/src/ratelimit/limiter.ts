@@ -29,7 +29,7 @@ export const limiter = object({
   name: "limiter",
   handlers: {
     state: async (
-      ctx: ObjectContext<LimiterState>,
+      ctx: ObjectContext<LimiterState>
     ): Promise<LimiterStateInner> => {
       return getState(ctx);
     },
@@ -43,7 +43,7 @@ export const limiter = object({
       {
         n = 1,
         waitLimitMillis = Infinity,
-      }: { n?: number; waitLimitMillis?: number },
+      }: { n?: number; waitLimitMillis?: number }
     ): Promise<Reservation> => {
       let lim = await getState(ctx);
 
@@ -104,7 +104,7 @@ export const limiter = object({
     },
     setRate: async (
       ctx: ObjectContext<LimiterState>,
-      { newLimit, newBurst }: { newLimit?: number; newBurst?: number },
+      { newLimit, newBurst }: { newLimit?: number; newBurst?: number }
     ) => {
       if (newLimit === undefined && newBurst === undefined) {
         return;
@@ -128,7 +128,7 @@ export const limiter = object({
     },
     cancelReservation: async (
       ctx: ObjectContext<LimiterState>,
-      r: Reservation,
+      r: Reservation
     ) => {
       let lim = await getState(ctx);
 
@@ -191,7 +191,7 @@ function advance(lim: LimiterStateInner, date: number): number {
 }
 
 async function getState(
-  ctx: ObjectContext<LimiterState>,
+  ctx: ObjectContext<LimiterState>
 ): Promise<LimiterStateInner> {
   return (
     (await ctx.get("state")) ?? {
@@ -206,7 +206,7 @@ async function getState(
 
 async function setState(
   ctx: ObjectContext<LimiterState>,
-  lim: LimiterStateInner,
+  lim: LimiterStateInner
 ) {
   ctx.set("state", lim);
 }

@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import {durablePromise} from "./dp/clients";
+import { durablePromise } from "./dp/clients";
 
 restate.service({
   name: "qna",
@@ -16,7 +16,7 @@ restate.service({
     },
 
     /**
-     * Answer a question 
+     * Answer a question
      */
     async answer(
       ctx: restate.Context,

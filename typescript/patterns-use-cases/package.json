@@ -5,7 +5,8 @@
   "main": "app.js",
   "type": "commonjs",
   "scripts": {
-    "build": "tsc --noEmitOnError"
+    "build": "tsc --noEmitOnError",
+    "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\""
   },
   "dependencies": {
     "@restatedev/restate-sdk": "^1.6.0",
@@ -19,6 +20,7 @@
     "@types/express": "^5.0.0",
     "@types/node": "^20.14.2",
     "@types/sequelize": "^4.28.20",
+    "prettier": "^2.8.4",
     "tsx": "^4.19.2",
     "typescript": "^5.4.5"
   }

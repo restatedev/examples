@@ -19,10 +19,11 @@ import * as restate from "@restatedev/restate-sdk";
 export const accountsObject = restate.object({
   name: "accounts",
   handlers: {
-
     deposit: async (ctx: restate.ObjectContext, amountCents: number) => {
       if (amountCents < 0) {
-        throw new restate.TerminalError("Amount must be greater than 0: amount = " + amountCents);
+        throw new restate.TerminalError(
+          "Amount must be greater than 0: amount = " + amountCents
+        );
       }
 
       const balanceCents: number =
@@ -36,7 +37,9 @@ export const accountsObject = restate.object({
       amountCents: number
     ): Promise<Result> => {
       if (amountCents < 0) {
-        throw new restate.TerminalError("Amount must be greater than 0: amount = " + amountCents);
+        throw new restate.TerminalError(
+          "Amount must be greater than 0: amount = " + amountCents
+        );
       }
 
       const balanceCents =

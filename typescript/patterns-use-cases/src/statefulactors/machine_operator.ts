@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import {bringUpMachine, Status, tearDownMachine} from "./utils/utils";
+import { bringUpMachine, Status, tearDownMachine } from "./utils/utils";
 
 // This is a State Machine implemented with a Virtual Object
 //

@@ -1,6 +1,6 @@
 import * as restate from "@restatedev/restate-sdk-clients";
-import {SendOpts} from "@restatedev/restate-sdk-clients";
-import {AsyncTaskWorker, TaskOpts} from "./async_task_worker";
+import { SendOpts } from "@restatedev/restate-sdk-clients";
+import { AsyncTaskWorker, TaskOpts } from "./async_task_worker";
 
 const RESTATE_URL = "http://localhost:8080";
 
@@ -18,7 +18,7 @@ async function submitAndAwaitTask(task: TaskOpts) {
       task,
       // use a stable uuid as an idempotency key; Restate deduplicates for us
       // optionally, execute the task later by adding a delay
-      SendOpts.from({ idempotencyKey: task.id, /*delay: 1000*/ })
+      SendOpts.from({ idempotencyKey: task.id /*delay: 1000*/ })
     );
 
   // ... Do other things while the task is being processed ...
