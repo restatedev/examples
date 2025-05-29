@@ -60,6 +60,7 @@ class BookingWorkflow {
     val compensations = mutableListOf<suspend () -> Unit>()
 
     try {
+      // For each action, we register a compensation that will be executed on failures
       compensations.add { ctx.runBlock("Cancel flight") { cancelFlight(req.customerId) } }
       ctx.runBlock("Flight reservation") { bookFlight(req.customerId, req.flights) }
 

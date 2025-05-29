@@ -29,8 +29,8 @@ When a terminal exception occurs, Restate ensures execution of all compensations
                      |
                      v
 +------------------ Try --------------------+
-| 1. Reserve Flights & Register Undo        |
-| 2. Reserve Car & Register Undo            |
+| 1. Reserve Flights & Register Cancel      |
+| 2. Reserve Car & Register Cancel          |
 | 3. Reserve Hotel & Register Cancel        |
 +------------------ Catch ------------------+
 | If TerminalException:                     |
@@ -53,6 +53,7 @@ public class BookingWorkflow {
     List<Runnable> compensations = new ArrayList<>();
 
     try {
+      // For each action, we register a compensation that will be executed on failures
       compensations.add(() -> ctx.run("Cancel flight", () -> FlightClient.cancel(req.customerId)));
       ctx.run("Flight reservation", () -> FlightClient.book(req.customerId, req.flights()));
 
