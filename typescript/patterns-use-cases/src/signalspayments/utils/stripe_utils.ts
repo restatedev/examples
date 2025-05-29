@@ -1,4 +1,4 @@
-import {TerminalError} from "@restatedev/restate-sdk";
+import { TerminalError } from "@restatedev/restate-sdk";
 import Stripe from "stripe";
 
 const stripeSecretKey = "sk_test_...";
@@ -46,20 +46,21 @@ export async function createPaymentIntent(request: {
   };
 
   try {
-    const paymentIntent: Stripe.PaymentIntent = await stripe.paymentIntents.create(
-      {
-        amount: request.amount,
-        currency: "usd",
-        payment_method: request.paymentMethodId,
-        confirm: true,
-        confirmation_method: "automatic",
-        return_url: "https://restate.dev/", // some random URL
-        metadata: {
-          restate_callback_id: request.intentWebhookId,
+    const paymentIntent: Stripe.PaymentIntent =
+      await stripe.paymentIntents.create(
+        {
+          amount: request.amount,
+          currency: "usd",
+          payment_method: request.paymentMethodId,
+          confirm: true,
+          confirmation_method: "automatic",
+          return_url: "https://restate.dev/", // some random URL
+          metadata: {
+            restate_callback_id: request.intentWebhookId,
+          },
         },
-      },
-      requestOptions
-    );
+        requestOptions
+      );
 
     // simulate delayed notifications for testing
     if (request.delayedStatus) {
@@ -74,7 +75,9 @@ export async function createPaymentIntent(request: {
         paymentIntent.status = "processing";
         return paymentIntent;
       } else {
-        throw new TerminalError(`Payment declined: ${paymentIntent?.status} - ${error.message}`);
+        throw new TerminalError(
+          `Payment declined: ${paymentIntent?.status} - ${error.message}`
+        );
       }
     } else {
       throw error;
@@ -101,4 +104,3 @@ export function verifyPaymentRequest(request: any): void {
     throw new TerminalError("'paymentMethodId' missing in request");
   }
 }
-

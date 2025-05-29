@@ -1,4 +1,4 @@
-import {object, ObjectContext} from "@restatedev/restate-sdk";
+import { object, ObjectContext } from "@restatedev/restate-sdk";
 
 type QueueState = {
   items: QueueItem[];
@@ -44,7 +44,7 @@ export const queue = object({
     },
     push: async (
       ctx: ObjectContext<QueueState>,
-      item: QueueItem,
+      item: QueueItem
     ): Promise<void> => {
       const state = await getState(ctx);
 
@@ -56,12 +56,12 @@ export const queue = object({
     },
     drop: async (
       ctx: ObjectContext<QueueState>,
-      awakeable: string,
+      awakeable: string
     ): Promise<void> => {
       const state = await getState(ctx);
 
       const index = state.items.findIndex(
-        (item) => item.awakeable == awakeable,
+        (item) => item.awakeable == awakeable
       );
       if (index == -1) {
         // we have already popped it; treat this as a 'done'
@@ -98,7 +98,7 @@ function tick(ctx: ObjectContext<QueueState>, state: QueueState) {
   }
 
   ctx.console.log(
-    `Tick end. Queue length: ${state.items.length}, In Flight: ${state.inFlight}`,
+    `Tick end. Queue length: ${state.items.length}, In Flight: ${state.inFlight}`
   );
 }
 

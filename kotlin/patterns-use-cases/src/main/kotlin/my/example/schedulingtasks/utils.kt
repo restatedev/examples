@@ -12,16 +12,12 @@ data class StripeEvent(
     val data: StripeData,
 )
 
-@Serializable
-data class StripeData(
-    val id: String,
-    val customer: String
-)
+@Serializable data class StripeData(val id: String, val customer: String)
 
 fun sendReminderEmail(event: StripeEvent) {
-    logger.info("Sending reminder email for event: ${event.data.id}")
+  logger.info("Sending reminder email for event: ${event.data.id}")
 }
 
 fun escalateToHuman(event: StripeEvent) {
-    logger.info("Escalating to ${event.data.id} invoice to support team")
+  logger.info("Escalating to ${event.data.id} invoice to support team")
 }

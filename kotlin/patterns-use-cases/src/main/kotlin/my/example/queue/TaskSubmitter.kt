@@ -14,31 +14,26 @@ import dev.restate.client.kotlin.*
  * as a reliable asynchronous task.
  */
 class TaskSubmitter {
-    companion object {
-        private val restateClient: Client = Client.connect("http://localhost:8080")
-    }
+  companion object {
+    private val restateClient: Client = Client.connect("http://localhost:8080")
+  }
 
-    suspend fun TaskOpts.scheduleTask() {
-        // submit the task; similar to publishing a message to a queue
-        // Restate ensures the task is executed exactly once
-        val handle =
-            AsyncTaskServiceClient.fromClient(restateClient)
-                .send()
-                .runTask(
-                    this,
-                    // optionally add a delay to execute the task later
-                    // delay = 5.days,
-                ) {
-                    // use a stable uuid as an idempotency key; Restate deduplicates for us
-                    idempotencyKey = "dQw4w9WgXcQ"
-                }
+  suspend fun TaskOpts.scheduleTask() {
+    // submit the task; similar to publishing a message to a queue
+    // Restate ensures the task is executed exactly once
+    val handle =
+        AsyncTaskServiceClient.fromClient(restateClient).send().runTask(
+            this,
+            // optionally add a delay to execute the task later
+            // delay = 5.days,
+        ) {
+          // use a stable uuid as an idempotency key; Restate deduplicates for us
+          idempotencyKey = "dQw4w9WgXcQ"
+        }
 
+    // ... do other things while the task is being processed ...
 
-        // ... do other things while the task is being processed ...
-
-        // await the handler's result; optionally from another process
-        val result =
-            handle
-                .attachSuspend()
-    }
+    // await the handler's result; optionally from another process
+    val result = handle.attachSuspend()
+  }
 }

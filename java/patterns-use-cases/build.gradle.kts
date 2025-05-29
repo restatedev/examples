@@ -1,6 +1,7 @@
 plugins {
   java
   application
+  id("com.diffplug.spotless") version "6.25.0"
 }
 
 repositories {
@@ -32,7 +33,7 @@ dependencies {
 
 java {
   toolchain {
-    languageVersion.set(JavaLanguageVersion.of(17))
+    languageVersion.set(JavaLanguageVersion.of(21))
   }
 }
 
@@ -53,4 +54,14 @@ tasks.withType<JavaCompile> {
 
 tasks.named<Test>("test") {
   useJUnitPlatform()
+}
+
+spotless {
+  java {
+    googleJavaFormat()
+    importOrder()
+    removeUnusedImports()
+    formatAnnotations()
+    toggleOffOn("//", "/n")
+  }
 }

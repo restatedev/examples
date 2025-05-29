@@ -139,33 +139,45 @@ You see the call to `resultAsEmail` after the upload took too long, and the send
 
 ## Sagas
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/sagas/BookingWorkflow.java)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/read-guide.svg">](https://docs.restate.dev/guides/sagas)
 
-An example of a trip reservation workflow, using the saga pattern to undo previous steps in case of an error.
+When building distributed systems, it is crucial to ensure that the system remains consistent even in the presence of failures. 
+One way to achieve this is by using the Saga pattern.
 
-Durable Execution's guarantee to run code to the end in the presence of failures, and to deterministically recover previous steps from the journal, makes sagas easy.
-Every step pushes a compensation action (an undo operation) to a stack. In the case of an error, those operations are run.
+Sagas are a way to manage transactions that span multiple services. 
+They allow you to run compensations when your code crashes halfway through. 
+This way, you can ensure that your system remains consistent even in the presence of failures.
 
-The main requirement is that steps are implemented as journaled operations, like `ctx.run()` or RPC/messaging.
+Restate guarantees that sagas run to completion. It will handle retries and failures, and ensure that compensations are executed successfully.
 
-The example shows two ways you can implement the compensation, depending on the characteristics of the API/system you interact with.
-1. **Two-phase commit**: The reservation is created and then confirmed or cancelled. The compensation executes 'cancel' and is added after the reservation is created.
-2. **Idempotency key**: The payment is made in one shot and supplies an ID. The compensation is added before the payment is made and uses the same ID.
+<img src="img/saga_diagram.svg" width="500" alt="Saga Workflow">
 
 Note that the compensating actions need to be idempotent.
 
+<img src="img/saga_journal.png" width="1200px" alt="Saga Journal">
 
 <details>
 <summary><strong>Running the example</strong></summary>
 
-1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `./gradlew -PmainClass=my.example.sagas.BookingWorkflow run`
-3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080` 
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell:
+```
+restate-server
+```
+2. Start the service: 
+```shell
+./gradlew -PmainClass=my.example.sagas.BookingWorkflow run
+```
+3. Register the services (with `--force` to override the endpoint during **development**): 
+```shell
+restate -y deployments register --force localhost:9080
+```
 
 Have a look at the logs to see how the compensations run in case of a terminal error.
 
 Start the workflow:
 ```shell
-curl -X POST localhost:8080/BookingWorkflow/trip12883/run -H 'content-type: application/json' -d '{
+curl localhost:8080/BookingWorkflow/run --json '{
+  "customerId": "12345",
   "flights": {
     "flightId": "12345",
     "passengerName": "John Doe"
@@ -174,9 +186,9 @@ curl -X POST localhost:8080/BookingWorkflow/trip12883/run -H 'content-type: appl
     "pickupLocation": "Airport",
     "rentalDate": "2024-12-16"
   },
-  "paymentInfo": {
-    "cardNumber": "4111111111111111",
-    "amount": 1500
+  "hotel": {
+    "arrivalDate": "2024-12-16",
+    "departureDate": "2024-12-20"
   }
 }'
 ```
@@ -187,24 +199,16 @@ Have a look at the logs to see the cancellations of the flight and car booking i
 <summary><strong>View logs</strong></summary>
 
 ```shell
-2024-12-18 11:35:48 INFO  [BookingWorkflow/run][inv_12ogPnVefk1c3clc9wNhEa4pMxxRh9IRyx] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-18 11:35:49 INFO  [Flights/reserve][inv_1ccelXW8IxuW6QpLWQu9ykt5aMAqRTl7pL] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-18 11:35:49 INFO  [Flights/reserve][inv_1ccelXW8IxuW6QpLWQu9ykt5aMAqRTl7pL] dev.restate.patterns.activities.Flights - Flight reservation created with id: 35ab7c68-6f32-48f6-adb9-a2a74076f4df
-2024-12-18 11:35:49 INFO  [Flights/reserve][inv_1ccelXW8IxuW6QpLWQu9ykt5aMAqRTl7pL] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-12-18 11:35:49 INFO  [CarRentals/reserve][inv_13cgaqr4XecK2ztj72BfVPuscdL1SJwMCZ] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-18 11:35:49 INFO  [CarRentals/reserve][inv_13cgaqr4XecK2ztj72BfVPuscdL1SJwMCZ] dev.restate.patterns.activities.CarRentals - Car rental reservation created with id: c103022e-9dda-4a34-a6ef-0c95d2911b2c
-2024-12-18 11:35:49 INFO  [CarRentals/reserve][inv_13cgaqr4XecK2ztj72BfVPuscdL1SJwMCZ] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-12-18 11:35:49 ERROR [BookingWorkflow/run][inv_12ogPnVefk1c3clc9wNhEa4pMxxRh9IRyx] dev.restate.patterns.clients.PaymentClient - This payment should never be accepted! Aborting booking.
-2024-12-18 11:35:49 INFO  [Flights/cancel][inv_19STR0U1v5Xo5W2UsYS3rhZEI02VGDVJM5] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-18 11:35:49 INFO  [Flights/cancel][inv_19STR0U1v5Xo5W2UsYS3rhZEI02VGDVJM5] dev.restate.patterns.activities.Flights - Flight reservation cancelled with id: 35ab7c68-6f32-48f6-adb9-a2a74076f4df
-2024-12-18 11:35:49 INFO  [Flights/cancel][inv_19STR0U1v5Xo5W2UsYS3rhZEI02VGDVJM5] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-12-18 11:35:49 INFO  [CarRentals/cancel][inv_14PS98BWOeNn1zw3yn2RqJ0wSp7V5sEJMd] dev.restate.sdk.core.InvocationStateMachine - Start invocation
-2024-12-18 11:35:49 INFO  [CarRentals/cancel][inv_14PS98BWOeNn1zw3yn2RqJ0wSp7V5sEJMd] dev.restate.patterns.activities.CarRentals - Car rental reservation cancelled with id: c103022e-9dda-4a34-a6ef-0c95d2911b2c
-2024-12-18 11:35:49 INFO  [CarRentals/cancel][inv_14PS98BWOeNn1zw3yn2RqJ0wSp7V5sEJMd] dev.restate.sdk.core.InvocationStateMachine - End invocation
-2024-12-18 11:35:49 INFO  [BookingWorkflow/run][inv_12ogPnVefk1c3clc9wNhEa4pMxxRh9IRyx] dev.restate.patterns.clients.PaymentClient - Refunding payment with id: 1a640cda-bd5f-9751-b6b9-274817549b58
-2024-12-18 11:35:49 WARN  [BookingWorkflow/run][inv_12ogPnVefk1c3clc9wNhEa4pMxxRh9IRyx] dev.restate.sdk.core.ResolvedEndpointHandlerImpl - Error when processing the invocation
-dev.restate.sdk.common.TerminalException: Payment could not be accepted!
-... rest of trace ...
+2025-05-29 14:41:01 INFO  [BookingWorkflow/run] dev.restate.sdk.core.statemachine.State - Start invocation
+2025-05-29 14:41:01 INFO  [BookingWorkflow/run][inv_1hSq1uuWb0SM6MGyZoCtFoxE5o3nduXo41] my.example.sagas.clients.FlightClient - Flight reservation created for customer: 12345
+2025-05-29 14:41:01 INFO  [BookingWorkflow/run][inv_1hSq1uuWb0SM6MGyZoCtFoxE5o3nduXo41] my.example.sagas.clients.CarRentalClient - Car rental reservation created for customer: 12345
+2025-05-29 14:41:01 ERROR [BookingWorkflow/run][inv_1hSq1uuWb0SM6MGyZoCtFoxE5o3nduXo41] my.example.sagas.clients.HotelClient - [👻 SIMULATED] This hotel is fully booked!
+2025-05-29 14:41:01 INFO  [BookingWorkflow/run][inv_1hSq1uuWb0SM6MGyZoCtFoxE5o3nduXo41] my.example.sagas.clients.FlightClient - Flight reservation cancelled for customer id: 12345
+2025-05-29 14:41:01 INFO  [BookingWorkflow/run][inv_1hSq1uuWb0SM6MGyZoCtFoxE5o3nduXo41] my.example.sagas.clients.CarRentalClient - Car rental reservation cancelled with id: 12345
+2025-05-29 14:41:01 INFO  [BookingWorkflow/run][inv_1hSq1uuWb0SM6MGyZoCtFoxE5o3nduXo41] my.example.sagas.clients.HotelClient - Hotel reservation cancelled for customer id: 12345
+2025-05-29 14:41:01 WARN  [BookingWorkflow/run][inv_1hSq1uuWb0SM6MGyZoCtFoxE5o3nduXo41] dev.restate.sdk.core.RequestProcessorImpl - Error when processing the invocation
+dev.restate.sdk.common.TerminalException: [👻 SIMULATED] This hotel is fully booked!
+... rest of stacktrace ... 
 ```
 
 </details>
@@ -456,6 +460,7 @@ If we lower the time between scheduled calls, we can see the reminder emails bei
 
 ## Parallelizing Work
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/parallelizework/FanOutWorker.java)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/read-guide.svg">](https://docs.restate.dev/guides/parallelizing-work)
 
 This example shows how to use the Restate SDK to **execute a list of tasks in parallel and then gather their result**.
 Also known as fan-out, fan-in.

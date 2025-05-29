@@ -9,21 +9,18 @@ import kotlinx.serialization.Serializable
 
 @Service
 class AsyncTaskService {
-    @Handler
-    suspend fun runTask(ctx: Context, params: TaskOpts): String {
-        return params.someHeavyWork()
-    }
+  @Handler
+  suspend fun runTask(ctx: Context, params: TaskOpts): String {
+    return params.someHeavyWork()
+  }
 }
 
 fun main() {
-    RestateHttpServer.listen(endpoint {
-        bind(AsyncTaskService())
-    })
+  RestateHttpServer.listen(endpoint { bind(AsyncTaskService()) })
 }
 
-@Serializable
-class TaskOpts
+@Serializable class TaskOpts
 
 fun TaskOpts.someHeavyWork(): String {
-    return "someHeavyWork"
+  return "someHeavyWork"
 }

@@ -9,9 +9,9 @@ import dev.restate.sdk.annotation.Accept;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Raw;
 import dev.restate.sdk.annotation.Service;
+import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.endpoint.Endpoint;
 import dev.restate.sdk.http.vertx.RestateHttpServer;
-import dev.restate.sdk.common.TerminalException;
 import dev.restate.serde.Serde;
 import my.example.signalspayments.utils.PaymentUtils;
 import my.example.signalspayments.utils.StripeUtils;
@@ -79,8 +79,7 @@ public class PaymentService {
     // We did not get the response on the synchronous path, talking to Stripe.
     // No worries, Stripe will let us know when it is done processing via a webhook.
     logger.info(
-        "Payment intent for {} still 'processing', awaiting webhook call...",
-        idempotencyKey);
+        "Payment intent for {} still 'processing', awaiting webhook call...", idempotencyKey);
 
     // We will now wait for the webhook call to complete this promise.
     // Check out the handler below.

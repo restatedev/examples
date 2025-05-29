@@ -1,13 +1,11 @@
 package my.example.syncasync;
 
 import dev.restate.client.Client;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 // The upload client calls the data upload workflow and awaits the result for 5 seconds.
 // If the workflow doesn't complete within that time, it asks the
@@ -28,9 +26,7 @@ public class UploadClient {
     String url;
     try {
       // Wait for the workflow to complete or timeout
-      url = uploadClient.workflowHandle().attachAsync()
-              .get(5, TimeUnit.SECONDS)
-              .response();
+      url = uploadClient.workflowHandle().attachAsync().get(5, TimeUnit.SECONDS).response();
     } catch (TimeoutException e) {
       logger.info("Slow upload... Mail the link later");
       uploadClient.resultAsEmail(email);
@@ -41,9 +37,10 @@ public class UploadClient {
     logger.info("Fast upload... URL was {}", url);
   }
 
-  //--------------------------------------------------------------------------------
+  // --------------------------------------------------------------------------------
   // This client would be used in some other part of the system.
-  // For the sake of this example, we are calling it here from the main method, so you can test the example.
+  // For the sake of this example, we are calling it here from the main method, so you can test the
+  // example.
   // To run from CLI:
   // ./gradlew run -PmainClass=my.example.UploadClient --args="userId123"
   public static void main(String[] args) throws Exception {
