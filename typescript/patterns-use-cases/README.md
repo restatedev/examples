@@ -91,6 +91,7 @@ Use Restate as a queue. Schedule tasks for now or later and ensure the task is o
 
 ## Database Interaction Patterns
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/database/main.ts)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/read-guide.svg">](https://docs.restate.dev/guides/databases)
 
 This set of examples shows various patterns to access databases from Restate handlers.
 
@@ -170,6 +171,7 @@ Update using 2-phase-commit:
 
 ## Webhook Callbacks
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/webhookcallbacks/webhook_callback_router.ts)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/read-guide.svg">](https://docs.restate.dev/guides/durable-webhooks)
 
 This example processes webhook callbacks from a payment provider.
 
@@ -603,6 +605,7 @@ Escalating to evt_1JH2Y4F2eZvKYlo2C8b9 invoice to support team
 
 ## Parallelizing work
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/parallelizework/fan_out_worker.ts)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/read-guide.svg">](https://docs.restate.dev/guides/parallelizing-work)
 
 This example shows how to use the Restate SDK to **execute a list of tasks in parallel and then gather their result**.
 Also known as fan-out, fan-in.
