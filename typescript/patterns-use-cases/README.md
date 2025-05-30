@@ -17,6 +17,7 @@ Common tasks and patterns implemented with Restate:
 - **[Payment state machines (Advanced)](README.md#payment-state-machines)**: State machine example that tracks a payment process, ensuring consistent processing and cancellations. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/statemachinepayments/payment_service.ts)
 
 #### Scheduling
+- **[Cron Jobs](README.md#cron-jobs)**: Implement a cron service that executes tasks based on a cron expression. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/cron/basic/cron_service.ts)
 - **[Scheduling Tasks](#scheduling-tasks)**: Restate as scheduler: Schedule tasks for later and ensure the task is triggered and executed. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/schedulingtasks/payment_reminders.ts)
 - **[Parallelizing work](README.md#parallelizing-work)**: Execute a list of tasks in parallel and then gather their result. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/parallelizework/fan_out_worker.ts)
 
@@ -382,6 +383,76 @@ Flight cancelled for customer 12345
 ```
 
 </details>
+</details>
+
+## Cron Jobs
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/cron/basic/cron_service.ts)
+
+Restate has no built-in functionality for cron jobs. 
+But Restate's durable building blocks make it easy to implement a service that does this for us.
+And uses the guarantees Restate gives to make sure tasks get executed reliably.
+
+This example implements two cron services:
+- Basic Cron Service: A simple cron service that executes a tasks based on a cron expression.
+- Advanced Cron Service: A cron service that executes tasks based on a cron expression and lets you cancel jobs and retrieve information about them.
+
+For example, we create two cron jobs. One executes every minute, and the other one executes at midnight.
+We then see the following in the UI for the advanced cron service:
+<img src="img/cron_service_schedule.png" width="1200px" alt="Cron Service UI">
+
+<img src="img/cron_state_ui.png" width="1200px" alt="Cron Job State UI">
+
+We use the following Restate features to implement the cron service:
+- **Durable timers**: Restate allows the schedule tasks to run at a specific time in the future. Restate ensures execution.
+- **Task control**: Restate allows starting and cancelling tasks.
+- **K/V state**: We store the details of the cron jobs in Restate, so we can retrieve them later.
+
+<details>
+<summary><strong>Running the example</strong></summary>
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start one of the cron services:
+   - The basic cron service is a simple implementation that executes tasks based on a cron expression:
+   ```shell
+   npx tsx watch ./src/cron/basic/cron_service.ts
+   ```
+   - The advanced cron service is a more sophisticated implementation that allows you to cancel jobs and retrieve information about them.
+   ```shell
+   npx tsx watch ./src/cron/advanced/cron_service.ts
+   ```
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+Send a request to create a cron job that runs every minute:
+
+```shell
+curl localhost:8080/CronService/create --json '{ 
+      "expr": "* * * * *", 
+      "service": "TaskService", 
+      "handler": "executeTask", 
+      "payload": "Hello new minute!" 
+  }'
+```
+
+Or create a cron job that runs at midnight:
+
+```shell
+curl localhost:8080/CronService/create --json '{ 
+      "expr": "0 0 * * *", 
+      "service": "TaskService", 
+      "handler": "executeTask", 
+      "payload": "Hello midnight!" 
+  }'
+```
+
+You will get back a response with the job ID.
+
+With the advanced cron service, you can cancel the job later:
+```shell
+curl localhost:8080/CronJob/<myJobId>/cancel
+```
+
+For the simple cron service, you can cancel jobs by cancelling the next execution via the UI. 
+
 </details>
 
 ## Stateful Actors and State Machines
