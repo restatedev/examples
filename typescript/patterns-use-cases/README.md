@@ -392,6 +392,11 @@ Restate has no built-in functionality for cron jobs.
 But Restate's durable building blocks make it easy to implement a service that does this for us.
 And uses the guarantees Restate gives to make sure tasks get executed reliably.
 
+We use the following Restate features to implement the cron service:
+- **Durable timers**: Restate allows the schedule tasks to run at a specific time in the future. Restate ensures execution.
+- **Task control**: Restate allows starting and cancelling tasks.
+- **K/V state**: We store the details of the cron jobs in Restate, so we can retrieve them later.
+
 This example implements two cron services:
 - Basic Cron Service: A simple cron service that executes a tasks based on a cron expression.
 - Advanced Cron Service: A cron service that executes tasks based on a cron expression and lets you cancel jobs and retrieve information about them.
@@ -402,10 +407,10 @@ We then see the following in the UI for the advanced cron service:
 
 <img src="img/cron_state_ui.png" width="1200px" alt="Cron Job State UI">
 
-We use the following Restate features to implement the cron service:
-- **Durable timers**: Restate allows the schedule tasks to run at a specific time in the future. Restate ensures execution.
-- **Task control**: Restate allows starting and cancelling tasks.
-- **K/V state**: We store the details of the cron jobs in Restate, so we can retrieve them later.
+Note that this implementation is fully resilient, but you might need to make some adjustments to make this production-ready/fit your use case:
+- Take into account time zones
+- Adjust how you want to handle tasks that fail until the next task gets scheduled
+- ...
 
 <details>
 <summary><strong>Running the example</strong></summary>
@@ -449,6 +454,11 @@ You will get back a response with the job ID.
 With the advanced cron service, you can cancel the job later:
 ```shell
 curl localhost:8080/CronJob/<myJobId>/cancel
+```
+
+Or get information about the job:
+```shell
+curl localhost:8080/CronJob/<myJobId>/getInfo
 ```
 
 For the simple cron service, you can cancel jobs by cancelling the next execution via the UI. 
