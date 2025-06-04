@@ -19,13 +19,13 @@ type CronJob = {
 };
 
 /*
-First look at the simple cron service example to understand the basic concepts.
-
-This advanced example builds on the simple cron service and adds the ability to cancel jobs and retrieve job information.
+A cron service that schedules tasks based on cron expressions.
+It uses a cron expression parser to determine the next execution time and schedules the task accordingly.
 The service allows you to create a cron job that can be started, executed, and canceled.
 It also provides a way to retrieve information about the job, such as the next execution time and the ID of the next execution invocation.
 
-Restate acts as the resilient scheduler.
+The service can be used to schedule any handler in any service, including virtual objects if you supply the key.
+Restate guarantees that the handler will be executed at the scheduled time.
 */
 
 const cronService = restate.service({
