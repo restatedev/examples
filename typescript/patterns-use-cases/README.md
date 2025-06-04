@@ -444,14 +444,14 @@ curl localhost:8080/CronService/create --json '{
 
 You will get back a response with the job ID.
 
-You can cancel the job later:
-```shell
-curl localhost:8080/CronJob/<myJobId>/cancel
-```
-
-Or get information about the job:
+You can get information about the job:
 ```shell
 curl localhost:8080/CronJob/<myJobId>/getInfo
+```
+
+Or cancel the job later:
+```shell
+curl localhost:8080/CronJob/<myJobId>/cancel
 ```
 
 </details>
