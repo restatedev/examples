@@ -5,7 +5,7 @@ import { serde } from "@restatedev/restate-sdk-clients";
 import {InvocationId, TerminalError} from "@restatedev/restate-sdk";
 
 type CronRequest = {
-  expr: string; // The cron expression e.g. "0 0 * * *" (every day at midnight)
+  cronExpression: string; // The cron expression e.g. "0 0 * * *" (every day at midnight)
   service: string;
   handler: string; // Handler to execute with this schedule
   key?: string; // Optional: Virtual Object key to call
@@ -89,18 +89,21 @@ restate
 
 const scheduleNext = async (ctx: restate.ObjectContext, req: CronRequest) => {
   // Parse the cron expression to determine the next execution time
+  // Persist current date in Restate for deterministic replay
+  const currentDate = await ctx.date.now()
   let interval ;
   try {
-    interval = CronExpressionParser.parse(req.expr);
+    interval = CronExpressionParser.parse(req.cronExpression, {currentDate});
   } catch (e) {
     throw new TerminalError(`Invalid cron expression: ${(e as Error).message}`)
   }
+
   const next = interval.next().toDate();
-  const delay = next.getTime() - Date.now();
+  const delay = next.getTime() - currentDate;
 
   // Schedule the next execution of the task
   const handle = ctx
-      .objectSendClient(cronJob, ctx.key, { delay: delay })
+      .objectSendClient(cronJob, ctx.key, { delay })
       .execute(req);
 
   // Store the job information in the Restate for later retrieval
