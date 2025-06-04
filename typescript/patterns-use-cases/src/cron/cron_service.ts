@@ -2,21 +2,23 @@ import * as restate from "@restatedev/restate-sdk";
 import { CronExpressionParser } from "cron-parser";
 import { taskService } from "./task_service";
 import { serde } from "@restatedev/restate-sdk-clients";
-import {InvocationId, TerminalError} from "@restatedev/restate-sdk";
+import { InvocationId, TerminalError } from "@restatedev/restate-sdk";
 
 type CronRequest = {
-  cronExpression: string; // The cron expression e.g. "0 0 * * *" (every day at midnight)
+  expr: string; // The cron expression e.g. "0 0 * * *" (every day at midnight)
   service: string;
-  handler: string; // Handler to execute with this schedule
+  method: string; // Handler to execute with this schedule
   key?: string; // Optional: Virtual Object key to call
-  payload?: any;
+  parameter?: any; // Optional payload to pass to the handler
 };
 
-type CronJob = {
+type CronJobSpec = {
   req: CronRequest;
-  next_execution_time?: string; // The next execution time of the cron job
-  next_execution_id?: InvocationId; // The ID of the next execution invocation
+  next_execution_time: string; // The next execution time of the cron job
+  next_execution_id: InvocationId; // The ID of the next execution invocation
 };
+
+const JOB = "job"; // Key for storing job information in the Restate object
 
 /*
 A cron service that schedules tasks based on cron expressions.
@@ -34,8 +36,8 @@ const cronService = restate.service({
     create: async (ctx: restate.Context, req: CronRequest) => {
       // Creates a job ID and waits for successful initiation of the job
       const jobId = ctx.rand.uuidv4();
-      await ctx.objectClient(cronJob, jobId).initiateJob(req);
-      return "Cron job created with ID: " + jobId;
+      const job = await ctx.objectClient(cronJob, jobId).initiateJob(req);
+      return `Cron job created with ID: ${jobId} and next execution at: ${job.next_execution_time}`;
     },
   },
 });
@@ -43,39 +45,51 @@ const cronService = restate.service({
 const cronJob = restate.object({
   name: "CronJob",
   handlers: {
-    initiateJob: async (ctx: restate.ObjectContext, req: CronRequest) => {
+    initiateJob: async (
+      ctx: restate.ObjectContext,
+      req: CronRequest
+    ): Promise<CronJobSpec> => {
       // Check if the job already exists
-        const existingJob = await ctx.get<CronJob>("job");
-        if (existingJob) {
-          throw new TerminalError("Job already exists. Use a different ID or cancel the existing job first.");
-        }
+      const job = await ctx.get<CronJobSpec>(JOB);
+      if (job) {
+        throw new TerminalError(
+          "Job already exists. Use a different ID or cancel the existing job first."
+        );
+      }
 
       // starting the cron job the first time
-      await scheduleNext(ctx, req);
+      return await scheduleNextExecution(ctx, req);
     },
-    execute: async (ctx: restate.ObjectContext, req: CronRequest) => {
+    execute: async (ctx: restate.ObjectContext) => {
+      const job = await ctx.get<CronJobSpec>(JOB);
+      if (!job) {
+        throw new TerminalError("No cron job information found.");
+      }
+
       // execute the handler
+      const { service, method, key, parameter } = job.req;
       ctx.genericSend({
-        service: req.service,
-        method: req.handler,
-        key: req.key,
-        parameter: req.payload,
-        inputSerde: req.payload ? serde.json : serde.empty,
+        service,
+        method,
+        key,
+        parameter,
+        inputSerde: parameter ? serde.json : serde.empty,
       });
 
-      // schedule the next execution
-      await scheduleNext(ctx, req);
+      await scheduleNextExecution(ctx, job.req);
     },
     cancel: async (ctx: restate.ObjectContext) => {
       // Cancel the cron job by canceling the next execution
-      const jobInfo = await ctx.get<CronJob>("job");
-      if (jobInfo && jobInfo.next_execution_id) {
-        ctx.cancel(jobInfo.next_execution_id);
+      const job = await ctx.get<CronJobSpec>(JOB);
+      if (job) {
+        ctx.cancel(job.next_execution_id);
       }
+
+      // Clear the job state
       ctx.clearAll();
     },
     getInfo: async (ctx: restate.ObjectSharedContext) =>
-      ctx.get<CronJob>("job"),
+      ctx.get<CronJobSpec>(JOB),
   },
 });
 
@@ -86,30 +100,32 @@ restate
   .bind(taskService)
   .listen(9080);
 
-
-const scheduleNext = async (ctx: restate.ObjectContext, req: CronRequest) => {
+const scheduleNextExecution = async (
+  ctx: restate.ObjectContext,
+  req: CronRequest
+): Promise<CronJobSpec> => {
   // Parse the cron expression to determine the next execution time
   // Persist current date in Restate for deterministic replay
-  const currentDate = await ctx.date.now()
-  let interval ;
+  const now = await ctx.date.now();
+  let interval;
   try {
-    interval = CronExpressionParser.parse(req.cronExpression, {currentDate});
+    interval = CronExpressionParser.parse(req.expr, { currentDate: now });
   } catch (e) {
-    throw new TerminalError(`Invalid cron expression: ${(e as Error).message}`)
+    throw new TerminalError(`Invalid cron expression: ${(e as Error).message}`);
   }
 
   const next = interval.next().toDate();
-  const delay = next.getTime() - currentDate;
+  const delay = next.getTime() - now;
 
   // Schedule the next execution of the task
-  const handle = ctx
-      .objectSendClient(cronJob, ctx.key, { delay })
-      .execute(req);
+  const handle = ctx.objectSendClient(cronJob, ctx.key, { delay }).execute();
 
   // Store the job information in the Restate for later retrieval
-  ctx.set<CronJob>("job", {
+  const job = {
     req,
     next_execution_time: next.toString(),
     next_execution_id: await handle.invocationId,
-  });
+  };
+  ctx.set<CronJobSpec>(JOB, job);
+  return job;
 };

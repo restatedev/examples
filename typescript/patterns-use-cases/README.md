@@ -426,8 +426,8 @@ Send a request to create a cron job that runs every minute:
 curl localhost:8080/CronService/create --json '{ 
       "expr": "* * * * *", 
       "service": "TaskService", 
-      "handler": "executeTask", 
-      "payload": "Hello new minute!" 
+      "method": "executeTask", 
+      "parameter": "Hello new minute!" 
   }'
 ```
 
@@ -437,14 +437,17 @@ Or create a cron job that runs at midnight:
 curl localhost:8080/CronService/create --json '{ 
       "expr": "0 0 * * *", 
       "service": "TaskService", 
-      "handler": "executeTask", 
-      "payload": "Hello midnight!" 
+      "method": "executeTask", 
+      "parameter": "Hello midnight!" 
   }'
 ```
 
+You can also use the cron service to execute handlers on Virtual Objects, by specifying the Virtual Object key in the request.
+
+
 You will get back a response with the job ID.
 
-You can get information about the job:
+Using the job ID, you can then get information about the job:
 ```shell
 curl localhost:8080/CronJob/<myJobId>/getInfo
 ```
