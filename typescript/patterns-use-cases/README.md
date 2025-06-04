@@ -405,9 +405,9 @@ We then see the following in the UI:
 
 <img src="img/cron_state_ui.png" width="1200px" alt="Cron Job State UI">
 
-Note that this implementation is fully resilient, but you might need to make some adjustments to make this production-ready/fit your use case:
-- Take into account time zones
-- Adjust how you want to handle tasks that fail until the next task gets scheduled
+Note that this implementation is fully resilient, but you might need to make some adjustments to make this fit your use case:
+- Take into account time zones.
+- Adjust how you want to handle tasks that fail until the next task gets scheduled. Right now, you would have concurrent executions of the same cron job (one retrying and the other starting up). 
 - ...
 
 <details>
