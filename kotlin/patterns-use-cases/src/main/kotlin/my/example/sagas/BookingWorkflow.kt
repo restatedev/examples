@@ -19,10 +19,10 @@ import my.example.sagas.clients.cancelHotel
 
 @Serializable
 data class BookingRequest(
-    val customerId: String,
-    val flights: FlightBookingRequest,
-    val car: CarRentalBookingRequest,
-    val hotel: HotelRequest
+  val customerId: String,
+  val flight: FlightBookingRequest,
+  val car: CarRentalBookingRequest,
+  val hotel: HotelRequest
 )
 
 /*
@@ -62,7 +62,7 @@ class BookingWorkflow {
     try {
       // For each action, we register a compensation that will be executed on failures
       compensations.add { ctx.runBlock("Cancel flight") { cancelFlight(req.customerId) } }
-      ctx.runBlock("Flight reservation") { bookFlight(req.customerId, req.flights) }
+      ctx.runBlock("Flight reservation") { bookFlight(req.customerId, req.flight) }
 
       compensations.add { ctx.runBlock("Cancel car") { cancelCar(req.customerId) } }
       ctx.runBlock("Car reservation") { bookCar(req.customerId, req.car) }
@@ -70,7 +70,7 @@ class BookingWorkflow {
       compensations.add { ctx.runBlock("Cancel hotel") { cancelHotel(req.customerId) } }
       ctx.runBlock("Hotel reservation") { bookHotel(req.customerId, req.hotel) }
     }
-    // Terminal errors are not retried by Restate, so undo previous actions and fail the workflow
+    // Terminal exceptions are not retried by Restate. We undo previous actions and fail the workflow.
     catch (e: TerminalException) {
       // Restate guarantees that all compensations are executed
       compensations.reversed().forEach { it() }

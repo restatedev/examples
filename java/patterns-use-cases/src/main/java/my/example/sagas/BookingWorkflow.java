@@ -35,7 +35,7 @@ When a terminal exception occurs, Restate ensures execution of all compensations
 +------------------ Catch ------------------+
 | If TerminalException:                     |
 |   Execute compensations in reverse order  |
-| Rethrow error                             |
+| Rethrow exception                         |
 +-------------------------------------------+
 
 Note: that the compensation logic is purely implemented in user code (no special Restate API)
@@ -63,7 +63,7 @@ public class BookingWorkflow {
       compensations.add(() -> ctx.run("Cancel hotel", () -> HotelClient.cancel(req.customerId)));
       ctx.run("Hotel reservation", () -> HotelClient.book(req.customerId, req.hotel()));
     }
-    // Terminal errors are not retried by Restate, so undo previous actions and fail the workflow
+    // Terminal exceptions are not retried by Restate. We undo previous actions and fail the workflow.
     catch (TerminalException e) {
       // Restate guarantees that all compensations are executed
       for (Runnable compensation : compensations) {
