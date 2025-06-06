@@ -58,11 +58,11 @@ async def run(ctx: restate.Context, req: BookingRequest):
         # For each action, we register a compensation that will be executed on failures
         compensations.append(
             lambda: ctx.run(
-                "Cancel flights", lambda: flight_client.cancel(req.customer_id)
+                "Cancel flight", lambda: flight_client.cancel(req.customer_id)
             )
         )
         await ctx.run(
-            "Reserve flights", lambda: flight_client.book(req.customer_id, req.flight)
+            "Reserve flight", lambda: flight_client.book(req.customer_id, req.flight)
         )
 
         compensations.append(
