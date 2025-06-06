@@ -17,6 +17,6 @@ public class TaskService {
   public void executeTask(Context ctx, String task) {
     // Here you would implement the logic to execute the task
     // For example, you could call another service or perform some computation
-    logger.info("Executing task with parameter: {}", task);
+    logger.info("Executing task with payload: {}", task);
   }
 }

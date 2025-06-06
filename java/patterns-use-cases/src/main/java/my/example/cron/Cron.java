@@ -1,6 +1,7 @@
 package my.example.cron;
 
-import com.cronutils.model.CronType;
+import static com.cronutils.model.CronType.UNIX;
+
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
@@ -22,139 +23,115 @@ import java.time.ZonedDateTime;
 import java.util.Optional;
 
 /*
-A cron service that schedules tasks based on cron expressions.
-It uses a cron expression parser to determine the next execution time and schedules the task accordingly.
-The service allows you to create a cron job that can be started, executed, and canceled.
-It also provides a way to retrieve information about the job, such as the next execution time and the ID of the next execution invocation.
-
-The service can be used to schedule any handler in any service, including virtual objects if you supply the key.
-Restate guarantees that the handler will be executed at the scheduled time.
-
-Requests to start a new cron job need to be sent to the JobInitiator,
-which creates a job ID and then initializes a new Job Object.
-
-+-------------------+                     +---------------------------+
-| CronJobInitiator  |                     | CronJob                   |
-| - create()        | ----------------->  | - initiateJob()           |
-|                   |                     | - execute()               |
-|                   |                     | - cancel()                |
-|                   |                     | - getInfo()               |
-+-------------------+                     +---------------------------+
-*/
+ * A distributed cron service built with Restate that schedules tasks based on cron expressions.
+ *
+ * Features:
+ * - Create cron jobs with standard cron expressions (e.g., "0 0 * * *" for daily at midnight)
+ * - Schedule any Restate service handler or virtual object method
+ * - Guaranteed execution with Restate's durability
+ * - Cancel and inspect running jobs
+ *
+ * Usage:
+ * 1. Send requests to CronInitiator.create() to start new jobs
+ * 2. Each job gets a unique ID and runs as a CronJob virtual object
+ * 3. Jobs automatically reschedule themselves after each execution
+ */
 public class Cron {
 
-  public record CronRequest(
-      String expr, // The cron expression e.g. "0 0 * * *" (every day at midnight)
+  public record JobRequest(
+      String cronExpression, // e.g. "0 0 * * *" (every day at midnight)
       String service,
       String method, // Handler to execute with this schedule
-      Optional<String> key, // Optional: Virtual Object key to call
-      Optional<String> parameter) {} // Optional payload to pass to the handler
+      Optional<String> key, // Optional Virtual Object key to call
+      Optional<String> payload) {} // Optional data to pass to the handler
 
-  public record CronJobSpec(
-      CronRequest req,
-      String nextExecutionTime, // The next execution time of the cron job
-      String nextExecutionId) {} // The ID of the next execution invocation
+  public record JobInfo(JobRequest req, String nextExecutionTime, String nextExecutionId) {}
 
   @Service
   public static class JobInitiator {
     @Handler
-    public String create(Context ctx, CronRequest req) {
-      // Creates a job ID and waits for successful initiation of the job
+    public String create(Context ctx, JobRequest req) {
       var jobId = ctx.random().nextUUID().toString();
       var cronJob = CronJobClient.fromContext(ctx, jobId).initiateJob(req).await();
-      return "Job created with ID "
-          + jobId
-          + " and next execution time "
-          + cronJob.nextExecutionTime();
+      return String.format(
+          "Job created with ID %s and next execution time %s", jobId, cronJob.nextExecutionTime());
     }
   }
 
   @VirtualObject
   public static class Job {
 
-    private final StateKey<CronJobSpec> JOB = StateKey.of("job", CronJobSpec.class);
-    private final CronParser cronParser =
-        new CronParser(CronDefinitionBuilder.instanceDefinitionFor(CronType.UNIX));
+    private final StateKey<JobInfo> JOB = StateKey.of("job", JobInfo.class);
+    private final CronParser PARSER =
+        new CronParser(CronDefinitionBuilder.instanceDefinitionFor(UNIX));
 
     @Handler
-    public CronJobSpec initiateJob(ObjectContext ctx, CronRequest req) {
-      // Check if the job already exists
-      var job = ctx.get(JOB);
-      if (job.isPresent()) {
-        throw new TerminalException(
-            "Job already exists. Use a different ID or cancel the existing job first.");
+    public JobInfo initiate(ObjectContext ctx, JobRequest req) {
+      if (ctx.get(JOB).isPresent()) {
+        throw new TerminalException("Job already exists for this ID");
       }
-
-      // starting the cron job the first time
       return scheduleNextExecution(ctx, req);
     }
 
     @Handler
     public void execute(ObjectContext ctx) {
-      var task =
-          ctx.get(JOB)
-              .orElseThrow(() -> new TerminalException("No cron job information found."))
-              .req;
+      JobRequest req = ctx.get(JOB).orElseThrow(() -> new TerminalException("Job not found")).req;
 
-      // Execute the task
-      var target =
-          (task.key.isPresent())
-              ? Target.virtualObject(task.service, task.method, task.key.get())
-              : Target.service(task.service, task.method);
-      var request =
-          (task.parameter.isPresent())
-              ? Request.of(
-                  target, TypeTag.of(String.class), TypeTag.of(Void.class), task.parameter.get())
-              : Request.of(target, new byte[0]);
-      ctx.send(request);
-
-      scheduleNextExecution(ctx, task);
+      executeTask(ctx, req);
+      scheduleNextExecution(ctx, req);
     }
 
     @Handler
     public void cancel(ObjectContext ctx) {
-      // Cancel the cron job by canceling the next execution
-      var job = ctx.get(JOB);
-      if (job.isPresent()) {
-        ctx.invocationHandle(job.get().nextExecutionId).cancel();
-      }
+      ctx.get(JOB).ifPresent(job -> ctx.invocationHandle(job.nextExecutionId).cancel());
 
       // Clear the job state
       ctx.clearAll();
     }
 
     @Shared
-    public Optional<CronJobSpec> getInfo(SharedObjectContext ctx) {
+    public Optional<JobInfo> getInfo(SharedObjectContext ctx) {
       return ctx.get(JOB);
     }
 
-    private CronJobSpec scheduleNextExecution(ObjectContext ctx, CronRequest req) {
-      // Parse the cron expression to determine the next execution time
-      // Persist current date in Restate for deterministic replay
-      var now = ctx.run(ZonedDateTime.class, ZonedDateTime::now);
+    private void executeTask(ObjectContext ctx, JobRequest job) {
+      Target target =
+          (job.key.isPresent())
+              ? Target.virtualObject(job.service, job.method, job.key.get())
+              : Target.service(job.service, job.method);
+      var request =
+          (job.payload.isPresent())
+              ? Request.of(
+                  target, TypeTag.of(String.class), TypeTag.of(Void.class), job.payload.get())
+              : Request.of(target, new byte[0]);
+      ctx.send(request);
+    }
 
+    private JobInfo scheduleNextExecution(ObjectContext ctx, JobRequest req) {
+      // Parse cron expression
       ExecutionTime executionTime;
       try {
-        executionTime = ExecutionTime.forCron(cronParser.parse(req.expr));
+        executionTime = ExecutionTime.forCron(PARSER.parse(req.cronExpression));
       } catch (IllegalArgumentException e) {
-        throw new TerminalException("Invalid cron expression " + req.expr + ": " + e.getMessage());
+        throw new TerminalException("Invalid cron expression: " + e.getMessage());
       }
 
-      // Get delay and next execution time
+      // Calculate next execution time
+      var now = ctx.run(ZonedDateTime.class, ZonedDateTime::now);
       var delay =
           executionTime
               .timeToNextExecution(now)
-              .orElseThrow(() -> new TerminalException("No next cron execution time found."));
-      var nextExecutionTime =
+              .orElseThrow(() -> new TerminalException("Cannot determine next execution time"));
+      var next =
           executionTime
               .nextExecution(now)
-              .orElseThrow(() -> new TerminalException("No next cron execution time found."));
+              .orElseThrow(() -> new TerminalException("Cannot determine next execution time"));
 
-      // Schedule the job to run at the next execution time
+      // Schedule next execution
       var handle = CronJobClient.fromContext(ctx, ctx.key()).send().execute(delay);
 
-      // Store the job spec in the context
-      var job = new CronJobSpec(req, nextExecutionTime.toString(), handle.invocationId());
+      // Save job state
+      var job = new JobInfo(req, next.toString(), handle.invocationId());
       ctx.set(JOB, job);
       return job;
     }

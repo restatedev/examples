@@ -14,33 +14,26 @@ type CronRequest = {
 
 type CronJobSpec = {
   req: CronRequest;
-  next_execution_time: string; // The next execution time of the cron job
-  next_execution_id: InvocationId; // The ID of the next execution invocation
+  next_execution_time: string;
+  next_execution_id: InvocationId;
 };
 
 const JOB = "job"; // Key for storing job information in the Restate object
 
-/*
-A cron service that schedules tasks based on cron expressions.
-It uses a cron expression parser to determine the next execution time and schedules the task accordingly.
-The service allows you to create a cron job that can be started, executed, and canceled.
-It also provides a way to retrieve information about the job, such as the next execution time and the ID of the next execution invocation.
-
-The service can be used to schedule any handler in any service, including virtual objects if you supply the key.
-Restate guarantees that the handler will be executed at the scheduled time.
-
-Requests to start a new cron job need to be sent to the CronJobInitiator,
-which creates a job ID and then initializes a new CronJob Object.
-
-+-------------------+                     +---------------------------+
-| CronJobInitiator  |                     | CronJob                   |
-| - create()        | ----------------->  | - initiateJob()           |
-|                   |                     | - execute()               |
-|                   |                     | - cancel()                |
-|                   |                     | - getInfo()               |
-+-------------------+                     +---------------------------+
-*/
-
+/**
+ * A distributed cron service built with Restate that schedules tasks based on cron expressions.
+ *
+ * Features:
+ * - Create cron jobs with standard cron expressions (e.g., "0 0 * * *" for daily at midnight)
+ * - Schedule any Restate service handler or virtual object method
+ * - Guaranteed execution with Restate's durability
+ * - Cancel and inspect running jobs
+ *
+ * Usage:
+ * 1. Send requests to CronInitiator.create() to start new jobs
+ * 2. Each job gets a unique ID and runs as a CronJob virtual object
+ * 3. Jobs automatically reschedule themselves after each execution
+ */
 const cronJobInitiator = restate.service({
   name: "CronJobInitiator",
   handlers: {
