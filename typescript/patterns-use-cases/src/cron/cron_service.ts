@@ -29,8 +29,16 @@ It also provides a way to retrieve information about the job, such as the next e
 The service can be used to schedule any handler in any service, including virtual objects if you supply the key.
 Restate guarantees that the handler will be executed at the scheduled time.
 
-Requests to start a new cron job need to be sent to the CronService,
+Requests to start a new cron job need to be sent to the CronJobInitiator,
 which creates a job ID and then initializes a new CronJob Object.
+
++-------------------+                     +---------------------------+
+| CronJobInitiator  |                     | CronJob                   |
+| - create()        | ----------------->  | - initiateJob()           |
+|                   |                     | - execute()               |
+|                   |                     | - cancel()                |
+|                   |                     | - getInfo()               |
++-------------------+                     +---------------------------+
 */
 
 const cronJobInitiator = restate.service({

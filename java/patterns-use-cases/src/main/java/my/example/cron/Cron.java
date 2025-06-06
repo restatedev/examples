@@ -1,13 +1,3 @@
-/*
- * Copyright (c) 2024 - Restate Software, Inc., Restate GmbH
- *
- * This file is part of the Restate examples,
- * which is released under the MIT license.
- *
- * You can find a copy of the license in the file LICENSE
- * in the root directory of this repository or package or at
- * https://github.com/restatedev/examples/
- */
 package my.example.cron;
 
 import com.cronutils.model.CronType;
@@ -40,8 +30,16 @@ It also provides a way to retrieve information about the job, such as the next e
 The service can be used to schedule any handler in any service, including virtual objects if you supply the key.
 Restate guarantees that the handler will be executed at the scheduled time.
 
-Requests to start a new cron job need to be sent to the CronService (CronService.java),
-which creates a job ID and then initializes a new CronJob Object.
+Requests to start a new cron job need to be sent to the JobInitiator,
+which creates a job ID and then initializes a new Job Object.
+
++-------------------+                     +---------------------------+
+| CronJobInitiator  |                     | CronJob                   |
+| - create()        | ----------------->  | - initiateJob()           |
+|                   |                     | - execute()               |
+|                   |                     | - cancel()                |
+|                   |                     | - getInfo()               |
++-------------------+                     +---------------------------+
 */
 public class Cron {
 
