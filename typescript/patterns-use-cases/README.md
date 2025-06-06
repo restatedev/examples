@@ -423,7 +423,7 @@ Note that this implementation is fully resilient, but you might need to make som
 Send a request to create a cron job that runs every minute:
 
 ```shell
-curl localhost:8080/CronService/create --json '{ 
+curl localhost:8080/CronJobInitiator/create --json '{ 
       "expr": "* * * * *", 
       "service": "TaskService", 
       "method": "executeTask", 
@@ -434,7 +434,7 @@ curl localhost:8080/CronService/create --json '{
 Or create a cron job that runs at midnight:
 
 ```shell
-curl localhost:8080/CronService/create --json '{ 
+curl localhost:8080/CronJobInitiator/create --json '{ 
       "expr": "0 0 * * *", 
       "service": "TaskService", 
       "method": "executeTask", 

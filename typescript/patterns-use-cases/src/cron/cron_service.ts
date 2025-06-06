@@ -33,8 +33,8 @@ Requests to start a new cron job need to be sent to the CronService,
 which creates a job ID and then initializes a new CronJob Object.
 */
 
-const cronService = restate.service({
-  name: "CronService",
+const cronJobInitiator = restate.service({
+  name: "CronJobInitiator",
   handlers: {
     create: async (ctx: restate.Context, req: CronRequest) => {
       // Creates a job ID and waits for successful initiation of the job
@@ -96,13 +96,6 @@ const cronJob = restate.object({
   },
 });
 
-restate
-  .endpoint()
-  .bind(cronService)
-  .bind(cronJob)
-  .bind(taskService)
-  .listen(9080);
-
 const scheduleNextExecution = async (
   ctx: restate.ObjectContext,
   req: CronRequest
@@ -132,3 +125,10 @@ const scheduleNextExecution = async (
   ctx.set<CronJobSpec>(JOB, job);
   return job;
 };
+
+restate
+    .endpoint()
+    .bind(cronJobInitiator)
+    .bind(cronJob)
+    .bind(taskService)
+    .listen(9080);
