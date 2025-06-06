@@ -15,21 +15,35 @@ import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
-
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
+/*
+A cron service that schedules tasks based on cron expressions.
+It uses a cron expression parser to determine the next execution time and schedules the task accordingly.
+The service allows you to create a cron job that can be started, executed, and canceled.
+It also provides a way to retrieve information about the job, such as the next execution time and the ID of the next execution invocation.
+
+The service can be used to schedule any handler in any service, including virtual objects if you supply the key.
+Restate guarantees that the handler will be executed at the scheduled time.
+
+Requests to start a new cron job need to be sent to the CronService (CronService.java),
+which creates a job ID and then initializes a new CronJob Object.
+*/
 @VirtualObject
 public class CronJob {
 
   public record CronRequest(
-      String expr,
+      String expr, // The cron expression e.g. "0 0 * * *" (every day at midnight)
       String service,
-      String method,
-      Optional<String> key,
-      Optional<String> parameter) {}
+      String method, // Handler to execute with this schedule
+      Optional<String> key, // Optional: Virtual Object key to call
+      Optional<String> parameter) {} // Optional payload to pass to the handler
 
-  public record CronJobSpec(CronRequest req, String nextExecutionTime, String nextExecutionId) {}
+  public record CronJobSpec(
+      CronRequest req,
+      String nextExecutionTime, // The next execution time of the cron job
+      String nextExecutionId) {} // The ID of the next execution invocation
 
   private final StateKey<CronJobSpec> JOB = StateKey.of("job", CronJobSpec.class);
   private final CronParser cronParser =
@@ -47,8 +61,8 @@ public class CronJob {
 
   @Handler
   public void execute(ObjectContext ctx) {
-    var job = ctx.get(JOB)
-        .orElseThrow(() -> new TerminalException("No cron job information found."));
+    var job =
+        ctx.get(JOB).orElseThrow(() -> new TerminalException("No cron job information found."));
 
     // Execute the task
     ctx.send(createRequest(job.req));
@@ -85,9 +99,13 @@ public class CronJob {
     }
 
     // Get delay and next execution time
-    var delay = executionTime.timeToNextExecution(now)
+    var delay =
+        executionTime
+            .timeToNextExecution(now)
             .orElseThrow(() -> new TerminalException("No next cron execution time found."));
-    var nextExecutionTime = executionTime.nextExecution(now)
+    var nextExecutionTime =
+        executionTime
+            .nextExecution(now)
             .orElseThrow(() -> new TerminalException("No next cron execution time found."));
 
     // Schedule the job to run at the next execution time
@@ -101,17 +119,22 @@ public class CronJob {
 
   private static Request<byte[], byte[]> createRequest(CronJob.CronRequest req) {
     ObjectMapper mapper = new ObjectMapper();
-    byte[] payloadBytes = req.parameter.map(param -> {
-      try {
-        return mapper.writeValueAsString(param).getBytes();
-      } catch (JsonProcessingException e) {
-        throw new TerminalException(e.getMessage());
-      }
-    }).orElse(new byte[0]);
+    byte[] payloadBytes =
+        req.parameter
+            .map(
+                param -> {
+                  try {
+                    return mapper.writeValueAsString(param).getBytes();
+                  } catch (JsonProcessingException e) {
+                    throw new TerminalException(e.getMessage());
+                  }
+                })
+            .orElse(new byte[0]);
 
-    var target = (req.key.isPresent()) ?
-        Target.virtualObject(req.service, req.method, req.key.get()) :
-        Target.service(req.service, req.method);
+    var target =
+        (req.key.isPresent())
+            ? Target.virtualObject(req.service, req.method, req.key.get())
+            : Target.service(req.service, req.method);
     return Request.of(target, payloadBytes);
   }
 }

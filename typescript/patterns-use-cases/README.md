@@ -442,7 +442,7 @@ curl localhost:8080/CronService/create --json '{
   }'
 ```
 
-You can also use the cron service to execute handlers on Virtual Objects, by specifying the Virtual Object key in the request.
+You can also use the cron service to execute handlers on Virtual Objects by specifying the Virtual Object key in the request.
 
 
 You will get back a response with the job ID.

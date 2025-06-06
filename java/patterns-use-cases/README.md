@@ -214,6 +214,85 @@ dev.restate.sdk.common.TerminalException: [👻 SIMULATED] This hotel is fully b
 </details>
 </details>
 
+## Cron
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/cron/CronJob.java)
+
+Restate has no built-in functionality for cron jobs.
+But Restate's durable building blocks make it easy to implement a service that does this for us.
+And uses the guarantees Restate gives to make sure tasks get executed reliably.
+
+We use the following Restate features to implement the cron service:
+- **Durable timers**: Restate allows the schedule tasks to run at a specific time in the future. Restate ensures execution.
+- **Task control**: Restate allows starting and cancelling tasks.
+- **K/V state**: We store the details of the cron jobs in Restate, so we can retrieve them later.
+
+The cron service schedules tasks based on a cron expression, lets you cancel jobs and retrieve information about them.
+
+For example, we create two cron jobs. One executes every minute, and the other one executes at midnight.
+We then see the following in the UI:
+<img src="img/cron_service_schedule.png" width="1200px" alt="Cron Service UI">
+
+<img src="img/cron_state_ui.png" width="1200px" alt="Cron Job State UI">
+
+Note that this implementation is fully resilient, but you might need to make some adjustments to make this fit your use case:
+- Take into account time zones.
+- Adjust how you want to handle tasks that fail until the next task gets scheduled. Right now, you would have concurrent executions of the same cron job (one retrying and the other starting up).
+- ...
+
+<details>
+<summary><strong>Running the example</strong></summary>
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell:
+   ```shell
+   restate-server
+   ```
+2. Start the cron service and the task service:
+   ```shell
+   ./gradlew -PmainClass=my.example.cron.AppMain run
+   ```
+3. Register the services (with `--force` to override the endpoint during **development**): 
+   ```shell
+   restate -y deployments register --force localhost:9080
+   ```
+Send a request to create a cron job that runs every minute:
+
+```shell
+curl localhost:8080/CronService/create --json '{ 
+      "expr": "* * * * *", 
+      "service": "TaskService", 
+      "method": "executeTask", 
+      "parameter": "Hello new minute!" 
+  }'
+```
+
+Or create a cron job that runs at midnight:
+
+```shell
+curl localhost:8080/CronService/create --json '{ 
+      "expr": "0 0 * * *", 
+      "service": "TaskService", 
+      "method": "executeTask", 
+      "parameter": "Hello midnight!" 
+  }'
+```
+
+You can also use the cron service to execute handlers on Virtual Objects by specifying the Virtual Object key in the request.
+
+
+You will get back a response with the job ID.
+
+Using the job ID, you can then get information about the job:
+```shell
+curl localhost:8080/CronJob/<myJobId>/getInfo
+```
+
+Or cancel the job later:
+```shell
+curl localhost:8080/CronJob/<myJobId>/cancel
+```
+
+</details>
+
 ## Stateful Actors and State Machines
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/statefulactors/MachineOperator.java)
 
