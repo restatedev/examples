@@ -51,11 +51,14 @@ public class CronJob {
 
   @Handler
   public CronJobSpec initiateJob(ObjectContext ctx, CronRequest req) {
+    // Check if the job already exists
     var job = ctx.get(JOB);
     if (job.isPresent()) {
       throw new TerminalException(
           "Job already exists. Use a different ID or cancel the existing job first.");
     }
+
+    // starting the cron job the first time
     return scheduleNextExecution(ctx, req);
   }
 
@@ -72,6 +75,7 @@ public class CronJob {
 
   @Handler
   public void cancel(ObjectContext ctx) {
+    // Cancel the cron job by canceling the next execution
     var job = ctx.get(JOB);
     if (job.isPresent()) {
       ctx.invocationHandle(job.get().nextExecutionId).cancel();

@@ -69,7 +69,7 @@ const cronJob = restate.object({
         throw new TerminalError("No cron job information found.");
       }
 
-      // execute the handler
+      // execute the task
       const { service, method, key, parameter } = job.req;
       ctx.genericSend({
         service,

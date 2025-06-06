@@ -11,6 +11,7 @@
 - **[Payment State Machines (Advanced)](README.md#payment-state-machines)**: State machine example that tracks a payment process, ensuring consistent processing and cancellations. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/statemachinepayments/PaymentProcessor.java)
 
 #### Scheduling
+- **[Cron Jobs](README.md#cron-jobs)**: Implement a cron service that executes tasks based on a cron expression. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/cron/CronJob.java)
 - **[Scheduling Tasks](README.md#scheduling-tasks)**: Restate as scheduler: Schedule tasks for later and ensure the task is triggered and executed. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/schedulingtasks/PaymentTracker.java)
 - **[Parallelizing Work](README.md#parallelizing-work)**: Execute a list of tasks in parallel and then gather their result. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/parallelizework/FanOutWorker.java)
 - **[Payment Signals (Advanced)](README.md#payment-signals)**: Handling async payment callbacks for slow payments, with Stripe. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/signalspayments/PaymentService.java)
@@ -214,7 +215,7 @@ dev.restate.sdk.common.TerminalException: [👻 SIMULATED] This hotel is fully b
 </details>
 </details>
 
-## Cron
+## Cron Jobs
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/cron/CronJob.java)
 
 Restate has no built-in functionality for cron jobs.
