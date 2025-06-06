@@ -51,7 +51,7 @@ export namespace Limiter {
   export function fromContext(ctx: Context, limiterID: string): Limiter {
     const client = ctx.objectClient<LimiterObject>(
       { name: "limiter" },
-      limiterID,
+      limiterID
     );
     return {
       async limit() {
@@ -107,12 +107,12 @@ export namespace Limiter {
           if (waitLimitMillis === undefined) {
             throw new TerminalError(
               `rate: Wait(n=${n}) would exceed the limiters burst`,
-              { errorCode: 429 },
+              { errorCode: 429 }
             );
           } else {
             throw new TerminalError(
               `rate: Wait(n=${n}) would either exceed the limiters burst or the provided waitLimitMillis`,
-              { errorCode: 429 },
+              { errorCode: 429 }
             );
           }
         }

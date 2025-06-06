@@ -1,5 +1,11 @@
 import * as restate from "@restatedev/restate-sdk";
-import {createPost, getPostStatus, PENDING, SocialMediaPost, updateUserFeed,} from "./utils/stubs";
+import {
+  createPost,
+  getPostStatus,
+  PENDING,
+  SocialMediaPost,
+  updateUserFeed,
+} from "./utils/stubs";
 
 //
 // Processing events (from Kafka) to update various downstream systems
@@ -11,26 +17,26 @@ import {createPost, getPostStatus, PENDING, SocialMediaPost, updateUserFeed,} fr
 //    entire partitions.
 //
 const userFeed = restate.object({
-    name: "userFeed",
-    handlers: {
-        /*
-         * The Kafka key routes events to the correct Virtual Object.
-         * Events with the same key are processed one after the other.
-         */
-        processPost: async (ctx: restate.ObjectContext, post: SocialMediaPost) => {
-            const userId = ctx.key
+  name: "userFeed",
+  handlers: {
+    /*
+     * The Kafka key routes events to the correct Virtual Object.
+     * Events with the same key are processed one after the other.
+     */
+    processPost: async (ctx: restate.ObjectContext, post: SocialMediaPost) => {
+      const userId = ctx.key;
 
-            const postId = await ctx.run(() => createPost(userId, post));
+      const postId = await ctx.run(() => createPost(userId, post));
 
-            // Delay processing until content moderation is complete (handler suspends when on FaaS).
-            // This only blocks other posts for this user (Virtual Object), not for other users.
-            while ((await ctx.run(() => getPostStatus(postId))) === PENDING) {
-                await ctx.sleep(5_000);
-            }
+      // Delay processing until content moderation is complete (handler suspends when on FaaS).
+      // This only blocks other posts for this user (Virtual Object), not for other users.
+      while ((await ctx.run(() => getPostStatus(postId))) === PENDING) {
+        await ctx.sleep(5_000);
+      }
 
-            await ctx.run(() => updateUserFeed(userId, postId));
-        },
+      await ctx.run(() => updateUserFeed(userId, postId));
     },
+  },
 });
 
 restate.endpoint().bind(userFeed).listen();

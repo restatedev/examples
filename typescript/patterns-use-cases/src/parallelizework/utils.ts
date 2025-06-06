@@ -28,7 +28,10 @@ export function split(task: Task): SubTask[] {
   return subTasks;
 }
 
-export async function executeSubtask(ctx: Context, subtask: SubTask): Promise<SubTaskResult> {
+export async function executeSubtask(
+  ctx: Context,
+  subtask: SubTask
+): Promise<SubTaskResult> {
   // Execute subtask
   ctx.console.info(`Started executing subtask: ${subtask.description}`);
   // Sleep for a random amount between 0 and 10 seconds
@@ -39,7 +42,7 @@ export async function executeSubtask(ctx: Context, subtask: SubTask): Promise<Su
 
 export function aggregate(ctx: Context, subResults: SubTaskResult[]): Result {
   // Aggregate the results
-  const descriptions = subResults.map(subResult => subResult.description);
+  const descriptions = subResults.map((subResult) => subResult.description);
   const resultDescription = descriptions.join(",");
   ctx.console.info(`Aggregated result: ${resultDescription}`);
   return { description: resultDescription };

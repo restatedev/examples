@@ -115,46 +115,60 @@ Have a look at the logs to see how the execution switches from synchronously wai
 
 ## Sagas
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/sagas/bookingworkflow.go)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/read-guide.svg">](https://docs.restate.dev/guides/sagas)
 
-An example of a trip reservation workflow, using the saga pattern to undo previous steps in case of an error.
+When building distributed systems, it is crucial to ensure that the system remains consistent even in the presence of failures.
+One way to achieve this is by using the Saga pattern.
 
-Durable Execution's guarantee to run code to the end in the presence of failures, and to deterministically recover previous steps from the journal, makes sagas easy.
-Every step pushes a compensation action (an undo operation) to a stack. In the case of an error, those operations are run.
+Sagas are a way to manage transactions that span multiple services.
+They allow you to run compensations when your code crashes halfway through.
+This way, you can ensure that your system remains consistent even in the presence of failures.
 
-The main requirement is that steps are implemented as journaled operations, like `restate.Run()` or RPC/messaging.
+Restate guarantees that sagas run to completion. It will handle retries and failures, and ensure that compensations are executed successfully.
 
-The example shows two ways you can implement the compensation, depending on the characteristics of the API/system you interact with.
-1. **Two-phase commit**: The reservation is created and then confirmed or cancelled. The compensation executes 'cancel' and is added after the reservation is created.
-2. **Idempotency key**: The payment is made in one shot and supplies an ID. The compensation is added before the payment is made and uses the same ID.
+<img src="img/saga_diagram.svg" width="500" alt="Saga Workflow">
 
 Note that the compensating actions need to be idempotent.
+
+<img src="img/saga_journal.png" width="1200px" alt="Saga Journal">
 
 <details>
 <summary><strong>Running the example</strong></summary>
 
-1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `go run ./src/sagas`
-3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell:
+```shell
+restate-server
+```
+2. Start the service: 
+```shell
+go run ./src/sagas
+```
+3. Register the services (with `--force` to override the endpoint during **development**):
+```shell
+restate -y deployments register --force localhost:9080
+```
 
 Have a look at the logs to see how the compensations run in case of a terminal error.
 
 Start the workflow:
 ```shell
-curl -X POST localhost:8080/BookingWorkflow/trip123/Run -H 'content-type: application/json' -d '{
-  "flights": {
-    "flight_id": "12345",
-    "passenger_name": "John Doe"
+curl localhost:8080/BookingWorkflow/Run --json '{
+  "customerId": "12345",
+  "flight": {
+    "flightId": "12345",
+    "passengerName": "John Doe"
   },
   "car": {
-    "pickup_location": "Airport",
-    "rental_date": "2024-12-16"
+    "pickupLocation": "Airport",
+    "rentalDate": "2024-12-16"
   },
-  "payment_info": {
-    "card_number": "4111111111111111",
-    "amount": 1500
+  "hotel": {
+    "arrivalDate": "2024-12-16",
+    "departureDate": "2024-12-20"
   }
 }'
 ```
+
 
 Have a look at the logs to see the cancellations of the flight and car booking in case of a terminal error.
 
@@ -162,22 +176,14 @@ Have a look at the logs to see the cancellations of the flight and car booking i
 <summary>View logs</summary>
 
 ```
-2025/01/06 16:16:02 INFO Handling invocation method=BookingWorkflow/Run invocationID=inv_17l9ZLwBY3bz6HEIybYB6Rh9SbV6khuc0N
-2025/01/06 16:16:02 INFO Handling invocation method=Flights/Reserve invocationID=inv_1kNkgfEJjWp67I8WxNRHZN79XZprWqPWp3
-2025/01/06 16:16:02 INFO Flight reserved: 8685229b-c219-466f-9a70-9f54b968a1b9
-2025/01/06 16:16:02 INFO Invocation completed successfully method=Flights/Reserve invocationID=inv_1kNkgfEJjWp67I8WxNRHZN79XZprWqPWp3
-2025/01/06 16:16:02 INFO Handling invocation method=CarRentals/Reserve invocationID=inv_1cXn5IBHJhEK7ihQnoXIX8rVLvWWAi27EB
-2025/01/06 16:16:02 INFO Car reserved:2b5be5c4-944c-48a4-abb3-e0e0039151e9
-2025/01/06 16:16:02 INFO Invocation completed successfully method=CarRentals/Reserve invocationID=inv_1cXn5IBHJhEK7ihQnoXIX8rVLvWWAi27EB
-2025/01/06 16:16:02 ERROR This payment should never be accepted! Aborting booking.
-2025/01/06 16:16:02 INFO Handling invocation method=Flights/Cancel invocationID=inv_1d4KgHFg2EFF62ccgILiNAgPwKx4tmskyl
-2025/01/06 16:16:02 INFO Flight cancelled: 8685229b-c219-466f-9a70-9f54b968a1b9
-2025/01/06 16:16:02 INFO Invocation completed successfully method=Flights/Cancel invocationID=inv_1d4KgHFg2EFF62ccgILiNAgPwKx4tmskyl
-2025/01/06 16:16:02 INFO Handling invocation method=CarRentals/Cancel invocationID=inv_15QXMdt8GLYU18PoNhVICXbqRg0x9lQsIp
-2025/01/06 16:16:02 INFO Car cancelled2b5be5c4-944c-48a4-abb3-e0e0039151e9
-2025/01/06 16:16:02 INFO Invocation completed successfully method=CarRentals/Cancel invocationID=inv_15QXMdt8GLYU18PoNhVICXbqRg0x9lQsIp
-2025/01/06 16:16:02 INFO Refunded payment: e4eac4a9-47c9-4087-9502-cb0fff1218c6
-2025/01/06 16:16:02 INFO Invocation completed successfully method=BookingWorkflow/Run invocationID=inv_17l9ZLwBY3bz6HEIybYB6Rh9SbV6khuc0N
+2025/05/29 21:23:19 INFO Handling invocation method=BookingWorkflow/Run invocationID=inv_1jDSzGn5OKSm41ndgD8QcKpfPtPUSEgEM1
+2025/05/29 21:23:19 INFO Flight reserved for customer: 12345
+2025/05/29 21:23:19 INFO Car reserved for customer: 12345
+2025/05/29 21:23:19 ERROR [👻 SIMULATED] This hotel is fully booked!
+2025/05/29 21:23:19 INFO Flight cancelled for customer:12345
+2025/05/29 21:23:19 INFO Car cancelled for customer:12345
+2025/05/29 21:23:19 INFO Hotel cancelled for customer:12345
+2025/05/29 21:23:19 ERROR Invocation returned a terminal failure method=BookingWorkflow/Run invocationID=inv_1jDSzGn5OKSm41ndgD8QcKpfPtPUSEgEM1 err="[500] [👻 SIMULATED] This hotel is fully booked!"
 ```
 
 </details>

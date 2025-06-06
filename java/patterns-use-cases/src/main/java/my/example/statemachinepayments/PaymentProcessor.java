@@ -6,10 +6,9 @@ import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.StateKey;
+import java.time.Duration;
 import my.example.statemachinepayments.accounts.AccountClient;
 import my.example.statemachinepayments.types.*;
-
-import java.time.Duration;
 
 /*
  * A service that processes the payment requests.
@@ -26,12 +25,10 @@ import java.time.Duration;
 public class PaymentProcessor {
 
   /** The key under which we store the status. */
-  private static final StateKey<PaymentStatus> STATUS =
-      StateKey.of("status", PaymentStatus.class);
+  private static final StateKey<PaymentStatus> STATUS = StateKey.of("status", PaymentStatus.class);
 
   /** The key under which we store the original payment request. */
-  private static final StateKey<Payment> PAYMENT =
-      StateKey.of("payment", Payment.class);
+  private static final StateKey<Payment> PAYMENT = StateKey.of("payment", Payment.class);
 
   private static final Duration EXPIRY_TIMEOUT = Duration.ofDays(1);
 

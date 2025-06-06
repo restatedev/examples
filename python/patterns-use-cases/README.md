@@ -179,55 +179,67 @@ You see the call to `resultAsEmail` after the upload took too long, and the send
 
 ## Sagas
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](sagas/app.py)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/read-guide.svg">](https://docs.restate.dev/guides/sagas)
 
-An example of a trip reservation workflow, using the saga pattern to undo previous steps in case of an error.
+When building distributed systems, it is crucial to ensure that the system remains consistent even in the presence of failures.
+One way to achieve this is by using the Saga pattern.
 
-Durable Execution's guarantee to run code to the end in the presence of failures, and to deterministically recover previous steps from the journal, makes sagas easy.
-Every step pushes a compensation action (an undo operation) to a stack. In the case of an error, those operations are run.
+Sagas are a way to manage transactions that span multiple services.
+They allow you to run compensations when your code crashes halfway through.
+This way, you can ensure that your system remains consistent even in the presence of failures.
 
-The main requirement is that steps are implemented as journaled operations, like `ctx.run()` or RPC/messaging.
+Restate guarantees that sagas run to completion. It will handle retries and failures, and ensure that compensations are executed successfully.
 
-The example shows two ways you can implement the compensation, depending on the characteristics of the API/system you interact with.
-1. **Two-phase commit**: The reservation is created and then confirmed or cancelled. The compensation executes 'cancel' and is added after the reservation is created.
-2. **Idempotency key**: The payment is made in one shot and supplies an ID. The compensation is added before the payment is made and uses the same ID.
+<img src="img/saga_diagram.svg" width="500" alt="Saga Workflow">
 
 Note that the compensating actions need to be idempotent.
+
+<img src="img/saga_journal.png" width="1200px" alt="Saga Journal">
 
 <details>
 <summary><strong>Running the example</strong></summary>
 
-1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `python sagas/app.py`
-3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
-
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: 
+```
+restate-server
+```
+2. Start the service: 
+```
+python sagas/app.py
+```
+3. Register the services (with `--force` to override the endpoint during **development**): 
+```
+restate -y deployments register --force localhost:9080
+```
 Have a look at the logs to see how the compensations run in case of a terminal error.
 
 Start the workflow:
 ```shell
-curl localhost:8080/BookingWorkflow/trip123/run --json '{
-  "flights": {
-    "flight_id": "12345",
-    "passenger_name": "John Doe"
-  },
-  "car": {
-    "pickup_location": "Airport",
-    "rental_date": "2024-12-16"
-  },
-  "payment_info": {
-    "card_number": "4111111111111111",
-    "amount": 1500
-  }
-}'
+curl localhost:8080/BookingWorkflow/run --json '{
+      "customer_id": "12345",
+      "flight": {
+        "flight_id": "12345",
+        "passenger_name": "John Doe"
+      },
+      "car": {
+        "pickup_location": "Airport",
+        "rental_date": "2024-12-16"
+      },
+      "hotel": {
+        "arrival_date": "2024-12-16",
+        "departure_date": "2024-12-20"
+      }
+    }'
 ```
 
 Have a look at the logs to see the cancellations of the flight and car booking in case of a terminal error:
 ```shell
-[2024-12-19 18:04:01,179] [706007] [INFO] - Flight reservation created with id: 84873f15-1ad6-4899-9c81-0060b35f3755
-[2024-12-19 18:04:01,184] [706007] [INFO] - Car rental reservation created with id: 246301f9-cca7-4d4d-9ef9-49cc0ccc627e
-[2024-12-19 18:04:01,188] [706007] [ERROR] - This payment should never be accepted! Aborting booking.
-[2024-12-19 18:04:01,189] [706007] [INFO] - Payment 90e88cb5-5ace-427c-a85a-aa3bcb4f2796 refunded
-[2024-12-19 18:04:01,193] [706007] [INFO] - Car rental reservation cancelled with id: 246301f9-cca7-4d4d-9ef9-49cc0ccc627e
-[2024-12-19 18:04:01,198] [706007] [INFO] - Flight reservation cancelled with id: 84873f15-1ad6-4899-9c81-0060b35f3755
+[2025-05-29 17:31:10,075] [495934] [INFO] - Flight reservation created for customer: 12345
+[2025-05-29 17:31:10,077] [495934] [INFO] - Car rental reservation created for customer: 12345
+[2025-05-29 17:31:10,079] [495934] [ERROR] - [👻 SIMULATED] This hotel is fully booked!
+[2025-05-29 17:31:10,081] [495934] [INFO] - Hotel reservation cancelled for customer: 12345
+[2025-05-29 17:31:10,083] [495934] [INFO] - Car rental reservation cancelled for customer: 12345
+[2025-05-29 17:31:10,085] [495934] [INFO] - Flight reservation cancelled for customer: 12345
 ```
 
 </details>
