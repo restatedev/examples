@@ -424,10 +424,10 @@ Send a request to create a cron job that runs every minute:
 
 ```shell
 curl localhost:8080/CronJobInitiator/create --json '{ 
-      "expr": "* * * * *", 
+      "cronExpression": "* * * * *", 
       "service": "TaskService", 
       "method": "executeTask", 
-      "parameter": "Hello new minute!" 
+      "payload": "Hello new minute!" 
   }'
 ```
 
@@ -435,10 +435,10 @@ Or create a cron job that runs at midnight:
 
 ```shell
 curl localhost:8080/CronJobInitiator/create --json '{ 
-      "expr": "0 0 * * *", 
+      "cronExpression": "0 0 * * *", 
       "service": "TaskService", 
       "method": "executeTask", 
-      "parameter": "Hello midnight!" 
+      "payload": "Hello midnight!" 
   }'
 ```
 
