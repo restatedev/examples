@@ -416,7 +416,7 @@ Note that this implementation is fully resilient, but you might need to make som
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the cron service and the task service:
    ```shell
-   npx tsx watch ./src/cron/cron_service.ts
+   npx tsx watch ./src/cron/task_service.ts
    ```
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 

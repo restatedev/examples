@@ -34,21 +34,21 @@ const JOB = "job"; // Key for storing job information in the Restate object
  * 2. Each job gets a unique ID and runs as a CronJob virtual object
  * 3. Jobs automatically reschedule themselves after each execution
  */
-const cronJobInitiator = restate.service({
+export const cronJobInitiator = restate.service({
   name: "CronJobInitiator",
   handlers: {
     create: async (ctx: restate.Context, req: JobRequest) => {
       const jobId = ctx.rand.uuidv4();
-      const job = await ctx.objectClient(cronJob, jobId).initiateJob(req);
+      const job = await ctx.objectClient(cronJob, jobId).initiate(req);
       return `Cron job created with ID: ${jobId} and next execution at: ${job.next_execution_time}`;
     },
   },
 });
 
-const cronJob = restate.object({
+export const cronJob = restate.object({
   name: "CronJob",
   handlers: {
-    initiateJob: async (
+    initiate: async (
       ctx: restate.ObjectContext,
       req: JobRequest
     ): Promise<JobInfo> => {
@@ -121,10 +121,3 @@ const scheduleNextExecution = async (
   ctx.set<JobInfo>(JOB, job);
   return job;
 };
-
-restate
-    .endpoint()
-    .bind(cronJobInitiator)
-    .bind(cronJob)
-    .bind(taskService)
-    .listen(9080);

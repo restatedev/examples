@@ -10,14 +10,9 @@ import dev.restate.common.Target;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.SharedObjectContext;
-import dev.restate.sdk.annotation.Handler;
-import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.annotation.Shared;
-import dev.restate.sdk.annotation.VirtualObject;
+import dev.restate.sdk.annotation.*;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
-import dev.restate.sdk.endpoint.Endpoint;
-import dev.restate.sdk.http.vertx.RestateHttpServer;
 import dev.restate.serde.TypeTag;
 import java.time.ZonedDateTime;
 import java.util.Optional;
@@ -47,17 +42,19 @@ public class Cron {
 
   public record JobInfo(JobRequest req, String nextExecutionTime, String nextExecutionId) {}
 
+  @Name("CronJobInitiator")
   @Service
   public static class JobInitiator {
     @Handler
     public String create(Context ctx, JobRequest req) {
       var jobId = ctx.random().nextUUID().toString();
-      var cronJob = CronJobClient.fromContext(ctx, jobId).initiateJob(req).await();
+      var cronJob = CronJobClient.fromContext(ctx, jobId).initiate(req).await();
       return String.format(
           "Job created with ID %s and next execution time %s", jobId, cronJob.nextExecutionTime());
     }
   }
 
+  @Name("CronJob")
   @VirtualObject
   public static class Job {
 
@@ -135,10 +132,5 @@ public class Cron {
       ctx.set(JOB, job);
       return job;
     }
-  }
-
-  public static void main(String[] args) {
-    RestateHttpServer.listen(
-        Endpoint.bind(new JobInitiator()).bind(new Job()).bind(new TaskService()));
   }
 }

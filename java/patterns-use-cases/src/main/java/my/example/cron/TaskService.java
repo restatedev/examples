@@ -3,6 +3,8 @@ package my.example.cron;
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
+import dev.restate.sdk.endpoint.Endpoint;
+import dev.restate.sdk.http.vertx.RestateHttpServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -18,5 +20,10 @@ public class TaskService {
     // Here you would implement the logic to execute the task
     // For example, you could call another service or perform some computation
     logger.info("Executing task with payload: {}", task);
+  }
+
+  public static void main(String[] args) {
+    RestateHttpServer.listen(
+        Endpoint.bind(new Cron.JobInitiator()).bind(new Cron.Job()).bind(new TaskService()));
   }
 }

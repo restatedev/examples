@@ -249,7 +249,7 @@ Note that this implementation is fully resilient, but you might need to make som
    ```
 2. Start the cron service and the task service:
    ```shell
-   ./gradlew -PmainClass=my.example.cron.Cron run
+   ./gradlew -PmainClass=my.example.cron.TaskService run
    ```
 3. Register the services (with `--force` to override the endpoint during **development**): 
    ```shell

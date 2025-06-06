@@ -1,4 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
+import {cronJob, cronJobInitiator} from "./cron_service";
 
 export const taskService = restate.service({
   name: "TaskService",
@@ -11,3 +12,11 @@ export const taskService = restate.service({
     },
   },
 });
+
+
+restate
+    .endpoint()
+    .bind(cronJobInitiator)
+    .bind(cronJob)
+    .bind(taskService)
+    .listen(9080);
