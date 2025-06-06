@@ -387,6 +387,7 @@ Flight cancelled for customer 12345
 
 ## Cron Jobs
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/cron/cron_service.ts)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/read-guide.svg">](https://docs.restate.dev/guides/cron)
 
 Restate has no built-in functionality for cron jobs. 
 But Restate's durable building blocks make it easy to implement a service that does this for us.

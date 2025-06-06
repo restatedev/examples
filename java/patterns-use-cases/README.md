@@ -217,6 +217,7 @@ dev.restate.sdk.common.TerminalException: [👻 SIMULATED] This hotel is fully b
 
 ## Cron Jobs
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/cron/Cron.java)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/read-guide.svg">](https://docs.restate.dev/guides/cron)
 
 Restate has no built-in functionality for cron jobs.
 But Restate's durable building blocks make it easy to implement a service that does this for us.
