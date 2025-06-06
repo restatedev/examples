@@ -1,8 +1,6 @@
 import * as restate from "@restatedev/restate-sdk";
 import { CronExpressionParser } from "cron-parser";
-import { taskService } from "./task_service";
-import { serde } from "@restatedev/restate-sdk-clients";
-import { InvocationId, TerminalError } from "@restatedev/restate-sdk";
+import { InvocationId, serde, TerminalError } from "@restatedev/restate-sdk";
 
 type JobRequest = {
   cronExpression: string; // The cron expression e.g. "0 0 * * *" (every day at midnight)
@@ -40,7 +38,7 @@ export const cronJobInitiator = restate.service({
     create: async (ctx: restate.Context, req: JobRequest) => {
       const jobId = ctx.rand.uuidv4();
       const job = await ctx.objectClient(cronJob, jobId).initiate(req);
-      return `Cron job created with ID: ${jobId} and next execution at: ${job.next_execution_time}`;
+      return `Job created with ID ${jobId} and next execution time ${job.next_execution_time}`;
     },
   },
 });
@@ -53,9 +51,7 @@ export const cronJob = restate.object({
       req: JobRequest
     ): Promise<JobInfo> => {
       if (await ctx.get<JobInfo>(JOB)) {
-        throw new TerminalError(
-          "Job already exists. Use a different ID or cancel the existing job first."
-        );
+        throw new TerminalError("Job already exists for this ID.");
       }
 
       return await scheduleNextExecution(ctx, req);
@@ -63,17 +59,28 @@ export const cronJob = restate.object({
     execute: async (ctx: restate.ObjectContext) => {
       const job = await ctx.get<JobInfo>(JOB);
       if (!job) {
-        throw new TerminalError("No cron job information found.");
+        throw new TerminalError("Job not found.");
       }
 
       // execute the task
       const { service, method, key, payload } = job.req;
-      ctx.genericSend({
-        service,
-        method,
-        parameter: payload,
-        key
-      });
+      if (payload) {
+        ctx.genericSend({
+          service,
+          method,
+          parameter: payload,
+          key,
+          inputSerde: serde.json,
+        });
+      } else {
+        ctx.genericSend({
+          service,
+          method,
+          parameter: undefined,
+          key,
+          inputSerde: serde.empty,
+        });
+      }
 
       await scheduleNextExecution(ctx, job.req);
     },
@@ -87,8 +94,7 @@ export const cronJob = restate.object({
       // Clear the job state
       ctx.clearAll();
     },
-    getInfo: async (ctx: restate.ObjectSharedContext) =>
-      ctx.get<JobInfo>(JOB),
+    getInfo: async (ctx: restate.ObjectSharedContext) => ctx.get<JobInfo>(JOB),
   },
 });
 
