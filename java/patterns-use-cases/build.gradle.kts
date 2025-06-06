@@ -29,6 +29,9 @@ dependencies {
 
   // Logging
   implementation("org.apache.logging.log4j:log4j-api:2.24.1")
+
+  // For cron example
+  implementation("com.cronutils:cron-utils:9.2.1")
 }
 
 java {
