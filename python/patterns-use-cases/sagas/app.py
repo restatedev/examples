@@ -16,7 +16,7 @@ logging.basicConfig(
 
 class BookingRequest(BaseModel):
     customer_id: str
-    flights: flight_client.FlightRequest
+    flight: flight_client.FlightRequest
     car: car_rental_client.CarRentalRequest
     hotel: hotel_client.HotelRequest
 
@@ -62,7 +62,7 @@ async def run(ctx: restate.Context, req: BookingRequest):
             )
         )
         await ctx.run(
-            "Reserve flights", lambda: flight_client.book(req.customer_id, req.flights)
+            "Reserve flights", lambda: flight_client.book(req.customer_id, req.flight)
         )
 
         compensations.append(

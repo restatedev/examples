@@ -5,7 +5,7 @@ import { hotelClient } from "./clients/hotel_client";
 
 type BookingRequest = {
   customerId: string;
-  flights: { flightId: string; passengerName: string };
+  flight: { flightId: string; passengerName: string };
   car: { pickupLocation: string; rentalDate: string };
   hotel: { arrivalDate: string; departureDate: string };
 };
@@ -49,7 +49,7 @@ const bookingWorkflow = restate.service({
           ctx.run("Cancel flight", () => flightClient.cancel(req.customerId))
         );
         await ctx.run("Book flight", () =>
-          flightClient.book(req.customerId, req.flights)
+          flightClient.book(req.customerId, req.flight)
         );
 
         compensations.push(() =>

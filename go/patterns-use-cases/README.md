@@ -154,7 +154,7 @@ Start the workflow:
 ```shell
 curl localhost:8080/BookingWorkflow/Run --json '{
   "customerId": "12345",
-  "flights": {
+  "flight": {
     "flightId": "12345",
     "passengerName": "John Doe"
   },

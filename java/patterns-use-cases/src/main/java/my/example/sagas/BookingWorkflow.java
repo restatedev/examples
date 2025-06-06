@@ -45,7 +45,7 @@ Note: that the compensation logic is purely implemented in user code (no special
 public class BookingWorkflow {
 
   public record BookingRequest(
-      String customerId, FlightRequest flights, CarRequest car, HotelRequest hotel) {}
+          String customerId, FlightRequest flight, CarRequest car, HotelRequest hotel) {}
 
   @Handler
   public void run(Context ctx, BookingRequest req) throws TerminalException {
@@ -55,7 +55,7 @@ public class BookingWorkflow {
     try {
       // For each action, we register a compensation that will be executed on failures
       compensations.add(() -> ctx.run("Cancel flight", () -> FlightClient.cancel(req.customerId)));
-      ctx.run("Flight reservation", () -> FlightClient.book(req.customerId, req.flights()));
+      ctx.run("Flight reservation", () -> FlightClient.book(req.customerId, req.flight()));
 
       compensations.add(() -> ctx.run("Cancel car", () -> CarRentalClient.cancel(req.customerId)));
       ctx.run("Car reservation", () -> CarRentalClient.book(req.customerId, req.car()));

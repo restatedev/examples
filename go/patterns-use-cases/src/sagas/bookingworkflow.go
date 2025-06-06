@@ -9,7 +9,7 @@ import (
 
 type BookingRequest struct {
 	CustomerId string            `json:"customerId"`
-	Flights    FlightRequest     `json:"flights"`
+	Flight     FlightRequest     `json:"flight"`
 	Car        CarBookingRequest `json:"car"`
 	Hotel      HotelRequest      `json:"hotel"`
 }
@@ -65,7 +65,7 @@ func (BookingWorkflow) Run(ctx restate.Context, req BookingRequest) (err error) 
 		return CancelFlight(req.CustomerId)
 	})
 	if _, err = restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return BookFlight(req.CustomerId, req.Flights)
+		return BookFlight(req.CustomerId, req.Flight)
 	}); err != nil {
 		return err
 	}
