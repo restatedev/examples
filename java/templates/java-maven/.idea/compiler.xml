@@ -1,8 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-    <component name="CompilerConfiguration">
-        <annotationProcessing>
-            <profile default="true" name="Default" enabled="true" />
-        </annotationProcessing>
-    </component>
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Annotation profile for greeter" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/dev/restate/sdk-api-gen/2.1.0/sdk-api-gen-2.1.0.jar" />
+          <entry name="$MAVEN_REPOSITORY$/dev/restate/sdk-api-gen-common/2.1.0/sdk-api-gen-common-2.1.0.jar" />
+          <entry name="$MAVEN_REPOSITORY$/com/github/jknack/handlebars/4.3.1/handlebars-4.3.1.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.32/slf4j-api-1.7.32.jar" />
+          <entry name="$MAVEN_REPOSITORY$/dev/restate/sdk-common/2.1.0/sdk-common-2.1.0.jar" />
+          <entry name="$MAVEN_REPOSITORY$/io/opentelemetry/opentelemetry-api/1.47.0/opentelemetry-api-1.47.0.jar" />
+          <entry name="$MAVEN_REPOSITORY$/io/opentelemetry/opentelemetry-context/1.47.0/opentelemetry-context-1.47.0.jar" />
+          <entry name="$MAVEN_REPOSITORY$/dev/restate/common/2.1.0/common-2.1.0.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/jetbrains/kotlin/kotlin-stdlib/2.0.21/kotlin-stdlib-2.0.21.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/jetbrains/annotations/13.0/annotations-13.0.jar" />
+          <entry name="$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-core/2.18.1/jackson-core-2.18.1.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/apache/logging/log4j/log4j-api/2.24.2/log4j-api-2.24.2.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/slf4j/slf4j-nop/2.0.16/slf4j-nop-2.0.16.jar" />
+          <entry name="$MAVEN_REPOSITORY$/dev/restate/sdk-api/2.1.0/sdk-api-2.1.0.jar" />
+          <entry name="$MAVEN_REPOSITORY$/dev/restate/sdk-serde-jackson/2.1.0/sdk-serde-jackson-2.1.0.jar" />
+          <entry name="$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-databind/2.18.1/jackson-databind-2.18.1.jar" />
+          <entry name="$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-annotations/2.18.1/jackson-annotations-2.18.1.jar" />
+          <entry name="$MAVEN_REPOSITORY$/com/github/victools/jsonschema-generator/4.37.0/jsonschema-generator-4.37.0.jar" />
+          <entry name="$MAVEN_REPOSITORY$/com/fasterxml/classmate/1.7.0/classmate-1.7.0.jar" />
+          <entry name="$MAVEN_REPOSITORY$/com/github/victools/jsonschema-module-jackson/4.37.0/jsonschema-module-jackson-4.37.0.jar" />
+        </processorPath>
+        <module name="greeter" />
+      </profile>
+    </annotationProcessing>
+  </component>
 </project>
