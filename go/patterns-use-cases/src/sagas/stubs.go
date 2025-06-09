@@ -26,9 +26,9 @@ func BookCar(customerId string, _req CarBookingRequest) (restate.Void, error) {
 	return restate.Void{}, nil
 }
 
-func CancelCar(customerId string) error {
+func CancelCar(customerId string) (restate.Void, error) {
 	slog.Info("Car cancelled for customer:" + customerId)
-	return nil
+	return restate.Void{}, nil
 }
 
 func BookFlight(customerId string, _req FlightRequest) (restate.Void, error) {
@@ -36,9 +36,9 @@ func BookFlight(customerId string, _req FlightRequest) (restate.Void, error) {
 	return restate.Void{}, nil
 }
 
-func CancelFlight(customerId string) error {
+func CancelFlight(customerId string) (restate.Void, error) {
 	slog.Info("Flight cancelled for customer:" + customerId)
-	return nil
+	return restate.Void{}, nil
 }
 
 func BookHotel(customerId string, _req HotelRequest) (restate.Void, error) {
@@ -46,7 +46,7 @@ func BookHotel(customerId string, _req HotelRequest) (restate.Void, error) {
 	return restate.Void{}, restate.TerminalError(errors.New("[👻 SIMULATED] This hotel is fully booked!"))
 }
 
-func CancelHotel(customerId string) error {
+func CancelHotel(customerId string) (restate.Void, error) {
 	slog.Info("Hotel cancelled for customer:" + customerId)
-	return nil
+	return restate.Void{}, nil
 }

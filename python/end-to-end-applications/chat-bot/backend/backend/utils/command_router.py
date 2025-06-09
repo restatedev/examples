@@ -48,16 +48,12 @@ async def execute_command(
                 task_opts = TaskOpts(**command.model_dump())
 
                 if task_opts.task_name in active_tasks.tasks:
-                    raise TerminalError(
-                        f"Task with name {task_opts.task_name} already exists."
-                    )
+                    raise TerminalError(f"Task with name {task_opts.task_name} already exists.")
 
                 task_id = await start_task(ctx, session_id, task_opts)
 
                 new_active_tasks = active_tasks.model_copy()
-                new_active_tasks.tasks[task_opts.task_name] = RunningTask(
-                    task_id=task_id, **command.model_dump()
-                )
+                new_active_tasks.tasks[task_opts.task_name] = RunningTask(task_id=task_id, **command.model_dump())
                 return CommandResult(
                     new_active_tasks=new_active_tasks,
                     task_message=f"The task '{task_opts.task_name}' of type {task_opts.task_type} has been successfully created in the system: {json.dumps(task_opts.params, indent=4)}",
@@ -66,9 +62,7 @@ async def execute_command(
             case Action.CANCEL:
                 task = active_tasks.tasks.get(command.task_name)
                 if task is None:
-                    return CommandResult(
-                        task_message=f"No task with name '{command.task_name}' is currently active."
-                    )
+                    return CommandResult(task_message=f"No task with name '{command.task_name}' is currently active.")
 
                 await cancel_task(ctx, task.task_type, task.task_id)
 
@@ -80,21 +74,15 @@ async def execute_command(
                 )
 
             case Action.LIST:
-                return CommandResult(
-                    task_message="tasks = " + active_tasks.model_dump_json(indent=4)
-                )
+                return CommandResult(task_message="tasks = " + active_tasks.model_dump_json(indent=4))
 
             case Action.STATUS:
                 task = active_tasks.tasks.get(command.task_name)
                 if task is None:
-                    return CommandResult(
-                        task_message=f"No task with name '{command.task_name}' is currently active."
-                    )
+                    return CommandResult(task_message=f"No task with name '{command.task_name}' is currently active.")
 
                 status = await get_task_status(ctx, task.task_type, task.task_id)
-                return CommandResult(
-                    task_message=f"{command.task_name}.status = {json.dumps(status, indent=4)}"
-                )
+                return CommandResult(task_message=f"{command.task_name}.status = {json.dumps(status, indent=4)}")
 
             case Action.OTHER:
                 return CommandResult()
@@ -103,9 +91,7 @@ async def execute_command(
 
     except Exception as e:
         if not isinstance(e, restate.vm.SuspendedException):
-            raise TerminalError(
-                f"Failed to interpret command: {str(e)}\nCommand:\n{command}"
-            )
+            raise TerminalError(f"Failed to interpret command: {str(e)}\nCommand:\n{command}")
         else:
             raise e
 
@@ -135,24 +121,16 @@ async def start_task(ctx: restate.Context, session_id: str, task_opts: TaskOpts)
 async def cancel_task(ctx: restate.Context, task_type: str, task_id: str) -> None:
     task = TASK_TYPES.get(task_type)
     if not task:
-        raise ValueError(
-            f"Can't cancel task type for task ID {task_id} - Unknown task type: {task_type}"
-        )
+        raise ValueError(f"Can't cancel task type for task ID {task_id} - Unknown task type: {task_type}")
 
     # Retrieve the invocation ID
     handle = ctx.workflow_send(task.task_handlers.run, task_id, None)
     ctx.cancel_invocation(await handle.invocation_id())
 
 
-async def get_task_status(
-    ctx: restate.Context, task_type: str, workflow_id: str
-) -> Any:
+async def get_task_status(ctx: restate.Context, task_type: str, workflow_id: str) -> Any:
     task = TASK_TYPES.get(task_type)
     if not task:
-        raise ValueError(
-            f"Can't get task status for task ID {workflow_id} - Unknown task type: {task_type}"
-        )
+        raise ValueError(f"Can't get task status for task ID {workflow_id} - Unknown task type: {task_type}")
 
-    return await ctx.workflow_call(
-        task.task_handlers.get_current_status, workflow_id, None
-    )
+    return await ctx.workflow_call(task.task_handlers.get_current_status, workflow_id, None)

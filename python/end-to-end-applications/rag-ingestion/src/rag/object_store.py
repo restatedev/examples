@@ -9,18 +9,14 @@ class ObjectStore:
     client: minio.Minio
 
     def __init__(self, endpoint: str, key: str, secret: str):
-        self.client = minio.Minio(
-            endpoint=endpoint, access_key=key, secret_key=secret, secure=False
-        )
+        self.client = minio.Minio(endpoint=endpoint, access_key=key, secret_key=secret, secure=False)
 
     async def aget_object(self, bucket_name: str, object_name: str):
         """Download object from minio"""
 
         def blocking_get():
             """minio API is blocking"""
-            response = self.client.get_object(
-                bucket_name=bucket_name, object_name=object_name
-            )
+            response = self.client.get_object(bucket_name=bucket_name, object_name=object_name)
             try:
                 return response.data
             finally:

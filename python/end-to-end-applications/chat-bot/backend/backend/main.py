@@ -12,9 +12,7 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 # Add all the services that the chatbot application needs
-services: list[Union[restate.Workflow | restate.Service | restate.VirtualObject]] = (
-    list()
-)
+services: list[Union[restate.Workflow | restate.Service | restate.VirtualObject]] = list()
 
 services.append(chat_session)
 services.append(task_executor)

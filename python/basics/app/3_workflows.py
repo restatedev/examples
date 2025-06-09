@@ -37,9 +37,7 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
 
     # Send the email with the verification link
     secret = await ctx.run("secret", lambda: str(uuid.uuid4()))
-    await ctx.run(
-        "send_email", lambda: send_email_with_link(user_id, user.email, secret)
-    )
+    await ctx.run("send_email", lambda: send_email_with_link(user_id, user.email, secret))
 
     # Wait until user clicked email verification link
     # Promise gets resolved or rejected by the other handlers

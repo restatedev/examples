@@ -19,9 +19,7 @@ async def process_text(ctx: restate.WorkflowContext, request: NewTextDocument):
 
     async def download() -> str:
         object_store = get_object_store_client()
-        text_bytes = await object_store.aget_object(
-            request["bucket_name"], request["object_name"]
-        )
+        text_bytes = await object_store.aget_object(request["bucket_name"], request["object_name"])
         return text_bytes.decode("utf-8")
 
     text: str = await ctx.run("Download", download)

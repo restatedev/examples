@@ -56,9 +56,7 @@ async def process_payment(ctx: restate.Context, req: PaymentRequest):
 
     # We did not get the response on the synchronous path, talking to Stripe.
     # No worries, Stripe will let us know when it is done processing via a webhook.
-    logger.info(
-        f"Payment intent for {idempotency_key} still processing, awaiting webhook call..."
-    )
+    logger.info(f"Payment intent for {idempotency_key} still processing, awaiting webhook call...")
 
     # We will now wait for the webhook call to complete this promise.
     # Check out the handler below.
@@ -79,15 +77,11 @@ async def process_webhook(ctx: restate.Context):
         return {"received": True}
 
     payment_intent = event["data"]["object"]
-    logger.info(
-        "Received webhook call for payment intent %s", json.dumps(payment_intent)
-    )
+    logger.info("Received webhook call for payment intent %s", json.dumps(payment_intent))
 
     webhook_promise = payment_intent["metadata"].get(RESTATE_CALLBACK_ID)
     if not webhook_promise:
-        raise TerminalError(
-            f"Missing callback property: {RESTATE_CALLBACK_ID}", status_code=404
-        )
+        raise TerminalError(f"Missing callback property: {RESTATE_CALLBACK_ID}", status_code=404)
 
     ctx.resolve_awakeable(webhook_promise, payment_intent)
     return {"received": True}

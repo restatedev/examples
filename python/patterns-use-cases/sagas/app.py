@@ -4,9 +4,9 @@ import restate
 from pydantic import BaseModel
 from restate.exceptions import TerminalError
 
-import activities.flight_client as flight_client
-import activities.car_rental_client as car_rental_client
-import activities.hotel_client as hotel_client
+import clients.flight_client as flight_client
+import clients.car_rental_client as car_rental_client
+import clients.hotel_client as hotel_client
 
 logging.basicConfig(
     level=logging.INFO,
@@ -57,31 +57,19 @@ async def run(ctx: restate.Context, req: BookingRequest):
     try:
         # For each action, we register a compensation that will be executed on failures
         compensations.append(
-            lambda: ctx.run(
-                "Cancel flight", lambda: flight_client.cancel(req.customer_id)
-            )
+            lambda: ctx.run("Cancel flight", flight_client.cancel, args=(req.customer_id,))
         )
-        await ctx.run(
-            "Reserve flight", lambda: flight_client.book(req.customer_id, req.flight)
-        )
+        await ctx.run("Book flight", flight_client.book, args=(req.customer_id, req.flight))
 
         compensations.append(
-            lambda: ctx.run(
-                "Cancel car", lambda: car_rental_client.cancel(req.customer_id)
-            )
+            lambda: ctx.run("Cancel car", car_rental_client.cancel, args=(req.customer_id,))
         )
-        await ctx.run(
-            "Reserve car", lambda: car_rental_client.book(req.customer_id, req.car)
-        )
+        await ctx.run("Book car", car_rental_client.book, args=(req.customer_id, req.car))
 
         compensations.append(
-            lambda: ctx.run(
-                "Cancel hotel", lambda: hotel_client.cancel(req.customer_id)
-            )
+            lambda: ctx.run("Cancel hotel", hotel_client.cancel, args=(req.customer_id,))
         )
-        await ctx.run(
-            "Reserve hotel", lambda: hotel_client.book(req.customer_id, req.hotel)
-        )
+        await ctx.run("Book hotel", hotel_client.book, args=(req.customer_id, req.hotel))
 
     # Terminal errors are not retried by Restate, so undo previous actions and fail the workflow
     except TerminalError as e:

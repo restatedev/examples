@@ -25,9 +25,7 @@ class VectorStore:
             point_id = uuid.UUID(bytes=text_hash[:16]).hex
             payload = metadata.copy()
             payload["page_content"] = text
-            point = models.PointStruct(
-                id=point_id, vector={"": vector}, payload=payload
-            )
+            point = models.PointStruct(id=point_id, vector={"": vector}, payload=payload)
             points.append(point)
 
         client = self.store.client

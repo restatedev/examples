@@ -55,13 +55,13 @@ public class BookingWorkflow {
     try {
       // For each action, we register a compensation that will be executed on failures
       compensations.add(() -> ctx.run("Cancel flight", () -> FlightClient.cancel(req.customerId)));
-      ctx.run("Flight reservation", () -> FlightClient.book(req.customerId, req.flight()));
+      ctx.run("Book flight", () -> FlightClient.book(req.customerId, req.flight()));
 
       compensations.add(() -> ctx.run("Cancel car", () -> CarRentalClient.cancel(req.customerId)));
-      ctx.run("Car reservation", () -> CarRentalClient.book(req.customerId, req.car()));
+      ctx.run("Book car", () -> CarRentalClient.book(req.customerId, req.car()));
 
       compensations.add(() -> ctx.run("Cancel hotel", () -> HotelClient.cancel(req.customerId)));
-      ctx.run("Hotel reservation", () -> HotelClient.book(req.customerId, req.hotel()));
+      ctx.run("Book hotel", () -> HotelClient.book(req.customerId, req.hotel()));
     }
     // Terminal exceptions are not retried by Restate. We undo previous actions and fail the workflow.
     catch (TerminalException e) {

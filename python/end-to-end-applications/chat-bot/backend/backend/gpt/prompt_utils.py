@@ -9,9 +9,7 @@ from typing import Optional
 from utils.types import ChatEntry, ActiveTasks, ChatHistory
 
 
-def to_prompt(
-    history: ChatHistory, active_tasks: ActiveTasks, message: ChatEntry
-) -> list[ChatEntry]:
+def to_prompt(history: ChatHistory, active_tasks: ActiveTasks, message: ChatEntry) -> list[ChatEntry]:
     """
     Set up the prompt and chat with the model using the given user prompts.
     """
@@ -80,7 +78,4 @@ def tasks_to_prompt(input_tasks: Optional[ActiveTasks]) -> str:
     if input_tasks is None:
         return "There are currently no active tasks"
 
-    return (
-        "This here is the set of currently active tasks: "
-        + input_tasks.model_dump_json()
-    )
+    return "This here is the set of currently active tasks: " + input_tasks.model_dump_json()
