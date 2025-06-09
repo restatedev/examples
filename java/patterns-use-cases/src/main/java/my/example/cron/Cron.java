@@ -78,11 +78,16 @@ public class Cron {
       scheduleNextExecution(ctx, req);
     }
 
-    @Handler
-    public void cancel(ObjectContext ctx) {
-      ctx.get(JOB).ifPresent(job -> ctx.invocationHandle(job.nextExecutionId).cancel());
+    @Shared
+    public void cancel(SharedObjectContext ctx) {
+      JobInfo job = ctx.get(JOB)
+                      .orElseThrow(() -> new TerminalException("Job not found"));
+      ctx.invocationHandle(job.nextExecutionId).cancel();
+      CronJobClient.fromContext(ctx, ctx.key()).send().cleanup();
+    }
 
-      // Clear the job state
+    @Handler
+    public void cleanup(ObjectContext ctx) {
       ctx.clearAll();
     }
 
