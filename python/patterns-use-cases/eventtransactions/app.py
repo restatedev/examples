@@ -32,9 +32,7 @@ async def process_post(ctx: restate.ObjectContext, post: SocialMediaPost):
     # Delay processing until content moderation is complete (handler suspends when on FaaS).
     # This only blocks other posts for this user (Virtual Object), not for other users.
 
-    while (
-        await ctx.run("post status", lambda: get_post_status(post_id)) == Status.PENDING
-    ):
+    while await ctx.run("post status", lambda: get_post_status(post_id)) == Status.PENDING:
         await ctx.sleep(timedelta(seconds=5))
 
     await ctx.run("update feed", lambda: update_user_feed(user_id, post_id))

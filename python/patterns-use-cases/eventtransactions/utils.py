@@ -23,9 +23,7 @@ class Status:
 
 def create_post(user_id: str, post: SocialMediaPost) -> str:
     post_id = str(uuid.uuid4())
-    logging.info(
-        f"Created post {post_id} for user {user_id} with content: {post.content}"
-    )
+    logging.info(f"Created post {post_id} for user {user_id} with content: {post.content}")
     return post_id
 
 

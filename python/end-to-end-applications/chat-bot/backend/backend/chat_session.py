@@ -34,9 +34,7 @@ async def on_message(ctx: restate.ObjectContext, message: ChatEntry):
     command = parse_to_command(gpt_response)
     output = await execute_command(ctx, ctx.key(), active_tasks, command)
     ctx.set("active_tasks", output.new_active_tasks)
-    chat_history.entries.append(
-        ChatEntry(role="system", content=command.message, timestamp=await time_now(ctx))
-    )
+    chat_history.entries.append(ChatEntry(role="system", content=command.message, timestamp=await time_now(ctx)))
     ctx.set("chat_history", chat_history)
 
 
@@ -53,9 +51,7 @@ async def on_task_done(ctx: restate.ObjectContext, result: TaskResult):
 
     # Add the task result to the chat history
     chat_history = await ctx.get("chat_history", type_hint=ChatHistory) or ChatHistory()
-    chat_history.entries.append(
-        ChatEntry(role="system", content=result.result, timestamp=result.timestamp)
-    )
+    chat_history.entries.append(ChatEntry(role="system", content=result.result, timestamp=result.timestamp))
     ctx.set("chat_history", chat_history)
 
 

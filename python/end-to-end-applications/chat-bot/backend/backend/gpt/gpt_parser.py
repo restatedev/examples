@@ -9,6 +9,4 @@ def parse_to_command(response: str) -> GptTaskCommand:
         result = json.loads(response)
         return GptTaskCommand(**result)
     except Exception as e:
-        raise TerminalError(
-            f"Malformed response from LLM: {str(e)}.\nRaw response:\n{response}"
-        )
+        raise TerminalError(f"Malformed response from LLM: {str(e)}.\nRaw response:\n{response}")

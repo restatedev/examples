@@ -4,12 +4,7 @@ import restate
 
 
 async def time_now(
-    ctx: (
-        restate.ObjectContext
-        | restate.Context
-        | restate.WorkflowContext
-        | restate.WorkflowSharedContext
-    ),
+    ctx: restate.ObjectContext | restate.Context | restate.WorkflowContext | restate.WorkflowSharedContext,
 ) -> int:
     """
     Get the current time in milliseconds since epoch.

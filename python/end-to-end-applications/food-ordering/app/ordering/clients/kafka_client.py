@@ -21,6 +21,4 @@ def send_location_to_kafka(driver_id: str, location: dict):
     except KafkaError as e:
         print(f"Failed to send location update for driver {driver_id}: {e}")
     else:
-        print(
-            f"Successfully sent location update for driver {driver_id} to {record_metadata.topic}"
-        )
+        print(f"Successfully sent location update for driver {driver_id} to {record_metadata.topic}")

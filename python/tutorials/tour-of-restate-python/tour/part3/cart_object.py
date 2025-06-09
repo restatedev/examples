@@ -52,9 +52,7 @@ async def checkout(ctx: ObjectContext) -> bool:
     if len(tickets) == 0:
         return False
 
-    success = await ctx.service_call(
-        handle, arg={"user_id": ctx.key(), "tickets": tickets}
-    )
+    success = await ctx.service_call(handle, arg={"user_id": ctx.key(), "tickets": tickets})
 
     if success:
         # !mark(1:2)

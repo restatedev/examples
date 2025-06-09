@@ -12,8 +12,12 @@
 import * as restate from "@restatedev/restate-sdk";
 import * as clients from "@restatedev/restate-sdk-clients";
 
-import type {DurablePromise} from "./api";
-import type {DurablePromiseObject, DurablePromiseServer, ValueOrError} from "./services";
+import type { DurablePromise } from "./api";
+import type {
+  DurablePromiseObject,
+  DurablePromiseServer,
+  ValueOrError,
+} from "./services";
 
 /**
  * Create a durable promise that uses the Restate Context to interact
@@ -25,7 +29,10 @@ import type {DurablePromiseObject, DurablePromiseServer, ValueOrError} from "./s
  * To use the durable promises without a Restate Context (from any process), use
  * the {@link durablePromiseExt durablePromise} function instead.
  */
-export function durablePromise<T>(promiseId: string, ctx: restate.Context): DurablePromise<T>;
+export function durablePromise<T>(
+  promiseId: string,
+  ctx: restate.Context
+): DurablePromise<T>;
 
 /**
  * Create a durable promise that uses the Restate Context to interact
@@ -37,21 +44,26 @@ export function durablePromise<T>(promiseId: string, ctx: restate.Context): Dura
  * To use the durable promises without a Restate Context (from any process), use
  * the {@link durablePromiseExt durablePromise} function instead.
  */
-export function durablePromise<T>(promiseId: string, ingressUri: string): DurablePromise<T>;
+export function durablePromise<T>(
+  promiseId: string,
+  ingressUri: string
+): DurablePromise<T>;
 
-export function durablePromise<T>(promiseId: string, uriOrCtx: string | restate.Context): DurablePromise<T> {
-  if (typeof uriOrCtx === 'string') {
+export function durablePromise<T>(
+  promiseId: string,
+  uriOrCtx: string | restate.Context
+): DurablePromise<T> {
+  if (typeof uriOrCtx === "string") {
     return durablePromiseFromIngress(uriOrCtx, promiseId);
   } else {
     return durablePromiseFromContext(uriOrCtx, promiseId);
   }
 }
 
-
 // ----------------------------------- impl ----------------------------------
 
-const DurablePromiseObject: DurablePromiseObject = { name : "promises" };
-const DurablePromiseServer: DurablePromiseServer = { name : "promise"};
+const DurablePromiseObject: DurablePromiseObject = { name: "promises" };
+const DurablePromiseServer: DurablePromiseServer = { name: "promise" };
 
 function durablePromiseFromContext<T>(
   ctx: restate.Context,
@@ -60,7 +72,7 @@ function durablePromiseFromContext<T>(
   const obj = ctx.objectClient(DurablePromiseObject, promiseId);
 
   return {
-    id:  promiseId,
+    id: promiseId,
 
     get: async () => {
       const awk = ctx.awakeable<ValueOrError<T>>();
@@ -124,7 +136,6 @@ function durablePromiseFromIngress<T>(
   };
 }
 
-
 // ----------------------------------- utils ----------------------------------
 
 function resultToPromise<T>(result: ValueOrError<unknown>): Promise<T> {
@@ -132,4 +143,3 @@ function resultToPromise<T>(result: ValueOrError<unknown>): Promise<T> {
     ? Promise.reject(new Error(result.error))
     : Promise.resolve(result.value as T);
 }
-

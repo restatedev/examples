@@ -76,19 +76,13 @@ class FlightPriceOpts(BaseModel):
     return_date: str
     travel_class: str
     price_threshold: float
-    price_threshold_usd: float = Field(
-        default_factory=lambda data: parse_currency(data["price_threshold"])
-    )
+    price_threshold_usd: float = Field(default_factory=lambda data: parse_currency(data["price_threshold"]))
     description: str | None = None
 
 
 class ReminderOpts(BaseModel):
     date: str
-    timestamp: int = Field(
-        default_factory=lambda data: int(
-            datetime.fromisoformat(data["date"]).timestamp() * 1000
-        )
-    )
+    timestamp: int = Field(default_factory=lambda data: int(datetime.fromisoformat(data["date"]).timestamp() * 1000))
     description: str | None = None
 
 

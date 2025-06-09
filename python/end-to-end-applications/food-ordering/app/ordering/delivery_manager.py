@@ -68,9 +68,7 @@ async def notify_delivery_pickup(ctx: ObjectContext):
     delivery["order_picked_up"] = True
     ctx.set(DELIVERY_INFO, delivery)
 
-    ctx.workflow_send(
-        order_workflow.signal_driver_at_restaurant, delivery["order_id"], arg=None
-    )
+    ctx.workflow_send(order_workflow.signal_driver_at_restaurant, delivery["order_id"], arg=None)
 
 
 @delivery_manager.handler()
@@ -80,9 +78,7 @@ async def notify_delivery_delivered(ctx: ObjectContext):
         raise TerminalError("No delivery information found")
     ctx.clear(DELIVERY_INFO)
 
-    ctx.workflow_send(
-        order_workflow.signal_delivery_finished, delivery["order_id"], arg=None
-    )
+    ctx.workflow_send(order_workflow.signal_delivery_finished, delivery["order_id"], arg=None)
 
 
 @delivery_manager.handler("handleDriverLocationUpdate")
@@ -92,9 +88,7 @@ async def handle_driver_location_update(ctx: ObjectContext, location: Location):
     if delivery["order_picked_up"]:
         eta = geo.calculate_eta_millis(location, delivery["customer_location"])
     else:
-        eta = geo.calculate_eta_millis(
-            location, delivery["restaurant_location"]
-        ) + geo.calculate_eta_millis(
+        eta = geo.calculate_eta_millis(location, delivery["restaurant_location"]) + geo.calculate_eta_millis(
             delivery["restaurant_location"], delivery["customer_location"]
         )
 

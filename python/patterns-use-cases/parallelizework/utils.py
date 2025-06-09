@@ -35,9 +35,7 @@ async def split(task: Task) -> SubTaskList:
     # Split the task into subTasks
     subtask_descriptions = task.description.split(",")
     sub_tasks = SubTaskList(
-        subtasks=[
-            SubTask(description=description) for description in subtask_descriptions
-        ]
+        subtasks=[SubTask(description=description) for description in subtask_descriptions]
     )
     return sub_tasks
 

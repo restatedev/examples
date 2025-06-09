@@ -1,5 +1,5 @@
-import {Context, TerminalError} from "@restatedev/restate-sdk";
-import type {Queue as QueueObject} from "./queue";
+import { Context, TerminalError } from "@restatedev/restate-sdk";
+import type { Queue as QueueObject } from "./queue";
 
 export interface Queue {
   run<T>(priority: number, op: () => Promise<T>): Promise<T>;
@@ -11,7 +11,7 @@ export namespace Queue {
       async run<T>(priority: number, op: () => Promise<T>): Promise<T> {
         const client = ctx.objectSendClient<QueueObject>(
           { name: "queue" },
-          name,
+          name
         );
 
         const awakeable = ctx.awakeable();

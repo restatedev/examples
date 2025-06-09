@@ -1,12 +1,12 @@
 import * as restate from "@restatedev/restate-sdk";
-import type {AccountsObject} from "./accounts";
-import {accountsObject} from "./accounts";
+import type { AccountsObject } from "./accounts";
+import { accountsObject } from "./accounts";
 
 type Payment = { accountId: string; amount: number };
 
 type PaymentStatus = "NEW" | "COMPLETED" | "CANCELLED";
 
-const Accounts: AccountsObject = { name : "accounts" };
+const Accounts: AccountsObject = { name: "accounts" };
 
 const EXPIRY_TIMEOUT = 60 * 60 * 1000; // 1 hour
 
@@ -30,7 +30,7 @@ const payments = restate.object({
       const paymentId = ctx.key;
 
       // check whether this payment-id was already processed (repeated call)
-      switch (await ctx.get<PaymentStatus>("status")){
+      switch (await ctx.get<PaymentStatus>("status")) {
         case "COMPLETED":
           return `${paymentId} was cancelled before`;
         case "CANCELLED":
@@ -38,25 +38,29 @@ const payments = restate.object({
       }
 
       // charge the target account
-      const paymentResult = await ctx.objectClient(Accounts, accountId).withdraw(amount);
+      const paymentResult = await ctx
+        .objectClient(Accounts, accountId)
+        .withdraw(amount);
 
       if (paymentResult.success) {
         ctx.set("status", "COMPLETED");
         ctx.set("payment", payment);
 
-        ctx.objectSendClient(payments, paymentId, { delay: EXPIRY_TIMEOUT }).expireToken();
+        ctx
+          .objectSendClient(payments, paymentId, { delay: EXPIRY_TIMEOUT })
+          .expireToken();
       }
 
       return `${paymentId} successful: ${paymentResult.success}`;
     },
 
     cancelPayment: async (ctx: restate.ObjectContext) => {
-      const status = await ctx.get<PaymentStatus>("status") ?? "NEW";
+      const status = (await ctx.get<PaymentStatus>("status")) ?? "NEW";
 
       switch (status) {
         case "COMPLETED": {
           // undo the payment
-          const {accountId, amount} = (await ctx.get<Payment>("payment"))!;
+          const { accountId, amount } = (await ctx.get<Payment>("payment"))!;
           ctx.objectSendClient(Accounts, accountId).deposit(amount);
           ctx.set("status", "CANCELLED");
           break;
@@ -85,8 +89,4 @@ const payments = restate.object({
   },
 });
 
-restate
-  .endpoint()
-  .bind(payments)
-  .bind(accountsObject)
-  .listen();
+restate.endpoint().bind(payments).bind(accountsObject).listen();

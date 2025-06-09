@@ -17,9 +17,7 @@ from threading import Thread
 # This file contains the logic for the Point of Sales API server of the restaurant.
 # It responds to requests to create, cancel and prepare orders.
 
-RESTATE_RUNTIME_ENDPOINT = os.getenv(
-    "RESTATE_RUNTIME_ENDPOINT", "http://localhost:8080"
-)
+RESTATE_RUNTIME_ENDPOINT = os.getenv("RESTATE_RUNTIME_ENDPOINT", "http://localhost:8080")
 RESTATE_TOKEN = os.getenv("RESTATE_RUNTIME_TOKEN")
 
 app = Flask(__name__)
@@ -39,9 +37,7 @@ def prepare_order():
 
 
 def resolve_cb(order_id):
-    print(
-        f"{log_prefix()} Order {order_id} prepared and ready for shipping", flush=True
-    )
+    print(f"{log_prefix()} Order {order_id} prepared and ready for shipping", flush=True)
     headers = {
         "Content-Type": "application/json",
     }

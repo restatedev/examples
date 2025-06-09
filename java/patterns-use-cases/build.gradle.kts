@@ -1,6 +1,7 @@
 plugins {
   java
   application
+  id("com.diffplug.spotless") version "6.25.0"
 }
 
 repositories {
@@ -28,11 +29,14 @@ dependencies {
 
   // Logging
   implementation("org.apache.logging.log4j:log4j-api:2.24.1")
+
+  // For cron example
+  implementation("com.cronutils:cron-utils:9.2.1")
 }
 
 java {
   toolchain {
-    languageVersion.set(JavaLanguageVersion.of(17))
+    languageVersion.set(JavaLanguageVersion.of(21))
   }
 }
 
@@ -53,4 +57,14 @@ tasks.withType<JavaCompile> {
 
 tasks.named<Test>("test") {
   useJUnitPlatform()
+}
+
+spotless {
+  java {
+    googleJavaFormat()
+    importOrder()
+    removeUnusedImports()
+    formatAnnotations()
+    toggleOffOn("//", "/n")
+  }
 }

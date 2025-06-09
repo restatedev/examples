@@ -33,9 +33,7 @@ async def process_pdf(ctx: restate.WorkflowContext, request: NewPdfDocument):
 
     async def download_pdf() -> bytes:
         object_store = get_object_store_client()
-        return await object_store.aget_object(
-            request["bucket_name"], request["object_name"]
-        )
+        return await object_store.aget_object(request["bucket_name"], request["object_name"])
 
     pdf_bytes = await ctx.run("Download PDF", download_pdf, serde=BytesSerde())
 

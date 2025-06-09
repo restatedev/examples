@@ -1,14 +1,14 @@
 package my.example.statefulactors;
 
+import static my.example.statefulactors.utils.MachineOperations.bringUpMachine;
+import static my.example.statefulactors.utils.MachineOperations.tearDownMachine;
+
 import dev.restate.sdk.ObjectContext;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
+import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.endpoint.Endpoint;
 import dev.restate.sdk.http.vertx.RestateHttpServer;
-import dev.restate.sdk.common.StateKey;
-
-import static my.example.statefulactors.utils.MachineOperations.bringUpMachine;
-import static my.example.statefulactors.utils.MachineOperations.tearDownMachine;
 
 // This is a State Machine implemented with a Virtual Object
 //
@@ -23,43 +23,47 @@ import static my.example.statefulactors.utils.MachineOperations.tearDownMachine;
 @VirtualObject
 public class MachineOperator {
 
-    enum Status { UP, DOWN }
-    private static final StateKey<Status> STATUS = StateKey.of("state", Status.class);
+  enum Status {
+    UP,
+    DOWN
+  }
 
-    @Handler
-    public String setUp(ObjectContext ctx) {
-        String machineId = ctx.key();
+  private static final StateKey<Status> STATUS = StateKey.of("state", Status.class);
 
-        // Ignore duplicate calls to start
-        var status = ctx.get(STATUS).orElse(Status.DOWN);
-        if (status.equals(Status.UP)) {
-            return machineId + " is already running";
-        }
+  @Handler
+  public String setUp(ObjectContext ctx) {
+    String machineId = ctx.key();
 
-        // Bringing up a machine is a slow process that frequently crashes
-        bringUpMachine(ctx, machineId);
-        ctx.set(STATUS, Status.UP);
-
-        return machineId + " is now running";
+    // Ignore duplicate calls to start
+    var status = ctx.get(STATUS).orElse(Status.DOWN);
+    if (status.equals(Status.UP)) {
+      return machineId + " is already running";
     }
 
-    @Handler
-    public String tearDown(ObjectContext ctx) {
-        String machineId = ctx.key();
+    // Bringing up a machine is a slow process that frequently crashes
+    bringUpMachine(ctx, machineId);
+    ctx.set(STATUS, Status.UP);
 
-        var status = ctx.get(STATUS).orElse(Status.DOWN);
-        if (!status.equals(Status.UP)) {
-            return machineId + " is not up, cannot tear down";
-        }
+    return machineId + " is now running";
+  }
 
-        // Tearing down a machine is a slow process that frequently crashes
-        tearDownMachine(ctx, machineId);
-        ctx.set(STATUS, Status.DOWN);
+  @Handler
+  public String tearDown(ObjectContext ctx) {
+    String machineId = ctx.key();
 
-        return machineId + " is now down";
+    var status = ctx.get(STATUS).orElse(Status.DOWN);
+    if (!status.equals(Status.UP)) {
+      return machineId + " is not up, cannot tear down";
     }
 
-    public static void main(String[] args) {
-        RestateHttpServer.listen(Endpoint.bind(new MachineOperator()));
-    }
+    // Tearing down a machine is a slow process that frequently crashes
+    tearDownMachine(ctx, machineId);
+    ctx.set(STATUS, Status.DOWN);
+
+    return machineId + " is now down";
+  }
+
+  public static void main(String[] args) {
+    RestateHttpServer.listen(Endpoint.bind(new MachineOperator()));
+  }
 }

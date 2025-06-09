@@ -84,11 +84,7 @@ async def handle_driver_location_update_event(ctx: ObjectContext, location: Loca
         )
 
 
-async def check_if_driver_in_expected_state(
-    expected_status: DriverStatus, ctx: ObjectContext
-):
+async def check_if_driver_in_expected_state(expected_status: DriverStatus, ctx: ObjectContext):
     current_status = await ctx.get(DRIVER_STATUS) or DriverStatus.IDLE
     if current_status != expected_status:
-        raise TerminalError(
-            f"Driver status wrong. Expected {expected_status} but was {current_status}"
-        )
+        raise TerminalError(f"Driver status wrong. Expected {expected_status} but was {current_status}")

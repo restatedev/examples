@@ -19,10 +19,10 @@ func ReserveProduct(productId string, reservationId string) {
 	// Durable RPC call to the product service
 	// Restate registers the request and makes sure it runs to completion exactly once
 	// This is a call to Virtual Object so we can be sure only one reservation is made concurrently
-	url := fmt.Sprintf("%s/ProductService/%s/Reserve", RESTATE_URL, productId)
+	url := fmt.Sprintf("%s/ProductService/%s/Book", RESTATE_URL, productId)
 	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
-		slog.Error("Reserve product failed", "err", err.Error())
+		slog.Error("Book product failed", "err", err.Error())
 		return
 	}
 	// use a stable uuid as an idempotency key; Restate deduplicates for us
@@ -30,14 +30,14 @@ func ReserveProduct(productId string, reservationId string) {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		slog.Error("Reserve product failed", "err", err.Error())
+		slog.Error("Book product failed", "err", err.Error())
 		return
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		slog.Error("Reserve product failed", "err", err.Error())
+		slog.Error("Book product failed", "err", err.Error())
 		return
 	}
 

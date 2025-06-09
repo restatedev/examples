@@ -21,9 +21,7 @@ async def execute(ctx: restate.Context, opts: dict) -> None:
             key=opts["task_id"],
         )
         timestamp = await time_now(ctx)
-        response = TaskResult(
-            task_name=opts["task_name"], result=json.loads(result), timestamp=timestamp
-        )
+        response = TaskResult(task_name=opts["task_name"], result=json.loads(result), timestamp=timestamp)
     except TerminalError as e:
         timestamp = await time_now(ctx)
         response = TaskResult(

@@ -14,8 +14,4 @@ def update_location(current: Location, target: Location) -> tuple[Location, bool
 
 def dim_step(current: float, target: float) -> float:
     step = geo.step()
-    return (
-        target
-        if abs(target - current) < step
-        else (current + step if target > current else current - step)
-    )
+    return target if abs(target - current) < step else (current + step if target > current else current - step)

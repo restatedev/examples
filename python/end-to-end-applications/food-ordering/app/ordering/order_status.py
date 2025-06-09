@@ -16,9 +16,7 @@ order_status = VirtualObject("order-status")
 @order_status.handler()
 async def get(ctx: ObjectContext):
     eta = await ctx.get("eta") or None
-    status = (
-        await ctx.workflow_call(order_workflow.get_status, ctx.key(), arg=None) or None
-    )
+    status = await ctx.workflow_call(order_workflow.get_status, ctx.key(), arg=None) or None
     return {"eta": eta, "status": status}
 
 

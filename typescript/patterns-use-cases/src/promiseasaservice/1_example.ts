@@ -33,11 +33,15 @@ async function run() {
 
   // awaiting the result
   const resultProm = durablePromise.get();
-  resultProm.then((val) => console.log("Result value: " + val)).catch(console.error);
+  resultProm
+    .then((val) => console.log("Result value: " + val))
+    .catch(console.error);
 
   // completing the promise. if we are the first to complete, the actual result
   // will be our completion value
-  const actualResult = await durablePromise.resolve("This promise will notify everyone");
+  const actualResult = await durablePromise.resolve(
+    "This promise will notify everyone"
+  );
   console.log("Actual result after completing: " + actualResult);
 
   // this will never make it, because the promise is already completed

@@ -35,9 +35,7 @@ async def withdraw(ctx: restate.ObjectContext, amount_cents: int) -> Result:
 
     balance_cents = await ctx.get(BALANCE) or initialize_random_amount()
     if balance_cents < amount_cents:
-        return Result(
-            success=False, message=f"Insufficient funds: {balance_cents} cents"
-        )
+        return Result(success=False, message=f"Insufficient funds: {balance_cents} cents")
 
     ctx.set(BALANCE, balance_cents - amount_cents)
     return Result(success=True, message="Withdrawal successful")

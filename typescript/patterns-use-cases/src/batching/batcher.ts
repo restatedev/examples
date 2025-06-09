@@ -26,13 +26,13 @@ export const batcher = restate.object({
     expire: async (ctx: ObjectContext<BatcherState>) => {
       const items = (await ctx.get("items")) ?? [];
       ctx.console.log(
-        `Sending batch with ${items.length} items as the timer fired`,
+        `Sending batch with ${items.length} items as the timer fired`
       );
       return sendBatch(ctx, null, items);
     },
     receive: async (
       ctx: ObjectContext<BatcherState>,
-      item: unknown,
+      item: unknown
     ): Promise<void> => {
       const expireInvocationId = await ctx.get("expireInvocationId");
       const items = (await ctx.get("items")) ?? [];
@@ -47,7 +47,7 @@ export const batcher = restate.object({
 
       if (items.length == 1) {
         ctx.console.log(
-          `Adding item to new batch, will send in at most ${MAX_BATCH_WAIT_MS} ms`,
+          `Adding item to new batch, will send in at most ${MAX_BATCH_WAIT_MS} ms`
         );
 
         const expirationHandle = ctx
@@ -85,7 +85,7 @@ export const batchReceiver = restate.object({
 function sendBatch(
   ctx: ObjectContext<BatcherState>,
   expireInvocationId: restate.InvocationId | null,
-  items: unknown[],
+  items: unknown[]
 ): void {
   if (expireInvocationId) {
     ctx.cancel(expireInvocationId);

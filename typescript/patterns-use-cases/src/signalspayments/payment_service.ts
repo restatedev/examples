@@ -1,6 +1,6 @@
 import * as restate from "@restatedev/restate-sdk";
 import * as stripe_utils from "./utils/stripe_utils";
-import {verifyPaymentRequest} from "./utils/stripe_utils";
+import { verifyPaymentRequest } from "./utils/stripe_utils";
 import Stripe from "stripe";
 
 //
@@ -24,7 +24,7 @@ type PaymentRequest = {
 };
 
 async function processPayment(ctx: restate.Context, request: PaymentRequest) {
-  const {paymentMethodId, amount, delayedStatus} = request;
+  const { paymentMethodId, amount, delayedStatus } = request;
 
   verifyPaymentRequest(request);
 
@@ -32,7 +32,8 @@ async function processPayment(ctx: restate.Context, request: PaymentRequest) {
   const idempotencyKey = ctx.rand.uuidv4();
 
   // Initiate a listener for external calls for potential webhook callbacks
-  const { id: intentWebhookId, promise: intentPromise } = ctx.awakeable<Stripe.PaymentIntent>();
+  const { id: intentWebhookId, promise: intentPromise } =
+    ctx.awakeable<Stripe.PaymentIntent>();
 
   // Make a synchronous call to the payment service
   const paymentIntent = await ctx.run("stripe call", () =>
@@ -91,4 +92,12 @@ async function processWebhook(ctx: restate.Context) {
   return { received: true };
 }
 
-restate.endpoint().bind(restate.service({name: "payments", handlers: { processPayment, processWebhook }})).listen(9080);
+restate
+  .endpoint()
+  .bind(
+    restate.service({
+      name: "payments",
+      handlers: { processPayment, processWebhook },
+    })
+  )
+  .listen(9080);
