@@ -10,11 +10,6 @@ dependencies = [
     "restate_sdk[serde]>=0.7.3",
 ]
 
-[project.optional-dependencies]
-dev = [
-    "black>=25.1.0"
-]
-
 [tool.hatch.build.targets.wheel]
 packages = ["app"]
 
