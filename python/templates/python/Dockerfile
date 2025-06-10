@@ -1,13 +1,16 @@
-FROM python:3.11-slim
+FROM python:3.13.1-slim-bookworm
 
-WORKDIR /usr/src/app
+ENV PYTHONUNBUFFERED=True
+WORKDIR /app
 
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/
+
+COPY pyproject.toml uv.lock /app/
+RUN uv sync --frozen --no-install-workspace
 
 COPY . .
+RUN uv sync --frozen
 
 EXPOSE 9080
 
-ENV PYTHONPATH="/usr/src/app/src"
-CMD ["hypercorn", "example:app", "--config", "hypercorn-config.toml"]
+CMD ["/app/.venv/bin/python", "/app"]
