@@ -25,15 +25,10 @@ export const batcher = restate.object({
   handlers: {
     expire: async (ctx: ObjectContext<BatcherState>) => {
       const items = (await ctx.get("items")) ?? [];
-      ctx.console.log(
-        `Sending batch with ${items.length} items as the timer fired`
-      );
+      ctx.console.log(`Sending batch with ${items.length} items as the timer fired`);
       return sendBatch(ctx, null, items);
     },
-    receive: async (
-      ctx: ObjectContext<BatcherState>,
-      item: unknown
-    ): Promise<void> => {
+    receive: async (ctx: ObjectContext<BatcherState>, item: unknown): Promise<void> => {
       const expireInvocationId = await ctx.get("expireInvocationId");
       const items = (await ctx.get("items")) ?? [];
 
@@ -46,9 +41,7 @@ export const batcher = restate.object({
       }
 
       if (items.length == 1) {
-        ctx.console.log(
-          `Adding item to new batch, will send in at most ${MAX_BATCH_WAIT_MS} ms`
-        );
+        ctx.console.log(`Adding item to new batch, will send in at most ${MAX_BATCH_WAIT_MS} ms`);
 
         const expirationHandle = ctx
           .objectSendClient<Batcher>({ name: "batcher" }, ctx.key, {
@@ -93,9 +86,7 @@ function sendBatch(
   ctx.clear("expireInvocationId");
   ctx.clear("items");
 
-  ctx
-    .objectSendClient<BatchReceiver>({ name: "batchReceiver" }, ctx.key)
-    .receive({ items });
+  ctx.objectSendClient<BatchReceiver>({ name: "batchReceiver" }, ctx.key).receive({ items });
 }
 
 export type Batcher = typeof batcher;

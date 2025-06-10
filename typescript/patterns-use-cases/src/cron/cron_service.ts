@@ -46,10 +46,7 @@ export const cronJobInitiator = restate.service({
 export const cronJob = restate.object({
   name: "CronJob",
   handlers: {
-    initiate: async (
-      ctx: restate.ObjectContext,
-      req: JobRequest
-    ): Promise<JobInfo> => {
+    initiate: async (ctx: restate.ObjectContext, req: JobRequest): Promise<JobInfo> => {
       if (await ctx.get<JobInfo>(JOB)) {
         throw new TerminalError("Job already exists for this ID.");
       }

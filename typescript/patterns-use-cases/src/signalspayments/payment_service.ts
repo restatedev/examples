@@ -32,8 +32,7 @@ async function processPayment(ctx: restate.Context, request: PaymentRequest) {
   const idempotencyKey = ctx.rand.uuidv4();
 
   // Initiate a listener for external calls for potential webhook callbacks
-  const { id: intentWebhookId, promise: intentPromise } =
-    ctx.awakeable<Stripe.PaymentIntent>();
+  const { id: intentWebhookId, promise: intentPromise } = ctx.awakeable<Stripe.PaymentIntent>();
 
   // Make a synchronous call to the payment service
   const paymentIntent = await ctx.run("stripe call", () =>
@@ -80,8 +79,7 @@ async function processWebhook(ctx: restate.Context) {
 
   const paymentIntent = event.data.object as Stripe.PaymentIntent;
 
-  const webhookPromise =
-    paymentIntent.metadata[stripe_utils.RESTATE_CALLBACK_ID];
+  const webhookPromise = paymentIntent.metadata[stripe_utils.RESTATE_CALLBACK_ID];
   if (!webhookPromise) {
     throw new restate.TerminalError(
       "Missing callback property: " + stripe_utils.RESTATE_CALLBACK_ID,

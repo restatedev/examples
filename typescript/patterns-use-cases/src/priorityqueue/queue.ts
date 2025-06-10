@@ -42,10 +42,7 @@ export const queue = object({
 
       setState(ctx, state);
     },
-    push: async (
-      ctx: ObjectContext<QueueState>,
-      item: QueueItem
-    ): Promise<void> => {
+    push: async (ctx: ObjectContext<QueueState>, item: QueueItem): Promise<void> => {
       const state = await getState(ctx);
 
       state.items.push(item);
@@ -54,15 +51,10 @@ export const queue = object({
 
       setState(ctx, state);
     },
-    drop: async (
-      ctx: ObjectContext<QueueState>,
-      awakeable: string
-    ): Promise<void> => {
+    drop: async (ctx: ObjectContext<QueueState>, awakeable: string): Promise<void> => {
       const state = await getState(ctx);
 
-      const index = state.items.findIndex(
-        (item) => item.awakeable == awakeable
-      );
+      const index = state.items.findIndex((item) => item.awakeable == awakeable);
       if (index == -1) {
         // we have already popped it; treat this as a 'done'
         state.inFlight--;
@@ -97,9 +89,7 @@ function tick(ctx: ObjectContext<QueueState>, state: QueueState) {
     ctx.resolveAwakeable(item.awakeable);
   }
 
-  ctx.console.log(
-    `Tick end. Queue length: ${state.items.length}, In Flight: ${state.inFlight}`
-  );
+  ctx.console.log(`Tick end. Queue length: ${state.items.length}, In Flight: ${state.inFlight}`);
 }
 
 export type Queue = typeof queue;

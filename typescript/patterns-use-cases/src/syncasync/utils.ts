@@ -1,14 +1,8 @@
-export function withTimeout<T>(
-  promise: Promise<T>,
-  millis: number
-): Promise<T> {
+export function withTimeout<T>(promise: Promise<T>, millis: number): Promise<T> {
   let timeoutPid: NodeJS.Timeout;
   const timeout = new Promise(
     (_resolve, reject) =>
-      (timeoutPid = setTimeout(
-        () => reject(`Timed out after ${millis} ms.`),
-        millis
-      ))
+      (timeoutPid = setTimeout(() => reject(`Timed out after ${millis} ms.`), millis))
   );
 
   return Promise.race([promise, timeout]).finally(() => {
@@ -27,9 +21,7 @@ export async function createS3Bucket(): Promise<URL> {
 
 export async function uploadData(target: URL) {
   const timeRemaining = Math.random() < 0.5 ? 1_500 : 10_000;
-  console.info(
-    ` >>> Uploading data to target ${target}. ETA: ${timeRemaining}ms`
-  );
+  console.info(` >>> Uploading data to target ${target}. ETA: ${timeRemaining}ms`);
   // simulate some work by delaying for a while. sometimes takes really long.
   return new Promise((resolve) => setTimeout(resolve, timeRemaining));
 }

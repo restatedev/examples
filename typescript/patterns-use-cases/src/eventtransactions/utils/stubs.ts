@@ -8,14 +8,9 @@ export type SocialMediaPost = {
 export const PENDING = "PENDING";
 export const DONE = "DONE";
 
-export async function createPost(
-  userId: string,
-  post: SocialMediaPost
-): Promise<string> {
+export async function createPost(userId: string, post: SocialMediaPost): Promise<string> {
   const postId = randomUUID().toString();
-  console.info(
-    `Created post ${postId} for user ${userId} with content: ${post.content}`
-  );
+  console.info(`Created post ${postId} for user ${userId} with content: ${post.content}`);
   return postId;
 }
 

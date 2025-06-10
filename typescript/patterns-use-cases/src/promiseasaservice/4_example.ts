@@ -18,10 +18,7 @@ restate.service({
     /**
      * Answer a question
      */
-    async answer(
-      ctx: restate.Context,
-      answer: { questionId: string; answer: string }
-    ) {
+    async answer(ctx: restate.Context, answer: { questionId: string; answer: string }) {
       const dp = durablePromise<string>(answer.questionId, ctx);
       await dp.resolve(answer.answer);
     },

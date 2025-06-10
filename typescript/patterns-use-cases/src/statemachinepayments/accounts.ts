@@ -21,29 +21,20 @@ export const accountsObject = restate.object({
   handlers: {
     deposit: async (ctx: restate.ObjectContext, amountCents: number) => {
       if (amountCents < 0) {
-        throw new restate.TerminalError(
-          "Amount must be greater than 0: amount = " + amountCents
-        );
+        throw new restate.TerminalError("Amount must be greater than 0: amount = " + amountCents);
       }
 
-      const balanceCents: number =
-        (await ctx.get<number>("balance")) ?? initializeRandomAmount();
+      const balanceCents: number = (await ctx.get<number>("balance")) ?? initializeRandomAmount();
 
       ctx.set("balance", balanceCents + amountCents);
     },
 
-    withdraw: async (
-      ctx: restate.ObjectContext,
-      amountCents: number
-    ): Promise<Result> => {
+    withdraw: async (ctx: restate.ObjectContext, amountCents: number): Promise<Result> => {
       if (amountCents < 0) {
-        throw new restate.TerminalError(
-          "Amount must be greater than 0: amount = " + amountCents
-        );
+        throw new restate.TerminalError("Amount must be greater than 0: amount = " + amountCents);
       }
 
-      const balanceCents =
-        (await ctx.get<number>("balance")) ?? initializeRandomAmount();
+      const balanceCents = (await ctx.get<number>("balance")) ?? initializeRandomAmount();
 
       if (balanceCents < amountCents) {
         return {

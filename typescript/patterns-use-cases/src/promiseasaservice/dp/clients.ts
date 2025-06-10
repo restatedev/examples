@@ -13,11 +13,7 @@ import * as restate from "@restatedev/restate-sdk";
 import * as clients from "@restatedev/restate-sdk-clients";
 
 import type { DurablePromise } from "./api";
-import type {
-  DurablePromiseObject,
-  DurablePromiseServer,
-  ValueOrError,
-} from "./services";
+import type { DurablePromiseObject, DurablePromiseServer, ValueOrError } from "./services";
 
 /**
  * Create a durable promise that uses the Restate Context to interact
@@ -29,10 +25,7 @@ import type {
  * To use the durable promises without a Restate Context (from any process), use
  * the {@link durablePromiseExt durablePromise} function instead.
  */
-export function durablePromise<T>(
-  promiseId: string,
-  ctx: restate.Context
-): DurablePromise<T>;
+export function durablePromise<T>(promiseId: string, ctx: restate.Context): DurablePromise<T>;
 
 /**
  * Create a durable promise that uses the Restate Context to interact
@@ -44,10 +37,7 @@ export function durablePromise<T>(
  * To use the durable promises without a Restate Context (from any process), use
  * the {@link durablePromiseExt durablePromise} function instead.
  */
-export function durablePromise<T>(
-  promiseId: string,
-  ingressUri: string
-): DurablePromise<T>;
+export function durablePromise<T>(promiseId: string, ingressUri: string): DurablePromise<T>;
 
 export function durablePromise<T>(
   promiseId: string,
@@ -65,10 +55,7 @@ export function durablePromise<T>(
 const DurablePromiseObject: DurablePromiseObject = { name: "promises" };
 const DurablePromiseServer: DurablePromiseServer = { name: "promise" };
 
-function durablePromiseFromContext<T>(
-  ctx: restate.Context,
-  promiseId: string
-): DurablePromise<T> {
+function durablePromiseFromContext<T>(ctx: restate.Context, promiseId: string): DurablePromise<T> {
   const obj = ctx.objectClient(DurablePromiseObject, promiseId);
 
   return {
@@ -98,10 +85,7 @@ function durablePromiseFromContext<T>(
   };
 }
 
-function durablePromiseFromIngress<T>(
-  restateUri: string,
-  promiseId: string
-): DurablePromise<T> {
+function durablePromiseFromIngress<T>(restateUri: string, promiseId: string): DurablePromise<T> {
   const restate = clients.connect({ url: restateUri });
   const server = restate.serviceClient(DurablePromiseServer);
   return {
