@@ -18,9 +18,9 @@ class Greeter {
   suspend fun greet(ctx: Context, name: String): String {
     // Durably execute a set of steps; resilient against failures
     val greetingId = ctx.random().nextUUID().toString()
-    ctx.runBlock { sendNotification(greetingId, name) }
+    ctx.runBlock("Notification") { sendNotification(greetingId, name) }
     ctx.sleep(1.seconds)
-    ctx.runBlock { sendReminder(greetingId) }
+    ctx.runBlock("Reminder") { sendReminder(greetingId, name) }
 
     // Respond to caller
     return "You said $greetingPrefix to $name!"
