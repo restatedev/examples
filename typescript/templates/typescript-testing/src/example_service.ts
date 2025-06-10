@@ -6,11 +6,11 @@ import * as restate from "@restatedev/restate-sdk";
 //
 
 export const exampleService = restate.service({
-    name: "ExampleService",
-    handlers: {
-        greet: async (ctx: restate.Context, name: string) => {
-            console.info("Hello there")
-            return `Hello ${name}!`;
-        }
+  name: "ExampleService",
+  handlers: {
+    greet: async (ctx: restate.Context, name: string) => {
+      console.info("Hello there");
+      return `Hello ${name}!`;
     },
-})
+  },
+});
