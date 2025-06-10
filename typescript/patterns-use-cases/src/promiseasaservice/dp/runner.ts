@@ -16,9 +16,5 @@ import { durablePromiseObject, durablePromiseServer } from "./services";
 if (require.main === module) {
   const port = process.argv.length > 2 ? parseInt(process.argv[2]) : 9080;
 
-  restate
-    .endpoint()
-    .bind(durablePromiseObject)
-    .bind(durablePromiseServer)
-    .listen(port);
+  restate.endpoint().bind(durablePromiseObject).bind(durablePromiseServer).listen(port);
 }

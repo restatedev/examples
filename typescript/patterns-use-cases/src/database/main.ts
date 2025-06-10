@@ -30,10 +30,9 @@ type Row = {
   version?: number; // the row version (used by some access methods)
 };
 
-const db = new Sequelize(
-  "postgres://restatedb:restatedb@localhost:5432/exampledb",
-  { logging: false }
-);
+const db = new Sequelize("postgres://restatedb:restatedb@localhost:5432/exampledb", {
+  logging: false,
+});
 
 // ----------------------------------------------------------------------------
 
@@ -83,9 +82,7 @@ const simpledbAccess = restate.service({
         // Automatic retries (on failure) will follow this branch again (using
         // Restate's journalled value for 'credits') so code in this branch will
         // reliably run to conclusion
-        console.log(
-          "Found an account without balance, doing something about it..."
-        );
+        console.log("Found an account without balance, doing something about it...");
       }
 
       return credits;
@@ -116,10 +113,7 @@ const simpledbAccess = restate.service({
      * For an example that use Restate to add consistency, see the examples
      * further below.
      */
-    update: async (
-      _ctx: restate.Context,
-      update: { userId: string; newName: string }
-    ) => {
+    update: async (_ctx: restate.Context, update: { userId: string; newName: string }) => {
       const { userId, newName } = update;
 
       // Update row - we execute this statement directly, because it is the only
@@ -194,34 +188,26 @@ const keyedDbAccess = restate.object({
      * If all updates to the row go through this handler (or other handlers in this
      * Virtual Object that use the versioning scheme) then no duplicates are possible.
      */
-    updateConditional: async (
-      ctx: restate.ObjectContext,
-      addCredits: number
-    ) => {
+    updateConditional: async (ctx: restate.ObjectContext, addCredits: number) => {
       const userid = ctx.key;
 
       // first read the current credits and the version.
       // Because the reads go through a `ctx.run` step (strong consensus), the
       // a single invocation and all if its retries can never see different values
       // for version and credits.
-      const [credits, version] = await ctx.run(
-        "read credits, version",
-        async () => {
-          const [results, _] = await db.query(
-            `SELECT credits, version
+      const [credits, version] = await ctx.run("read credits, version", async () => {
+        const [results, _] = await db.query(
+          `SELECT credits, version
                        FROM users
                       WHERE userid = '${userid}'`
-          );
+        );
 
-          if (results.length !== 1) {
-            throw new restate.TerminalError(
-              `No single row with userid = '${userid}'`
-            );
-          }
-          const row = results[0] as any;
-          return [Number(row.credits), Number(row.version)];
+        if (results.length !== 1) {
+          throw new restate.TerminalError(`No single row with userid = '${userid}'`);
         }
-      );
+        const row = results[0] as any;
+        return [Number(row.credits), Number(row.version)];
+      });
 
       // Make the update conditional on the fact that the version is still the same (see
       // 'AND version = ...'). If the version is no longer the same, it means that a
@@ -248,18 +234,16 @@ const keyedDbAccess = restate.object({
      * with the other invocations for this key. That way reads execute immediately
      * and concurrently, while writes execute sequentially.
      */
-    read: restate.handlers.object.shared(
-      async (ctx: restate.ObjectSharedContext) => {
-        const userid = ctx.key;
+    read: restate.handlers.object.shared(async (ctx: restate.ObjectSharedContext) => {
+      const userid = ctx.key;
 
-        const [results, _meta] = await db.query(
-          `SELECT *
+      const [results, _meta] = await db.query(
+        `SELECT *
                        FROM users
                       WHERE userid = '${userid}'`
-        );
-        return results[0] ?? "(row not found)";
-      }
-    ),
+      );
+      return results[0] ?? "(row not found)";
+    }),
   },
 });
 
@@ -287,10 +271,7 @@ const idempotencyKeyDbAccess = restate.service({
      * The code uses Restate's features to deterministically generate the tokens and
      * to expire them after a day.
      */
-    update: async (
-      ctx: restate.Context,
-      update: { userId: string; addCredits: number }
-    ) => {
+    update: async (ctx: restate.Context, update: { userId: string; addCredits: number }) => {
       // create a persistent idempotency key. we use Restate's random number generator,
       // because that is the most efficient way to generate a durable deterministic ID.
       const idempotencyKey = ctx.rand.uuidv4();
@@ -382,10 +363,7 @@ const idempotencyKeyDbAccess = restate.service({
 const twoPhaseCommitDbAccess = restate.service({
   name: "twoPhaseCommit",
   handlers: {
-    update: async (
-      ctx: restate.Context,
-      update: { userId: string; addCredits: number }
-    ) => {
+    update: async (ctx: restate.Context, update: { userId: string; addCredits: number }) => {
       const { userId, addCredits } = update;
 
       const query = `UPDATE users

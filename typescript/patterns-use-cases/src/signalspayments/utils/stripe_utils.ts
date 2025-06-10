@@ -12,21 +12,14 @@ export function isPaymentIntent(event: Stripe.Event) {
   return event.type.startsWith("payment_intent");
 }
 
-export function parseWebhookCall(
-  requestBody: any,
-  signature: string | string[] | undefined
-) {
+export function parseWebhookCall(requestBody: any, signature: string | string[] | undefined) {
   if (!signature) {
     throw new TerminalError("Missing 'stripe-signature' header.", {
       errorCode: 400,
     });
   }
   try {
-    return stripe.webhooks.constructEvent(
-      requestBody,
-      signature,
-      webHookSecret
-    );
+    return stripe.webhooks.constructEvent(requestBody, signature, webHookSecret);
   } catch (err) {
     throw new TerminalError(`Webhook Error: ${err}`, {
       errorCode: 400,
@@ -46,21 +39,20 @@ export async function createPaymentIntent(request: {
   };
 
   try {
-    const paymentIntent: Stripe.PaymentIntent =
-      await stripe.paymentIntents.create(
-        {
-          amount: request.amount,
-          currency: "usd",
-          payment_method: request.paymentMethodId,
-          confirm: true,
-          confirmation_method: "automatic",
-          return_url: "https://restate.dev/", // some random URL
-          metadata: {
-            restate_callback_id: request.intentWebhookId,
-          },
+    const paymentIntent: Stripe.PaymentIntent = await stripe.paymentIntents.create(
+      {
+        amount: request.amount,
+        currency: "usd",
+        payment_method: request.paymentMethodId,
+        confirm: true,
+        confirmation_method: "automatic",
+        return_url: "https://restate.dev/", // some random URL
+        metadata: {
+          restate_callback_id: request.intentWebhookId,
         },
-        requestOptions
-      );
+      },
+      requestOptions
+    );
 
     // simulate delayed notifications for testing
     if (request.delayedStatus) {
@@ -75,9 +67,7 @@ export async function createPaymentIntent(request: {
         paymentIntent.status = "processing";
         return paymentIntent;
       } else {
-        throw new TerminalError(
-          `Payment declined: ${paymentIntent?.status} - ${error.message}`
-        );
+        throw new TerminalError(`Payment declined: ${paymentIntent?.status} - ${error.message}`);
       }
     } else {
       throw error;

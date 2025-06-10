@@ -1,8 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import {
-  WorkflowContext,
-  WorkflowSharedContext,
-} from "@restatedev/restate-sdk";
+import { WorkflowContext, WorkflowSharedContext } from "@restatedev/restate-sdk";
 import { createS3Bucket, sendEmail, uploadData } from "./utils";
 
 const dataUploadService = restate.workflow({
@@ -16,10 +13,7 @@ const dataUploadService = restate.workflow({
       return url;
     },
 
-    resultAsEmail: async (
-      ctx: WorkflowSharedContext,
-      req: { email: string }
-    ) => {
+    resultAsEmail: async (ctx: WorkflowSharedContext, req: { email: string }) => {
       console.info("Slow upload: client requested to be notified via email.");
       const url = await ctx.promise<URL>("url");
       await ctx.run(() => sendEmail(req.email, url));

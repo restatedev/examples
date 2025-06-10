@@ -13,9 +13,4 @@ export const taskService = restate.service({
   },
 });
 
-restate
-  .endpoint()
-  .bind(cronJobInitiator)
-  .bind(cronJob)
-  .bind(taskService)
-  .listen(9080);
+restate.endpoint().bind(cronJobInitiator).bind(cronJob).bind(taskService).listen(9080);

@@ -1,8 +1,5 @@
 import { Context, TerminalError } from "@restatedev/restate-sdk";
-import type {
-  Limiter as LimiterObject,
-  Reservation as ReservationResponse,
-} from "./limiter";
+import type { Limiter as LimiterObject, Reservation as ReservationResponse } from "./limiter";
 
 export interface Reservation extends ReservationResponse {
   // cancel indicates that the reservation holder will not perform the reserved action
@@ -49,10 +46,7 @@ export interface Limiter {
 
 export namespace Limiter {
   export function fromContext(ctx: Context, limiterID: string): Limiter {
-    const client = ctx.objectClient<LimiterObject>(
-      { name: "limiter" },
-      limiterID
-    );
+    const client = ctx.objectClient<LimiterObject>({ name: "limiter" }, limiterID);
     return {
       async limit() {
         return (await client.state()).limit;
@@ -105,10 +99,9 @@ export namespace Limiter {
         const r = await this.reserve(n, waitLimitMillis);
         if (!r.ok) {
           if (waitLimitMillis === undefined) {
-            throw new TerminalError(
-              `rate: Wait(n=${n}) would exceed the limiters burst`,
-              { errorCode: 429 }
-            );
+            throw new TerminalError(`rate: Wait(n=${n}) would exceed the limiters burst`, {
+              errorCode: 429,
+            });
           } else {
             throw new TerminalError(
               `rate: Wait(n=${n}) would either exceed the limiters burst or the provided waitLimitMillis`,

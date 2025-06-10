@@ -9,10 +9,7 @@ export namespace Queue {
   export function fromContext(ctx: Context, name: string): Queue {
     return {
       async run<T>(priority: number, op: () => Promise<T>): Promise<T> {
-        const client = ctx.objectSendClient<QueueObject>(
-          { name: "queue" },
-          name
-        );
+        const client = ctx.objectSendClient<QueueObject>({ name: "queue" }, name);
 
         const awakeable = ctx.awakeable();
         client.push({

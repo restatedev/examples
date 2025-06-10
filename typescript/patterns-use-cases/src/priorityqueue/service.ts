@@ -18,11 +18,7 @@ export const myService = service({
   },
 });
 
-async function expensiveOperation(
-  ctx: Context,
-  left: number,
-  right: number
-): Promise<number> {
+async function expensiveOperation(ctx: Context, left: number, right: number): Promise<number> {
   return ctx.run(async () => {
     // very cpu heavy - important that the queue protects this
     await new Promise((resolve) => setTimeout(resolve, 5_000));

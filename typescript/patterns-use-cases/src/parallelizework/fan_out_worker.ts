@@ -1,14 +1,6 @@
 import * as restate from "@restatedev/restate-sdk";
 import { RestatePromise, Context } from "@restatedev/restate-sdk";
-import {
-  aggregate,
-  executeSubtask,
-  Result,
-  split,
-  SubTask,
-  SubTaskResult,
-  Task,
-} from "./utils";
+import { aggregate, executeSubtask, Result, split, SubTask, SubTaskResult, Task } from "./utils";
 
 /*
  * Restate makes it easy to parallelize async work by fanning out tasks.
@@ -36,16 +28,12 @@ const fanOutWorker = restate.service({
   handlers: {
     run: async (ctx: Context, task: Task): Promise<Result> => {
       // Split the task in subtasks
-      const subtasks: SubTask[] = await ctx.run("split task", () =>
-        split(task)
-      );
+      const subtasks: SubTask[] = await ctx.run("split task", () => split(task));
 
       // Fan out the subtasks - run them in parallel
       const resultPromises = [];
       for (const subtask of subtasks) {
-        const subResultPromise = ctx
-          .serviceClient(fanOutWorker)
-          .runSubtask(subtask);
+        const subResultPromise = ctx.serviceClient(fanOutWorker).runSubtask(subtask);
         resultPromises.push(subResultPromise);
       }
 
@@ -55,10 +43,7 @@ const fanOutWorker = restate.service({
     },
 
     // Can also run on FaaS
-    runSubtask: async (
-      ctx: Context,
-      subtask: SubTask
-    ): Promise<SubTaskResult> => {
+    runSubtask: async (ctx: Context, subtask: SubTask): Promise<SubTaskResult> => {
       // Processing logic goes here ...
       // Can be moved to a separate service to scale independently
       return executeSubtask(ctx, subtask);

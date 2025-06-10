@@ -16,17 +16,12 @@ import { spawn } from "child_process";
 //    no custom DSLs
 
 const promiseId = process.argv.length > 2 ? process.argv[2] : "my-example-3-id";
-const restateUri =
-  process.argv.length > 3 ? process.argv[3] : "http://localhost:8080";
+const restateUri = process.argv.length > 3 ? process.argv[3] : "http://localhost:8080";
 const numProcesses = process.argv.length > 4 ? Number(process.argv[4]) : 10;
 
 // Function to execute an external script with the same stdout and stderr as the parent
 function executeScript() {
-  const args = [
-    "./src/promiseasaservice/2_example_process.ts",
-    promiseId,
-    restateUri,
-  ];
+  const args = ["./src/promiseasaservice/2_example_process.ts", promiseId, restateUri];
   const child = spawn("tsx", args, { stdio: "inherit" });
 
   return new Promise<void>((resolve, reject) => {
@@ -42,9 +37,7 @@ function executeScript() {
 
 // Main function to execute the script 10 times in parallel
 async function main() {
-  console.log(
-    `Running ${numProcesses} forks of the promise example process...`
-  );
+  console.log(`Running ${numProcesses} forks of the promise example process...`);
   const promises = [];
   for (let i = 0; i < numProcesses; i++) {
     promises.push(executeScript());

@@ -17,14 +17,8 @@ export type StripeEvent = {
 const paymentTracker = restate.object({
   name: "PaymentTracker",
   handlers: {
-    onPaymentFailed: async (
-      ctx: restate.ObjectContext,
-      event: StripeEvent
-    ) => {},
-    onPaymentSuccess: async (
-      ctx: restate.ObjectContext,
-      event: StripeEvent
-    ) => {},
+    onPaymentFailed: async (ctx: restate.ObjectContext, event: StripeEvent) => {},
+    onPaymentSuccess: async (ctx: restate.ObjectContext, event: StripeEvent) => {},
   },
 });
 
