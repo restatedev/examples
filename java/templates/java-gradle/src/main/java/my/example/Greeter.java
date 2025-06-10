@@ -18,9 +18,9 @@ public class Greeter {
     public String greet(Context ctx, String name) {
         // Durably execute a set of steps; resilient against failures
         String greetingId = ctx.random().nextUUID().toString();
-        ctx.run(() -> sendNotification(greetingId, name));
+        ctx.run("Notification", () -> sendNotification(greetingId, name));
         ctx.sleep(Duration.ofSeconds(1));
-        ctx.run(() -> sendReminder(greetingId));
+        ctx.run("Reminder", () -> sendReminder(greetingId, name));
 
         // Respond to caller
         return "You said hi to " + name + "!";

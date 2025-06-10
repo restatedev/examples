@@ -5,17 +5,17 @@ package org.acme;
 
 class Utils {
     public static void sendNotification(String greetingId, String name){
-        if (Math.random() < 0.5) { // 50% chance of failure
-            System.out.println("👻 Failed to send notification: " + greetingId + " - " + name);
-            throw new RuntimeException("Failed to send notification: " + greetingId + " - " + name);
+        if (Math.random() < 0.7 && name.equals("Alice")) { // 70% chance of failure
+            System.out.println("[👻 SIMULATED] Failed to send notification: " + greetingId + " - " + name);
+            throw new RuntimeException("[👻 SIMULATED] Failed to send notification: " + greetingId + " - " + name);
         }
         System.out.println("Notification sent: " + greetingId + " - " + name);
     }
 
-    public static void sendReminder(String greetingId){
-        if (Math.random() < 0.5) { // 50% chance of failure
-            System.out.println("👻 Failed to send reminder: " + greetingId);
-            throw new RuntimeException("Failed to send reminder: " + greetingId);
+    public static void sendReminder(String greetingId, String name){
+        if (Math.random() < 0.7 && name.equals("Alice")) { // 70% chance of failure
+            System.out.println("[👻 SIMULATED] Failed to send reminder: " + greetingId);
+            throw new RuntimeException("[👻 SIMULATED] Failed to send reminder: " + greetingId);
         }
         System.out.println("Reminder sent: " + greetingId);
     }
