@@ -12,9 +12,12 @@ func (Greeter) Greet(ctx restate.Context, name string) (string, error) {
 	//  Durably execute a set of steps; resilient against failures
 	greetingId := restate.Rand(ctx).UUID().String()
 
-	if _, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return restate.Void{}, SendNotification(greetingId, name)
-	}); err != nil {
+	if _, err := restate.Run(ctx,
+		func(ctx restate.RunContext) (restate.Void, error) {
+			return SendNotification(greetingId, name)
+		},
+		restate.WithName("Notification"),
+	); err != nil {
 		return "", err
 	}
 
@@ -22,9 +25,12 @@ func (Greeter) Greet(ctx restate.Context, name string) (string, error) {
 		return "", err
 	}
 
-	if _, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return restate.Void{}, SendReminder(greetingId)
-	}); err != nil {
+	if _, err := restate.Run(ctx,
+		func(ctx restate.RunContext) (restate.Void, error) {
+			return SendReminder(greetingId, name)
+		},
+		restate.WithName("Reminder"),
+	); err != nil {
 		return "", err
 	}
 
