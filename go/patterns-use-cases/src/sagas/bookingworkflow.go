@@ -60,35 +60,53 @@ func (BookingWorkflow) Run(ctx restate.Context, req BookingRequest) (err error) 
 	}()
 
 	compensations = append(compensations, func() (restate.Void, error) {
-		return restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-			return CancelFlight(req.CustomerId)
-		})
+		return restate.Run(ctx,
+			func(ctx restate.RunContext) (restate.Void, error) {
+				return CancelFlight(req.CustomerId)
+			},
+			restate.WithName("Cancel flight"),
+		)
 	})
-	if _, err = restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return BookFlight(req.CustomerId, req.Flight)
-	}); err != nil {
+	if _, err = restate.Run(ctx,
+		func(ctx restate.RunContext) (restate.Void, error) {
+			return BookFlight(req.CustomerId, req.Flight)
+		},
+		restate.WithName("Book flight"),
+	); err != nil {
 		return err
 	}
 
 	compensations = append(compensations, func() (restate.Void, error) {
-		return restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-			return CancelCar(req.CustomerId)
-		})
+		return restate.Run(ctx,
+			func(ctx restate.RunContext) (restate.Void, error) {
+				return CancelCar(req.CustomerId)
+			},
+			restate.WithName("Cancel car"),
+		)
 	})
-	if _, err = restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return BookCar(req.CustomerId, req.Car)
-	}); err != nil {
+	if _, err = restate.Run(ctx,
+		func(ctx restate.RunContext) (restate.Void, error) {
+			return BookCar(req.CustomerId, req.Car)
+		},
+		restate.WithName("Book car"),
+	); err != nil {
 		return err
 	}
 
 	compensations = append(compensations, func() (restate.Void, error) {
-		return restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-			return CancelHotel(req.CustomerId)
-		})
+		return restate.Run(ctx,
+			func(ctx restate.RunContext) (restate.Void, error) {
+				return CancelHotel(req.CustomerId)
+			},
+			restate.WithName("Cancel hotel"),
+		)
 	})
-	if _, err = restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return BookHotel(req.CustomerId, req.Hotel)
-	}); err != nil {
+	if _, err = restate.Run(ctx,
+		func(ctx restate.RunContext) (restate.Void, error) {
+			return BookHotel(req.CustomerId, req.Hotel)
+		},
+		restate.WithName("Book hotel"),
+	); err != nil {
 		return err
 	}
 
