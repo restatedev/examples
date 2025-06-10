@@ -13,8 +13,7 @@ import * as dp from "./dp/clients";
 //
 
 const promiseId = process.argv.length > 2 ? process.argv[2] : "my-example-2-id";
-const restateUri =
-  process.argv.length > 3 ? process.argv[3] : "http://localhost:8080";
+const restateUri = process.argv.length > 3 ? process.argv[3] : "http://localhost:8080";
 const pid = process.pid;
 
 async function run() {

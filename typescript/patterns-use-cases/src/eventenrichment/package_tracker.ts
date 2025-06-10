@@ -20,10 +20,7 @@ const packageTracker = restate.object({
     },
 
     // Connected to a Kafka topic for real-time location updates
-    updateLocation: async (
-      ctx: ObjectContext,
-      locationUpdate: LocationUpdate
-    ) => {
+    updateLocation: async (ctx: ObjectContext, locationUpdate: LocationUpdate) => {
       const packageInfo = await ctx.get<PackageInfo>("package-info");
       if (!packageInfo) {
         throw new TerminalError(`Package ${ctx.key} not found`);
@@ -35,9 +32,7 @@ const packageTracker = restate.object({
     },
 
     // Called by the delivery dashboard to get the package details
-    getPackageInfo: shared((ctx: ObjectSharedContext) =>
-      ctx.get<PackageInfo>("package-info")
-    ),
+    getPackageInfo: shared((ctx: ObjectSharedContext) => ctx.get<PackageInfo>("package-info")),
   },
 });
 

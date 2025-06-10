@@ -83,43 +83,40 @@ export async function runAs2pcTxn(
     }
 
     try {
-      const txnRan = await ctx.run(
-        "run txn attempt (or cleanup old txn)",
-        async () => {
-          // If we did not generate this transaction ID, a previous execution attempt did.
-          // We don't know whether that execution made it to the point that it already prepared
-          // the query (pre-committed) and crashed just before recording the completion of the
-          // `ctx.run` block in the Restate journal. As a result, we clean up that transaction ID
-          // to be on the safe side and not leave lingering database locks.
-          if (!executedThisTime) {
-            cleanup();
-            return false; // try again with a different txnId
-          }
-
-          // run:
-          //   (1) the query transaction
-          //   (2) pre-commit step (prepare transaction)
-          //   (3) record this in the Restate journal
-
-          const txn = await dbConnection.transaction();
-          try {
-            // (1) run the main app-defined database query (or queries)
-            await action(dbConnection, txn);
-
-            // (2) pre-commit - after this step, the txn is immutable and not rolled back
-            // any more after closing/disposing/loss-of-connection
-            await dbConnection.query(`PREPARE TRANSACTION '${txnId}'`, {
-              transaction: txn,
-            });
-            // (3) if this durable block returns ('true' recoded in journal) step (3) will
-            // be completed
-            return true;
-          } catch (e) {
-            await txn.rollback();
-            throw e;
-          }
+      const txnRan = await ctx.run("run txn attempt (or cleanup old txn)", async () => {
+        // If we did not generate this transaction ID, a previous execution attempt did.
+        // We don't know whether that execution made it to the point that it already prepared
+        // the query (pre-committed) and crashed just before recording the completion of the
+        // `ctx.run` block in the Restate journal. As a result, we clean up that transaction ID
+        // to be on the safe side and not leave lingering database locks.
+        if (!executedThisTime) {
+          cleanup();
+          return false; // try again with a different txnId
         }
-      );
+
+        // run:
+        //   (1) the query transaction
+        //   (2) pre-commit step (prepare transaction)
+        //   (3) record this in the Restate journal
+
+        const txn = await dbConnection.transaction();
+        try {
+          // (1) run the main app-defined database query (or queries)
+          await action(dbConnection, txn);
+
+          // (2) pre-commit - after this step, the txn is immutable and not rolled back
+          // any more after closing/disposing/loss-of-connection
+          await dbConnection.query(`PREPARE TRANSACTION '${txnId}'`, {
+            transaction: txn,
+          });
+          // (3) if this durable block returns ('true' recoded in journal) step (3) will
+          // be completed
+          return true;
+        } catch (e) {
+          await txn.rollback();
+          throw e;
+        }
+      });
 
       if (txnRan) {
         txnIdToCommit = txnId;

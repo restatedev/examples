@@ -5,18 +5,12 @@ const paymentTracker = restate.object({
   // one instance per invoice id
   name: "PaymentTracker",
   handlers: {
-    onPaymentSuccess: async (
-      ctx: restate.ObjectContext,
-      event: StripeEvent
-    ) => {
+    onPaymentSuccess: async (ctx: restate.ObjectContext, event: StripeEvent) => {
       // Mark the invoice as paid
       ctx.set("paid", true);
     },
 
-    onPaymentFailure: async (
-      ctx: restate.ObjectContext,
-      event: StripeEvent
-    ) => {
+    onPaymentFailure: async (ctx: restate.ObjectContext, event: StripeEvent) => {
       if (await ctx.get<boolean>("paid")) {
         return;
       }

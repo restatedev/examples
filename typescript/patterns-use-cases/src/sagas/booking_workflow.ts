@@ -40,31 +40,20 @@ const bookingWorkflow = restate.service({
   name: "BookingWorkflow",
   handlers: {
     run: async (ctx: restate.Context, req: BookingRequest) => {
+      const { customerId, flight, car, hotel } = req;
       // create a list of undo actions
       const compensations = [];
 
       try {
         // For each action, we register a compensation that will be executed on failures
-        compensations.push(() =>
-          ctx.run("Cancel flight", () => flightClient.cancel(req.customerId))
-        );
-        await ctx.run("Book flight", () =>
-          flightClient.book(req.customerId, req.flight)
-        );
+        compensations.push(() => ctx.run("Cancel flight", () => flightClient.cancel(customerId)));
+        await ctx.run("Book flight", () => flightClient.book(customerId, flight));
 
-        compensations.push(() =>
-          ctx.run("Cancel car", () => carRentalClient.cancel(req.customerId))
-        );
-        await ctx.run("Book car", () =>
-          carRentalClient.book(req.customerId, req.car)
-        );
+        compensations.push(() => ctx.run("Cancel car", () => carRentalClient.cancel(customerId)));
+        await ctx.run("Book car", () => carRentalClient.book(customerId, car));
 
-        compensations.push(() =>
-          ctx.run("Cancel hotel", () => hotelClient.cancel(req.customerId))
-        );
-        await ctx.run("Book hotel", () =>
-          hotelClient.book(req.customerId, req.hotel)
-        );
+        compensations.push(() => ctx.run("Cancel hotel", () => hotelClient.cancel(customerId)));
+        await ctx.run("Book hotel", () => hotelClient.book(customerId, hotel));
       } catch (e) {
         // Terminal errors are not retried by Restate, so undo previous actions and fail the workflow
         if (e instanceof restate.TerminalError) {

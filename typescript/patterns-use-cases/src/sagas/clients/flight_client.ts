@@ -1,8 +1,5 @@
 export const flightClient = {
-  book: async (
-    customerId: string,
-    _req: { flightId: string; passengerName: string }
-  ) => {
+  book: async (customerId: string, _req: { flightId: string; passengerName: string }) => {
     console.info(`Flight booked for customer ${customerId}`);
   },
   cancel: async (customerId: string) => {

@@ -28,9 +28,7 @@ export interface Reservation {
 export const limiter = object({
   name: "limiter",
   handlers: {
-    state: async (
-      ctx: ObjectContext<LimiterState>
-    ): Promise<LimiterStateInner> => {
+    state: async (ctx: ObjectContext<LimiterState>): Promise<LimiterStateInner> => {
       return getState(ctx);
     },
     tokens: async (ctx: ObjectContext<LimiterState>): Promise<number> => {
@@ -40,10 +38,7 @@ export const limiter = object({
     },
     reserve: async (
       ctx: ObjectContext<LimiterState>,
-      {
-        n = 1,
-        waitLimitMillis = Infinity,
-      }: { n?: number; waitLimitMillis?: number }
+      { n = 1, waitLimitMillis = Infinity }: { n?: number; waitLimitMillis?: number }
     ): Promise<Reservation> => {
       let lim = await getState(ctx);
 
@@ -126,10 +121,7 @@ export const limiter = object({
 
       setState(ctx, lim);
     },
-    cancelReservation: async (
-      ctx: ObjectContext<LimiterState>,
-      r: Reservation
-    ) => {
+    cancelReservation: async (ctx: ObjectContext<LimiterState>, r: Reservation) => {
       let lim = await getState(ctx);
 
       lim = await ctx.run(() => {
@@ -142,8 +134,7 @@ export const limiter = object({
         // calculate tokens to restore
         // The duration between lim.lastEvent and r.timeToAct tells us how many tokens were reserved
         // after r was obtained. These tokens should not be restored.
-        const restoreTokens =
-          r.tokens - tokensFromDuration(r.limit, lim.lastEvent - r.dateToAct);
+        const restoreTokens = r.tokens - tokensFromDuration(r.limit, lim.lastEvent - r.dateToAct);
         if (restoreTokens <= 0) {
           return lim;
         }
@@ -158,8 +149,7 @@ export const limiter = object({
         lim.last = now;
         lim.tokens = tokens;
         if (r.dateToAct == lim.lastEvent) {
-          const prevEvent =
-            r.dateToAct + durationFromTokens(r.limit, -r.tokens);
+          const prevEvent = r.dateToAct + durationFromTokens(r.limit, -r.tokens);
           if (prevEvent >= now) {
             lim.lastEvent = prevEvent;
           }
@@ -190,9 +180,7 @@ function advance(lim: LimiterStateInner, date: number): number {
   return tokens;
 }
 
-async function getState(
-  ctx: ObjectContext<LimiterState>
-): Promise<LimiterStateInner> {
+async function getState(ctx: ObjectContext<LimiterState>): Promise<LimiterStateInner> {
   return (
     (await ctx.get("state")) ?? {
       limit: 0,
@@ -204,10 +192,7 @@ async function getState(
   );
 }
 
-async function setState(
-  ctx: ObjectContext<LimiterState>,
-  lim: LimiterStateInner
-) {
+async function setState(ctx: ObjectContext<LimiterState>, lim: LimiterStateInner) {
   ctx.set("state", lim);
 }
 

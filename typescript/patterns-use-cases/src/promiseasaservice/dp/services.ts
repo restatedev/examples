@@ -38,25 +38,17 @@ export type ValueOrError<T> = {
 export const durablePromiseObject = restate.object({
   name: "promises",
   handlers: {
-    resolve: <T>(
-      ctx: restate.ObjectContext,
-      result: T
-    ): Promise<ValueOrError<T>> => {
+    resolve: <T>(ctx: restate.ObjectContext, result: T): Promise<ValueOrError<T>> => {
       const completion = { value: result };
       return completePromise(ctx, completion);
     },
 
-    reject: <T>(
-      ctx: restate.ObjectContext,
-      errorMessage: string
-    ): Promise<ValueOrError<T>> => {
+    reject: <T>(ctx: restate.ObjectContext, errorMessage: string): Promise<ValueOrError<T>> => {
       const completion = { error: ensureErrorMessage(errorMessage) };
       return completePromise<T>(ctx, completion);
     },
 
-    peek: async <T>(
-      ctx: restate.ObjectContext
-    ): Promise<ValueOrError<T> | null> => {
+    peek: async <T>(ctx: restate.ObjectContext): Promise<ValueOrError<T> | null> => {
       return ctx.get<ValueOrError<T>>(PROMISE_RESULT_STATE);
     },
 
@@ -150,10 +142,7 @@ export const durablePromiseServer = restate.service({
       return awakeable.promise;
     },
 
-    dispose: (
-      ctx: restate.Context,
-      request: { promiseId: string }
-    ): Promise<any> => {
+    dispose: (ctx: restate.Context, request: { promiseId: string }): Promise<any> => {
       const name = ensureName(request.promiseId);
       const obj = ctx.objectClient(DurablePromiseObject, name);
       return obj.dispose();

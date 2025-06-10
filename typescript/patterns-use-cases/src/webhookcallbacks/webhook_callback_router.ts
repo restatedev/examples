@@ -9,13 +9,9 @@ const webhookCallbackRouter = restate.service({
     // Just point your webhook to the handler endpoint: restate:8080/WebhookCallbackRouter/onStripeEvent
     onStripeEvent: async (ctx: restate.Context, event: StripeEvent) => {
       if (event.type === "invoice.payment_failed") {
-        ctx
-          .objectSendClient(PaymentTracker, event.data.object.id)
-          .onPaymentFailed(event);
+        ctx.objectSendClient(PaymentTracker, event.data.object.id).onPaymentFailed(event);
       } else if (event.type === "invoice.payment_succeeded") {
-        ctx
-          .objectSendClient(PaymentTracker, event.data.object.id)
-          .onPaymentSuccess(event);
+        ctx.objectSendClient(PaymentTracker, event.data.object.id).onPaymentSuccess(event);
       }
     },
   },

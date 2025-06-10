@@ -28,10 +28,7 @@ export function split(task: Task): SubTask[] {
   return subTasks;
 }
 
-export async function executeSubtask(
-  ctx: Context,
-  subtask: SubTask
-): Promise<SubTaskResult> {
+export async function executeSubtask(ctx: Context, subtask: SubTask): Promise<SubTaskResult> {
   // Execute subtask
   ctx.console.info(`Started executing subtask: ${subtask.description}`);
   // Sleep for a random amount between 0 and 10 seconds
