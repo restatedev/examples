@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	restate "github.com/restatedev/sdk-go"
 	"github.com/restatedev/sdk-go/server"
 	"log"
@@ -37,7 +36,7 @@ func (PackageTracker) UpdateLocation(ctx restate.ObjectContext, locationUpdate L
 		return err
 	}
 	if packageInfo == nil {
-		return restate.TerminalError(errors.New("package not found"))
+		return restate.TerminalErrorf("package not found")
 	}
 
 	// Update the package details in the state

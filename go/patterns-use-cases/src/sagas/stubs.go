@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	restate "github.com/restatedev/sdk-go"
 	"log/slog"
 )
@@ -43,7 +42,7 @@ func CancelFlight(customerId string) (restate.Void, error) {
 
 func BookHotel(customerId string, _req HotelRequest) (restate.Void, error) {
 	slog.Error("[👻 SIMULATED] This hotel is fully booked!")
-	return restate.Void{}, restate.TerminalError(errors.New("[👻 SIMULATED] This hotel is fully booked!"))
+	return restate.Void{}, restate.TerminalErrorf("[👻 SIMULATED] This hotel is fully booked!")
 }
 
 func CancelHotel(customerId string) (restate.Void, error) {
