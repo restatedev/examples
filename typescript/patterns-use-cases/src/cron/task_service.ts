@@ -5,8 +5,8 @@ export const taskService = restate.service({
   name: "TaskService",
   handlers: {
     // This is a task stub to be able to demo the cron service.
-    executeTask: async (ctx: restate.Context) => {
-      console.log(`Executing task`);
+    executeTask: async (ctx: restate.Context, payload: string) => {
+      console.log(`Executing task ${payload}`);
       // Here you would implement the logic to execute the task
       // For example, you could call another service or perform some computation
     },
