@@ -8,6 +8,7 @@
 // https://github.com/restatedev/sdk-java/blob/main/LICENSE
 package com.example.restatestarter
 
+import com.example.restatestarter.Greeter.Greeting
 import dev.restate.client.Client
 import dev.restate.sdk.testing.BindService
 import dev.restate.sdk.testing.RestateClient
@@ -31,6 +32,6 @@ class GreeterTest {
   fun greet(@RestateClient ingressClient: Client) = runTest {
     val client = GreeterClient.fromClient(ingressClient)
 
-    assertThat(client.greet("Francesco")).isEqualTo("You said ciao to Francesco!")
+    assertThat(client.greet(Greeting("Francesco")).message).isEqualTo("You said ciao to Francesco!")
   }
 }

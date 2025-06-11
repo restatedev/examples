@@ -28,7 +28,7 @@ public class Greeter {
     ctx.run("Reminder", () -> sendReminder(greetingId, req.name));
 
     // Respond to caller
-    return new GreetingResponse("You said hi to " + req.name + "!");
+    return new GreetingResponse("You said " + greetingPrefix + " to " + req.name + "!");
   }
 }
 

@@ -31,6 +31,6 @@ public class GreeterTest {
   void greet(@RestateClient Client ingressClient) {
     var client = GreeterClient.fromClient(ingressClient);
 
-    assertThat(client.greet(new Greeting("Alice"))).isEqualTo("You said ciao to Francesco!");
+    assertThat(client.greet(new Greeting("Francesco")).message()).isEqualTo("You said ciao to Francesco!");
   }
 }

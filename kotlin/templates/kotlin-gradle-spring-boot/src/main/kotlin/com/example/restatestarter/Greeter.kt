@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value
 import sendNotification
 import sendReminder
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.serialization.Serializable
 
 @RestateService
 class Greeter {
@@ -14,15 +15,20 @@ class Greeter {
   @Value("\${greetingPrefix}")
   lateinit var greetingPrefix: String
 
+  @Serializable
+  data class Greeting(val name: String)
+  @Serializable
+  data class GreetingResponse(val message: String)
+
   @Handler
-  suspend fun greet(ctx: Context, name: String): String {
+  suspend fun greet(ctx: Context, req: Greeting): GreetingResponse {
     // Durably execute a set of steps; resilient against failures
     val greetingId = ctx.random().nextUUID().toString()
-    ctx.runBlock("Notification") { sendNotification(greetingId, name) }
+    ctx.runBlock("Notification") { sendNotification(greetingId, req.name) }
     ctx.sleep(1.seconds)
-    ctx.runBlock("Reminder") { sendReminder(greetingId, name) }
+    ctx.runBlock("Reminder") { sendReminder(greetingId, req.name) }
 
     // Respond to caller
-    return "You said $greetingPrefix to $name!"
+    return GreetingResponse("You said $greetingPrefix to ${req.name}!")
   }
 }

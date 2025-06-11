@@ -12,6 +12,8 @@ import dev.restate.client.Client;
 import dev.restate.sdk.testing.BindService;
 import dev.restate.sdk.testing.RestateClient;
 import dev.restate.sdk.testing.RestateTest;
+import my.example.Greeter.Greeting;
+import my.example.Greeter.GreetingResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -28,7 +30,7 @@ class GreeterTest {
   void testGreet(@RestateClient Client ingressClient) {
     var client = GreeterClient.fromClient(ingressClient);
 
-    String response = client.greet("Francesco");
-    assertEquals(response, "You said hi to Francesco!");
+    GreetingResponse response = client.greet(new Greeting("Francesco"));
+    assertEquals(response.message(), "You said hi to Francesco!");
   }
 }
