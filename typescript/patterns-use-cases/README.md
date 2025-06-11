@@ -30,6 +30,7 @@ Use Restate to build distributed coordination and synchronization constructs:
 - **[Durable Promises as a Service](README.md#durable-promises-as-a-service)**: Building Promises/Futures as a service, that can be exposed to external clients and are durable across processes and failures. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/promiseasaservice)
 - **[Priority Queue](README.md#priority-queue)**: Example of implementing a priority queue to manage task execution order. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/priorityqueue)
 - **[Rate Limiting](README.md#rate-limiting)**: Example of implementing a token bucket rate limiter. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/ratelimit)
+- **[Fixed Window Counter](README.md#fixed-window-counter)**: Example of implementing a fixed window counter for tracking events over time periods. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/fixedwindowcounter)
 
 First, install the dependencies:
 
@@ -992,5 +993,30 @@ for i in $(seq 1 30); do curl localhost:8080/myService/expensiveMethod && echo "
 
 You should observe that only one request is processed per second. You can then try changing the limit or the burst
 and sending more requests.
+
+</details>
+
+## Fixed Window Counter
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/fixedwindowcounter)
+
+An example of implementing a fixed window counter for tracking events over time periods using Restate state.
+
+<details>
+<summary><strong>Running the example</strong></summary>
+
+Run the example with `npx tsx watch ./src/fixedwindowcounter/app.ts`.
+
+You can track events like this:
+```shell
+# add a single event
+curl localhost:8080/counter/myKey/add
+# add lots
+for i in $(seq 1 30); do curl localhost:8080/counter/myKey/add; done
+```
+
+You can then see the count over a particular period, eg 25 seconds:
+```shell
+curl http://localhost:8080/counter/myKey/count -H 'content-type:application/json' -d '{"periodMillis": 25000}'
+```
 
 </details>
