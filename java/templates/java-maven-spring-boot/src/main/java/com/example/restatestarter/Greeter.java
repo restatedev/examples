@@ -16,16 +16,19 @@ public class Greeter {
   @Value("${greetingPrefix}")
   private String greetingPrefix;
 
+  record Greeting(String name) {}
+  record GreetingResponse(String message) {}
+
   @Handler
-  public String greet(Context ctx, String name) {
+  public GreetingResponse greet(Context ctx, Greeting req) {
     // Durably execute a set of steps; resilient against failures
     String greetingId = ctx.random().nextUUID().toString();
-    ctx.run("Notification", () -> sendNotification(greetingId, name));
+    ctx.run("Notification", () -> sendNotification(greetingId, req.name));
     ctx.sleep(Duration.ofSeconds(1));
-    ctx.run("Reminder", () -> sendReminder(greetingId, name));
+    ctx.run("Reminder", () -> sendReminder(greetingId, req.name));
 
     // Respond to caller
-    return "You said " + greetingPrefix + " to " + name + "!";
+    return new GreetingResponse("You said hi to " + req.name + "!");
   }
 }
 

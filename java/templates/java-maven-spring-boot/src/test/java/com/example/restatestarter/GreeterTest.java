@@ -8,6 +8,7 @@
 // https://github.com/restatedev/sdk-java/blob/main/LICENSE
 package com.example.restatestarter;
 
+import com.example.restatestarter.Greeter.Greeting;
 import dev.restate.client.Client;
 import dev.restate.sdk.testing.*;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,6 @@ public class GreeterTest {
   void greet(@RestateClient Client ingressClient) {
     var client = GreeterClient.fromClient(ingressClient);
 
-    assertThat(client.greet("Francesco")).isEqualTo("You said ciao to Francesco!");
+    assertThat(client.greet(new Greeting("Alice"))).isEqualTo("You said ciao to Francesco!");
   }
 }
