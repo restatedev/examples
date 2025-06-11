@@ -10,7 +10,7 @@ import (
 type TaskService struct{}
 
 func (TaskService) ExecuteTask(ctx restate.Context, payload string) error {
-	fmt.Printf("Executing task: ", payload)
+	fmt.Printf("Executing task: %s", payload)
 	return nil
 }
 
