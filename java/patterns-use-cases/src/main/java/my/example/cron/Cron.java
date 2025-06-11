@@ -74,7 +74,8 @@ public class Cron {
 
     @Handler
     public void execute(ObjectContext ctx) {
-      JobRequest request = ctx.get(JOB_STATE).orElseThrow(() -> new TerminalException("Job not found")).request;
+      JobRequest request =
+          ctx.get(JOB_STATE).orElseThrow(() -> new TerminalException("Job not found")).request;
 
       executeTask(ctx, request);
       scheduleNextExecution(ctx, request);
@@ -82,7 +83,8 @@ public class Cron {
 
     @Handler
     public void cancel(ObjectContext ctx) {
-      ctx.get(JOB_STATE).ifPresent(jobState -> ctx.invocationHandle(jobState.nextExecutionId).cancel());
+      ctx.get(JOB_STATE)
+          .ifPresent(jobState -> ctx.invocationHandle(jobState.nextExecutionId).cancel());
 
       // Clear the job state
       ctx.clearAll();
