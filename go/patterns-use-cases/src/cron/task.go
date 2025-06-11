@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	restate "github.com/restatedev/sdk-go"
 	"github.com/restatedev/sdk-go/server"
 )
@@ -9,7 +10,7 @@ import (
 type TaskService struct{}
 
 func (TaskService) ExecuteTask(ctx restate.Context, payload string) error {
-	println("Executing task: ", payload)
+	fmt.Printf("Executing task: ", payload)
 	return nil
 }
 

@@ -84,16 +84,14 @@ export const cronJob = restate.object({
 
       await scheduleNextExecution(ctx, job.req);
     },
-    cancel: async (ctx: restate.ObjectSharedContext) => {
+    cancel: async (ctx: restate.ObjectContext) => {
       // Cancel the next execution
       const job = await ctx.get<JobInfo>(JOB);
-      if (!job) {
-        throw new TerminalError("Job not found.");
+      if (job) {
+        ctx.cancel(job.next_execution_id);
       }
-      ctx.cancel(job.next_execution_id);
-      ctx.objectSendClient(cronJob, ctx.key).cleanup()
-    },
-    cleanup: async (ctx: restate.ObjectContext) => {
+
+      // Clear the job state
       ctx.clearAll();
     },
     getInfo: async (ctx: restate.ObjectSharedContext) => ctx.get<JobInfo>(JOB),

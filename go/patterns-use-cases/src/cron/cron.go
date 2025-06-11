@@ -46,7 +46,7 @@ type CronJobInitiator struct{}
 func (CronJobInitiator) Create(ctx restate.Context, req JobRequest) (string, error) {
 	jobID := restate.Rand(ctx).UUID().String()
 
-	println("Creating new cron job with ID:", jobID, "for service:", req.Service, "method:", req.Method)
+	fmt.Printf("Creating new cron job with ID:", jobID, "for service:", req.Service, "method:", req.Method)
 	job, err := restate.Object[*JobInfo](ctx, "CronJob", jobID, "Initiate").Request(req)
 	if err != nil {
 		return "", err
@@ -65,7 +65,7 @@ func (CronJob) Initiate(ctx restate.ObjectContext, req JobRequest) (*JobInfo, er
 		return nil, err
 	}
 	if job != nil {
-		return nil, restate.TerminalError(fmt.Errorf("job already exists for this ID"), 500)
+		return nil, restate.TerminalErrorf("job already exists for this ID", 500)
 	}
 
 	return scheduleNextExecution(ctx, req)
@@ -78,11 +78,11 @@ func (CronJob) Execute(ctx restate.ObjectContext, req JobRequest) error {
 		return err
 	}
 	if job == nil {
-		return restate.TerminalError(fmt.Errorf("job not found"), 500)
+		return restate.TerminalErrorf("job not found", 500)
 	}
 
 	// Add key if it's a virtual object call
-	println("Executing job with ID:", restate.Key(ctx), "for service:", req.Service, "method:", req.Method)
+	fmt.Printf("Executing job with ID:", restate.Key(ctx), "for service:", req.Service, "method:", req.Method)
 	if req.Key != "" {
 		restate.ObjectSend(ctx, req.Service, req.Key, req.Method).Send(req.Payload)
 	} else {
@@ -94,21 +94,18 @@ func (CronJob) Execute(ctx restate.ObjectContext, req JobRequest) error {
 	return err
 }
 
-func (CronJob) Cancel(ctx restate.ObjectSharedContext) error {
+func (CronJob) Cancel(ctx restate.ObjectContext) error {
 	// Get the job to cancel the next execution
 	job, err := restate.Get[*JobInfo](ctx, JOB_KEY)
 	if err != nil {
 		return err
 	}
 	if job == nil {
-		return restate.TerminalError(fmt.Errorf("job not found for cancellation"), 404)
+		return restate.TerminalErrorf("job not found for cancellation", 404)
 	}
 	restate.CancelInvocation(ctx, job.NextExecutionID)
 	restate.ObjectSend(ctx, "CronJob", restate.Key(ctx), "Cleanup").Send(nil)
-	return nil
-}
 
-func (CronJob) Cleanup(ctx restate.ObjectContext) error {
 	restate.ClearAll(ctx)
 	return nil
 }
@@ -123,7 +120,7 @@ func scheduleNextExecution(ctx restate.ObjectContext, req JobRequest) (*JobInfo,
 	parser := cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow)
 	schedule, err := parser.Parse(req.CronExpression)
 	if err != nil {
-		return nil, restate.TerminalError(fmt.Errorf("invalid cron expression: %v", err), 500)
+		return nil, restate.TerminalErrorf("invalid cron expression: %v", err, 500)
 	}
 
 	// Get current time deterministically from Restate
