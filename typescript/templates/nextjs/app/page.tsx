@@ -21,8 +21,8 @@ export default function Home() {
   const formAction = async (formData: FormData) => {
     const name = String(formData.get("name"));
     if (name) {
-      const response = await greeterClient.greet(name);
-      setGreetAnswer(response);
+      const response = await greeterClient.greet({ name });
+      setGreetAnswer(response.result);
     }
   };
 
