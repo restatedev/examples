@@ -6,12 +6,12 @@ import * as restate from "@restatedev/restate-sdk";
 //
 
 export const exampleObject = restate.object({
-    name: "ExampleObject",
-    handlers: {
-        greet: async (ctx: restate.ObjectContext) => {
-          const count = (await ctx.get<number>("count")) ?? 0;
-          ctx.set("count", count + 1);
-          return `Hello ${ctx.key}! Counter: ${count}`;
-        }
+  name: "ExampleObject",
+  handlers: {
+    greet: async (ctx: restate.ObjectContext) => {
+      const count = (await ctx.get<number>("count")) ?? 0;
+      ctx.set("count", count + 1);
+      return `Hello ${ctx.key}! Counter: ${count}`;
     },
-})
+  },
+});

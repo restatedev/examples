@@ -14,16 +14,19 @@ import static my.example.Utils.sendReminder;
 @Service
 public class Greeter {
 
+    record Greeting(String name) {}
+    record GreetingResponse(String message) {}
+
     @Handler
-    public String greet(Context ctx, String name) {
+    public GreetingResponse greet(Context ctx, Greeting req) {
         // Durably execute a set of steps; resilient against failures
         String greetingId = ctx.random().nextUUID().toString();
-        ctx.run(() -> sendNotification(greetingId, name));
+        ctx.run("Notification", () -> sendNotification(greetingId, req.name));
         ctx.sleep(Duration.ofSeconds(1));
-        ctx.run(() -> sendReminder(greetingId));
+        ctx.run("Reminder", () -> sendReminder(greetingId, req.name));
 
         // Respond to caller
-        return "You said hi to " + name + "!";
+        return new GreetingResponse("You said hi to " + req.name + "!");
     }
 
     public static void main(String[] args) {

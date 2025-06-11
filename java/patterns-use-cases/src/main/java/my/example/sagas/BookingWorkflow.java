@@ -45,7 +45,7 @@ Note: that the compensation logic is purely implemented in user code (no special
 public class BookingWorkflow {
 
   public record BookingRequest(
-          String customerId, FlightRequest flight, CarRequest car, HotelRequest hotel) {}
+      String customerId, FlightRequest flight, CarRequest car, HotelRequest hotel) {}
 
   @Handler
   public void run(Context ctx, BookingRequest req) throws TerminalException {
@@ -63,7 +63,8 @@ public class BookingWorkflow {
       compensations.add(() -> ctx.run("Cancel hotel", () -> HotelClient.cancel(req.customerId)));
       ctx.run("Book hotel", () -> HotelClient.book(req.customerId, req.hotel()));
     }
-    // Terminal exceptions are not retried by Restate. We undo previous actions and fail the workflow.
+    // Terminal exceptions are not retried by Restate. We undo previous actions and fail the
+    // workflow.
     catch (TerminalException e) {
       // Restate guarantees that all compensations are executed
       for (Runnable compensation : compensations) {

@@ -7,7 +7,12 @@ requires-python = ">=3.11"
 dependencies = [
     "hypercorn>=0.17.3",
     "pydantic>=2.10.6",
-    "restate-sdk==0.7.0",
+    "restate_sdk[serde]>=0.7.3",
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
