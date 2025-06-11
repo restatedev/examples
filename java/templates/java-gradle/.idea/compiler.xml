@@ -1,34 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="CompilerConfiguration">
-    <annotationProcessing>
-      <profile default="true" name="Default" enabled="true" />
-      <profile name="Gradle Imported" enabled="true">
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.restate/sdk-api-gen/2.1.0/1ae92e018eee6922dbd76bee3e6e4acce3fe5d45/sdk-api-gen-2.1.0.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.restate/sdk-api-gen-common/2.1.0/bdb53003464b3f5123860a3c7732f9cace2bfc2f/sdk-api-gen-common-2.1.0.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.restate/sdk-api/2.1.0/c42b9253e0fdac3c037c40796f03b3c427ad8234/sdk-api-2.1.0.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.jknack/handlebars/4.3.1/95d9902e78faa2be20a40a75f33b6602b99ee246/handlebars-4.3.1.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.restate/sdk-common/2.1.0/8db162e593cd4e11dfc2386512daebc8b1ba2b62/sdk-common-2.1.0.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-nop/2.0.16/d8d657e5b08dfbad70758fc8c47c58372272e08c/slf4j-nop-2.0.16.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.logging.log4j/log4j-api/2.24.2/daf49ee71f2664c3ff57412e4b43061e61a28596/log4j-api-2.24.2.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.restate/sdk-serde-jackson/2.1.0/15258f62a3d1219a41fbe81a489542ef04e69fb7/sdk-serde-jackson-2.1.0.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.victools/jsonschema-generator/4.37.0/ec28160ed810268595d124fdb990a66123259d89/jsonschema-generator-4.37.0.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.victools/jsonschema-module-jackson/4.37.0/51afaeb328e164b8ea7460127a9853fb5fbd9e95/jsonschema-module-jackson-4.37.0.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.slf4j/slf4j-api/2.0.16/172931663a09a1fa515567af5fbef00897d3c04/slf4j-api-2.0.16.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-annotations/2.18.1/8f9aa97e7fb44d4bea829061625472b0f6199923/jackson-annotations-2.18.1.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-databind/2.18.1/66547d0c6c2f9e022019499308f09bebbf30ab2e/jackson-databind-2.18.1.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml.jackson.core/jackson-core/2.18.1/9e2284c539e2dedd2aa1487c781e20a0f575d695/jackson-core-2.18.1.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.opentelemetry/opentelemetry-api/1.47.0/9de168f2c648c33b86136f51a4584bde9a705ff1/opentelemetry-api-1.47.0.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/dev.restate/common/2.1.0/2241466de38e92642a2db56fb8b91d1a737c090/common-2.1.0.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/2.0.21/618b539767b4899b4660a83006e052b63f1db551/kotlin-stdlib-2.0.21.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.opentelemetry/opentelemetry-context/1.47.0/86e49fe98ce06c279f7b9f028af8658cb7bc972a/opentelemetry-context-1.47.0.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/13.0/919f0dfe192fb4e063e7dacadee7f8bb9a2672a9/annotations-13.0.jar" />
-          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.fasterxml/classmate/1.7.0/e98374da1f2143ac8e6e0a95036994bb19137a3/classmate-1.7.0.jar" />
-        </processorPath>
-        <module name="java-gradle.main" />
-      </profile>
-    </annotationProcessing>
-  </component>
+    <component name="CompilerConfiguration">
+        <annotationProcessing>
+            <profile default="true" name="Default" enabled="true" />
+        </annotationProcessing>
+    </component>
 </project>
