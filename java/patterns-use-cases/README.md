@@ -7,6 +7,7 @@
 
 #### Orchestration patterns
 - **[Sagas](README.md#sagas)**: Preserve consistency by tracking undo actions and running them when code fails halfway through. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/sagas/BookingWorkflow.java)
+- **[Concurrent Async Tasks](README.md/concurrent-async-tasks)**: Run multiple resilient async tasks in parallel. For example, wait on a future and on two timers. And handle the outcome deterministically across crashes and restarts. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/concurrenttasks/EmailVerification.java)
 - **[Stateful Actors and State Machines](README.md#stateful-actors-and-state-machines)**: State machine with a set of transitions, built as a Restate Virtual Object for automatic state persistence. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/statefulactors/MachineOperator.java)
 - **[Payment State Machines (Advanced)](README.md#payment-state-machines)**: State machine example that tracks a payment process, ensuring consistent processing and cancellations. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/statemachinepayments/PaymentProcessor.java)
 
@@ -213,6 +214,78 @@ dev.restate.sdk.common.TerminalException: [👻 SIMULATED] This hotel is fully b
 ```
 
 </details>
+</details>
+
+## Concurrent Async Tasks
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/concurrenttasks/EmailVerification.java)
+
+This example demonstrates how to build **reliable workflows that combine multiple concurrent async operations**: timers, human-in-the-loop, RPC calls, etc.
+Restate takes care of automatic, deterministic failure recovery.
+
+The example implements email verification. 
+A user signs up for an online service and gets an email. 
+He then has 24 hours to confirm his email and gets periodic reminders. 
+
+Restate features:
+- **Durable timers**: Set reliable timeouts and periodic reminders that survive service restarts
+- **Resilient futures**: Create futures that external systems can resolve (e.g., webhook callbacks) and that can be recovered anywhere
+- **Select pattern**: Race-condition-free handling of multiple concurrent events with deterministic ordering
+- **Durable execution**: Entire workflow state persists through failures: no lost state or duplicate operations
+- **Automatic retries**: Transient failures are retried automatically without developer intervention
+- **Observability**: The UI shows the execution history of how the order in which the futures were resolved. 
+
+<img src="./img/concurrent_tasks_ui.png" width="1000px">
+
+**What it replaces**: Without Restate, this pattern typically requires complex orchestration with databases, job queues, external schedulers, and careful handling of partial failures across multiple systems.
+
+
+
+<details>
+<summary><strong>Running the example</strong></summary>
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell:
+   ```shell
+   restate-server
+   ```
+2. Start the email verification service:
+   ```shell
+   ./gradlew -PmainClass=my.example.concurrenttasks.EmailVerification run
+   ```
+3. Register the services (with `--force` to override the endpoint during **development**):
+   ```shell
+   restate -y deployments register --force localhost:9080
+   ```
+Send a request to start an email verification:
+
+```shell
+curl localhost:8080/EmailVerification/verifyEmail \
+   --json '{                                                                          
+      "email": "me@mail.com",
+      "userId": "luke"
+    }'
+```
+
+The service logs will print that the email got send and the curl request to mimic clicking the link.
+You will also see the periodic reminders being fired. 
+```shell
+2025-06-12 12:10:03 INFO  [EmailVerification/verifyEmail][inv_1bwBIwDnsKNn7Ba5hvqyOp1YNCMDAlqhwZ] my.example.concurrenttasks.utils.EmailClient - Sending email to me@mail.com
+2025-06-12 12:10:03 INFO  [EmailVerification/verifyEmail][inv_1bwBIwDnsKNn7Ba5hvqyOp1YNCMDAlqhwZ] my.example.concurrenttasks.utils.EmailClient - 
+ Verify by clicking: curl http://localhost:8080/restate/awakeables/sign_1XaULgbTwP4YBl2OeOiizwzgRDEewO7H5AAAAEQ==/resolve --json 'true'
+2025-06-12 12:10:13 INFO  [EmailVerification/verifyEmail][inv_1bwBIwDnsKNn7Ba5hvqyOp1YNCMDAlqhwZ] my.example.concurrenttasks.utils.EmailClient - Sending reminder to me@mail.com
+2025-06-12 12:10:13 INFO  [EmailVerification/verifyEmail][inv_1bwBIwDnsKNn7Ba5hvqyOp1YNCMDAlqhwZ] my.example.concurrenttasks.utils.EmailClient - 
+ Verify by clicking: curl http://localhost:8080/restate/awakeables/sign_1XaULgbTwP4YBl2OeOiizwzgRDEewO7H5AAAAEQ==/resolve --json 'true'
+2025-06-12 12:10:23 INFO  [EmailVerification/verifyEmail][inv_1bwBIwDnsKNn7Ba5hvqyOp1YNCMDAlqhwZ] my.example.concurrenttasks.utils.EmailClient - Sending reminder to me@mail.com
+2025-06-12 12:10:23 INFO  [EmailVerification/verifyEmail][inv_1bwBIwDnsKNn7Ba5hvqyOp1YNCMDAlqhwZ] my.example.concurrenttasks.utils.EmailClient - 
+ Verify by clicking: curl http://localhost:8080/restate/awakeables/sign_1XaULgbTwP4YBl2OeOiizwzgRDEewO7H5AAAAEQ==/resolve --json 'true'
+2025-06-12 12:10:33 INFO  [EmailVerification/verifyEmail][inv_1bwBIwDnsKNn7Ba5hvqyOp1YNCMDAlqhwZ] my.example.concurrenttasks.utils.EmailClient - Sending reminder to me@mail.com
+2025-06-12 12:10:33 INFO  [EmailVerification/verifyEmail][inv_1bwBIwDnsKNn7Ba5hvqyOp1YNCMDAlqhwZ] my.example.concurrenttasks.utils.EmailClient - 
+ Verify by clicking: curl http://localhost:8080/restate/awakeables/sign_1XaULgbTwP4YBl2OeOiizwzgRDEewO7H5AAAAEQ==/resolve --json 'true'
+```
+
+In the Restate UI, you can also see the execution history of the email verification, as shown in the screenshot above. 
+
+You can restart the service and Restate, and your workflow will continue progressing.
+
 </details>
 
 ## Cron Jobs
