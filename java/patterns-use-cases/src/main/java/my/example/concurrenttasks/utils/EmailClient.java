@@ -8,13 +8,19 @@ public class EmailClient {
 
   public static String sendVerificationEmail(String email, String id) {
     logger.info("Sending email to {}", email);
-    logger.info("\n Verify by clicking: curl http://localhost:8080/restate/awakeables/" + id + "/resolve --json 'true'");
+    logger.info(
+        "\n Verify by clicking: curl http://localhost:8080/restate/awakeables/"
+            + id
+            + "/resolve --json 'true'");
 
     return "Email sent";
   }
 
   public static void sendReminder(String email, String id) {
     logger.info("Sending reminder to {}", email);
-    logger.info("\n Verify by clicking: curl http://localhost:8080/restate/awakeables/" + id + "/resolve --json 'true'");
+    logger.info(
+        "\n Verify by clicking: curl http://localhost:8080/restate/awakeables/"
+            + id
+            + "/resolve --json 'true'");
   }
 }

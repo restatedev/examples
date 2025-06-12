@@ -1,5 +1,8 @@
 package my.example.concurrenttasks;
 
+import static my.example.concurrenttasks.utils.EmailClient.sendReminder;
+import static my.example.concurrenttasks.utils.EmailClient.sendVerificationEmail;
+
 import dev.restate.sdk.Context;
 import dev.restate.sdk.Select;
 import dev.restate.sdk.annotation.Handler;
@@ -7,12 +10,8 @@ import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.endpoint.Endpoint;
 import dev.restate.sdk.http.vertx.RestateHttpServer;
-import my.example.concurrenttasks.utils.EmailClient;
-
 import java.time.Duration;
-
-import static my.example.concurrenttasks.utils.EmailClient.sendReminder;
-import static my.example.concurrenttasks.utils.EmailClient.sendVerificationEmail;
+import my.example.concurrenttasks.utils.EmailClient;
 
 /*
  * This service implements a reliable email verification workflow using Restate.
@@ -57,9 +56,7 @@ public class EmailVerification {
   @Handler
   public String verifyEmail(Context ctx, VerifyEmailRequest req) {
     var confirmationFuture = ctx.awakeable(Boolean.class);
-    ctx.run(
-        "send email",
-        () -> sendVerificationEmail(req.email(), confirmationFuture.id()));
+    ctx.run("send email", () -> sendVerificationEmail(req.email(), confirmationFuture.id()));
 
     var verificationTimeout = ctx.timer(Duration.ofDays(1));
 
@@ -79,12 +76,10 @@ public class EmailVerification {
         case "failure":
           return "Email rejected";
         case "reminder":
-            ctx.run(
-                "send reminder",
-                () -> sendReminder(req.email(), confirmationFuture.id()));
-            break;
+          ctx.run("send reminder", () -> sendReminder(req.email(), confirmationFuture.id()));
+          break;
         case "timeout":
-            throw new TerminalException("Verification timed out");
+          throw new TerminalException("Verification timed out");
       }
     }
   }
