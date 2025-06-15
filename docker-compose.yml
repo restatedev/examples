@@ -1,0 +1,41 @@
+services:
+  endpoint:
+    image: node:22.14
+    working_dir: /endpoint
+    ports:
+      - "9080:9080"
+    volumes:
+      - ./:/endpoint/examples
+    command:
+      - /bin/bash
+      - -c
+      - |
+        cd examples/typescript/basics
+        npm install
+        npm run example-0 # or 2, 3
+    healthcheck:
+      test: curl --http2-prior-knowledge http://localhost:9080 || exit 1
+      interval: 5s
+      retries: 10
+      start_period: 5s
+      timeout: 10s
+  restate:
+    image: docker.io/restatedev/restate:latest
+    pull_policy: always
+    ports:
+      - 8080:8080
+      - 9070:9070
+      - 9071:9071
+  register_endpoint:
+    image: docker.io/curlimages/curl:8.8.0
+    depends_on:
+      endpoint:
+        condition: service_healthy
+      restate:
+        condition: service_started
+    command:
+      - /bin/sh
+      - -c
+      - |
+        curl --retry 10 http://restate:9070/deployments -H 'content-type: application/json' -d '{"uri": "http://endpoint:9080"}'
+        echo "Endpoint successfully registered"
