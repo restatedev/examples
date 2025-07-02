@@ -4,7 +4,7 @@ go 1.22.5
 
 require (
 	github.com/google/uuid v1.6.0
-	github.com/restatedev/sdk-go v0.17.0
+	github.com/restatedev/sdk-go v0.18.0
 	github.com/robfig/cron/v3 v3.0.1
 )
 
