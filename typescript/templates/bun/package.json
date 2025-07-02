@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@restatedev/restate-sdk": "^1.7.1",
-    "@restatedev/restate-sdk-zod": "^1.6.0"
+    "@restatedev/restate-sdk-zod": "^1.7.1"
   },
   "devDependencies": {
     "@types/bun": "^1.1.5",

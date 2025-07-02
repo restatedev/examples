@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@restatedev/restate-sdk-cloudflare-workers": "^1.7.1",
-    "@restatedev/restate-sdk-zod": "^1.6.0"
+    "@restatedev/restate-sdk-zod": "^1.7.1"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240605.0",

@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@restatedev/restate-sdk": "^1.7.1",
-    "@restatedev/restate-sdk-clients": "^1.4.0",
+    "@restatedev/restate-sdk-clients": "^1.7.1",
     "cron-parser": "^5.2.0",
     "express": "^5.0.0",
     "pg": "^8.10.0",
