@@ -1,4 +1,4 @@
-module github.com/restatedev/examples/go/templates/go
+module github.com/restatedev/examples/go/templates/go-hello-world
 
 go 1.22.5
 
