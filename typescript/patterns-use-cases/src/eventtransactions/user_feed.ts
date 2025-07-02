@@ -25,7 +25,7 @@ const userFeed = restate.object({
       // Delay processing until content moderation is complete (handler suspends when on FaaS).
       // This only blocks other posts for this user (Virtual Object), not for other users.
       while ((await ctx.run(() => getPostStatus(postId))) === PENDING) {
-        await ctx.sleep(5_000);
+        await ctx.sleep({ seconds: 5 });
       }
 
       await ctx.run(() => updateUserFeed(userId, postId));

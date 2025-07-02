@@ -54,11 +54,11 @@ const myService = restate.service({
             // When this runs on FaaS, the handler suspends and the timer is tracked by Restate
             // Example of durable recoverable sleep
             // If the service crashes two seconds later, Restate will invoke it after another 3 seconds
-            await ctx.sleep(5000)
+            await ctx.sleep({ seconds: 5 })
             // Example of waiting on a promise (call/awakeable/...) or a timeout
-            await promise.orTimeout(5000);
+            await promise.orTimeout({ seconds: 5 });
             // Example of scheduling a handler for later on
-            ctx.objectSendClient(SubscriptionService, "my-sub-123", {delay: 24*60*60*1000}).cancel();
+            ctx.objectSendClient(SubscriptionService, "my-sub-123").cancel(restate.rpc.sendOpts({ delay: { days: 1 } }));
 
             // ---
             // 7. PERSIST RESULTS: avoid re-execution of actions on retries

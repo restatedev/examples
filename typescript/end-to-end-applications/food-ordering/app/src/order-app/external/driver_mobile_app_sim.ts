@@ -9,7 +9,7 @@
  * https://github.com/restatedev/examples/blob/main/LICENSE
  */
 
-import { object, ObjectContext } from "@restatedev/restate-sdk"; 
+import { object, ObjectContext, rpc } from "@restatedev/restate-sdk";
 import * as geo from "../utils/geo";
 import {DEMO_REGION, Location, DeliveryState} from "../types/types";
 import { getPublisher } from "../clients/kafka_publisher";
@@ -30,9 +30,9 @@ const kafkaPublisher = getPublisher();
 const ASSIGNED_DELIVERY = "assigned-delivery";
 const CURRENT_LOCATION = "current-location";
 
-const POLL_INTERVAL = 1000;
-const MOVE_INTERVAL = 1000;
-const PAUSE_BETWEEN_DELIVERIES = 2000;
+const POLL_INTERVAL = { seconds: 1 };
+const MOVE_INTERVAL = { seconds: 1 };
+const PAUSE_BETWEEN_DELIVERIES = { seconds: 2 };
 
 
 const TwinObject: DriverDigitalTwin = {name : "driver-digital-twin"};
@@ -60,7 +60,7 @@ const mobileAppObject =  object({
   pollForWork: async (ctx: ObjectContext) => {
     const optionalAssignedDelivery = await ctx.objectClient(TwinObject, ctx.key).getAssignedDelivery();
     if (optionalAssignedDelivery === null || optionalAssignedDelivery === undefined) {
-      ctx.objectSendClient(Self, ctx.key, {delay: POLL_INTERVAL}).pollForWork();
+      ctx.objectSendClient(Self, ctx.key).pollForWork(rpc.sendOpts({ delay: POLL_INTERVAL }));
       return;
     }
 
@@ -70,7 +70,7 @@ const mobileAppObject =  object({
     }
     ctx.set(ASSIGNED_DELIVERY, delivery);
 
-    ctx.objectSendClient(Self, ctx.key, {delay: MOVE_INTERVAL}).move();
+    ctx.objectSendClient(Self, ctx.key).move(rpc.sendOpts({delay: MOVE_INTERVAL}));
   },
 
   move: async (ctx: ObjectContext) => {
@@ -105,7 +105,7 @@ const mobileAppObject =  object({
       await ctx.objectClient(TwinObject, ctx.key).notifyDeliveryPickUp();
     }
 
-    ctx.objectSendClient(Self, ctx.key, {delay: MOVE_INTERVAL}).move();
+    ctx.objectSendClient(Self, ctx.key).move(rpc.sendOpts({delay: MOVE_INTERVAL}));
   }
 }})
 

@@ -104,8 +104,8 @@ const eventDeduperSvc = restate.object({
 
             if (!known) {
                 ctx.set(eventId, true);
-                ctx.objectSendClient(eventDeduperSvc, ctx.key, { delay: hours(24) })
-                   .expireMessageId(eventId);
+                ctx.objectSendClient(eventDeduperSvc, ctx.key)
+                   .expireMessageId(eventId, restate.rpc.sendOpts({ delay: { days: 1 } }));
             }
 
             return ! Boolean(known);
@@ -241,8 +241,4 @@ async function updateMessageInSlack(
 function makeMarkdownQuote(text: string): string {
     const lines: string[] = text.split("\n");
     return ":memo: " + lines.join(" \n> ");
-}
-
-function hours(hours: number): number {
-    return hours * 60 * 60 * 1000;
 }

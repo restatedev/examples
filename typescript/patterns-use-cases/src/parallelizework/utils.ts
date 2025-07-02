@@ -32,7 +32,7 @@ export async function executeSubtask(ctx: Context, subtask: SubTask): Promise<Su
   // Execute subtask
   ctx.console.info(`Started executing subtask: ${subtask.description}`);
   // Sleep for a random amount between 0 and 10 seconds
-  await ctx.sleep(Math.floor(ctx.rand.random() * 5) * 1000);
+  await ctx.sleep({ seconds: Math.floor(ctx.rand.random() * 5) });
   ctx.console.info(`Execution subtask finished: ${subtask.description}`);
   return { description: `${subtask.description}: DONE` };
 }

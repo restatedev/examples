@@ -10,7 +10,7 @@ import { checkField, parseCurrency } from "../util/utils"
 
 // Check prices every 10 sec. to make this more interactive
 // A real setup would prob. poll every 6 hours or so
-const POLL_INTERVAL = 10_000; 
+const POLL_INTERVAL = { seconds: 10 };
 
 type FlightPriceOpts = {
     name: string,

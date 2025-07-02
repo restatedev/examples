@@ -276,11 +276,11 @@ const idempotencyKeyDbAccess = restate.service({
       // because that is the most efficient way to generate a durable deterministic ID.
       const idempotencyKey = ctx.rand.uuidv4();
 
-      // expire the idempotency key from the database after one day = 86,400,000ms
+      // expire the idempotency key from the database after one day
       // by scheduling a call to the handler that deletes the key
       ctx
-        .serviceSendClient(idempotencyKeyDbAccess, { delay: 86_400_000 })
-        .expireIdempotencyKey(idempotencyKey);
+        .serviceSendClient(idempotencyKeyDbAccess)
+        .expireIdempotencyKey(idempotencyKey, restate.rpc.sendOpts({ delay: { days: 1 }}));
 
       // checking the existence of the idempotency key and making the update happens
       // in one database transaction
