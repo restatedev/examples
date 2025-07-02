@@ -1,7 +1,6 @@
 # IDEs
 /.idea
 **/.idea
-.vscode
 *.iml
 
 # NodeJS
