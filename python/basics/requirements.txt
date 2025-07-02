@@ -1,4 +1,4 @@
 hypercorn
-restate_sdk==0.7.0
+restate_sdk==0.8.0
 pydantic
 black
