@@ -6,7 +6,7 @@ plugins {
 
 repositories { mavenCentral() }
 
-val restateVersion = "2.1.0"
+val restateVersion = "2.2.0"
 
 dependencies {
   // Restate SDK

@@ -22,8 +22,8 @@ export const cartObject = restate.object({
 
       if (reservationSuccess) {
         // !mark(1,2)
-        ctx.objectSendClient(CartObject, ctx.key, {delay: 15 * 60 * 1000})
-            .expireTicket(ticketId);
+        ctx.objectSendClient(CartObject, ctx.key)
+            .expireTicket(ticketId, restate.rpc.sendOpts({ delay: { minutes: 15 } }));
       }
 
       return reservationSuccess;

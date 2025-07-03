@@ -60,6 +60,7 @@ jobs:
                   typescript-bun-hello-world.zip
                   typescript-cloudflare-worker-hello-world.zip
                   typescript-deno-hello-world.zip
+                  typescript-nextjs-hello-world.zip
                   typescript-tour-of-restate.zip
                   go-basics.zip
                   go-hello-world-lambda-cdk.zip

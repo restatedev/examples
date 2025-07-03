@@ -18,7 +18,7 @@ type BatcherState = {
 };
 
 const MAX_BATCH = 10;
-const MAX_BATCH_WAIT_MS = 1000;
+const MAX_BATCH_WAIT = { seconds: 1 };
 
 export const batcher = restate.object({
   name: "batcher",
@@ -41,13 +41,11 @@ export const batcher = restate.object({
       }
 
       if (items.length == 1) {
-        ctx.console.log(`Adding item to new batch, will send in at most ${MAX_BATCH_WAIT_MS} ms`);
+        ctx.console.log(`Adding item to new batch, will send in at most ${MAX_BATCH_WAIT}`);
 
         const expirationHandle = ctx
-          .objectSendClient<Batcher>({ name: "batcher" }, ctx.key, {
-            delay: MAX_BATCH_WAIT_MS,
-          })
-          .expire();
+          .objectSendClient<Batcher>({ name: "batcher" }, ctx.key)
+          .expire(restate.rpc.sendOpts({ delay: MAX_BATCH_WAIT }));
 
         // Waiting for the expiration invocation ID can trigger a suspension, but this way we can avoid the vast majority of 'expire' calls
         // via cancellation, which reduces executions overall.

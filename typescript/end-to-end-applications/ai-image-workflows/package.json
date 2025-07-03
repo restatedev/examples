@@ -12,7 +12,7 @@
     "stable-diffusion-service": "ts-node-dev --watch ./src --respawn --transpile-only src/stable_diffusion.ts"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.6.0",
+    "@restatedev/restate-sdk": "^1.7.2",
     "axios": "^1.6.7",
     "axios-retry": "^4.0.0",
     "jimp": "^0.22.10",

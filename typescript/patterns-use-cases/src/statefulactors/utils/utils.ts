@@ -8,14 +8,14 @@ export enum Status {
 export async function bringUpMachine(ctx: restate.Context, machineId: string) {
   ctx.console.info(`Beginning transition of ${machineId} to up`);
   maybeCrash(0.4);
-  await ctx.sleep(5000);
+  await ctx.sleep({ seconds: 5 });
   ctx.console.info(`Done transitioning ${machineId} to up`);
 }
 
 export async function tearDownMachine(ctx: restate.Context, machineId: string) {
   ctx.console.info(`Beginning transition of ${machineId} to down`);
   maybeCrash(0.4);
-  await ctx.sleep(5000);
+  await ctx.sleep({ seconds: 5 });
   ctx.console.info(`Done transitioning ${machineId} to down`);
 }
 
