@@ -4,6 +4,7 @@
 - **[Durable RPC, Idempotency & Concurrency](README.md#durable-rpc-idempotency--concurrency)**: Restate persists requests and makes sure they execute exactly-once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/durablerpc/MyClient.java)
 - **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/queue/TaskSubmitter.java)
 - **[Convert Sync Tasks to Async](README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/syncasync/UploadClient.java)
+- **[Batching](README.md#batching)**: Group RPCs into batches of a particular size, subject to a max wait time [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/batcher/Batcher.java)
 
 #### Orchestration patterns
 - **[Sagas](README.md#sagas)**: Preserve consistency by tracking undo actions and running them when code fails halfway through. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](src/main/java/my/example/sagas/BookingWorkflow.java)
@@ -137,6 +138,35 @@ Workflow logs:
 You see the call to `resultAsEmail` after the upload took too long, and the sending of the email.
 
 </details>
+</details>
+
+
+## Batching
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/main/java/my/example/batcher/Batcher.java)
+
+This example shows how to group events into batches, subject to a maximum 'linger' period after which undersized batches will be sent.
+
+A client submits items to the `receive` handler of the `Batcher` object, which adds them to its state.
+If the number of items hits a configured limit (in this case 10), the batch will be sent off to its real destination,
+the `BatchReceiver` object. If an expiration timer fires before the batch size is reached, an undersized batch is sent.
+
+<details>
+<summary><strong>Running the example</strong></summary>
+
+1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
+2. Start the service: `./gradlew -PmainClass=my.example.batcher.Batcher run`
+3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+
+Submit some work to be batched:
+```shell
+# add one item
+curl localhost:8080/Batcher/myKey/receive -H 'content-type: application/json' -d '123'
+# add lots
+for i in $(seq 1 31); do curl localhost:8080/Batcher/myKey/receive -H 'content-type: application/json' -d "$i"; done
+```
+
+Have a look at the service logs to see how your messages are grouped together into batches.
+
 </details>
 
 ## Sagas
