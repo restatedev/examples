@@ -6,6 +6,6 @@ Have a look at the [TypeScript Testing documentation](https://docs.restate.dev/d
 
 You can run the tests with:
 
-```typescript
+```shell
 npm run test
 ```

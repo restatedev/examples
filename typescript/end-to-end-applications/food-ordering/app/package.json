@@ -13,7 +13,7 @@
     "postbundle": "cd dist/order-app && zip -r app.zip app.js* && cd ../restaurant && zip -r server.zip server.js*",
     "order-app": "node ./dist/order-app/app.js",
     "restaurant-app": "node ./dist/restaurant/server.js",
-    "app-dev": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --watch src --respawn --transpile-only src/order-app/app.ts"
+    "dev": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --watch src --respawn --transpile-only src/order-app/app.ts"
   },
   "dependencies": {
     "@restatedev/restate-sdk": "^1.7.2",

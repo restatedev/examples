@@ -4,4 +4,9 @@
     "dev": "deno run --allow-net --allow-env --watch main.ts",
     "start": "deno run --allow-net --allow-env main.ts",
   },
+  "imports": {
+    "@restatedev/restate-sdk": "npm:@restatedev/restate-sdk@^1.7.3",
+    "@restatedev/restate-sdk-zod": "npm:@restatedev/restate-sdk-zod@^1.7.3",
+    "zod": "npm:zod@3.24.1"
+  },
 }
