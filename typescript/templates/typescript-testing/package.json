@@ -6,11 +6,13 @@
   "type": "commonjs",
   "scripts": {
     "build": "tsc --noEmitOnError",
+    "start": "node ./dist/app.js",
+    "dev": "tsx watch ./src/app.ts",
     "prebundle": "rm -rf dist",
     "bundle": "esbuild src/app.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/app.js",
     "postbundle": "cd dist && zip -r app.zip app.js*",
-    "app": "node ./dist/app.js",
-    "app-dev": "tsx watch ./src/app.ts",
+    "app": "npm run start",
+    "app-dev": "npm run dev",
     "test": "TESTCONTAINERS_RYUK_DISABLED=true DEBUG=testcontainers,testcontainers:exec,testcontainers:containers jest --maxWorkers=1 --detectOpenHandles"
   },
   "dependencies": {

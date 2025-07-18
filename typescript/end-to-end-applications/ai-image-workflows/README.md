@@ -76,7 +76,7 @@ You can clone the example repository (`git clone https://github.com/restatedev/e
 
 2. Start Restate Server in a separate shell: `npx restate-server`
 
-3. Start the workflow and image transformation services: `npm run app-dev`
+3. Start the workflow and image transformation services: `npm run dev`
 
 4. Register the example at Restate server by calling
    `npx restate -y deployment register "localhost:9080"`.

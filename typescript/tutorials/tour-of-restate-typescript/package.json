@@ -10,7 +10,7 @@
     "lint": "eslint --ignore-path .eslintignore --ext .ts .",
     "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\"",
     "verify": "npm run format -- --check && npm run lint && npm run build",
-    "app-dev": "RESTATE_LOGGING=DEBUG RESTATE_DEBUG_LOGGING=JOURNAL tsx watch src/app/app.ts",
+    "dev": "RESTATE_LOGGING=DEBUG RESTATE_DEBUG_LOGGING=JOURNAL tsx watch src/app/app.ts",
     "part1": "RESTATE_LOGGING=DEBUG RESTATE_DEBUG_LOGGING=JOURNAL tsx watch src/part1/app.ts",
     "part2": "RESTATE_LOGGING=DEBUG RESTATE_DEBUG_LOGGING=JOURNAL tsx watch src/part2/app.ts",
     "part3": "RESTATE_LOGGING=DEBUG RESTATE_DEBUG_LOGGING=JOURNAL tsx watch src/part3/app.ts",
