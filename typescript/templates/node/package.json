@@ -15,8 +15,8 @@
     "app-dev": "npm run dev"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.7.2",
-    "@restatedev/restate-sdk-zod": "^1.7.2"
+    "@restatedev/restate-sdk": "^1.7.3",
+    "@restatedev/restate-sdk-zod": "^1.7.3"
   },
   "devDependencies": {
     "@types/node": "^20.14.2",
