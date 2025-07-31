@@ -1,4 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
+import { serve } from "@restatedev/restate-sdk";
 import { TaskSpec, TaskWorkflow } from "../taskmanager";
 
 // ----------------------------------------------------------------------------
@@ -63,5 +64,8 @@ export const reminderTaskDefinition: TaskSpec<ReminderOpts> = {
 };
 
 if (require.main === module) {
-  restate.endpoint().bind(reminderSvc).listen(9081);
+  serve({
+    services: [reminderSvc],
+    port: 9081,
+  });
 }

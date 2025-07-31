@@ -1,4 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
+import { serve } from "@restatedev/restate-sdk";
 import * as stripe_utils from "./utils/stripe_utils";
 import { verifyPaymentRequest } from "./utils/stripe_utils";
 import Stripe from "stripe";
@@ -90,12 +91,12 @@ async function processWebhook(ctx: restate.Context) {
   return { received: true };
 }
 
-restate
-  .endpoint()
-  .bind(
+serve({
+  services: [
     restate.service({
       name: "payments",
       handlers: { processPayment, processWebhook },
     }),
-  )
-  .listen(9080);
+  ],
+  port: 9080,
+});

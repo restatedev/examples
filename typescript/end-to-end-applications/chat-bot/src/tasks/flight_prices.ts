@@ -1,4 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
+import { serve } from "@restatedev/restate-sdk";
 import { TaskSpec } from "../taskmanager";
 import { getBestQuote, OfferPrice, RoundtripRouteDetails } from "../util/flight_price_api";
 import { checkField, parseCurrency } from "../util/utils";
@@ -76,5 +77,8 @@ export const flightPricesTaskDefinition: TaskSpec<FlightPriceOpts> = {
 };
 
 if (require.main === module) {
-  restate.endpoint().bind(flightPriceWatcherWorkflow).listen(9082);
+  serve({
+    services: [flightPriceWatcherWorkflow],
+    port: 9082,
+  });
 }

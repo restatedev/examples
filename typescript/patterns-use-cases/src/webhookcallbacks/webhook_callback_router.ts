@@ -1,4 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
+import { serve } from "@restatedev/restate-sdk";
 import { PaymentTracker, StripeEvent } from "./stubs";
 
 const webhookCallbackRouter = restate.service({
@@ -17,4 +18,7 @@ const webhookCallbackRouter = restate.service({
   },
 });
 
-restate.endpoint().bind(webhookCallbackRouter).listen(9080);
+serve({
+  services: [webhookCallbackRouter],
+  port: 9080,
+});

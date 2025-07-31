@@ -1,4 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
+import { serve } from "@restatedev/restate-sdk";
 import { bringUpMachine, Status, tearDownMachine } from "./utils/utils";
 
 // This is a State Machine implemented with a Virtual Object
@@ -50,4 +51,7 @@ const machineOperator = restate.object({
   },
 });
 
-restate.endpoint().bind(machineOperator).listen(9080);
+serve({
+  services: [machineOperator],
+  port: 9080,
+});

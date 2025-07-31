@@ -1,4 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
+import { serve } from "@restatedev/restate-sdk";
 import { Sequelize, Transaction } from "sequelize";
 import { runQueryAs2pcTxn } from "./2phasecommit";
 
@@ -377,10 +378,7 @@ const twoPhaseCommitDbAccess = restate.service({
 
 // ----------------------------------------------------------------------------
 
-restate
-  .endpoint()
-  .bind(simpledbAccess)
-  .bind(keyedDbAccess)
-  .bind(idempotencyKeyDbAccess)
-  .bind(twoPhaseCommitDbAccess)
-  .listen(9080);
+serve({
+  services: [simpledbAccess, keyedDbAccess, idempotencyKeyDbAccess, twoPhaseCommitDbAccess],
+  port: 9080,
+});

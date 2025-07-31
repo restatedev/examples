@@ -31,4 +31,4 @@ const greeter = restate.service({
   },
 });
 
-export default restate.endpoint().bind(greeter).handler();
+export default restate.createEndpointHandler({ services: [greeter] });

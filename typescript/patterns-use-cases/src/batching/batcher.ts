@@ -10,7 +10,7 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import { ObjectContext } from "@restatedev/restate-sdk";
+import { ObjectContext, serve } from "@restatedev/restate-sdk";
 
 type BatcherState = {
   items: unknown[];
@@ -90,4 +90,6 @@ function sendBatch(
 export type Batcher = typeof batcher;
 export type BatchReceiver = typeof batchReceiver;
 
-restate.endpoint().bind(batcher).bind(batchReceiver).listen();
+serve({
+  services: [batcher, batchReceiver],
+});

@@ -1,4 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
+import { serve } from "@restatedev/restate-sdk";
 
 // Virtual Objects are services that hold K/V state. Its handlers interact with the object state.
 // An object is identified by a unique id - only one object exists per id.
@@ -36,8 +37,11 @@ const greeterObject = restate.object({
   },
 });
 
-restate.endpoint().bind(greeterObject).listen(9080);
-// or .handler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
+serve({
+  services: [greeterObject],
+  port: 9080,
+});
+// or createEndpointHandler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
 
 /*
 You specify which object you want to invoke by including its key in the URL path:

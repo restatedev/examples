@@ -1,4 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
+import { serve } from "@restatedev/restate-sdk";
 import { createPost, getPostStatus, PENDING, SocialMediaPost, updateUserFeed } from "./utils/stubs";
 
 //
@@ -33,8 +34,9 @@ const userFeed = restate.object({
   },
 });
 
-restate.endpoint().bind(userFeed).listen();
-
+serve({
+  services: [userFeed],
+});
 // Process new posts for users via Kafka or by calling the endpoint over HTTP:
 /*
 curl localhost:8080/userFeed/userid1/processPost --json '{"content": "Hi! This is my first post!", "metadata": "public"}'

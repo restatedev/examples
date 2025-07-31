@@ -9,7 +9,7 @@
  * https://github.com/restatedev/examples/
  */
 
-import * as restate from "@restatedev/restate-sdk";
+import { serve } from "@restatedev/restate-sdk";
 import orderWorkflow from "./order_workflow/impl";
 import orderStatus from "./order_status/impl";
 import driverDigitalTwin from "./driver_digital_twin/impl";
@@ -18,13 +18,14 @@ import deliveryManager from "./delivery_manager/impl";
 import driverMobileAppSimulator from "./external/driver_mobile_app_sim";
 
 if (require.main === module) {
-  restate
-    .endpoint()
-    .bind(driverDigitalTwin)
-    .bind(driverDeliveryMatcher)
-    .bind(deliveryManager)
-    .bind(driverMobileAppSimulator)
-    .bind(orderWorkflow)
-    .bind(orderStatus)
-    .listen();
+  serve({
+    services: [
+      driverDigitalTwin,
+      driverDeliveryMatcher,
+      deliveryManager,
+      driverMobileAppSimulator,
+      orderWorkflow,
+      orderStatus,
+    ],
+  });
 }

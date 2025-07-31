@@ -1,4 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
+import { serve } from "@restatedev/restate-sdk";
 import { serde } from "@restatedev/restate-sdk-zod";
 import { sendNotification, sendReminder } from "./utils";
 
@@ -31,4 +32,7 @@ const greeter = restate.service({
   },
 });
 
-restate.endpoint().bind(greeter).listen(9080);
+serve({
+  services: [greeter],
+  port: 9080,
+});
