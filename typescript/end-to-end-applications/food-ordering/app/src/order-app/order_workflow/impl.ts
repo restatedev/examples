@@ -10,11 +10,11 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import {WorkflowSharedContext} from "@restatedev/restate-sdk";
-import type {DeliveryManager} from "../delivery_manager/api";
-import {Order, Status} from "../types/types";
-import {getPaymentClient} from "../clients/payment_client";
-import {getRestaurantClient} from "../clients/restaurant_client";
+import { WorkflowSharedContext } from "@restatedev/restate-sdk";
+import type { DeliveryManager } from "../delivery_manager/api";
+import { Order, Status } from "../types/types";
+import { getPaymentClient } from "../clients/payment_client";
+import { getRestaurantClient } from "../clients/restaurant_client";
 
 /**
  * Order processing workflow Gets called for each Kafka event that is published to the order topic.
@@ -29,7 +29,6 @@ const DeliveryManagerObject: DeliveryManager = { name: "delivery-manager" };
 export default restate.workflow({
   name: "order-workflow",
   handlers: {
-
     run: async (ctx: restate.WorkflowContext, order: Order) => {
       const { id, totalCost, deliveryDelay } = order;
 
@@ -58,7 +57,7 @@ export default restate.workflow({
 
       // 5. Find a driver and start delivery
       const deliveryId = ctx.rand.uuidv4();
-      ctx.objectSendClient(DeliveryManagerObject, deliveryId).start(order)
+      ctx.objectSendClient(DeliveryManagerObject, deliveryId).start(order);
 
       await ctx.promise("driver_selected");
       ctx.set("status", Status.WAITING_FOR_DRIVER);
@@ -68,26 +67,24 @@ export default restate.workflow({
       ctx.set("status", Status.DELIVERED);
     },
 
-
-    finishedPreparation: async (ctx: WorkflowSharedContext)=> {
+    finishedPreparation: async (ctx: WorkflowSharedContext) => {
       ctx.promise("preparation_finished").resolve();
     },
 
-    selectedDriver: async (ctx: WorkflowSharedContext)=> {
+    selectedDriver: async (ctx: WorkflowSharedContext) => {
       ctx.promise("driver_selected").resolve();
     },
 
-    signalDriverAtRestaurant: async (ctx: WorkflowSharedContext)=> {
+    signalDriverAtRestaurant: async (ctx: WorkflowSharedContext) => {
       ctx.promise("driver_at_restaurant").resolve();
     },
 
-    signalDeliveryFinished: async (ctx: WorkflowSharedContext)=> {
+    signalDeliveryFinished: async (ctx: WorkflowSharedContext) => {
       ctx.promise("delivery_finished").resolve();
     },
 
-    getStatus: async (ctx: WorkflowSharedContext)=> {
+    getStatus: async (ctx: WorkflowSharedContext) => {
       return ctx.get<Status>("status");
-    }
-  }
+    },
+  },
 });
-

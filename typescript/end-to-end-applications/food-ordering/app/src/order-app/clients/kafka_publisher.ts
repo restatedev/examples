@@ -30,11 +30,11 @@ export class Kafka_publisher {
 
     await this.producer.send({
       topic: KAFKA_TOPIC,
-      messages: [{key: driverId, value: JSON.stringify(location)}],
+      messages: [{ key: driverId, value: JSON.stringify(location) }],
     });
   }
 }
 
 export function getPublisher(): Kafka_publisher {
-    return new Kafka_publisher();
+  return new Kafka_publisher();
 }

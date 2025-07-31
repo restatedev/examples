@@ -24,7 +24,7 @@ const paymentTracker = restate.object({
         ctx
           .objectSendClient(
             PaymentTracker,
-            ctx.key // this object's invoice id
+            ctx.key, // this object's invoice id
           )
           .onPaymentFailure(event, restate.rpc.sendOpts({ delay: { days: 1 } }));
       } else {

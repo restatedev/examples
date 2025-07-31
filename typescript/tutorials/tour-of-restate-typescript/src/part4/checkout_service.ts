@@ -32,7 +32,7 @@ export const checkoutService = restate.service({
       return success;
     },
     // <end_checkout>
-  }
+  },
 });
 
-export const CheckoutService: typeof checkoutService = { name: "CheckoutService"};
+export const CheckoutService: typeof checkoutService = { name: "CheckoutService" };

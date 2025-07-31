@@ -11,7 +11,7 @@ const useCartProducts = () => {
   const updateQuantitySafely = (
     currentProduct: ICartProduct,
     targetProduct: ICartProduct,
-    quantity: number
+    quantity: number,
   ): ICartProduct => {
     if (currentProduct.id === targetProduct.id) {
       return Object.assign({
@@ -26,7 +26,7 @@ const useCartProducts = () => {
   const addProduct = (newProduct: ICartProduct) => {
     let updatedProducts;
     const isProductAlreadyInCart = products.some(
-      (product: ICartProduct) => newProduct.id === product.id
+      (product: ICartProduct) => newProduct.id === product.id,
     );
 
     if (isProductAlreadyInCart) {
@@ -57,7 +57,7 @@ const useCartProducts = () => {
 
   const removeProduct = (productToRemove: ICartProduct) => {
     const updatedProducts = products.filter(
-      (product: ICartProduct) => product.id !== productToRemove.id
+      (product: ICartProduct) => product.id !== productToRemove.id,
     );
 
     setProducts(updatedProducts);

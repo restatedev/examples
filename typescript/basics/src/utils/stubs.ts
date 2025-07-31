@@ -39,10 +39,7 @@ export function createSubscription(
 /**
  * Simulates calling a payment API, with a random probability of API downtime.
  */
-export function createRecurringPayment(
-  _creditCard: string,
-  paymentId: any,
-): string {
+export function createRecurringPayment(_creditCard: string, paymentId: any): string {
   maybeCrash(0.3);
   console.log(`>>> Creating recurring payment ${paymentId}`);
   return "payment-reference";
@@ -50,30 +47,35 @@ export function createRecurringPayment(
 
 // Stubs for 3_workflows.ts
 export async function createUserEntry(entry: { name: string; email: string }) {
-    console.log(`Creating user entry for ${entry.name}`);
+  console.log(`Creating user entry for ${entry.name}`);
 }
 export async function sendEmailWithLink(req: {
-  userId: string,
-  user: {name: string, email: string};
+  userId: string;
+  user: { name: string; email: string };
   secret: string;
 }) {
-    console.info(`Sending email to ${req.user.email} with secret ${req.secret}. \n 
+  console.info(`Sending email to ${req.user.email} with secret ${req.secret}. \n 
     To simulate a user clicking the link, run the following command: \n 
     curl localhost:8080/usersignup/${req.userId}/click -H 'content-type: application/json' -d '{ "secret": "${req.secret}"}'`);
 }
 
-export function chargeBankAccount(_paymentDeduplicationID: string, _payment: { amount: number; account: string }) {
+export function chargeBankAccount(
+  _paymentDeduplicationID: string,
+  _payment: { amount: number; account: string },
+) {
   return undefined;
 }
 
 const subscriptionService = restate.object({
   name: "SubscriptionService",
   handlers: {
-    create: async (ctx: restate.ObjectContext, userId: string) => { return "SUCCESS" },
+    create: async (ctx: restate.ObjectContext, userId: string) => {
+      return "SUCCESS";
+    },
     cancel: async (ctx: restate.ObjectContext) => {
       console.info(`Cancelling all subscriptions for user ${ctx.key}`);
     },
-  }
-})
+  },
+});
 
 export type SubscriptionSvc = typeof subscriptionService;

@@ -18,12 +18,13 @@ import deliveryManager from "./delivery_manager/impl";
 import driverMobileAppSimulator from "./external/driver_mobile_app_sim";
 
 if (require.main === module) {
-  restate.endpoint()
-      .bind(driverDigitalTwin)
-      .bind(driverDeliveryMatcher)
-      .bind(deliveryManager)
-      .bind(driverMobileAppSimulator)
-      .bind(orderWorkflow)
-      .bind(orderStatus)
-      .listen();
+  restate
+    .endpoint()
+    .bind(driverDigitalTwin)
+    .bind(driverDeliveryMatcher)
+    .bind(deliveryManager)
+    .bind(driverMobileAppSimulator)
+    .bind(orderWorkflow)
+    .bind(orderStatus)
+    .listen();
 }

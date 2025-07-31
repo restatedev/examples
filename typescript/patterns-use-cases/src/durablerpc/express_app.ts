@@ -21,7 +21,7 @@ app.post("/reserve/:productId/:reservationId", async (req: Request, res: Respons
   const products = restateClient.objectClient<ProductService>({ name: "product" }, productId);
   const reservation = await products.reserve(
     // Restate deduplicates requests with the same idempotency key
-    Opts.from({ idempotencyKey: reservationId })
+    Opts.from({ idempotencyKey: reservationId }),
   );
 
   res.json({ reserved: reservation });

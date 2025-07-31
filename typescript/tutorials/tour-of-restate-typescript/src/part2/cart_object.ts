@@ -10,8 +10,8 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import {TicketObject} from "../part1/ticket_object";
-import {CheckoutService} from "../part1/checkout_service";
+import { TicketObject } from "../part1/ticket_object";
+import { CheckoutService } from "../part1/checkout_service";
 
 export const cartObject = restate.object({
   name: "CartObject",
@@ -22,8 +22,9 @@ export const cartObject = restate.object({
 
       if (reservationSuccess) {
         // !mark(1,2)
-        ctx.objectSendClient(CartObject, ctx.key)
-            .expireTicket(ticketId, restate.rpc.sendOpts({ delay: { minutes: 15 } }));
+        ctx
+          .objectSendClient(CartObject, ctx.key)
+          .expireTicket(ticketId, restate.rpc.sendOpts({ delay: { minutes: 15 } }));
       }
 
       return reservationSuccess;
@@ -31,16 +32,17 @@ export const cartObject = restate.object({
     // <end_add_ticket>
 
     async checkout(ctx: restate.ObjectContext) {
-      const success = await ctx.serviceClient(CheckoutService)
-          .handle({userId: ctx.key, tickets: ["seat2B"]});
+      const success = await ctx
+        .serviceClient(CheckoutService)
+        .handle({ userId: ctx.key, tickets: ["seat2B"] });
 
       return success;
     },
 
     async expireTicket(ctx: restate.ObjectContext, ticketId: string) {
       ctx.objectSendClient(TicketObject, ticketId).unreserve();
-    }
-  }
+    },
+  },
 });
 
 export const CartObject: typeof cartObject = { name: "CartObject" };

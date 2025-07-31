@@ -14,10 +14,10 @@ import * as restate from "@restatedev/restate-sdk";
 export const checkoutService = restate.service({
   name: "CheckoutService",
   handlers: {
-    async handle(ctx: restate.Context, request: { userId: string; tickets: string[] }){
+    async handle(ctx: restate.Context, request: { userId: string; tickets: string[] }) {
       return true;
     },
-  }
+  },
 });
 
-export const CheckoutService: typeof checkoutService = { name: "CheckoutService"};
+export const CheckoutService: typeof checkoutService = { name: "CheckoutService" };

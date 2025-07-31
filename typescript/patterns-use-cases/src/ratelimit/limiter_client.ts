@@ -105,7 +105,7 @@ export namespace Limiter {
           } else {
             throw new TerminalError(
               `rate: Wait(n=${n}) would either exceed the limiters burst or the provided waitLimitMillis`,
-              { errorCode: 429 }
+              { errorCode: 429 },
             );
           }
         }
