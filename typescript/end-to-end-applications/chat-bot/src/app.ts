@@ -1,10 +1,11 @@
-import * as restate from "@restatedev/restate-sdk"
-import * as tm from "./taskmanager" 
-import * as slackbot from "./slackbot"
-import * as chat from "./chat"
+import * as restate from "@restatedev/restate-sdk";
+import * as tm from "./taskmanager";
+import * as slackbot from "./slackbot";
+import * as chat from "./chat";
 
 import { reminderTaskDefinition } from "./tasks/reminder";
 import { flightPricesTaskDefinition } from "./tasks/flight_prices";
+import { createServer } from "node:http2";
 
 const mode = process.argv[2];
 
@@ -12,20 +13,22 @@ const mode = process.argv[2];
 //     so that the task manager knows where to send certain commands to
 
 tm.registerTaskWorkflow(reminderTaskDefinition);
-tm.registerTaskWorkflow(flightPricesTaskDefinition)
+tm.registerTaskWorkflow(flightPricesTaskDefinition);
 
 // (2) build the endpoint with the core handlers for the chat
 
-const endpoint = restate.endpoint()
-    .bind(chat.chatSessionService)
-    .bind(tm.workflowInvoker)
+let endpointHandler = restate.createEndpointHandler({
+  services: [chat.chatSessionService, tm.workflowInvoker],
+});
 
 // (3) add slackbot, if in slack mode
 
 if (mode === "SLACK") {
-    slackbot.services.forEach(endpoint.bind)
-    chat.notificationHandler(slackbot.notificationHandler)
+  endpointHandler = restate.createEndpointHandler({
+    services: [chat.chatSessionService, tm.workflowInvoker, ...slackbot.services],
+  });
+  chat.notificationHandler(slackbot.notificationHandler);
 }
 
-// start the defaut http2 server (alternatively export as lambda handler, http handler, ...)
-endpoint.listen(9080);
+// create a http2 server (alternatively export as lambda handler, http handler, ...)
+createServer(endpointHandler).listen(9080);

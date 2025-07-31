@@ -1,12 +1,10 @@
 import styled from 'styled-components/macro';
 
 export const Container = styled.div`
-  @media only screen and (min-width: ${({ theme: { breakpoints } }) =>
-      breakpoints.tablet}) {
+  @media only screen and (min-width: ${({ theme: { breakpoints } }) => breakpoints.tablet}) {
   }
 
-  @media only screen and (min-width: ${({ theme: { breakpoints } }) =>
-      breakpoints.desktop}) {
+  @media only screen and (min-width: ${({ theme: { breakpoints } }) => breakpoints.desktop}) {
   }
 
   @media (min-width: 1025px) {
@@ -41,12 +39,10 @@ export const Container = styled.div`
 `;
 
 export const SimpleContainer = styled.div`
-  @media only screen and (min-width: ${({ theme: { breakpoints } }) =>
-      breakpoints.tablet}) {
+  @media only screen and (min-width: ${({ theme: { breakpoints } }) => breakpoints.tablet}) {
   }
 
-  @media only screen and (min-width: ${({ theme: { breakpoints } }) =>
-      breakpoints.desktop}) {
+  @media only screen and (min-width: ${({ theme: { breakpoints } }) => breakpoints.desktop}) {
   }
 
   @media (min-width: 1025px) {

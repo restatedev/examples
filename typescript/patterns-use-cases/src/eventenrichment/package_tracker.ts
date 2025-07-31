@@ -36,8 +36,9 @@ const packageTracker = restate.object({
   },
 });
 
-restate.endpoint().bind(packageTracker).listen();
-
+restate.serve({
+  services: [packageTracker],
+});
 // Process package tracking events via HTTP:
 /*
 curl localhost:8080/package-tracker/package1234/registerPackage -H 'content-type: application/json' -d '{ "finalDestination": "Bridge 6, Amsterdam", "locations": [] }'

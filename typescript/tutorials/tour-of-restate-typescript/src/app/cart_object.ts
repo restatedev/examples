@@ -10,23 +10,23 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import {TicketObject} from "./ticket_object";
-import {CheckoutService} from "./checkout_service";
+import { TicketObject } from "./ticket_object";
+import { CheckoutService } from "./checkout_service";
 
 // <start_user_session>
 export const cartObject = restate.object({
   name: "CartObject",
   handlers: {
-    async addTicket(ctx: restate.ObjectContext, ticketId: string){
+    async addTicket(ctx: restate.ObjectContext, ticketId: string) {
       return true;
     },
 
-    async checkout(ctx: restate.ObjectContext){
+    async checkout(ctx: restate.ObjectContext) {
       return true;
     },
 
-    async expireTicket(ctx: restate.ObjectContext, ticketId: string){},
-  }
+    async expireTicket(ctx: restate.ObjectContext, ticketId: string) {},
+  },
 });
 // <end_user_session>
 

@@ -100,7 +100,7 @@ export const cronJob = restate.object({
 
 const scheduleNextExecution = async (
   ctx: restate.ObjectContext,
-  request: JobRequest
+  request: JobRequest,
 ): Promise<JobInfo> => {
   // Parse cron expression
   // Persist current date in Restate for deterministic replay

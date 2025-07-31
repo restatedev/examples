@@ -45,8 +45,7 @@ export const Container = styled.div<IContainer>`
       isOpen ? theme.colors.black : theme.colors.primary};
   }
 
-  @media only screen and (min-width: ${({ theme: { breakpoints } }) =>
-      breakpoints.tablet}) {
+  @media only screen and (min-width: ${({ theme: { breakpoints } }) => breakpoints.tablet}) {
     width: 450px;
     right: ${({ isOpen }) => (isOpen ? '0' : '-450px')};
 

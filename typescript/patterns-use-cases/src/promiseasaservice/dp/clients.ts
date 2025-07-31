@@ -41,7 +41,7 @@ export function durablePromise<T>(promiseId: string, ingressUri: string): Durabl
 
 export function durablePromise<T>(
   promiseId: string,
-  uriOrCtx: string | restate.Context
+  uriOrCtx: string | restate.Context,
 ): DurablePromise<T> {
   if (typeof uriOrCtx === "string") {
     return durablePromiseFromIngress(uriOrCtx, promiseId);

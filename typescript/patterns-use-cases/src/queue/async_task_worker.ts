@@ -12,8 +12,10 @@ const asyncTaskWorker = restate.service({
 
 export type AsyncTaskWorker = typeof asyncTaskWorker;
 
-restate.endpoint().bind(asyncTaskWorker).listen(9080);
-
+restate.serve({
+  services: [asyncTaskWorker],
+  port: 9080,
+});
 // ----------------------- Stubs to please the compiler -----------------------
 export type TaskOpts = { id: string; task: string };
 

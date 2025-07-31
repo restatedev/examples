@@ -52,7 +52,7 @@ const simpledbAccess = restate.service({
       const [results, _meta] = await db.query(
         `SELECT *
                    FROM users
-                  WHERE userid = '${userid}'`
+                  WHERE userid = '${userid}'`,
       );
       return results.length > 0 ? results[0] : "(row not found)";
     },
@@ -72,7 +72,7 @@ const simpledbAccess = restate.service({
         const [results, _metadata] = await db.query(
           `SELECT credits
                        FROM users
-                      WHERE userid = '${userid}'`
+                      WHERE userid = '${userid}'`,
         );
         return (results[0] as any)?.credits;
       });
@@ -99,7 +99,7 @@ const simpledbAccess = restate.service({
       const [_, numInserted] = await db.query(
         `INSERT INTO users (userid, name, address, credits, version)
                       VALUES ('${userId}', '${name}', '${address}', ${credits}, 0)
-                 ON CONFLICT (userid) DO NOTHING`
+                 ON CONFLICT (userid) DO NOTHING`,
       );
       return numInserted === 1;
     },
@@ -124,7 +124,7 @@ const simpledbAccess = restate.service({
       const [_, meta] = await db.query(
         `UPDATE users
                     SET name = '${newName}'
-                  WHERE userID = '${userId}'`
+                  WHERE userID = '${userId}'`,
       );
       return (meta as any).rowCount === 1;
     },
@@ -167,7 +167,7 @@ const keyedDbAccess = restate.object({
       await db.query(
         `UPDATE users
                     SET credits = credits + ${credits}
-                  WHERE userid = '${userid}'`
+                  WHERE userid = '${userid}'`,
       );
     },
 
@@ -199,7 +199,7 @@ const keyedDbAccess = restate.object({
         const [results, _] = await db.query(
           `SELECT credits, version
                        FROM users
-                      WHERE userid = '${userid}'`
+                      WHERE userid = '${userid}'`,
         );
 
         if (results.length !== 1) {
@@ -219,7 +219,7 @@ const keyedDbAccess = restate.object({
                     SET credits = ${credits + addCredits},
                         version = ${version + 1}
                   WHERE userid = '${userid}'
-                    AND version = ${version}`
+                    AND version = ${version}`,
       );
 
       if ((meta as any).rowCount !== 1) {
@@ -240,7 +240,7 @@ const keyedDbAccess = restate.object({
       const [results, _meta] = await db.query(
         `SELECT *
                        FROM users
-                      WHERE userid = '${userid}'`
+                      WHERE userid = '${userid}'`,
       );
       return results[0] ?? "(row not found)";
     }),
@@ -280,7 +280,7 @@ const idempotencyKeyDbAccess = restate.service({
       // by scheduling a call to the handler that deletes the key
       ctx
         .serviceSendClient(idempotencyKeyDbAccess)
-        .expireIdempotencyKey(idempotencyKey, restate.rpc.sendOpts({ delay: { days: 1 }}));
+        .expireIdempotencyKey(idempotencyKey, restate.rpc.sendOpts({ delay: { days: 1 } }));
 
       // checking the existence of the idempotency key and making the update happens
       // in one database transaction
@@ -295,7 +295,7 @@ const idempotencyKeyDbAccess = restate.service({
           `INSERT INTO user_idempotency (id)
                         VALUES ('${idempotencyKey}')
                     ON CONFLICT (id) DO NOTHING`,
-          { transaction: tx }
+          { transaction: tx },
         );
 
         if (numInserted !== 1) {
@@ -309,7 +309,7 @@ const idempotencyKeyDbAccess = restate.service({
           `UPDATE users
                         SET credits = credits + ${update.addCredits}
                       WHERE userid = '${update.userId}'`,
-          { transaction: tx }
+          { transaction: tx },
         );
 
         // if everything succeeds, commit idempotency token and update atomically
@@ -329,7 +329,7 @@ const idempotencyKeyDbAccess = restate.service({
     expireIdempotencyKey: async (_ctx: restate.Context, key: string) => {
       await db.query(
         `DELETE FROM user_idempotency
-                       WHERE id = '${key}'`
+                       WHERE id = '${key}'`,
       );
     },
   },
@@ -377,10 +377,7 @@ const twoPhaseCommitDbAccess = restate.service({
 
 // ----------------------------------------------------------------------------
 
-restate
-  .endpoint()
-  .bind(simpledbAccess)
-  .bind(keyedDbAccess)
-  .bind(idempotencyKeyDbAccess)
-  .bind(twoPhaseCommitDbAccess)
-  .listen(9080);
+restate.serve({
+  services: [simpledbAccess, keyedDbAccess, idempotencyKeyDbAccess, twoPhaseCommitDbAccess],
+  port: 9080,
+});

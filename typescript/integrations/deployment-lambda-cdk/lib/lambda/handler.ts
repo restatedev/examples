@@ -16,12 +16,11 @@ const greet = async (_ctx: restate.Context, name: string) => {
 };
 
 // Create the Restate server to accept requests
-export const handler = restate
-  .endpoint()
-  .bind(
+export const handler = restate.createEndpointHandler({
+  services: [
     restate.service({
       name: "Greeter", // the service that serves the handlers
       handlers: { greet },
     }),
-  )
-  .handler();
+  ],
+});
