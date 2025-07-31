@@ -50,4 +50,7 @@ const machineOperator = restate.object({
   },
 });
 
-restate.endpoint().bind(machineOperator).listen(9080);
+restate.serve({
+  services: [machineOperator],
+  port: 9080,
+});

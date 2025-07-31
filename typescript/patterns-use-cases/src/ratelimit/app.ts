@@ -1,6 +1,8 @@
-import { endpoint } from "@restatedev/restate-sdk";
+import * as restate from "@restatedev/restate-sdk";
 
 import { limiter } from "./limiter";
 import { myService } from "./service";
 
-endpoint().bind(limiter).bind(myService).listen();
+restate.serve({
+  services: [limiter, myService],
+});

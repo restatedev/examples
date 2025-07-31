@@ -1,6 +1,8 @@
-import { endpoint } from "@restatedev/restate-sdk";
+import * as restate from "@restatedev/restate-sdk";
 
 import { queue } from "./queue";
 import { myService } from "./service";
 
-endpoint().bind(queue).bind(myService).listen();
+restate.serve({
+  services: [queue, myService],
+});

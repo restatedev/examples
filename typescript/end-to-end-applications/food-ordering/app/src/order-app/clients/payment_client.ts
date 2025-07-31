@@ -11,25 +11,19 @@
 
 class PaymentClient {
   async reserve(id: string, token: string, amount: number): Promise<boolean> {
-    console.info(
-      `[${id}] Reserving payment with token ${token} for $${amount}`
-    );
+    console.info(`[${id}] Reserving payment with token ${token} for $${amount}`);
     // do the call
     return true;
   }
 
   async unreserve(id: string, token: string, amount: number): Promise<boolean> {
-    console.info(
-      `[${id}] Unreserving payment with token ${token} for $${amount}`
-    );
+    console.info(`[${id}] Unreserving payment with token ${token} for $${amount}`);
     // do the call
     return true;
   }
 
   async charge(id: string, token: string, amount: number): Promise<boolean> {
-    console.info(
-      `[${id}] Executing payment with token ${token} for $${amount}`
-    );
+    console.info(`[${id}] Executing payment with token ${token} for $${amount}`);
     // do the call
     return true;
   }

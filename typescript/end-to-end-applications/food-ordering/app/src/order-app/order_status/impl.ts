@@ -9,19 +9,20 @@
  * https://github.com/restatedev/examples/
  */
 
-import {object, ObjectContext} from "@restatedev/restate-sdk";
+import { object, ObjectContext } from "@restatedev/restate-sdk";
 import type { OrderWorkflow } from "../order_workflow/api";
 
-const OrderWorkflowObject: OrderWorkflow = { name: "order-workflow"};
+const OrderWorkflowObject: OrderWorkflow = { name: "order-workflow" };
 
 export default object({
   name: "order-status",
   handlers: {
     /** Gets called by the webUI frontend to display the status of an order. */
     get: async (ctx: ObjectContext) => {
-      const eta = await ctx.get<number>("eta") ?? undefined;
-      const status = await ctx.workflowClient(OrderWorkflowObject, ctx.key).getStatus() ?? undefined;
-      return { eta, status }
+      const eta = (await ctx.get<number>("eta")) ?? undefined;
+      const status =
+        (await ctx.workflowClient(OrderWorkflowObject, ctx.key).getStatus()) ?? undefined;
+      return { eta, status };
     },
 
     setETA: async (ctx: ObjectContext, eta: number) => {

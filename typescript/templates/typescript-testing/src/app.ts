@@ -8,4 +8,7 @@ import { exampleObject } from "./example_object";
 //
 
 // Create the Restate server to accept requests
-restate.endpoint().bind(exampleService).bind(exampleObject).listen(9080);
+restate.serve({
+  services: [exampleService, exampleObject],
+  port: 9080,
+});

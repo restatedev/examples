@@ -51,4 +51,7 @@ const fanOutWorker = restate.service({
   },
 });
 
-restate.endpoint().bind(fanOutWorker).listen(9080);
+restate.serve({
+  services: [fanOutWorker],
+  port: 9080,
+});

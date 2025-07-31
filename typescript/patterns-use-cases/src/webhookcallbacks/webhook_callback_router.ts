@@ -17,4 +17,7 @@ const webhookCallbackRouter = restate.service({
   },
 });
 
-restate.endpoint().bind(webhookCallbackRouter).listen(9080);
+restate.serve({
+  services: [webhookCallbackRouter],
+  port: 9080,
+});
