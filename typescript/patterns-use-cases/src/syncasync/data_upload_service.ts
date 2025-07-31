@@ -23,4 +23,7 @@ const dataUploadService = restate.workflow({
 
 export type DataUploadService = typeof dataUploadService;
 
-restate.endpoint().bind(dataUploadService).listen(9080);
+restate.serve({
+  services: [dataUploadService],
+  port: 9080,
+});

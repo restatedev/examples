@@ -43,8 +43,10 @@ const signupWorkflow = restate.workflow({
 
 export type SignupApi = typeof signupWorkflow;
 
-restate.endpoint().bind(signupWorkflow).listen(9080);
-// or .handler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
+restate.serve({
+  services: [signupWorkflow],
+  port: 9080,
+}); // or createEndpointHandler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
 
 /*
 Check the README to learn how to run Restate.

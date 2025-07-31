@@ -83,4 +83,6 @@ const payments = restate.object({
   },
 });
 
-restate.endpoint().bind(payments).bind(accountsObject).listen();
+restate.serve({
+  services: [payments, accountsObject],
+});

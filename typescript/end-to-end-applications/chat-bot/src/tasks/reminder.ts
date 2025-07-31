@@ -63,5 +63,8 @@ export const reminderTaskDefinition: TaskSpec<ReminderOpts> = {
 };
 
 if (require.main === module) {
-  restate.endpoint().bind(reminderSvc).listen(9081);
+  restate.serve({
+    services: [reminderSvc],
+    port: 9081,
+  });
 }

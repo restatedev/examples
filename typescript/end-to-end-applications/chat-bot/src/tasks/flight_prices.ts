@@ -76,5 +76,8 @@ export const flightPricesTaskDefinition: TaskSpec<FlightPriceOpts> = {
 };
 
 if (require.main === module) {
-  restate.endpoint().bind(flightPriceWatcherWorkflow).listen(9082);
+  restate.serve({
+    services: [flightPriceWatcherWorkflow],
+    port: 9082,
+  });
 }

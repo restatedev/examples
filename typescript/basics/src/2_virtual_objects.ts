@@ -36,8 +36,11 @@ const greeterObject = restate.object({
   },
 });
 
-restate.endpoint().bind(greeterObject).listen(9080);
-// or .handler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
+restate.serve({
+  services: [greeterObject],
+  port: 9080,
+});
+// or createEndpointHandler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
 
 /*
 You specify which object you want to invoke by including its key in the URL path:

@@ -377,10 +377,7 @@ const twoPhaseCommitDbAccess = restate.service({
 
 // ----------------------------------------------------------------------------
 
-restate
-  .endpoint()
-  .bind(simpledbAccess)
-  .bind(keyedDbAccess)
-  .bind(idempotencyKeyDbAccess)
-  .bind(twoPhaseCommitDbAccess)
-  .listen(9080);
+restate.serve({
+  services: [simpledbAccess, keyedDbAccess, idempotencyKeyDbAccess, twoPhaseCommitDbAccess],
+  port: 9080,
+});

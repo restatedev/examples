@@ -42,8 +42,11 @@ const subscriptionService = restate.service({
 });
 
 // Create an HTTP endpoint to serve your services on port 9080
-// or use .handler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
-restate.endpoint().bind(subscriptionService).listen(9080);
+// or use createEndpointHandler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
+restate.serve({
+  services: [subscriptionService],
+  port: 9080,
+});
 
 /*
 Check the README to learn how to run Restate.

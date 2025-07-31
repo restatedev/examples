@@ -36,4 +36,7 @@ const paymentTracker = restate.object({
 
 const PaymentTracker: typeof paymentTracker = { name: "PaymentTracker" };
 
-restate.endpoint().bind(paymentTracker).listen(9080);
+restate.serve({
+  services: [paymentTracker],
+  port: 9080,
+});

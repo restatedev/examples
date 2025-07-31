@@ -90,4 +90,6 @@ function sendBatch(
 export type Batcher = typeof batcher;
 export type BatchReceiver = typeof batchReceiver;
 
-restate.endpoint().bind(batcher).bind(batchReceiver).listen();
+restate.serve({
+  services: [batcher, batchReceiver],
+});

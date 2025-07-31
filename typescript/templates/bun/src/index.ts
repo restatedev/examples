@@ -31,4 +31,7 @@ const greeter = restate.service({
   },
 });
 
-restate.endpoint().bind(greeter).listen(9080);
+restate.serve({
+  services: [greeter],
+  port: 9080,
+});

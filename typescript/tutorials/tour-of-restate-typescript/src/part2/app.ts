@@ -14,4 +14,6 @@ import { cartObject } from "./cart_object";
 import { ticketObject } from "./ticket_object";
 import { checkoutService } from "./checkout_service";
 
-restate.endpoint().bind(cartObject).bind(ticketObject).bind(checkoutService).listen();
+restate.serve({
+  services: [cartObject, ticketObject, checkoutService],
+});

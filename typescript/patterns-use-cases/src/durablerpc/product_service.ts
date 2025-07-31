@@ -22,4 +22,7 @@ const productService = restate.object({
 
 export type ProductService = typeof productService;
 
-restate.endpoint().bind(productService).listen(9080);
+restate.serve({
+  services: [productService],
+  port: 9080,
+});

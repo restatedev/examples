@@ -13,4 +13,7 @@ export const taskService = restate.service({
   },
 });
 
-restate.endpoint().bind(cronJobInitiator).bind(cronJob).bind(taskService).listen(9080);
+restate.serve({
+  services: [cronJobInitiator, cronJob, taskService],
+  port: 9080,
+});

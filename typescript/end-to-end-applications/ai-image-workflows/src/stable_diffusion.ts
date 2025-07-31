@@ -23,7 +23,10 @@ export const stableDiffusion = restate.service({
       const { prompt } = wf.parameters as { prompt: string };
       const image = await Jimp.read(wf.imgInputPath!);
       const base64EncodedImg = (await image.getBufferAsync(Jimp.MIME_PNG)).toString("base64");
-      const stableDiffusionParams = { ...{ prompt }, init_images: [base64EncodedImg] };
+      const stableDiffusionParams = {
+        ...{ prompt },
+        init_images: [base64EncodedImg],
+      };
 
       ctx.console.info(`Transforming image with prompt: ${prompt}`);
       await callStableDiffusion(ctx, wf.imgOutputPath!, stableDiffusionParams);
@@ -35,7 +38,10 @@ export const stableDiffusion = restate.service({
   },
 });
 
-restate.endpoint().bind(stableDiffusion).listen(9081);
+restate.serve({
+  services: [stableDiffusion],
+  port: 9081,
+});
 
 async function callStableDiffusion(
   ctx: restate.Context,

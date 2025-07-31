@@ -90,12 +90,12 @@ async function processWebhook(ctx: restate.Context) {
   return { received: true };
 }
 
-restate
-  .endpoint()
-  .bind(
+restate.serve({
+  services: [
     restate.service({
       name: "payments",
       handlers: { processPayment, processWebhook },
     }),
-  )
-  .listen(9080);
+  ],
+  port: 9080,
+});

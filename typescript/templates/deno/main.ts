@@ -31,6 +31,9 @@ export const greeter = restate.service({
   },
 });
 
-const handler = restate.endpoint().bind(greeter).bidirectional().handler();
+const handler = restate.createEndpointHandler({
+  services: [greeter],
+  bidirectional: true,
+});
 
-Deno.serve({ port: 9080 }, handler.fetch);
+Deno.serve({ port: 9080 }, handler);
