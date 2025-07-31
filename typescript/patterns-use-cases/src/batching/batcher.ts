@@ -76,7 +76,7 @@ export const batchReceiver = restate.object({
 function sendBatch(
   ctx: ObjectContext<BatcherState>,
   expireInvocationId: restate.InvocationId | null,
-  items: unknown[]
+  items: unknown[],
 ): void {
   if (expireInvocationId) {
     ctx.cancel(expireInvocationId);

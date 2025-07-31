@@ -10,23 +10,23 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import {TicketStatus} from "../auxiliary/ticket_status";
+import { TicketStatus } from "../auxiliary/ticket_status";
 
 export const ticketObject = restate.object({
   name: "TicketObject",
-    handlers: {
-        async reserve(ctx: restate.ObjectContext){
-            return true;
-        },
+  handlers: {
+    async reserve(ctx: restate.ObjectContext) {
+      return true;
+    },
 
-        async unreserve(ctx: restate.ObjectContext){
-            return;
-        },
+    async unreserve(ctx: restate.ObjectContext) {
+      return;
+    },
 
-        async markAsSold(ctx: restate.ObjectContext){
-            return;
-        },
-    }
+    async markAsSold(ctx: restate.ObjectContext) {
+      return;
+    },
+  },
 });
 
 export const TicketObject: typeof ticketObject = { name: "TicketObject" };

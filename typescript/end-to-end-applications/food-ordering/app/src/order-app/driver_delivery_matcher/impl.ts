@@ -9,7 +9,7 @@
  * https://github.com/restatedev/examples/
  */
 
-import {object, ObjectContext} from "@restatedev/restate-sdk";
+import { object, ObjectContext } from "@restatedev/restate-sdk";
 import { PendingDelivery } from "../types/types";
 
 /**
@@ -26,9 +26,7 @@ export default object({
   handlers: {
     setDriverAvailable: async (ctx: ObjectContext, driverId: string) => {
       // if we have deliveries already waiting, assign those
-      const pendingDeliveries = await ctx.get<PendingDelivery[]>(
-        PENDING_DELIVERIES
-      ) ?? [];
+      const pendingDeliveries = (await ctx.get<PendingDelivery[]>(PENDING_DELIVERIES)) ?? [];
       if (pendingDeliveries.length > 0) {
         const nextDelivery = pendingDeliveries.shift()!;
         ctx.set(PENDING_DELIVERIES, pendingDeliveries);
@@ -39,19 +37,15 @@ export default object({
       }
 
       // otherwise remember driver as available
-      const availableDrivers =
-        (await ctx.get<string[]>(AVAILABLE_DRIVERS)) ?? [];
+      const availableDrivers = (await ctx.get<string[]>(AVAILABLE_DRIVERS)) ?? [];
       availableDrivers.push(driverId);
       ctx.set(AVAILABLE_DRIVERS, availableDrivers);
     },
 
     // Called when a new delivery gets scheduled.
-    requestDriverForDelivery: async (
-      ctx: ObjectContext,
-      request: PendingDelivery
-    ) => {
+    requestDriverForDelivery: async (ctx: ObjectContext, request: PendingDelivery) => {
       // if a driver is available, assign the delivery right away
-      const availableDrivers = await ctx.get<string[]>(AVAILABLE_DRIVERS) ?? [];
+      const availableDrivers = (await ctx.get<string[]>(AVAILABLE_DRIVERS)) ?? [];
       if (availableDrivers.length > 0) {
         // Remove driver from the pool
         const nextAvailableDriver = availableDrivers.shift()!;
@@ -63,8 +57,7 @@ export default object({
       }
 
       // otherwise store the delivery request until a new driver becomes available
-      const pendingDeliveries =
-        (await ctx.get<PendingDelivery[]>(PENDING_DELIVERIES)) ?? [];
+      const pendingDeliveries = (await ctx.get<PendingDelivery[]>(PENDING_DELIVERIES)) ?? [];
       pendingDeliveries.push(request);
       ctx.set(PENDING_DELIVERIES, pendingDeliveries);
     },
