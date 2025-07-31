@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import { WorkflowContext, WorkflowSharedContext } from "@restatedev/restate-sdk";
+import { WorkflowContext, WorkflowSharedContext, serve } from "@restatedev/restate-sdk";
 import { createS3Bucket, sendEmail, uploadData } from "./utils";
 
 const dataUploadService = restate.workflow({
@@ -23,7 +23,7 @@ const dataUploadService = restate.workflow({
 
 export type DataUploadService = typeof dataUploadService;
 
-restate.serve({
+serve({
   services: [dataUploadService],
   port: 9080,
 });

@@ -1,4 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
+import { serve } from "@restatedev/restate-sdk";
 import { sendReminderEmail, escalateToHuman, StripeEvent } from "./utils/stubs";
 
 const paymentTracker = restate.object({
@@ -36,7 +37,7 @@ const paymentTracker = restate.object({
 
 const PaymentTracker: typeof paymentTracker = { name: "PaymentTracker" };
 
-restate.serve({
+serve({
   services: [paymentTracker],
   port: 9080,
 });

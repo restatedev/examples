@@ -1,7 +1,7 @@
 import * as restate from "@restatedev/restate-sdk";
 import { WorkflowStep } from "./types/types";
 import axios from "axios";
-import * as fs from "fs";
+import { serve } from "@restatedev/restate-sdk";
 import Jimp from "jimp";
 
 type StableDiffusionParams = { prompt: string; steps?: number };
@@ -38,7 +38,7 @@ export const stableDiffusion = restate.service({
   },
 });
 
-restate.serve({
+serve({
   services: [stableDiffusion],
   port: 9081,
 });

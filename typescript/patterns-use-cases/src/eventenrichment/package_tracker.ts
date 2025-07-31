@@ -4,6 +4,7 @@ import {
   ObjectContext,
   ObjectSharedContext,
   TerminalError,
+  serve,
 } from "@restatedev/restate-sdk";
 import shared = handlers.object.shared;
 
@@ -36,7 +37,7 @@ const packageTracker = restate.object({
   },
 });
 
-restate.serve({
+serve({
   services: [packageTracker],
 });
 // Process package tracking events via HTTP:

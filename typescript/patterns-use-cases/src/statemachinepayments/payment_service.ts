@@ -1,4 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
+import { serve } from "@restatedev/restate-sdk";
 import type { AccountsObject } from "./accounts";
 import { accountsObject } from "./accounts";
 
@@ -83,6 +84,6 @@ const payments = restate.object({
   },
 });
 
-restate.serve({
+serve({
   services: [payments, accountsObject],
 });

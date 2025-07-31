@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import { service } from "@restatedev/restate-sdk";
+import { serve } from "@restatedev/restate-sdk";
 import { SubscriptionRequest, createRecurringPayment, createSubscription } from "./utils/stubs";
 
 // Restate helps you implement resilient applications:
@@ -43,7 +43,7 @@ const subscriptionService = restate.service({
 
 // Create an HTTP endpoint to serve your services on port 9080
 // or use createEndpointHandler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
-restate.serve({
+serve({
   services: [subscriptionService],
   port: 9080,
 });

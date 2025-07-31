@@ -1,4 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
+import { serve } from "@restatedev/restate-sdk";
 import { cronJob, cronJobInitiator } from "./cron_service";
 
 export const taskService = restate.service({
@@ -13,7 +14,7 @@ export const taskService = restate.service({
   },
 });
 
-restate.serve({
+serve({
   services: [cronJobInitiator, cronJob, taskService],
   port: 9080,
 });

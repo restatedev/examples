@@ -1,4 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
+import { serve } from "@restatedev/restate-sdk";
 import * as restateClients from "@restatedev/restate-sdk-clients";
 import { createUserEntry, sendEmailWithLink } from "./utils/stubs";
 
@@ -43,7 +44,7 @@ const signupWorkflow = restate.workflow({
 
 export type SignupApi = typeof signupWorkflow;
 
-restate.serve({
+serve({
   services: [signupWorkflow],
   port: 9080,
 }); // or createEndpointHandler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...

@@ -1,4 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
+import { serve } from "@restatedev/restate-sdk";
 import { flightClient } from "./clients/flight_client";
 import { carRentalClient } from "./clients/car_rental_client";
 import { hotelClient } from "./clients/hotel_client";
@@ -68,7 +69,7 @@ const bookingWorkflow = restate.service({
   },
 });
 
-restate.serve({
+serve({
   services: [bookingWorkflow],
   port: 9080,
 });

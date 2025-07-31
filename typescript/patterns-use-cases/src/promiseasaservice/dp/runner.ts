@@ -9,14 +9,14 @@
  * https://github.com/restatedev/sdk-typescript/blob/main/LICENSE
  */
 
-import * as restate from "@restatedev/restate-sdk";
+import { serve } from "@restatedev/restate-sdk";
 import { durablePromiseObject, durablePromiseServer } from "./services";
 
 // launch the server, if this is our main entry point
 if (require.main === module) {
   const port = process.argv.length > 2 ? parseInt(process.argv[2]) : 9080;
 
-  restate.serve({
+  serve({
     services: [durablePromiseObject, durablePromiseServer],
     port,
   });

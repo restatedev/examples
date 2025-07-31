@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import { RestatePromise, Context } from "@restatedev/restate-sdk";
+import { RestatePromise, Context, serve } from "@restatedev/restate-sdk";
 import { aggregate, executeSubtask, Result, split, SubTask, SubTaskResult, Task } from "./utils";
 
 /*
@@ -51,7 +51,7 @@ const fanOutWorker = restate.service({
   },
 });
 
-restate.serve({
+serve({
   services: [fanOutWorker],
   port: 9080,
 });

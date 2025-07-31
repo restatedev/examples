@@ -1,4 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
+import { serve } from "@restatedev/restate-sdk";
 import { exampleService } from "./example_service";
 import { exampleObject } from "./example_object";
 
@@ -8,7 +9,7 @@ import { exampleObject } from "./example_object";
 //
 
 // Create the Restate server to accept requests
-restate.serve({
+serve({
   services: [exampleService, exampleObject],
   port: 9080,
 });

@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import { ObjectContext } from "@restatedev/restate-sdk";
+import { ObjectContext, serve } from "@restatedev/restate-sdk";
 
 /**
  * The product service is deployed somewhere as a Restate application.
@@ -22,7 +22,7 @@ const productService = restate.object({
 
 export type ProductService = typeof productService;
 
-restate.serve({
+serve({
   services: [productService],
   port: 9080,
 });

@@ -1,4 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
+import { serve } from "@restatedev/restate-sdk";
 
 // Virtual Objects are services that hold K/V state. Its handlers interact with the object state.
 // An object is identified by a unique id - only one object exists per id.
@@ -36,7 +37,7 @@ const greeterObject = restate.object({
   },
 });
 
-restate.serve({
+serve({
   services: [greeterObject],
   port: 9080,
 });

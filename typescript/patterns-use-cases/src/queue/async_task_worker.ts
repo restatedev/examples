@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import { Context } from "@restatedev/restate-sdk";
+import { Context, serve } from "@restatedev/restate-sdk";
 
 const asyncTaskWorker = restate.service({
   name: "asyncTaskWorker",
@@ -12,7 +12,7 @@ const asyncTaskWorker = restate.service({
 
 export type AsyncTaskWorker = typeof asyncTaskWorker;
 
-restate.serve({
+serve({
   services: [asyncTaskWorker],
   port: 9080,
 });
