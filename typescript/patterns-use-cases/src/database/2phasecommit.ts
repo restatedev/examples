@@ -30,12 +30,12 @@ export async function runQueryAs2pcTxn(
  * See docs for {@link runQueryAs2pcTxn}.
  *
  * IMPORTANT: When using function, all queries issues must make use of the `tnx` object:
- * ```
+ * 
  * await db.query(
  *     "UDATE ... SET ... WHERE ...",
  *     { transaction: txn }
  * );
- * ```
+ * 
  */
 export async function runAs2pcTxn(
   ctx: restate.Context,
