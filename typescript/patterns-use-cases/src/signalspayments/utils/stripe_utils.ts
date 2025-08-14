@@ -51,7 +51,7 @@ export async function createPaymentIntent(request: {
           restate_callback_id: request.intentWebhookId,
         },
       },
-      requestOptions
+      requestOptions,
     );
 
     // simulate delayed notifications for testing

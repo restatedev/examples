@@ -5,7 +5,9 @@ export const Container = styled.div`
   box-sizing: border-box;
   padding: 5%;
 
-  transition: background-color 0.2s, opacity 0.2s;
+  transition:
+    background-color 0.2s,
+    opacity 0.2s;
 
   &::before {
     content: '';

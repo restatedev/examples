@@ -38,7 +38,7 @@ export const limiter = object({
     },
     reserve: async (
       ctx: ObjectContext<LimiterState>,
-      { n = 1, waitLimitMillis = Infinity }: { n?: number; waitLimitMillis?: number }
+      { n = 1, waitLimitMillis = Infinity }: { n?: number; waitLimitMillis?: number },
     ): Promise<Reservation> => {
       let lim = await getState(ctx);
 
@@ -99,7 +99,7 @@ export const limiter = object({
     },
     setRate: async (
       ctx: ObjectContext<LimiterState>,
-      { newLimit, newBurst }: { newLimit?: number; newBurst?: number }
+      { newLimit, newBurst }: { newLimit?: number; newBurst?: number },
     ) => {
       if (newLimit === undefined && newBurst === undefined) {
         return;

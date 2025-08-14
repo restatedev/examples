@@ -4,7 +4,6 @@ import { sendNotification, sendReminder } from "./utils.js";
 
 import { z } from "zod";
 
-
 const Greeting = z.object({
   name: z.string(),
 });

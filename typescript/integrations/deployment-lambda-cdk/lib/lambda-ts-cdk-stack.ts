@@ -34,7 +34,7 @@ export class LambdaTsCdkStack extends cdk.Stack {
     // you can remove or comment the rest of the code below this line.
     if (!process.env.RESTATE_ENV_ID || !process.env.RESTATE_API_KEY) {
       throw new Error(
-        "Required environment variables RESTATE_ENV_ID and RESTATE_API_KEY are not set, please see README."
+        "Required environment variables RESTATE_ENV_ID and RESTATE_API_KEY are not set, please see README.",
       );
     }
 

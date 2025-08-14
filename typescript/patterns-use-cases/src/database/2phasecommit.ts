@@ -18,7 +18,7 @@ import { Sequelize, Transaction } from "sequelize";
 export async function runQueryAs2pcTxn(
   ctx: restate.Context,
   dbConnection: Sequelize,
-  query: string
+  query: string,
 ) {
   const action = async (db: Sequelize, txn: Transaction) => {
     await db.query(query, { transaction: txn });
@@ -40,7 +40,7 @@ export async function runQueryAs2pcTxn(
 export async function runAs2pcTxn(
   ctx: restate.Context,
   dbConnection: Sequelize,
-  action: (dbConnection: Sequelize, txn: Transaction) => Promise<void>
+  action: (dbConnection: Sequelize, txn: Transaction) => Promise<void>,
 ) {
   // this code only works on a streaming bi-directional connection, see below.
   checkRunsOnBidi(ctx);
@@ -132,7 +132,7 @@ export async function runAs2pcTxn(
   // now commit the prepared transaction - this step is idempotent, so if it was
   // already committed, this does nothing
   await ctx.run("commit prepared transaction", () =>
-    dbConnection.query(`COMMIT PREPARED '${txnIdToCommit}'`)
+    dbConnection.query(`COMMIT PREPARED '${txnIdToCommit}'`),
   );
 }
 

@@ -25,7 +25,7 @@ export const ticketObject = restate.object({
     async markAsSold(ctx: restate.ObjectContext) {
       return;
     },
-  }
+  },
 });
 
 export const TicketObject: typeof ticketObject = { name: "TicketObject" };

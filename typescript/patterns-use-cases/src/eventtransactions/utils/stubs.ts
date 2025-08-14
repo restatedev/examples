@@ -17,7 +17,7 @@ export async function createPost(userId: string, post: SocialMediaPost): Promise
 export async function getPostStatus(postId: string): Promise<string> {
   if (Math.random() < 0.8) {
     console.info(
-      `Content moderation for post ${postId} is still pending... Will check again in 5 seconds`
+      `Content moderation for post ${postId} is still pending... Will check again in 5 seconds`,
     );
     return PENDING;
   } else {

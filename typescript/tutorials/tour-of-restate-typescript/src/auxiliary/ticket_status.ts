@@ -1,5 +1,5 @@
 export enum TicketStatus {
-    Available,
-    Reserved,
-    Sold,
+  Available,
+  Reserved,
+  Sold,
 }

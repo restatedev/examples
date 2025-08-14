@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-const RESTATE_HOST =
-  process.env.REACT_APP_RESTATE_HOST || 'http://localhost:8080';
+const RESTATE_HOST = process.env.REACT_APP_RESTATE_HOST || 'http://localhost:8080';
 const KAFKA_REST_PROXY_HOST = 'http://localhost:8088';
 
 const challenge = (): { challenge: string; challengeTime: string } => {
@@ -52,15 +51,11 @@ export const sendRequestToRestate = async ({
 
 export const publishToKafka = async (record: any) => {
   return await (
-    await axios.post(
-      `${KAFKA_REST_PROXY_HOST}/topics/orders`,
-      `{"records":[${record}]}`,
-      {
-        headers: {
-          'Content-Type': 'application/vnd.kafka.json.v2+json',
-          Accept: '*/*',
-        },
-      }
-    )
+    await axios.post(`${KAFKA_REST_PROXY_HOST}/topics/orders`, `{"records":[${record}]}`, {
+      headers: {
+        'Content-Type': 'application/vnd.kafka.json.v2+json',
+        Accept: '*/*',
+      },
+    })
   ).data;
 };

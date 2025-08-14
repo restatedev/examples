@@ -2,7 +2,7 @@ export function withTimeout<T>(promise: Promise<T>, millis: number): Promise<T> 
   let timeoutPid: NodeJS.Timeout;
   const timeout = new Promise(
     (_resolve, reject) =>
-      (timeoutPid = setTimeout(() => reject(`Timed out after ${millis} ms.`), millis))
+      (timeoutPid = setTimeout(() => reject(`Timed out after ${millis} ms.`), millis)),
   );
 
   return Promise.race([promise, timeout]).finally(() => {

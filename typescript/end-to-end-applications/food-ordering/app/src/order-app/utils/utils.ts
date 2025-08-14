@@ -16,4 +16,3 @@ export function fail(id: string, msg: string) {
   console.error(errorMsg);
   throw new Error(errorMsg);
 }
-

@@ -1,10 +1,6 @@
 import { IUser } from 'models';
 
-const {
-  uniqueNamesGenerator,
-  names,
-  NumberDictionary,
-} = require('unique-names-generator');
+const { uniqueNamesGenerator, names, NumberDictionary } = require('unique-names-generator');
 const { v4: uuidv4 } = require('uuid');
 
 export const whoami = async (): Promise<IUser> => {

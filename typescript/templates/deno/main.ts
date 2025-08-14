@@ -5,36 +5,32 @@ import { sendNotification, sendReminder } from "./utils.ts";
 import { z } from "npm:zod";
 
 const Greeting = z.object({
-    name: z.string(),
+  name: z.string(),
 });
 
 const GreetingResponse = z.object({
-    result: z.string(),
+  result: z.string(),
 });
 
 export const greeter = restate.service({
-    name: "Greeter",
-    handlers: {
-        greet: restate.handlers.handler(
-            { input: serde.zod(Greeting), output: serde.zod(GreetingResponse) },
-            async (ctx: restate.Context, { name }) => {
-                // Durably execute a set of steps; resilient against failures
-                const greetingId = ctx.rand.uuidv4();
-                await ctx.run("Notification", () => sendNotification(greetingId, name));
-                await ctx.sleep({ seconds: 1 });
-                await ctx.run("Reminder", () => sendReminder(greetingId, name));
+  name: "Greeter",
+  handlers: {
+    greet: restate.handlers.handler(
+      { input: serde.zod(Greeting), output: serde.zod(GreetingResponse) },
+      async (ctx: restate.Context, { name }) => {
+        // Durably execute a set of steps; resilient against failures
+        const greetingId = ctx.rand.uuidv4();
+        await ctx.run("Notification", () => sendNotification(greetingId, name));
+        await ctx.sleep({ seconds: 1 });
+        await ctx.run("Reminder", () => sendReminder(greetingId, name));
 
-                // Respond to caller
-                return { result: `You said hi to ${name}!` };
-            },
-        ),
-    },
+        // Respond to caller
+        return { result: `You said hi to ${name}!` };
+      },
+    ),
+  },
 });
 
-const handler = restate
-  .endpoint()
-  .bind(greeter)
-  .bidirectional()
-  .handler();
+const handler = restate.endpoint().bind(greeter).bidirectional().handler();
 
 Deno.serve({ port: 9080 }, handler.fetch);

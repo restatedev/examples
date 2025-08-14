@@ -16,10 +16,7 @@ const signupWorkflow = restate.workflow({
   name: "usersignup",
   handlers: {
     // --- The workflow logic ---
-    run: async (
-      ctx: restate.WorkflowContext,
-      user: { name: string; email: string },
-    ) => {
+    run: async (ctx: restate.WorkflowContext, user: { name: string; email: string }) => {
       // workflow ID = user ID; workflow runs once per user
       const userId = ctx.key;
 
@@ -37,10 +34,7 @@ const signupWorkflow = restate.workflow({
     },
 
     // --- Other handlers interact with the workflow via queries and signals ---
-    click: async (
-      ctx: restate.WorkflowSharedContext,
-      request: { secret: string },
-    ) => {
+    click: async (ctx: restate.WorkflowSharedContext, request: { secret: string }) => {
       // Send data to the workflow via a durable promise
       await ctx.promise<string>("link-clicked").resolve(request.secret);
     },
@@ -67,10 +61,7 @@ Check the README to learn how to run Restate.
 // or programmatically
 async function signupUser(userId: string, name: string, email: string) {
   const rs = restateClients.connect({ url: "http://restate:8080" });
-  const workflowClient = rs.workflowClient<SignupApi>(
-    { name: "usersignup" },
-    userId,
-  );
+  const workflowClient = rs.workflowClient<SignupApi>({ name: "usersignup" }, userId);
   const response = await workflowClient.workflowSubmit({ name, email });
 
   if (response.status != "Accepted") {
@@ -83,10 +74,7 @@ async function signupUser(userId: string, name: string, email: string) {
 // interact with the workflow  from any other code
 async function verifyEmail(userId: string, emailSecret: string) {
   const rs = restateClients.connect({ url: "http://restate:8080" });
-  const workflowClient = rs.workflowClient<SignupApi>(
-    { name: "usersignup" },
-    userId,
-  );
+  const workflowClient = rs.workflowClient<SignupApi>({ name: "usersignup" }, userId);
 
   await workflowClient.click({ secret: emailSecret });
 }

@@ -54,7 +54,7 @@ export const durablePromiseObject = restate.object({
 
     await: async <T>(
       ctx: restate.ObjectContext,
-      awakeableId: string
+      awakeableId: string,
     ): Promise<ValueOrError<T> | null> => {
       const currVal = await ctx.get<ValueOrError<T>>(PROMISE_RESULT_STATE);
 
@@ -105,7 +105,7 @@ export const durablePromiseServer = restate.service({
   handlers: {
     resolve: (
       ctx: restate.Context,
-      request: { promiseId: string; value: any }
+      request: { promiseId: string; value: any },
     ): Promise<ValueOrError<any>> => {
       const name = ensureName(request?.promiseId);
       const obj = ctx.objectClient(DurablePromiseObject, name);
@@ -114,7 +114,7 @@ export const durablePromiseServer = restate.service({
 
     reject: (
       ctx: restate.Context,
-      request: { promiseId: string; errorMessage: string }
+      request: { promiseId: string; errorMessage: string },
     ): Promise<ValueOrError<any>> => {
       const name = ensureName(request?.promiseId);
       const message = ensureErrorMessage(request?.errorMessage);
@@ -124,7 +124,7 @@ export const durablePromiseServer = restate.service({
 
     peek: (
       ctx: restate.Context,
-      request: { promiseId: string }
+      request: { promiseId: string },
     ): Promise<null | ValueOrError<any>> => {
       const name = ensureName(request?.promiseId);
       const obj = ctx.objectClient(DurablePromiseObject, name);
@@ -133,7 +133,7 @@ export const durablePromiseServer = restate.service({
 
     await: async (
       ctx: restate.Context,
-      request: { promiseId: string }
+      request: { promiseId: string },
     ): Promise<ValueOrError<any>> => {
       const name = ensureName(request.promiseId);
       const awakeable = ctx.awakeable<ValueOrError<any>>();
@@ -172,7 +172,7 @@ function ensureErrorMessage(message: string | undefined): string {
 
 async function completePromise<T>(
   ctx: restate.ObjectContext,
-  completion: ValueOrError<T>
+  completion: ValueOrError<T>,
 ): Promise<ValueOrError<T>> {
   const prevResult = await ctx.get<ValueOrError<T>>(PROMISE_RESULT_STATE);
 
