@@ -18,6 +18,9 @@ jobs:
     # prevent from running on forks
     if: github.repository_owner == 'restatedev'
     runs-on: ubuntu-latest
+    env:
+      RESTATE_DISABLE_TELEMETRY: "true"
+
     steps:
       - uses: actions/checkout@v4
       - name: Install Rust toolchain
@@ -33,6 +36,8 @@ jobs:
     # prevent from running on forks
     if: github.repository_owner == 'restatedev'
     runs-on: ubuntu-latest
+    env:
+      RESTATE_DISABLE_TELEMETRY: "true"
     strategy:
       matrix:
         jvm-version: [ 21 ]
@@ -56,6 +61,8 @@ jobs:
     # prevent from running on forks
     if: github.repository_owner == 'restatedev'
     runs-on: ubuntu-latest
+    env:
+      RESTATE_DISABLE_TELEMETRY: "true"
     strategy:
       matrix:
         node-version: [20.x]
@@ -78,6 +85,8 @@ jobs:
     # prevent from running on forks
     if: github.repository_owner == 'restatedev'
     runs-on: ubuntu-latest
+    env:
+      RESTATE_DISABLE_TELEMETRY: "true"
 
     steps:
       - uses: actions/checkout@v3
@@ -105,6 +114,8 @@ jobs:
     # prevent from running on forks
     if: github.repository_owner == 'restatedev'
     runs-on: ubuntu-latest
+    env:
+      RESTATE_DISABLE_TELEMETRY: "true"
     strategy:
       matrix:
         go-version: [1.22]
@@ -124,6 +135,8 @@ jobs:
     # prevent from running on forks
     if: github.repository_owner == 'restatedev'
     runs-on: ubuntu-latest
+    env:
+      RESTATE_DISABLE_TELEMETRY: "true"
     strategy:
       matrix:
         python: ["3.12"]

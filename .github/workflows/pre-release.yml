@@ -38,6 +38,8 @@ jobs:
     if: github.repository_owner == 'restatedev'
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      RESTATE_DISABLE_TELEMETRY: "true"
 
     steps:
       - name: Checkout
