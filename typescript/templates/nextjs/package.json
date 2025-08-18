@@ -9,9 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.8.2",
-    "@restatedev/restate-sdk-clients": "^1.8.2",
-    "@restatedev/restate-sdk-zod": "^1.8.2",
+    "@restatedev/restate-sdk": "^1.8.3",
+    "@restatedev/restate-sdk-clients": "^1.8.3",
+    "@restatedev/restate-sdk-zod": "^1.8.3",
     "@tailwindcss/forms": "^0.5.9",
     "next": "15.2.4",
     "react": "^19.0.0",
