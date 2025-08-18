@@ -1,15 +1,15 @@
 plugins {
   application
-  kotlin("jvm") version "2.1.20"
-  kotlin("plugin.serialization") version "2.1.20"
-  id("com.google.devtools.ksp") version "2.1.20-1.0.32"
+  kotlin("jvm") version "2.2.10"
+  kotlin("plugin.serialization") version "2.2.10"
+  id("com.google.devtools.ksp") version "2.2.10-2.0.2"
 }
 
 repositories {
   mavenCentral()
 }
 
-val restateVersion = "2.2.0"
+val restateVersion = "2.3.0"
 
 dependencies {
   // Annotation processor
