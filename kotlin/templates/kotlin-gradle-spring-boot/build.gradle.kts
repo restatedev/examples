@@ -1,8 +1,8 @@
 plugins {
-	kotlin("jvm") version "2.1.20"
-	kotlin("plugin.spring") version "2.1.20"
-	kotlin("plugin.serialization") version "2.1.20"
-	id("com.google.devtools.ksp") version "2.1.20-1.0.32"
+  kotlin("jvm") version "2.2.10"
+  kotlin("plugin.spring") version "2.2.10"
+  kotlin("plugin.serialization") version "2.2.10"
+  id("com.google.devtools.ksp") version "2.2.10-2.0.2"
 
 	id("org.springframework.boot") version "3.4.4"
 	id("io.spring.dependency-management") version "1.1.7"

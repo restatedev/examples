@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.kotlinJvm)
     application
 
-    id("com.google.devtools.ksp") version "2.0.20-1.0.25"
+    id("com.google.devtools.ksp") version "2.2.10-2.0.2"
 }
 
 group = "dev.restate.examples.noteapp"

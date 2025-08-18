@@ -1,8 +1,8 @@
 plugins {
   application
-  kotlin("jvm") version "2.0.0"
-  kotlin("plugin.serialization") version "2.0.0"
-  id("com.google.devtools.ksp") version "2.0.0-1.0.21"
+  kotlin("jvm") version "2.2.10"
+  kotlin("plugin.serialization") version "2.2.10"
+  id("com.google.devtools.ksp") version "2.2.10-2.0.2"
   id("com.diffplug.spotless") version "6.25.0"
 }
 
