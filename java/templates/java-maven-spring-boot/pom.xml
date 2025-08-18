@@ -28,6 +28,8 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
+        <!-- Override Netty version to make sure we bring in the latest with MadeYourReset CVE fix-->
+        <netty.version>4.1.124.Final</netty.version>
         <restate.version>2.2.0</restate.version>
 	</properties>
 	<dependencies>
