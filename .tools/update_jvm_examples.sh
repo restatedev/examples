@@ -11,7 +11,7 @@ function search_and_replace_version_gradle() {
 }
 
 function search_and_replace_version_maven() {
-  pushd $1 && mvn versions:set-property -Dproperty=restate.version -DnewVersion=$NEW_VERSION && popd || exit
+  pushd $1 && mvn -B versions:set-property -Dproperty=restate.version -DnewVersion=$NEW_VERSION && popd || exit
 }
 
 search_and_replace_version_gradle $PROJECT_ROOT/java/templates/java-gradle

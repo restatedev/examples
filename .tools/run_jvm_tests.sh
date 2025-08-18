@@ -6,9 +6,9 @@ SELF_PATH=${BASH_SOURCE[0]:-"$(command -v -- "$0")"}
 PROJECT_ROOT="$(dirname "$SELF_PATH")/.."
 
 pushd $PROJECT_ROOT/java/templates/java-gradle && ./gradlew --console=plain check && popd
-pushd $PROJECT_ROOT/java/templates/java-maven && mvn verify && popd
-pushd $PROJECT_ROOT/java/templates/java-maven-quarkus && mvn verify && popd
-pushd $PROJECT_ROOT/java/templates/java-maven-spring-boot && mvn verify && popd
+pushd $PROJECT_ROOT/java/templates/java-maven && mvn -B verify && popd
+pushd $PROJECT_ROOT/java/templates/java-maven-quarkus && mvn -B verify && popd
+pushd $PROJECT_ROOT/java/templates/java-maven-spring-boot && mvn -B verify && popd
 pushd $PROJECT_ROOT/kotlin/templates/kotlin-gradle && ./gradlew --console=plain check && popd
 pushd $PROJECT_ROOT/kotlin/templates/kotlin-gradle-spring-boot && ./gradlew --console=plain check && popd
 
@@ -25,7 +25,7 @@ pushd $PROJECT_ROOT/java/tutorials/tour-of-restate-java && ./gradlew --console=p
 
 pushd $PROJECT_ROOT/java/end-to-end-applications/food-ordering/app && ./gradlew --console=plain check && popd
 pushd $PROJECT_ROOT/java/end-to-end-applications/subway-fare-calculator && ./gradlew --console=plain check && popd
-pushd $PROJECT_ROOT/java/end-to-end-applications/workflow-interpreter && mvn verify && popd
+pushd $PROJECT_ROOT/java/end-to-end-applications/workflow-interpreter && mvn -B verify && popd
 pushd $PROJECT_ROOT/kotlin/end-to-end-applications/food-ordering/app && ./gradlew --console=plain check && popd
 
 # This needs the Android SDK
