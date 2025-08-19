@@ -1,97 +1,59 @@
 import * as restate from "@restatedev/restate-sdk";
 
-export function createUserInDB(user: { name: string; email: string }) {
-  if (Math.random() < 0.7 && user.name === "Alice") {
-    // 70% chance of failure
-    console.error(`[👻 SIMULATED] Failed to create user entry: ${user.name}`);
-    throw new Error(`[👻 SIMULATED] Failed to create user entry: ${user.name}`);
+function failOnAlice(name: string){
+  if (name === "Alice") {
+    console.error(`[👻 SIMULATED] Failed to create user entry: ${name}`);
+    throw new Error(`[👻 SIMULATED] Failed to create user entry: ${name}`);
   }
-  console.log(`User entry created: ${user.name}`);
+}
+
+// <start_here>
+export function sendWelcomeEmail(user: { name: string; email: string }) {
+  // failOnAlice(user.name)
+  console.log(`Welcome email sent: ${user.email}`);
+}
+// <end_here>
+
+export function createUserInDB(user: { name: string; email: string }) {
+  console.log(`User entry created in DB: ${user.name}`);
   return true;
 }
 
 export function deleteUserInDB(user: { name: string; email: string }) {
-  if (Math.random() < 0.7 && user.name === "Alice") {
-    // 70% chance of failure
-    console.error(`[👻 SIMULATED] Failed to create user entry: ${user.name}`);
-    throw new Error(`[👻 SIMULATED] Failed to create user entry: ${user.name}`);
-  }
-  console.log(`User entry created: ${user.name}`);
+  console.log(`User entry deleted in DB: ${user.name}`);
   return true;
 }
 
-export function sendWelcomeEmail(user: { name: string; email: string }) {
-  if (Math.random() < 0.7 && user.name === "Alice") {
-    // 70% chance of failure
-    console.error(`[👻 SIMULATED] Failed to send email: ${user.email}`);
-    throw new Error(`[👻 SIMULATED] Failed to send email: ${user.email}`);
-  }
-  console.log(`Email sent: ${user.email}`);
-}
-
 export function sendVerificationEmail(
+    id: string,
   user: { name: string; email: string },
   verificationSecret: string,
 ) {
-  if (Math.random() < 0.7 && user.name === "Alice") {
-    // 70% chance of failure
-    console.error(`[👻 SIMULATED] Failed to send email: ${user.email}`);
-    throw new Error(`[👻 SIMULATED] Failed to send email: ${user.email}`);
-  }
-  console.log(`Email sent: ${user.email}`);
+  console.log(`Verification email sent: ${user.email} \n Verify via: curl localhost:8080/signup-with-signals/${id}/verifyEmail --json '{"secret": "${verificationSecret}"}'`);
 }
 
 export function sendReminderEmail(
   user: { name: string; email: string },
   verificationSecret: string,
 ) {
-  if (Math.random() < 0.7 && user.name === "Alice") {
-    // 70% chance of failure
-    console.error(`[👻 SIMULATED] Failed to send email: ${user.email}`);
-    throw new Error(`[👻 SIMULATED] Failed to send email: ${user.email}`);
-  }
-  console.log(`Email sent: ${user.email}`);
+  console.log(`Reminder email sent: ${user.email}`);
 }
 
 export function callActivateUserAPI(userId: string) {
-  if (Math.random() < 0.7 && userId === "123") {
-    // 70% chance of failure
-    console.error(`[👻 SIMULATED] Failed to activate user account: ${userId}`);
-    throw new Error(
-      `[👻 SIMULATED] Failed to activate user account: ${userId}`,
-    );
-  }
   console.log(`User account activated: ${userId}`);
 }
 
 export function callDeactivateUserAPI(userId: string) {
-  if (Math.random() < 0.7 && userId === "123") {
-    // 70% chance of failure
-    console.error(`[👻 SIMULATED] Failed to activate user account: ${userId}`);
-    throw new Error(
-      `[👻 SIMULATED] Failed to activate user account: ${userId}`,
-    );
-  }
-  console.log(`User account activated: ${userId}`);
+  console.log(`User account deactivated: ${userId}`);
 }
 
 export function subscribeToPaidPlan(user: { name: string; email: string }) {
-  if (Math.random() < 0.7 && user.name === "Alice") {
-    // 70% chance of failure
-    console.error(`[👻 SIMULATED] Failed to create user entry: ${user.name}`);
-    throw new Error(`[👻 SIMULATED] Failed to create user entry: ${user.name}`);
-  }
-  console.log(`User entry created: ${user.name}`);
+  console.log(`User subscribed to paid plan: ${user.name}`);
   return true;
 }
 
 export function cancelSubscription(user: { name: string; email: string }) {
-  if (Math.random() < 0.7 && user.name === "Alice") {
-    // 70% chance of failure
-    console.error(`[👻 SIMULATED] Failed to create user entry: ${user.name}`);
-    throw new Error(`[👻 SIMULATED] Failed to create user entry: ${user.name}`);
-  }
-  console.log(`User entry created: ${user.name}`);
+  console.log(`User subscription cancelled: ${user.name}`);
   return true;
 }
 

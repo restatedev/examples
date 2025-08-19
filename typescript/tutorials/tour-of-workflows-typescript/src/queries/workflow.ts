@@ -26,7 +26,7 @@ export const signupWithQueries = restate.workflow({
       ctx.set("status", {
         status: "user-activated",
         user,
-        completedAt: new Date().toISOString(),
+        completedAt: await ctx.date.toJSON(),
       });
       await ctx.run("welcome", () => sendWelcomeEmail(user));
       return { success };

@@ -12,7 +12,7 @@ export const signupWithSignals = restate.workflow({
 
       // Generate verification secret and send email
       const verificationSecret = ctx.rand.uuidv4();
-      await ctx.run("verify", () => sendVerificationEmail(user, verificationSecret));
+      await ctx.run("verify", () => sendVerificationEmail(userId, user, verificationSecret));
 
       // Wait for user to click verification link
       const clickedSecret = await ctx.promise<string>("email-verified");

@@ -9,20 +9,19 @@ export const signupWithTimers = restate.workflow({
       ctx: restate.WorkflowContext,
       user: { name: string; email: string },
     ) => {
+      const userId = ctx.key;
+
       const verificationSecret = ctx.rand.uuidv4();
-      await ctx.run("verify", () => sendVerificationEmail(user, verificationSecret));
+      await ctx.run("verify", () => sendVerificationEmail(userId, user, verificationSecret));
 
+      const clickedPromise = ctx.promise<string>("email-verified").get();
       const verificationTimeout = ctx.sleep({ days: 1 });
-
       while (true) {
-        const reminderTimer = ctx.sleep({ hours: 4 });
+        const reminderTimer = ctx.sleep({ seconds: 15 });
 
         // Wait for either email verification, reminder timeout, or verification timeout
         const result = await RestatePromise.race([
-          ctx
-            .promise<string>("email-verified")
-            .get()
-            .map(() => "verified"),
+          clickedPromise.map(() => "verified"),
           reminderTimer.map(() => "reminder"),
           verificationTimeout.map(() => "timeout"),
         ]);
