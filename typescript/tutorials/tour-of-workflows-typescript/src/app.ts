@@ -1,13 +1,13 @@
 import * as restate from "@restatedev/restate-sdk";
 import { emailService, userService } from "./utils";
-import { signupWorkflow } from "./getstarted/app";
-import { signupWithActivities } from "./activities/app";
-import { signupWithEvents } from "./events/app";
-import { signupWithQueries } from "./queries/app";
-import { signupWithSignals } from "./signals/app";
-import { signupWithTimers } from "./timers/app";
-import { signupWithSagas } from "./sagas/app";
-import { signupWithRetries } from "./retries/app";
+import { signupWorkflow } from "./getstarted/workflow";
+import { signupWithActivities } from "./activities/workflow";
+import { signupWithEvents } from "./events/workflow";
+import { signupWithQueries } from "./queries/workflow";
+import { signupWithSignals } from "./signals/workflow";
+import { signupWithTimers } from "./timers/workflow";
+import { signupWithSagas } from "./sagas/workflow";
+import { signupWithRetries } from "./retries/workflow";
 
 restate
   .endpoint()
