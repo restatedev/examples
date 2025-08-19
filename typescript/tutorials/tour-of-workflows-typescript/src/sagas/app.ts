@@ -42,4 +42,5 @@ export const signupWithSagas = restate.workflow({
       return { success: true };
     },
   },
+  options: {journalRetention: {hours: 4}}
 });

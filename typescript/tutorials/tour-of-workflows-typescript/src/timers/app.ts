@@ -10,7 +10,7 @@ export const signupWithTimers = restate.workflow({
       user: { name: string; email: string },
     ) => {
       const verificationSecret = ctx.rand.uuidv4();
-      await ctx.run(() => sendVerificationEmail(user, verificationSecret));
+      await ctx.run("verify", () => sendVerificationEmail(user, verificationSecret));
 
       const verificationTimeout = ctx.sleep({ days: 1 });
 
@@ -32,7 +32,7 @@ export const signupWithTimers = restate.workflow({
             const clickedSecret = await ctx.promise<string>("email-verified");
             return { success: clickedSecret === verificationSecret };
           case "reminder":
-            await ctx.run(() => sendReminderEmail(user, verificationSecret));
+            await ctx.run("remind", () => sendReminderEmail(user, verificationSecret));
             break;
 
           case "timeout":
@@ -50,4 +50,5 @@ export const signupWithTimers = restate.workflow({
       await ctx.promise<string>("email-verified").resolve(request.secret);
     },
   },
+  options: {journalRetention: {hours: 4}}
 });

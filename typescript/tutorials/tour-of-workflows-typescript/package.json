@@ -8,6 +8,7 @@
     "build": "tsc --noEmitOnError",
     "start": "node ./dist/app.js",
     "dev": "tsx watch ./src/app.ts",
+    "client": "tsx ./src/client.ts",
     "prebundle": "rm -rf dist",
     "bundle": "esbuild src/app.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/app.js",
     "postbundle": "cd dist && zip -r index.zip app.js*",
@@ -15,7 +16,8 @@
     "app-dev": "npm run dev"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.7.2"
+    "@restatedev/restate-sdk": "^1.7.2",
+    "@restatedev/restate-sdk-clients": "^1.8.3"
   },
   "devDependencies": {
     "@types/node": "^20.14.2",

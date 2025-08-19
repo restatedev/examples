@@ -14,7 +14,7 @@ export const signupWithEvents = restate.workflow({
     ) => {
       const userId = ctx.key;
 
-      const success = await ctx.run(() => createUserInDB(user));
+      const success = await ctx.run("create", () => createUserInDB(user));
 
       if (!success) {
         await ctx
@@ -24,9 +24,9 @@ export const signupWithEvents = restate.workflow({
       }
 
       await ctx.promise<string>("user-created").resolve("User created.");
-      await ctx.run(() => callActivateUserAPI(userId));
+      await ctx.run("activate", () => callActivateUserAPI(userId));
       await ctx.promise<boolean>("user-activated").resolve(true);
-      await ctx.run(() => sendWelcomeEmail(user));
+      await ctx.run("welcome", () => sendWelcomeEmail(user));
       return { success };
     },
 
@@ -38,4 +38,5 @@ export const signupWithEvents = restate.workflow({
       return ctx.promise<boolean>("user-activated");
     },
   },
+  options: {journalRetention: {hours: 4}}
 });

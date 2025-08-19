@@ -40,4 +40,5 @@ export const signupWithRetries = restate.workflow({
       return { success };
     },
   },
+  options: {journalRetention: {hours: 4}}
 });

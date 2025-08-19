@@ -19,9 +19,10 @@ export const signupWithActivities = restate.workflow({
         return { success };
       }
 
-      await ctx.run(() => callActivateUserAPI(userId));
-      await ctx.run(() => sendWelcomeEmail(user));
+      await ctx.run("activate", () => callActivateUserAPI(userId));
+      await ctx.run("welcome", () => sendWelcomeEmail(user));
       return { success };
     },
   },
+  options: {journalRetention: {hours: 4}}
 });

@@ -15,15 +15,16 @@ export const signupWorkflow = restate.workflow({
       // workflow ID = user ID; workflow runs once per user
       const userId = ctx.key;
 
-      const success = await ctx.run(() => createUserInDB(user));
+      const success = await ctx.run("create", () => createUserInDB(user));
 
       if (!success) {
         return { success };
       }
 
-      await ctx.run(() => callActivateUserAPI(userId));
-      await ctx.run(() => sendWelcomeEmail(user));
+      await ctx.run("activate", () => callActivateUserAPI(userId));
+      await ctx.run("welcome", () => sendWelcomeEmail(user));
       return { success };
     },
   },
+  options: {journalRetention: {hours: 4}}
 });

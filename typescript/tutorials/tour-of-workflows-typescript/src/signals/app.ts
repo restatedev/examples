@@ -12,7 +12,7 @@ export const signupWithSignals = restate.workflow({
 
       // Generate verification secret and send email
       const verificationSecret = ctx.rand.uuidv4();
-      await ctx.run(() => sendVerificationEmail(user, verificationSecret));
+      await ctx.run("verify", () => sendVerificationEmail(user, verificationSecret));
 
       // Wait for user to click verification link
       const clickedSecret = await ctx.promise<string>("email-verified");
@@ -22,7 +22,7 @@ export const signupWithSignals = restate.workflow({
         return { success };
       }
 
-      await ctx.run(() => callActivateUserAPI(userId));
+      await ctx.run("activate", () => callActivateUserAPI(userId));
       return { success };
     },
     verifyEmail: async (
@@ -33,4 +33,5 @@ export const signupWithSignals = restate.workflow({
       await ctx.promise<string>("email-verified").resolve(request.secret);
     },
   },
+  options: {journalRetention: {hours: 4}}
 });
