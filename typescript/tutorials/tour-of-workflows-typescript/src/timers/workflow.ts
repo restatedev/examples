@@ -1,11 +1,16 @@
 import * as restate from "@restatedev/restate-sdk";
-import {RestatePromise, TerminalError} from "@restatedev/restate-sdk";
+import {
+  RestatePromise,
+  TerminalError,
+  WorkflowContext,
+  WorkflowSharedContext,
+} from "@restatedev/restate-sdk";
 import { sendVerificationEmail, sendReminderEmail, User } from "../utils";
 
 export const signupWithTimers = restate.workflow({
   name: "signup-with-timers",
   handlers: {
-    run: async (ctx: restate.WorkflowContext, user: User) => {
+    run: async (ctx: WorkflowContext, user: User) => {
       const userId = ctx.key;
 
       const secret = ctx.rand.uuidv4();
@@ -16,7 +21,7 @@ export const signupWithTimers = restate.workflow({
       while (true) {
         const reminderTimer = ctx.sleep({ seconds: 15 });
 
-        // Wait for either email verification, reminder timeout, or verification timeout
+        // Wait for email verification, reminder timer or timeout
         const result = await RestatePromise.race([
           clickedPromise.map(() => "verified"),
           reminderTimer.map(() => "reminder"),
@@ -35,9 +40,8 @@ export const signupWithTimers = restate.workflow({
         }
       }
     },
-    verifyEmail: async (ctx: restate.WorkflowSharedContext, request: { secret: string }) => {
-      // Resolve the promise to continue the main workflow
-      await ctx.promise<string>("email-verified").resolve(request.secret);
+    verifyEmail: async (ctx: WorkflowSharedContext, req: { secret: string }) => {
+      await ctx.promise<string>("email-verified").resolve(req.secret);
     },
   },
 });

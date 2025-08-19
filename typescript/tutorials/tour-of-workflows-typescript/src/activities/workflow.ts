@@ -1,10 +1,11 @@
 import * as restate from "@restatedev/restate-sdk";
+import { WorkflowContext } from "@restatedev/restate-sdk";
 import { activateUser, sendWelcomeEmail, userService, User } from "../utils";
 
 export const signupWithActivities = restate.workflow({
   name: "signup-with-activities",
   handlers: {
-    run: async (ctx: restate.WorkflowContext, user: User) => {
+    run: async (ctx: WorkflowContext, user: User) => {
       const userId = ctx.key;
 
       // <start_activities>

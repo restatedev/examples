@@ -1,10 +1,11 @@
 import * as restate from "@restatedev/restate-sdk";
+import { WorkflowContext, WorkflowSharedContext } from "@restatedev/restate-sdk";
 import { createUser, activateUser, sendWelcomeEmail, User } from "../utils";
 
 export const signupWithQueries = restate.workflow({
   name: "signup-with-queries",
   handlers: {
-    run: async (ctx: restate.WorkflowContext, user: User) => {
+    run: async (ctx: WorkflowContext, user: User) => {
       const userId = ctx.key;
 
       ctx.set("user", user);
@@ -20,7 +21,7 @@ export const signupWithQueries = restate.workflow({
       return { success };
     },
 
-    getStatus: async (ctx: restate.WorkflowSharedContext) => {
+    getStatus: async (ctx: WorkflowSharedContext) => {
       return {
         status: await ctx.get("status"),
         user: await ctx.get("user"),

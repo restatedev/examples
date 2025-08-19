@@ -1,4 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
+import { WorkflowContext } from "@restatedev/restate-sdk";
 import {
   activateUser,
   deactivateUser,
@@ -12,7 +13,7 @@ import {
 export const signupWithSagas = restate.workflow({
   name: "signup-with-sagas",
   handlers: {
-    run: async (ctx: restate.WorkflowContext, user: User) => {
+    run: async (ctx: WorkflowContext, user: User) => {
       const userId = ctx.key;
       const compensations = [];
 

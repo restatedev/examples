@@ -1,10 +1,11 @@
 import * as restate from "@restatedev/restate-sdk";
+import { WorkflowContext } from "@restatedev/restate-sdk";
 import { activateUser, createUser, sendWelcomeEmail, User } from "../utils";
 
 export const signupWithRetries = restate.workflow({
   name: "signup-with-retries",
   handlers: {
-    run: async (ctx: restate.WorkflowContext, user: User) => {
+    run: async (ctx: WorkflowContext, user: User) => {
       const userId = ctx.key;
 
       const success = await ctx.run("create", () => createUser(userId, user));
@@ -14,7 +15,6 @@ export const signupWithRetries = restate.workflow({
 
       // <start_retries>
       try {
-        // Define a retry policy for sending the welcome email
         const policy = {
           maxRetryAttempts: 3,
           initialRetryIntervalMillis: 1000,
