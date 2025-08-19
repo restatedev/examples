@@ -26,7 +26,7 @@ export const signupWithRetries = restate.workflow({
         // Don't let the workflow get stuck if the email service is down
         const emailRetryPolicy = {
           maxRetryAttempts: 3,
-          maxRetryInterval: { seconds: 10 },
+          initialRetryIntervalMillis: 1000,
         };
         await ctx.run(
           "welcome",
