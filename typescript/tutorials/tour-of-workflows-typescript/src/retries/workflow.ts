@@ -1,10 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import {
-  callActivateUserAPI,
-  createUserInDB,
-  sendWelcomeEmail,
-  User,
-} from "../utils";
+import { activateUser, createUser, sendWelcomeEmail, User } from "../utils";
 
 export const signupWithRetries = restate.workflow({
   name: "signup-with-retries",
@@ -12,10 +7,10 @@ export const signupWithRetries = restate.workflow({
     run: async (ctx: restate.WorkflowContext, user: User) => {
       const userId = ctx.key;
 
-      const success = await ctx.run("create", () => createUserInDB(user));
+      const success = await ctx.run("create", () => createUser(userId, user));
       if (!success) return { success };
 
-      await ctx.run("activate", () => callActivateUserAPI(userId));
+      await ctx.run("activate", () => activateUser(userId));
 
       // <start_retries>
       try {

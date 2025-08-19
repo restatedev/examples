@@ -15,9 +15,7 @@ function failOnAlice(name: string, action: string) {
 
 function terminalErrorOnAlice(name: string, action: string) {
   if (name === "Alice") {
-    console.error(
-      `[👻 SIMULATED] Failed to ${action} for ${name}: not available in this country`,
-    );
+    console.error(`[👻 SIMULATED] Failed to ${action} for ${name}: not available in this country`);
     throw new TerminalError(
       `[👻 SIMULATED] Failed to ${action} for ${name}: not available in this country`,
     );
@@ -25,51 +23,47 @@ function terminalErrorOnAlice(name: string, action: string) {
 }
 
 // <start_here>
-export function sendWelcomeEmail(user: { name: string; email: string }) {
+export function sendWelcomeEmail(user: User) {
   failOnAlice(user.name, "send welcome email");
   console.log(`Welcome email sent: ${user.email}`);
 }
 // <end_here>
 
-export function createUserInDB(user: { name: string; email: string }) {
-  console.log(`User entry created in DB: ${user.name}`);
+export function createUser(userId: string, user: User) {
+  console.log(`User entry created in DB: ${userId}`);
   return true;
 }
 
-export function deleteUserInDB(user: { name: string; email: string }) {
-  console.log(`User entry deleted in DB: ${user.name}`);
+export function deleteUser(userId: string) {
+  console.log(`User entry deleted in DB: ${userId}`);
   return true;
 }
 
-export function sendVerificationEmail(
-  id: string,
-  user: { name: string; email: string },
-  verificationSecret: string,
-) {
+export function sendVerificationEmail(id: string, user: User, verificationSecret: string) {
   console.log(`Verification email sent: ${user.email} \n 
   For the signals section, verify via: curl localhost:8080/signup-with-signals/${id}/verifyEmail --json '{"secret": "${verificationSecret}"} \n'
   For the timers section, verify via: curl localhost:8080/signup-with-timers/${id}/verifyEmail --json '{"secret": "${verificationSecret}"} \n'`);
 }
 
-export function sendReminderEmail(user: { name: string; email: string }) {
+export function sendReminderEmail(user: User) {
   console.log(`Reminder email sent: ${user.email}`);
 }
 
-export function callActivateUserAPI(userId: string) {
+export function activateUser(userId: string) {
   console.log(`User account activated: ${userId}`);
 }
 
-export function callDeactivateUserAPI(userId: string) {
+export function deactivateUser(userId: string) {
   console.log(`User account deactivated: ${userId}`);
 }
 
-export function subscribeToPaidPlan(user: { name: string; email: string }) {
+export function subscribeToPaidPlan(user: User) {
   terminalErrorOnAlice(user.name, "subscribe to paid plan");
   console.log(`User subscribed to paid plan: ${user.name}`);
   return true;
 }
 
-export function cancelSubscription(user: { name: string; email: string }) {
+export function cancelSubscription(user: User) {
   console.log(`User subscription cancelled: ${user.name}`);
   return true;
 }
@@ -77,10 +71,7 @@ export function cancelSubscription(user: { name: string; email: string }) {
 export const emailService = restate.service({
   name: "email-service",
   handlers: {
-    sendWelcome: async (
-      ctx: restate.Context,
-      user: { name: string; email: string },
-    ) => {
+    sendWelcome: async (ctx: restate.Context, user: User) => {
       await ctx.run(() => sendWelcomeEmail(user));
       return { success: true, message: "Email sent successfully" };
     },
@@ -90,8 +81,8 @@ export const emailService = restate.service({
 export const userService = restate.service({
   name: "user-service",
   handlers: {
-    createUser: async (ctx: restate.Context, user: User) => {
-      return ctx.run(() => createUserInDB(user));
+    createUser: async (ctx: restate.Context, req: { userId: string; user: User }) => {
+      return ctx.run(() => createUser(req.userId, req.user));
     },
   },
 });

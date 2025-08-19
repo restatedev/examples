@@ -1,15 +1,7 @@
 import * as clients from "@restatedev/restate-sdk-clients";
 import { signupWorkflow } from "./getstarted/workflow";
 
-async function submitWorkflow({
-  id,
-  name,
-  email,
-}: {
-  id: string;
-  name: string;
-  email: string;
-}) {
+async function submitWorkflow({ id, name, email }: { id: string; name: string; email: string }) {
   // <start_submit>
   const restateClient = clients.connect({ url: "http://localhost:8080" });
 
