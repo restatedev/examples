@@ -1,10 +1,8 @@
 import * as restate from "@restatedev/restate-sdk";
 import {
-  emailService,
-  userService,
   createUserInDB,
-  sendVerificationEmail,
-  callActivateUserAPI, sendWelcomeEmail,
+  callActivateUserAPI,
+  sendWelcomeEmail,
 } from "../utils";
 
 export const signupWithEvents = restate.workflow({
@@ -18,16 +16,18 @@ export const signupWithEvents = restate.workflow({
 
       const success = await ctx.run(() => createUserInDB(user));
 
-      if(!success){
-        await ctx.promise<string>("user-created").reject("User couldn't be created.");
-        return { success }
+      if (!success) {
+        await ctx
+          .promise<string>("user-created")
+          .reject("User couldn't be created.");
+        return { success };
       }
 
       await ctx.promise<string>("user-created").resolve("User created.");
-      await ctx.run(() => callActivateUserAPI(userId))
+      await ctx.run(() => callActivateUserAPI(userId));
       await ctx.promise<boolean>("user-activated").resolve(true);
       await ctx.run(() => sendWelcomeEmail(user));
-      return { success }
+      return { success };
     },
 
     waitForUserCreation: async (ctx: restate.WorkflowSharedContext) => {

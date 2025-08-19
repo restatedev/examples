@@ -1,9 +1,6 @@
 import * as restate from "@restatedev/restate-sdk";
 import { RestatePromise } from "@restatedev/restate-sdk";
-import {
-  sendVerificationEmail,
-  sendReminderEmail,
-} from "../utils";
+import { sendVerificationEmail, sendReminderEmail } from "../utils";
 
 export const signupWithTimers = restate.workflow({
   name: "signup-with-timers",
@@ -12,7 +9,6 @@ export const signupWithTimers = restate.workflow({
       ctx: restate.WorkflowContext,
       user: { name: string; email: string },
     ) => {
-
       const verificationSecret = ctx.rand.uuidv4();
       await ctx.run(() => sendVerificationEmail(user, verificationSecret));
 
@@ -23,7 +19,10 @@ export const signupWithTimers = restate.workflow({
 
         // Wait for either email verification, reminder timeout, or verification timeout
         const result = await RestatePromise.race([
-          ctx.promise<string>("email-verified").get().map(() => "verified"),
+          ctx
+            .promise<string>("email-verified")
+            .get()
+            .map(() => "verified"),
           reminderTimer.map(() => "reminder"),
           verificationTimeout.map(() => "timeout"),
         ]);
@@ -31,7 +30,7 @@ export const signupWithTimers = restate.workflow({
         switch (result) {
           case "verified":
             const clickedSecret = await ctx.promise<string>("email-verified");
-            return { success: clickedSecret === verificationSecret }
+            return { success: clickedSecret === verificationSecret };
           case "reminder":
             await ctx.run(() => sendReminderEmail(user, verificationSecret));
             break;
@@ -44,12 +43,11 @@ export const signupWithTimers = restate.workflow({
       }
     },
     verifyEmail: async (
-        ctx: restate.WorkflowSharedContext,
-        request: { secret: string },
+      ctx: restate.WorkflowSharedContext,
+      request: { secret: string },
     ) => {
       // Resolve the promise to continue the main workflow
       await ctx.promise<string>("email-verified").resolve(request.secret);
     },
   },
 });
-

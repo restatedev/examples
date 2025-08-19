@@ -58,7 +58,7 @@ export function callActivateUserAPI(userId: string) {
     // 70% chance of failure
     console.error(`[👻 SIMULATED] Failed to activate user account: ${userId}`);
     throw new Error(
-        `[👻 SIMULATED] Failed to activate user account: ${userId}`,
+      `[👻 SIMULATED] Failed to activate user account: ${userId}`,
     );
   }
   console.log(`User account activated: ${userId}`);
@@ -69,7 +69,7 @@ export function callDeactivateUserAPI(userId: string) {
     // 70% chance of failure
     console.error(`[👻 SIMULATED] Failed to activate user account: ${userId}`);
     throw new Error(
-        `[👻 SIMULATED] Failed to activate user account: ${userId}`,
+      `[👻 SIMULATED] Failed to activate user account: ${userId}`,
     );
   }
   console.log(`User account activated: ${userId}`);
@@ -98,18 +98,26 @@ export function cancelSubscription(user: { name: string; email: string }) {
 export const emailService = restate.service({
   name: "email-service",
   handlers: {
-    sendWelcome: async (ctx: restate.Context, user: {name: string, email: string}) => {
-        await ctx.run(() => sendWelcomeEmail(user));
-        return { success: true, message: "Email sent successfully" };
-      },
+    sendWelcome: async (
+      ctx: restate.Context,
+      user: { name: string; email: string },
+    ) => {
+      await ctx.run(() => sendWelcomeEmail(user));
+      return { success: true, message: "Email sent successfully" };
+    },
   },
 });
 
 export const userService = restate.service({
   name: "user-service",
   handlers: {
-    createUser: async (ctx: restate.Context, user: {id: string, name: string, email: string}) => {
-        return ctx.run(() => createUserInDB({name: user.name, email: user.email}));
-      },
+    createUser: async (
+      ctx: restate.Context,
+      user: { id: string; name: string; email: string },
+    ) => {
+      return ctx.run(() =>
+        createUserInDB({ name: user.name, email: user.email }),
+      );
+    },
   },
 });

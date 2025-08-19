@@ -1,11 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import {
-  emailService,
-  userService,
-  createUserInDB,
-  sendVerificationEmail,
-  callActivateUserAPI,
-} from "../utils";
+import { sendVerificationEmail, callActivateUserAPI } from "../utils";
 
 export const signupWithSignals = restate.workflow({
   name: "signup-with-signals",

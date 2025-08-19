@@ -1,5 +1,9 @@
 import * as restate from "@restatedev/restate-sdk";
-import {callActivateUserAPI, createUserInDB, sendWelcomeEmail} from "../utils";
+import {
+  callActivateUserAPI,
+  createUserInDB,
+  sendWelcomeEmail,
+} from "../utils";
 
 export const signupWorkflow = restate.workflow({
   name: "user-signup",
@@ -13,11 +17,11 @@ export const signupWorkflow = restate.workflow({
 
       const success = await ctx.run(() => createUserInDB(user));
 
-      if(!success){
-        return { success }
+      if (!success) {
+        return { success };
       }
 
-      await ctx.run(() => callActivateUserAPI(userId))
+      await ctx.run(() => callActivateUserAPI(userId));
       await ctx.run(() => sendWelcomeEmail(user));
       return { success };
     },

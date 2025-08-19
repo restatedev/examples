@@ -1,11 +1,11 @@
 import * as restate from "@restatedev/restate-sdk";
 import {
   callActivateUserAPI,
-  callDeactivateUserAPI, cancelSubscription,
+  callDeactivateUserAPI,
+  cancelSubscription,
   createUserInDB,
   deleteUserInDB,
-  sendWelcomeEmail,
-  subscribeToPaidPlan
+  subscribeToPaidPlan,
 } from "../utils";
 
 export const signupWithSagas = restate.workflow({
@@ -22,10 +22,14 @@ export const signupWithSagas = restate.workflow({
         compensations.push(() => ctx.run("delete", () => deleteUserInDB(user)));
         await ctx.run("create", () => createUserInDB(user));
 
-        compensations.push(() => ctx.run("deactivate", () => callDeactivateUserAPI(userId)));
-        await ctx.run("activate", () => callActivateUserAPI(userId))
+        compensations.push(() =>
+          ctx.run("deactivate", () => callDeactivateUserAPI(userId)),
+        );
+        await ctx.run("activate", () => callActivateUserAPI(userId));
 
-        compensations.push(() => ctx.run("unsubscribe", () => cancelSubscription(user)));
+        compensations.push(() =>
+          ctx.run("unsubscribe", () => cancelSubscription(user)),
+        );
         await ctx.run("subscribe", () => subscribeToPaidPlan(user));
       } catch (e) {
         if (e instanceof restate.TerminalError) {
