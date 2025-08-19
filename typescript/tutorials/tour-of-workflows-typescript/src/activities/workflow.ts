@@ -1,28 +1,27 @@
 import * as restate from "@restatedev/restate-sdk";
-import { callActivateUserAPI, sendWelcomeEmail, userService } from "../utils";
+import {
+  callActivateUserAPI,
+  sendWelcomeEmail,
+  userService,
+  User,
+} from "../utils";
 
 export const signupWithActivities = restate.workflow({
   name: "signup-with-activities",
   handlers: {
-    run: async (
-      ctx: restate.WorkflowContext,
-      user: { name: string; email: string },
-    ) => {
+    run: async (ctx: restate.WorkflowContext, user: User) => {
       const userId = ctx.key;
 
+      // <start_activities>
       // Move user DB interaction to dedicated service
-      const success = await ctx
-        .serviceClient(userService)
-        .createUser({ id: ctx.key, ...user });
+      const success = await ctx.serviceClient(userService).createUser(user);
+      if (!success) return { success };
 
-      if (!success) {
-        return { success };
-      }
-
+      // Execute other steps inline
       await ctx.run("activate", () => callActivateUserAPI(userId));
       await ctx.run("welcome", () => sendWelcomeEmail(user));
+      // <end_activities>
       return { success };
     },
   },
-  options: {journalRetention: {hours: 4}}
 });

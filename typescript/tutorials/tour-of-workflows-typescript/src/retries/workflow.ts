@@ -3,42 +3,33 @@ import {
   callActivateUserAPI,
   createUserInDB,
   sendWelcomeEmail,
+  User,
 } from "../utils";
 
 export const signupWithRetries = restate.workflow({
   name: "signup-with-retries",
   handlers: {
-    run: async (
-      ctx: restate.WorkflowContext,
-      user: { name: string; email: string },
-    ) => {
+    run: async (ctx: restate.WorkflowContext, user: User) => {
       const userId = ctx.key;
 
       const success = await ctx.run("create", () => createUserInDB(user));
-
-      if (!success) {
-        return { success };
-      }
+      if (!success) return { success };
 
       await ctx.run("activate", () => callActivateUserAPI(userId));
 
+      // <start_retries>
       try {
-        // Don't let the workflow get stuck if the email service is down
-        const emailRetryPolicy = {
+        // Define a retry policy for sending the welcome email
+        const policy = {
           maxRetryAttempts: 3,
           initialRetryIntervalMillis: 1000,
         };
-        await ctx.run(
-          "welcome",
-          () => sendWelcomeEmail(user),
-          emailRetryPolicy,
-        );
+        await ctx.run("welcome", () => sendWelcomeEmail(user), policy);
       } catch (error) {
         console.error("Failed to send welcome email after retries:", error);
-        return { success: true };
       }
+      // <end_retries>
       return { success };
     },
   },
-  options: {journalRetention: {hours: 4}}
 });

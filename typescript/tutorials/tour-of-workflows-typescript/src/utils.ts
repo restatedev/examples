@@ -1,23 +1,32 @@
 import * as restate from "@restatedev/restate-sdk";
-import {TerminalError} from "@restatedev/restate-sdk";
+import { TerminalError } from "@restatedev/restate-sdk";
 
-function failOnAlice(name: string, action: string){
+export type User = {
+  name: string;
+  email: string;
+};
+
+function failOnAlice(name: string, action: string) {
   if (name === "Alice") {
     console.error(`[👻 SIMULATED] Failed to ${action}: ${name}`);
     throw new Error(`[👻 SIMULATED] Failed to ${action}: ${name}`);
   }
 }
 
-function terminalErrorOnAlice(name: string, action: string){
+function terminalErrorOnAlice(name: string, action: string) {
   if (name === "Alice") {
-    console.error(`[👻 SIMULATED] Failed to ${action} for ${name}: not available in this country`);
-    throw new TerminalError(`[👻 SIMULATED] Failed to ${action} for ${name}: not available in this country`);
+    console.error(
+      `[👻 SIMULATED] Failed to ${action} for ${name}: not available in this country`,
+    );
+    throw new TerminalError(
+      `[👻 SIMULATED] Failed to ${action} for ${name}: not available in this country`,
+    );
   }
 }
 
 // <start_here>
 export function sendWelcomeEmail(user: { name: string; email: string }) {
-  failOnAlice(user.name, "send welcome email")
+  failOnAlice(user.name, "send welcome email");
   console.log(`Welcome email sent: ${user.email}`);
 }
 // <end_here>
@@ -33,19 +42,16 @@ export function deleteUserInDB(user: { name: string; email: string }) {
 }
 
 export function sendVerificationEmail(
-    id: string,
-    user: { name: string; email: string },
-    verificationSecret: string,
+  id: string,
+  user: { name: string; email: string },
+  verificationSecret: string,
 ) {
   console.log(`Verification email sent: ${user.email} \n 
   For the signals section, verify via: curl localhost:8080/signup-with-signals/${id}/verifyEmail --json '{"secret": "${verificationSecret}"} \n'
   For the timers section, verify via: curl localhost:8080/signup-with-timers/${id}/verifyEmail --json '{"secret": "${verificationSecret}"} \n'`);
 }
 
-export function sendReminderEmail(
-  user: { name: string; email: string },
-  verificationSecret: string,
-) {
+export function sendReminderEmail(user: { name: string; email: string }) {
   console.log(`Reminder email sent: ${user.email}`);
 }
 
@@ -84,13 +90,8 @@ export const emailService = restate.service({
 export const userService = restate.service({
   name: "user-service",
   handlers: {
-    createUser: async (
-      ctx: restate.Context,
-      user: { id: string; name: string; email: string },
-    ) => {
-      return ctx.run(() =>
-        createUserInDB({ name: user.name, email: user.email }),
-      );
+    createUser: async (ctx: restate.Context, user: User) => {
+      return ctx.run(() => createUserInDB(user));
     },
   },
 });

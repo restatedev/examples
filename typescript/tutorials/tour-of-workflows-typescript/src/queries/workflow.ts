@@ -3,31 +3,26 @@ import {
   createUserInDB,
   callActivateUserAPI,
   sendWelcomeEmail,
+  User,
 } from "../utils";
 
 export const signupWithQueries = restate.workflow({
   name: "signup-with-queries",
   handlers: {
-    run: async (
-      ctx: restate.WorkflowContext,
-      user: { name: string; email: string },
-    ) => {
+    run: async (ctx: restate.WorkflowContext, user: User) => {
       const userId = ctx.key;
 
       const success = await ctx.run("create", () => createUserInDB(user));
-
       if (!success) {
-        ctx.set("status", { status: "verification-failed", user });
+        ctx.set("status", "failed");
         return { success };
       }
 
-      ctx.set("status", { status: "user-created", user });
+      ctx.set("status", "created");
       await ctx.run("activate", () => callActivateUserAPI(userId));
-      ctx.set("status", {
-        status: "user-activated",
-        user,
-        completedAt: await ctx.date.toJSON(),
-      });
+      ctx.set("completed-at", await ctx.date.toJSON());
+      ctx.set("status", "active");
+
       await ctx.run("welcome", () => sendWelcomeEmail(user));
       return { success };
     },
@@ -36,5 +31,4 @@ export const signupWithQueries = restate.workflow({
       return await ctx.get("status");
     },
   },
-  options: {journalRetention: {hours: 4}}
 });

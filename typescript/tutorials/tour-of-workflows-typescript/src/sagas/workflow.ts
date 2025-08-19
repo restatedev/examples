@@ -6,15 +6,13 @@ import {
   createUserInDB,
   deleteUserInDB,
   subscribeToPaidPlan,
+  User,
 } from "../utils";
 
 export const signupWithSagas = restate.workflow({
   name: "signup-with-sagas",
   handlers: {
-    run: async (
-      ctx: restate.WorkflowContext,
-      user: { name: string; email: string },
-    ) => {
+    run: async (ctx: restate.WorkflowContext, user: User) => {
       const userId = ctx.key;
       const compensations = [];
 
@@ -42,5 +40,4 @@ export const signupWithSagas = restate.workflow({
       return { success: true };
     },
   },
-  options: {journalRetention: {hours: 4}}
 });

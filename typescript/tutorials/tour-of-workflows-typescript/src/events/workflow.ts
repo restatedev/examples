@@ -3,29 +3,23 @@ import {
   createUserInDB,
   callActivateUserAPI,
   sendWelcomeEmail,
+  User,
 } from "../utils";
 
 export const signupWithEvents = restate.workflow({
   name: "signup-with-events",
   handlers: {
-    run: async (
-      ctx: restate.WorkflowContext,
-      user: { name: string; email: string },
-    ) => {
+    run: async (ctx: restate.WorkflowContext, user: User) => {
       const userId = ctx.key;
 
       const success = await ctx.run("create", () => createUserInDB(user));
-
       if (!success) {
-        await ctx
-          .promise<string>("user-created")
-          .reject("User couldn't be created.");
+        await ctx.promise<string>("user-created").reject("Creation failed.");
         return { success };
       }
-
       await ctx.promise<string>("user-created").resolve("User created.");
+
       await ctx.run("activate", () => callActivateUserAPI(userId));
-      await ctx.promise<boolean>("user-activated").resolve(true);
       await ctx.run("welcome", () => sendWelcomeEmail(user));
       return { success };
     },
@@ -33,10 +27,5 @@ export const signupWithEvents = restate.workflow({
     waitForUserCreation: async (ctx: restate.WorkflowSharedContext) => {
       return ctx.promise<string>("user-created");
     },
-
-    waitForUserActivation: async (ctx: restate.WorkflowSharedContext) => {
-      return ctx.promise<boolean>("user-activated");
-    },
   },
-  options: {journalRetention: {hours: 4}}
 });
