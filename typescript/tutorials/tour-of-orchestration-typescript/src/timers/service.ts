@@ -13,7 +13,6 @@ export const paymentsWithTimeout = restate.service({
     process: async (ctx: Context, req: PaymentRequest) => {
       const confirmation = ctx.awakeable<PaymentResult>();
 
-      // Initiate payment with external provider
       const payRef = await ctx.run("pay", () =>
         initPayment(req, confirmation.id),
       );
@@ -34,12 +33,10 @@ export const paymentsWithTimeout = restate.service({
       }
     },
 
-    // Webhook handler called by external payment provider
     confirm: async (
       ctx: Context,
       confirmation: { id: string; result: PaymentResult },
     ) => {
-      // Resolve the awakeable to continue the payment flow
       ctx.resolveAwakeable(confirmation.id, confirmation.result);
     },
   },

@@ -26,7 +26,7 @@ export const subscriptionSaga = restate.service({
 
         for (const subscription of req.subscriptions) {
           compensations.push(() =>
-            ctx.run(`del-${subscription}`, () =>
+            ctx.run(`undo-${subscription}`, () =>
               removeSubscription(req.userId, subscription),
             ),
           );
