@@ -1,5 +1,5 @@
-# Hello world - TypeScript example
+# Tour of Workflows with Restate - TypeScript SDK
 
-Sample project configuration of a Restate service using the TypeScript SDK.
+This project implements the code snippets of the Tour of Workflows with Restate using the TypeScript SDK.
 
-Have a look at the [TypeScript Quickstart guide](https://docs.restate.dev/get_started/quickstart?sdk=ts) for more information on how to use this template.
+[Learn more](https://docs.restate.dev/tour/workflows)
