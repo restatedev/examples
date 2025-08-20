@@ -15,7 +15,7 @@ export const userSubscriptions = restate.object({
       ctx.set("subscriptions", subscriptions);
 
       // Update metrics
-      ctx.set("lastUpdated", ctx.date.toJSON());
+      ctx.set("lastUpdated", await ctx.date.toJSON());
     },
 
     getSubscriptions: async (ctx: ObjectSharedContext) => {

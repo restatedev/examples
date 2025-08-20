@@ -54,7 +54,7 @@ export function createSubscription(
   subscription: string,
   _paymentRef: string,
 ): string {
-  // failOnNetflix(subscription);
+  failOnNetflix(subscription);
   terminalErrorOnDisney(subscription);
   console.log(`>>> Created subscription ${subscription} for user ${userId}`);
   return "SUCCESS";
@@ -78,7 +78,10 @@ export function removeRecurringPayment(paymentId: any) {
 }
 
 export function initPayment(req: PaymentRequest, paymentId: string) {
-  console.log(`>>> Initiating external payment ${paymentId}`);
+  console.log(`>>> Initiating external payment ${paymentId} \n
+  Confirm the payment via: \n
+  curl localhost:8080/Payments/confirm --json '{"id": "${paymentId}", "result": {"success": true, "transactionId": "txn-123"}}'
+  `);
   return "payRef-" + randomUUID().toString();
 }
 

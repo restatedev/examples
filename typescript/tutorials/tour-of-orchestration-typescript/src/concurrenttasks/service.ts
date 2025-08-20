@@ -17,7 +17,7 @@ export const parallelSubscriptionService = restate.service({
 
             // Start all subscriptions in parallel
             const subscriptionPromises = []
-            for (const subscription in req.subscriptions) {
+            for (const subscription of req.subscriptions) {
                 subscriptionPromises.push(ctx.run(`add-${subscription}`, () =>
                     createSubscription(req.userId, subscription, payRef)
                 ))

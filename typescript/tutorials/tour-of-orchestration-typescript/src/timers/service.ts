@@ -5,7 +5,7 @@ import {
   PaymentRequest,
   PaymentResult,
 } from "../utils";
-import { Context, TimeoutError } from "@restatedev/restate-sdk";
+import {Context, TerminalError, TimeoutError} from "@restatedev/restate-sdk";
 
 export const paymentsWithTimeout = restate.service({
   name: "PaymentsWithTimeout",
@@ -17,9 +17,10 @@ export const paymentsWithTimeout = restate.service({
         initPayment(req, confirmation.id),
       );
 
+      // <start_or_timeout>
       // Race between payment confirmation and timeout
       try {
-        return confirmation.promise.orTimeout({ minutes: 10 });
+        return await confirmation.promise.orTimeout({ seconds: 30 });
       } catch (e) {
         if (e instanceof TimeoutError) {
           // Cancel the payment with external provider
@@ -31,6 +32,7 @@ export const paymentsWithTimeout = restate.service({
         }
         throw e;
       }
+      // <end_or_timeout>
     },
 
     confirm: async (
