@@ -4,8 +4,8 @@ import { subscriptionSaga } from "./sagas/service";
 import { userSubscriptions } from "./objects/service";
 import { concertTicketingService } from "./communication/service";
 import { emailService, paymentService } from "./utils";
-import { asyncPaymentServiceWithTimeout } from "./timers/service";
-import { asyncPaymentService } from "./events/service";
+import { paymentsWithTimeout } from "./timers/service";
+import { payments } from "./events/service";
 
 restate
   .endpoint()
@@ -13,8 +13,8 @@ restate
   .bind(subscriptionSaga)
   .bind(userSubscriptions)
   .bind(concertTicketingService)
-  .bind(asyncPaymentService)
-  .bind(asyncPaymentServiceWithTimeout)
+  .bind(payments)
+  .bind(paymentsWithTimeout)
   .bind(paymentService)
   .bind(emailService)
   .listen(9080);

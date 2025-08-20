@@ -63,7 +63,10 @@ export function removeSubscription(userId: string, subscription: string) {
   console.log(`>>> Removed subscription ${subscription} for user ${userId}`);
 }
 
-export function createRecurringPayment(_creditCard: string, paymentId: any): string {
+export function createRecurringPayment(
+  _creditCard: string,
+  paymentId: any,
+): string {
   console.log(`>>> Creating recurring payment ${paymentId}`);
   return "payment-" + randomUUID().toString();
 }
@@ -72,12 +75,12 @@ export function removeRecurringPayment(paymentId: any) {
   console.log(`>>> Removing recurring payment ${paymentId}`);
 }
 
-export function initExternalPayment(req: PaymentRequest, paymentId: string) {
+export function initPayment(req: PaymentRequest, paymentId: string) {
   console.log(`>>> Initiating external payment ${paymentId}`);
   return "payRef-" + randomUUID().toString();
 }
 
-export function cancelExternalPayment(payRef: string) {
+export function cancelPayment(payRef: string) {
   console.log(`>>> Canceling external payment with ref ${payRef}`);
 }
 

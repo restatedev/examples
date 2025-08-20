@@ -1,23 +1,24 @@
 import * as restate from "@restatedev/restate-sdk";
-import { initExternalPayment, PaymentRequest, PaymentResult } from "../utils";
+import { initPayment, PaymentRequest, PaymentResult } from "../utils";
+import { Context } from "@restatedev/restate-sdk";
 
-export const asyncPaymentService = restate.service({
-  name: "AsyncPaymentService",
+export const payments = restate.service({
+  name: "Payments",
   handlers: {
-    processPayment: async (ctx: restate.Context, req: PaymentRequest) => {
+    process: async (ctx: Context, req: PaymentRequest) => {
       // Create awakeable to wait for webhook payment confirmation
       const confirmation = ctx.awakeable<PaymentResult>();
 
       // Initiate payment with external provider (Stripe, PayPal, etc.)
-      await ctx.run("pay", () => initExternalPayment(req, confirmation.id));
+      await ctx.run("pay", () => initPayment(req, confirmation.id));
 
       // Wait for external payment provider to call our webhook
       return confirmation.promise;
     },
 
     // Webhook handler called by external payment provider
-    confirmPayment: async (
-      ctx: restate.Context,
+    confirm: async (
+      ctx: Context,
       confirmation: { id: string; result: PaymentResult },
     ) => {
       // Resolve the awakeable to continue the payment flow

@@ -6,12 +6,15 @@ import {
   removeSubscription,
   SubscriptionRequest,
 } from "../utils";
+import { Context } from "@restatedev/restate-sdk";
 
 export const subscriptionSaga = restate.service({
   name: "SubscriptionSaga",
   handlers: {
-    add: async (ctx: restate.Context, req: SubscriptionRequest) => {
+    add: async (ctx: Context, req: SubscriptionRequest) => {
+      // <start_saga>
       const compensations = [];
+
       try {
         const paymentId = ctx.rand.uuidv4();
         compensations.push(() =>
@@ -39,6 +42,7 @@ export const subscriptionSaga = restate.service({
         }
         throw e;
       }
+      // <end_saga>
     },
   },
 });

@@ -4,11 +4,12 @@ import {
   createSubscription,
   SubscriptionRequest,
 } from "../utils";
+import { Context } from "@restatedev/restate-sdk";
 
 export const subscriptionService = restate.service({
   name: "SubscriptionService",
   handlers: {
-    add: async (ctx: restate.Context, req: SubscriptionRequest) => {
+    add: async (ctx: Context, req: SubscriptionRequest) => {
       const paymentId = ctx.rand.uuidv4();
 
       const payRef = await ctx.run("pay", () =>
