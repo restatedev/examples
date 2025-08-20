@@ -6,15 +6,11 @@ import {
   PaymentResult,
 } from "../utils";
 import { TimeoutError } from "@restatedev/restate-sdk";
-import { asyncPaymentService } from "../events/service";
 
 export const asyncPaymentServiceWithTimeout = restate.service({
   name: "AsyncPaymentServiceWithTimeout",
   handlers: {
-    processPayment: async (
-      ctx: restate.Context,
-      req: PaymentRequest,
-    ): Promise<PaymentResult> => {
+    processPayment: async (ctx: restate.Context, req: PaymentRequest) => {
       const paymentConfirmation = ctx.awakeable<PaymentResult>();
 
       // Initiate payment with external provider

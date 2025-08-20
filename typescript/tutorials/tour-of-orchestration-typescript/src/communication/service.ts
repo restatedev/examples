@@ -10,12 +10,9 @@ import sendOpts = rpc.sendOpts;
 export const concertTicketingService = restate.service({
   name: "ConcertTicketingService",
   handlers: {
-    buy: async (
-      ctx: restate.Context,
-      req: PurchaseTicketRequest,
-    ): Promise<string> => {
+    buy: async (ctx: restate.Context, req: PurchaseTicketRequest) => {
       // Request-response call - wait for payment to complete
-      const paymentRef = await ctx
+      const payRef = await ctx
         .serviceClient(paymentService)
         .processPayment(req);
 
@@ -28,7 +25,7 @@ export const concertTicketingService = restate.service({
         .serviceSendClient(notificationService)
         .sendReminder(req, sendOpts({ delay: reminderDelay }));
 
-      return `Ticket purchased successfully with payment reference: ${paymentRef}`;
+      return `Ticket purchased successfully with payment reference: ${payRef}`;
     },
   },
 });

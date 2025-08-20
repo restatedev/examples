@@ -1,12 +1,10 @@
 import * as restate from "@restatedev/restate-sdk";
+import { ObjectContext, ObjectSharedContext } from "@restatedev/restate-sdk";
 
 export const userSubscriptions = restate.object({
   name: "UserSubscriptions",
   handlers: {
-    addSubscription: async (
-      ctx: restate.ObjectContext,
-      subscription: string,
-    ) => {
+    add: async (ctx: ObjectContext, subscription: string) => {
       // Get current subscriptions
       const subscriptions = (await ctx.get<string[]>("subscriptions")) ?? [];
 
@@ -20,7 +18,7 @@ export const userSubscriptions = restate.object({
       ctx.set("lastUpdated", ctx.date.toJSON());
     },
 
-    getSubscriptions: async (ctx: restate.ObjectContext): Promise<string[]> => {
+    getSubscriptions: async (ctx: ObjectSharedContext) => {
       return (await ctx.get<string[]>("subscriptions")) ?? [];
     },
   },

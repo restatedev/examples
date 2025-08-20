@@ -8,10 +8,7 @@ import {
 export const asyncPaymentService = restate.service({
   name: "AsyncPaymentService",
   handlers: {
-    processPayment: async (
-      ctx: restate.Context,
-      req: PaymentRequest,
-    ): Promise<PaymentResult> => {
+    processPayment: async (ctx: restate.Context, req: PaymentRequest) => {
       // Create awakeable to wait for webhook confirmation
       const paymentConfirmation = ctx.awakeable<PaymentResult>();
 
