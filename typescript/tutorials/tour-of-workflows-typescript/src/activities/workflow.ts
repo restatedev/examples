@@ -10,7 +10,9 @@ export const signupWithActivities = restate.workflow({
 
       // <start_activities>
       // Move user DB interaction to dedicated service
-      const success = await ctx.serviceClient(userService).createUser({ userId, user });
+      const success = await ctx
+        .serviceClient(userService)
+        .createUser({ userId, user });
       if (!success) return { success };
 
       // Execute other steps inline

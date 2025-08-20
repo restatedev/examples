@@ -15,7 +15,9 @@ function failOnAlice(name: string, action: string) {
 
 function terminalErrorOnAlice(name: string, action: string) {
   if (name === "Alice") {
-    console.error(`[👻 SIMULATED] Failed to ${action} for ${name}: not available in this country`);
+    console.error(
+      `[👻 SIMULATED] Failed to ${action} for ${name}: not available in this country`,
+    );
     throw new TerminalError(
       `[👻 SIMULATED] Failed to ${action} for ${name}: not available in this country`,
     );
@@ -39,7 +41,11 @@ export function deleteUser(userId: string) {
   return true;
 }
 
-export function sendVerificationEmail(id: string, user: User, verificationSecret: string) {
+export function sendVerificationEmail(
+  id: string,
+  user: User,
+  verificationSecret: string,
+) {
   console.log(`Verification email sent: ${user.email} \n 
   For the signals section, verify via: curl localhost:8080/signup-with-signals/${id}/verifyEmail --json '{"secret": "${verificationSecret}"} \n'
   For the timers section, verify via: curl localhost:8080/signup-with-timers/${id}/verifyEmail --json '{"secret": "${verificationSecret}"} \n'`);
@@ -81,7 +87,10 @@ export const emailService = restate.service({
 export const userService = restate.service({
   name: "user-service",
   handlers: {
-    createUser: async (ctx: restate.Context, req: { userId: string; user: User }) => {
+    createUser: async (
+      ctx: restate.Context,
+      req: { userId: string; user: User },
+    ) => {
       return ctx.run(() => createUser(req.userId, req.user));
     },
   },

@@ -1,5 +1,8 @@
 import * as restate from "@restatedev/restate-sdk";
-import { WorkflowContext, WorkflowSharedContext } from "@restatedev/restate-sdk";
+import {
+  WorkflowContext,
+  WorkflowSharedContext,
+} from "@restatedev/restate-sdk";
 import { createUser, activateUser, sendWelcomeEmail, User } from "../utils";
 
 export const signupWithQueries = restate.workflow({

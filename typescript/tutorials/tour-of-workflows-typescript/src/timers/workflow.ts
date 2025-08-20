@@ -14,7 +14,9 @@ export const signupWithTimers = restate.workflow({
       const userId = ctx.key;
 
       const secret = ctx.rand.uuidv4();
-      await ctx.run("verify", () => sendVerificationEmail(userId, user, secret));
+      await ctx.run("verify", () =>
+        sendVerificationEmail(userId, user, secret),
+      );
 
       const clickedPromise = ctx.promise<string>("email-verified").get();
       const verificationTimeout = ctx.sleep({ days: 1 });
@@ -36,11 +38,16 @@ export const signupWithTimers = restate.workflow({
             await ctx.run("remind", () => sendReminderEmail(user));
             break;
           case "timeout":
-            throw new TerminalError("Email verification timed out after 24 hours");
+            throw new TerminalError(
+              "Email verification timed out after 24 hours",
+            );
         }
       }
     },
-    verifyEmail: async (ctx: WorkflowSharedContext, req: { secret: string }) => {
+    verifyEmail: async (
+      ctx: WorkflowSharedContext,
+      req: { secret: string },
+    ) => {
       await ctx.promise<string>("email-verified").resolve(req.secret);
     },
   },

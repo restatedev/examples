@@ -15,11 +15,11 @@ export const signupWithRetries = restate.workflow({
 
       // <start_retries>
       try {
-        const policy = {
+        const retryPolicy = {
           maxRetryAttempts: 3,
           initialRetryIntervalMillis: 1000,
         };
-        await ctx.run("welcome", () => sendWelcomeEmail(user), policy);
+        await ctx.run("welcome", () => sendWelcomeEmail(user), retryPolicy);
       } catch (error) {
         console.error("Failed to send welcome email after retries:", error);
       }

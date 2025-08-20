@@ -21,10 +21,14 @@ export const signupWithSagas = restate.workflow({
         compensations.push(() => ctx.run("delete", () => deleteUser(userId)));
         await ctx.run("create", () => createUser(userId, user));
 
-        compensations.push(() => ctx.run("deactivate", () => deactivateUser(userId)));
+        compensations.push(() =>
+          ctx.run("deactivate", () => deactivateUser(userId)),
+        );
         await ctx.run("activate", () => activateUser(userId));
 
-        compensations.push(() => ctx.run("unsubscribe", () => cancelSubscription(user)));
+        compensations.push(() =>
+          ctx.run("unsubscribe", () => cancelSubscription(user)),
+        );
         await ctx.run("subscribe", () => subscribeToPaidPlan(user));
       } catch (e) {
         if (e instanceof restate.TerminalError) {
