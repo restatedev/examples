@@ -1,6 +1,7 @@
 import * as restate from "@restatedev/restate-sdk";
 import {
-  notificationService,
+  dayBefore,
+  emailService,
   paymentService,
   PurchaseTicketRequest,
 } from "../utils";
@@ -12,18 +13,15 @@ export const concertTicketingService = restate.service({
   handlers: {
     buy: async (ctx: restate.Context, req: PurchaseTicketRequest) => {
       // Request-response call - wait for payment to complete
-      const payRef = await ctx
-        .serviceClient(paymentService)
-        .processPayment(req);
+      const payRef = await ctx.serviceClient(paymentService).charge(req);
 
       // One-way message - fire and forget ticket delivery
-      ctx.serviceSendClient(notificationService).emailTicket(req);
+      ctx.serviceSendClient(emailService).emailTicket(req);
 
       // Delayed message - schedule reminder for day before concert
-      const reminderDelay = req.millisUntilConcert - 24 * 60 * 60 * 1000; // 1 day in ms
       ctx
-        .serviceSendClient(notificationService)
-        .sendReminder(req, sendOpts({ delay: reminderDelay }));
+        .serviceSendClient(emailService)
+        .sendReminder(req, sendOpts({ delay: dayBefore(req.concertDate) }));
 
       return `Ticket purchased successfully with payment reference: ${payRef}`;
     },

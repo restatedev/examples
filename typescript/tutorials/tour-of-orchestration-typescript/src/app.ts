@@ -3,7 +3,7 @@ import { subscriptionService } from "./getstarted/service";
 import { subscriptionSaga } from "./sagas/service";
 import { userSubscriptions } from "./objects/service";
 import { concertTicketingService } from "./communication/service";
-import { notificationService, paymentService } from "./utils";
+import { emailService, paymentService } from "./utils";
 import { asyncPaymentServiceWithTimeout } from "./timers/service";
 import { asyncPaymentService } from "./events/service";
 
@@ -16,5 +16,5 @@ restate
   .bind(asyncPaymentService)
   .bind(asyncPaymentServiceWithTimeout)
   .bind(paymentService)
-  .bind(notificationService)
+  .bind(emailService)
   .listen(9080);

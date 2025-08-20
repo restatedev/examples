@@ -1,7 +1,7 @@
 import * as restate from "@restatedev/restate-sdk";
 import {
   cancelExternalPayment,
-  initiateExternalPayment,
+  initExternalPayment,
   PaymentRequest,
   PaymentResult,
 } from "../utils";
@@ -15,7 +15,7 @@ export const asyncPaymentServiceWithTimeout = restate.service({
 
       // Initiate payment with external provider
       const payRef = await ctx.run("init-payment", () =>
-        initiateExternalPayment(req, paymentConfirmation.id),
+        initExternalPayment(req, paymentConfirmation.id),
       );
 
       // Race between payment confirmation and timeout

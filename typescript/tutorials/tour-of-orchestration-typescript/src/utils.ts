@@ -14,8 +14,7 @@ export type PurchaseTicketRequest = {
   ticketId: string;
   price: number;
   customerEmail: string;
-  concertDateTime: string;
-  millisUntilConcert: number;
+  concertDate: string;
 };
 
 export type PaymentRequest = {
@@ -64,10 +63,7 @@ export function removeSubscription(userId: string, subscription: string) {
   console.log(`>>> Removed subscription ${subscription} for user ${userId}`);
 }
 
-export function createRecurringPayment(
-  _creditCard: string,
-  paymentId: any,
-): string {
+export function createRecurringPayment(_creditCard: string, paymentId: any): string {
   console.log(`>>> Creating recurring payment ${paymentId}`);
   return "payment-" + randomUUID().toString();
 }
@@ -76,10 +72,7 @@ export function removeRecurringPayment(paymentId: any) {
   console.log(`>>> Removing recurring payment ${paymentId}`);
 }
 
-export function initiateExternalPayment(
-  req: PaymentRequest,
-  paymentId: string,
-) {
+export function initExternalPayment(req: PaymentRequest, paymentId: string) {
   console.log(`>>> Initiating external payment ${paymentId}`);
   return "payRef-" + randomUUID().toString();
 }
@@ -88,12 +81,26 @@ export function cancelExternalPayment(payRef: string) {
   console.log(`>>> Canceling external payment with ref ${payRef}`);
 }
 
+export function dayBefore(concertDate: string): number {
+  const concertTime = new Date(concertDate).getTime();
+  const now = Date.now();
+  const delay = concertTime - now - 24 * 60 * 60 * 1000; // 1 day in milliseconds
+
+  if (delay < 0) {
+    console.error("Reminder date is in the past, cannot schedule reminder.");
+    return 0; // No delay if the concert is already over
+  }
+
+  console.log(`Scheduling reminder for ${concertDate} with delay ${delay}ms`);
+  return delay;
+}
+
 // SERVICES
 
 export const paymentService = restate.service({
   name: "PaymentService",
   handlers: {
-    processPayment: async (
+    charge: async (
       ctx: restate.Context,
       req: PurchaseTicketRequest,
     ): Promise<string> => {
@@ -107,7 +114,7 @@ export const paymentService = restate.service({
   },
 });
 
-export const notificationService = restate.service({
+export const emailService = restate.service({
   name: "NotificationService",
   handlers: {
     emailTicket: async (
@@ -115,7 +122,7 @@ export const notificationService = restate.service({
       req: PurchaseTicketRequest,
     ): Promise<void> => {
       console.log(
-        `Sending ticket to ${req.customerEmail} for concert on ${req.concertDateTime}`,
+        `Sending ticket to ${req.customerEmail} for concert on ${req.concertDate}`,
       );
     },
     sendReminder: async (
@@ -123,7 +130,7 @@ export const notificationService = restate.service({
       req: PurchaseTicketRequest,
     ): Promise<void> => {
       console.log(
-        `Sending reminder for concert on ${req.concertDateTime} to ${req.customerEmail}`,
+        `Sending reminder for concert on ${req.concertDate} to ${req.customerEmail}`,
       );
     },
   },
