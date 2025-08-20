@@ -48,16 +48,18 @@ function terminalErrorOnDisney(subscription: string) {
   }
 }
 
+// <start_subscription>
 export function createSubscription(
   userId: string,
   subscription: string,
   _paymentRef: string,
 ): string {
-  failOnNetflix(subscription);
+  // failOnNetflix(subscription);
   terminalErrorOnDisney(subscription);
   console.log(`>>> Created subscription ${subscription} for user ${userId}`);
   return "SUCCESS";
 }
+// <end_subscription>
 
 export function removeSubscription(userId: string, subscription: string) {
   console.log(`>>> Removed subscription ${subscription} for user ${userId}`);
