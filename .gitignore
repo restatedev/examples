@@ -3,10 +3,14 @@
 **/.idea
 *.iml
 
+# OSX
+.DS_Store
+
 # NodeJS
 node_modules
 dist
 package-lock.json
+yarn.lock
 
 # Java
 .gradle
