@@ -6,7 +6,7 @@ import { concertTicketingService } from "./communication/service";
 import { emailService, paymentService } from "./utils";
 import { paymentsWithTimeout } from "./timers/service";
 import { payments } from "./events/service";
-import {parallelSubscriptionService} from "./concurrenttasks/service";
+import { parallelSubscriptionService } from "./concurrenttasks/service";
 
 restate
   .endpoint()

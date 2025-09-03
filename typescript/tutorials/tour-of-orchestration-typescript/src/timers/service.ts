@@ -5,7 +5,7 @@ import {
   PaymentRequest,
   PaymentResult,
 } from "../utils";
-import {Context, TerminalError, TimeoutError} from "@restatedev/restate-sdk";
+import { Context, TerminalError, TimeoutError } from "@restatedev/restate-sdk";
 
 export const paymentsWithTimeout = restate.service({
   name: "PaymentsWithTimeout",

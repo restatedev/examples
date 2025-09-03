@@ -18,8 +18,10 @@ export const userSubscriptions = restate.object({
       ctx.set("lastUpdated", await ctx.date.toJSON());
     },
 
-    getSubscriptions: async (ctx: ObjectSharedContext) => {
-      return (await ctx.get<string[]>("subscriptions")) ?? [];
-    },
+    getSubscriptions: restate.handlers.object.shared(
+      async (ctx: ObjectSharedContext) => {
+        return (await ctx.get<string[]>("subscriptions")) ?? [];
+      },
+    ),
   },
 });
