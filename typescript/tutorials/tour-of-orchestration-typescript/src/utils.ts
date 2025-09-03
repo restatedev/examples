@@ -123,7 +123,7 @@ export const paymentService = restate.service({
 });
 
 export const emailService = restate.service({
-  name: "NotificationService",
+  name: "EmailService",
   handlers: {
     emailTicket: async (
       ctx: restate.Context,
