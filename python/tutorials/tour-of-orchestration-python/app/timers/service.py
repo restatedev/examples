@@ -12,7 +12,9 @@ payments_with_timeout = restate.Service("PaymentsWithTimeout")
 async def process(ctx: restate.Context, req: PaymentRequest) -> PaymentResult:
     confirmation = ctx.awakeable()
 
-    pay_ref = await ctx.run_typed("pay", lambda: init_payment(req, confirmation.id))
+    pay_ref = await ctx.run_typed(
+        "pay", init_payment, req=req, confirmation_id=confirmation.id
+    )
 
     # Race between payment confirmation and timeout
     match await restate.select(
@@ -22,7 +24,7 @@ async def process(ctx: restate.Context, req: PaymentRequest) -> PaymentResult:
             return result
         case ["timeout", _]:
             # Cancel the payment with external provider
-            await ctx.run_typed("cancel-payment", lambda: cancel_payment(pay_ref))
+            await ctx.run_typed("cancel-payment", cancel_payment, payment_ref=pay_ref)
             return PaymentResult(
                 success=False, transaction_id=None, error_message="Payment timeout"
             )

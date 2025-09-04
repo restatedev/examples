@@ -10,9 +10,12 @@ parallel_subscription_service = restate.Service("ParallelSubscriptionService")
 
 @parallel_subscription_service.handler()
 async def add(ctx: restate.Context, req: SubscriptionRequest) -> SubscriptionResult:
-    payment_id = ctx.uuid()
+    payment_id = str(ctx.uuid())
     pay_ref = await ctx.run_typed(
-        "pay", lambda: create_recurring_payment(req.credit_card, payment_id)
+        "pay",
+        create_recurring_payment,
+        credit_card=req.credit_card,
+        payment_id=payment_id,
     )
 
     # Start all subscriptions in parallel using asyncio.gather
@@ -20,7 +23,10 @@ async def add(ctx: restate.Context, req: SubscriptionRequest) -> SubscriptionRes
     for subscription in req.subscriptions:
         task = ctx.run_typed(
             f"add-{subscription}",
-            lambda s=subscription: create_subscription(req.user_id, s, pay_ref),
+            create_subscription,
+            user_id=req.user_id,
+            subscription=subscription,
+            payment_ref=pay_ref,
         )
         subscription_tasks.append(task)
 

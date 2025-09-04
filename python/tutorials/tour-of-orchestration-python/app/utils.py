@@ -24,7 +24,7 @@ def terminal_error_on_disney(subscription: str):
 
 
 # <start_subscription>
-def create_subscription(user_id: str, subscription: str, _payment_ref: str) -> str:
+def create_subscription(user_id: str, subscription: str, payment_ref: str) -> str:
     fail_on_netflix(subscription)
     terminal_error_on_disney(subscription)
     print(f">>> Created subscription {subscription} for user {user_id}")

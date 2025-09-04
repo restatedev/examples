@@ -29,7 +29,7 @@ payment_service = restate.Service("PaymentService")
 @payment_service.handler()
 async def charge(ctx: restate.Context, req: PurchaseTicketRequest) -> str:
     # Simulate payment processing
-    payment_id = ctx.uuid()
+    payment_id = str(ctx.uuid())
     print(f"Processing payment for ticket {req.ticket_id} with payment ID {payment_id}")
     return payment_id
 

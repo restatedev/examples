@@ -13,7 +13,7 @@ async def process(ctx: restate.Context, req: PaymentRequest) -> PaymentResult:
     confirmation = ctx.awakeable()
 
     # Initiate payment with external provider (Stripe, PayPal, etc.)
-    await ctx.run_typed("pay", lambda: init_payment(req, confirmation.id))
+    await ctx.run_typed("pay", init_payment, req=req, confirmation_id=confirmation.id)
 
     # Wait for external payment provider to call our webhook
     return await confirmation.promise
