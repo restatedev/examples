@@ -34,6 +34,7 @@ def send_reminder(greeting_id: str, name: str):
         raise Exception(f"[👻 SIMULATED] Failed to send reminder: {greeting_id}")
     print(f"Reminder sent: {greeting_id}")
 
+
 def day_before(concert_date: str) -> timedelta:
     """Calculate delay until day before concert - equivalent to Utils.dayBefore"""
     try:
@@ -57,12 +58,17 @@ def day_before(concert_date: str) -> timedelta:
         return timedelta(0)
 
 
-def init_payment(req: "PaymentRequest", payment_id: str, service_name: str = "Payments") -> str:
+def init_payment(
+    req: "PaymentRequest", payment_id: str
+) -> str:
     """Mock function to initiate payment"""
     print(f">>> Initiating external payment {payment_id}")
     print(f"  Confirm the payment via:")
     print(
-        f'  curl localhost:8080/{service_name}/confirm --json \'{{"id": "{payment_id}", "result": {{"success": true, "transactionId": "txn-123"}}}}\''
+        f'  - For Payments service: curl localhost:8080/Payments/confirm --json \'{{"id": "{payment_id}", "result": {{"success": true, "transactionId": "txn-123"}}}}\''
+    )
+    print(
+        f'  - For PaymentsWithTimeout service: curl localhost:8080/PaymentsWithTimeout/confirm --json \'{{"id": "{payment_id}", "result": {{"success": true, "transactionId": "txn-123"}}}}\''
     )
     return f"payRef-{uuid.uuid4()}"
 

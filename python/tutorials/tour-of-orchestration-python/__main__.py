@@ -4,7 +4,11 @@ import restate
 
 from app.getstarted.service import subscription_service
 from app.sagas.service import subscription_saga
-from app.communication.service import concert_ticketing_service, payment_service, email_service
+from app.communication.service import (
+    concert_ticketing_service,
+    payment_service,
+    email_service,
+)
 from app.concurrenttasks.service import parallel_subscription_service
 from app.events.service import payments
 from app.objects.service import user_subscriptions

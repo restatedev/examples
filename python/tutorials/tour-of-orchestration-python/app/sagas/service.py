@@ -1,7 +1,12 @@
 import restate
 from typing import Callable, Awaitable, List
 
-from app.utils import create_recurring_payment, remove_recurring_payment, create_subscription, remove_subscription
+from app.utils import (
+    create_recurring_payment,
+    remove_recurring_payment,
+    create_subscription,
+    remove_subscription,
+)
 from app.types import SubscriptionRequest
 
 

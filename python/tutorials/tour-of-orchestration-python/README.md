@@ -1,15 +1,11 @@
-# Python Hello World
+# Tour of Microservice Orchestration with Restate - Python SDK
 
-Python hello world project to get started.
+Learn how to orchestrate microservices with durable execution, sagas, and async communication patterns.
 
-To get started, run:
+[Learn more](https://docs.restate.dev/tour/microservice-orchestration)
 
-```shell
-uv run . 
-```
-
-To build a docker image:
+To run:
 
 ```shell
-docker build .
+uv run .
 ```

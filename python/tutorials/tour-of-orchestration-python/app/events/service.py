@@ -4,7 +4,6 @@ from app.utils import init_payment
 from app.types import PaymentRequest, PaymentResult, ConfirmationRequest
 
 
-
 payments = restate.Service("Payments")
 
 

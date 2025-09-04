@@ -17,7 +17,7 @@ export const subscriptionService = restate.service({
       );
 
       for (const subscription of req.subscriptions) {
-        await ctx.run(`subscribe-${subscription}`, () =>
+        await ctx.run(`add-${subscription}`, () =>
           createSubscription(req.userId, subscription, payRef),
         );
       }
