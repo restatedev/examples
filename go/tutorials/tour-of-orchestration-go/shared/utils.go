@@ -2,32 +2,75 @@ package shared
 
 import (
 	"fmt"
+	restate "github.com/restatedev/sdk-go"
 	"time"
 
 	"github.com/google/uuid"
 )
 
 func DayBefore(concertDate string) time.Duration {
-	return time.Minute
+	concertTime, err := time.Parse(time.RFC3339, concertDate)
+	if err != nil {
+		fmt.Printf("Error parsing concert date: %v\n", err)
+		return 0
+	}
+
+	now := time.Now()
+	delay := concertTime.Sub(now) - 24*time.Hour
+
+	if delay < 0 {
+		fmt.Println("Reminder date is in the past, cannot schedule reminder.")
+		return 0
+	}
+
+	fmt.Printf("Scheduling reminder for %s with delay %v\n", concertDate, delay)
+	return delay
 }
 
 func CreateRecurringPayment(creditCard, paymentId string) (string, error) {
 	return fmt.Sprintf("payRef-%s", uuid.New().String()), nil
 }
 
-func RemoveRecurringPayment(paymentId string) error {
+func RemoveRecurringPayment(paymentId string) (restate.Void, error) {
 	fmt.Printf("Removing recurring payment: %s\n", paymentId)
+	return restate.Void{}, nil
+}
+
+func failOnNetflix(subscription string) error {
+	if subscription == "Netflix" {
+		message := `[👻 SIMULATED] "Netflix subscription failed: Netflix API down..."`
+		fmt.Println(message)
+		return fmt.Errorf(message)
+	}
 	return nil
 }
 
-func CreateSubscription(userId, subscription, paymentRef string) error {
-	fmt.Printf("Creating subscription for user: %s, subscription: %s, paymentRef: %s\n", userId, subscription, paymentRef)
+func terminalErrorOnDisney(subscription string) error {
+	if subscription == "Disney" {
+		message := `[👻 SIMULATED] "Disney subscription is not available in this region"`
+		fmt.Println(message)
+		return restate.TerminalError(fmt.Errorf(message))
+	}
 	return nil
 }
 
-func RemoveSubscription(userId, subscription string) error {
+// <start_subscription>
+func CreateSubscription(userId, subscription, paymentRef string) (string, error) {
+	if err := failOnNetflix(subscription); err != nil {
+		return "", err
+	}
+	if err := terminalErrorOnDisney(subscription); err != nil {
+		return "", err
+	}
+	fmt.Printf(">>> Created subscription %s for user %s\n", subscription, userId)
+	return "SUCCESS", nil
+}
+
+// <end_subscription>
+
+func RemoveSubscription(userId, subscription string) (restate.Void, error) {
 	fmt.Printf("Removing subscription for user: %s, subscription: %s\n", userId, subscription)
-	return nil
+	return restate.Void{}, nil
 }
 
 func InitPayment(req PaymentRequest, paymentId string, confirmationId string) (string, error) {

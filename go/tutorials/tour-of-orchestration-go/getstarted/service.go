@@ -21,8 +21,8 @@ func (SubscriptionService) Add(ctx restate.Context, req shared.SubscriptionReque
 	}
 
 	for _, subscription := range req.Subscriptions {
-		_, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-			return restate.Void{}, shared.CreateSubscription(req.UserId, subscription, payRef)
+		_, err := restate.Run(ctx, func(ctx restate.RunContext) (string, error) {
+			return shared.CreateSubscription(req.UserId, subscription, payRef)
 		}, restate.WithName(fmt.Sprintf("add-%s", subscription)))
 		if err != nil {
 			return err
