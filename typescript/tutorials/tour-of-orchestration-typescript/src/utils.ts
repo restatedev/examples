@@ -77,10 +77,11 @@ export function removeRecurringPayment(paymentId: any) {
   console.log(`>>> Removing recurring payment ${paymentId}`);
 }
 
-export function initPayment(req: PaymentRequest, paymentId: string) {
+export function initPayment(req: PaymentRequest, paymentId: string, confirmationId: string) {
   console.log(`>>> Initiating external payment ${paymentId} \n
   Confirm the payment via: \n
-  curl localhost:8080/Payments/confirm --json '{"id": "${paymentId}", "result": {"success": true, "transactionId": "txn-123"}}'
+    - For Payments service: curl localhost:8080/Payments/confirm --json '{"id": "${confirmationId}", "result": {"success": true, "transactionId": "txn-123"}}'
+    - For PaymentsWithTimeout service: curl localhost:8080/PaymentsWithTimeout/confirm --json '{"id": "${confirmationId}", "result": {"success": true, "transactionId": "txn-123"}}'
   `);
   return "payRef-" + randomUUID().toString();
 }

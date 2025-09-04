@@ -10,7 +10,8 @@ export const payments = restate.service({
       const confirmation = ctx.awakeable<PaymentResult>();
 
       // Initiate payment with external provider (Stripe, PayPal, etc.)
-      await ctx.run("pay", () => initPayment(req, confirmation.id));
+      const paymentId = ctx.rand.uuidv4();
+      await ctx.run("pay", () => initPayment(req, paymentId, confirmation.id));
 
       // Wait for external payment provider to call our webhook
       return confirmation.promise;

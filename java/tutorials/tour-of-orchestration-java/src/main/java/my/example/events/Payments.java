@@ -18,7 +18,8 @@ public class Payments {
     var confirmation = ctx.awakeable(PaymentResult.class);
 
     // Initiate payment with external provider (Stripe, PayPal, etc.)
-    ctx.run(() -> initPayment(req, confirmation.id()));
+    var paymentId = ctx.random().nextUUID().toString();
+    ctx.run(() -> initPayment(req, paymentId, confirmation.id()));
 
     // Wait for external payment provider to call our webhook
     return confirmation.await();

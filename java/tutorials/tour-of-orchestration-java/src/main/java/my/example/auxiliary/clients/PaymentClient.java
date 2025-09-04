@@ -13,13 +13,13 @@ public class PaymentClient {
     System.out.printf(">>> Removing recurring payment %s\n", paymentId);
   }
 
-  public static String initPayment(PaymentRequest req, String paymentId) {
+  public static String initPayment(PaymentRequest req, String paymentId, String confirmationId) {
     System.out.printf(
         ">>> Initiating external payment %s \n"
             + "  Confirm the payment via: \n"
             + "  - For Payments service: curl localhost:8080/Payments/confirm --json '{\"id\": \"%s\", \"result\": {\"success\": true, \"transactionId\": \"txn-123\"}}'\n"
             + "  - For PaymentsWithTimeout service: curl localhost:8080/PaymentsWithTimeout/confirm --json '{\"id\": \"%s\", \"result\": {\"success\": true, \"transactionId\": \"txn-123\"}}'\n",
-        paymentId, paymentId, paymentId);
+        paymentId, confirmationId, confirmationId);
     return "payRef-" + UUID.randomUUID();
   }
 

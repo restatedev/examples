@@ -13,8 +13,9 @@ export const paymentsWithTimeout = restate.service({
     process: async (ctx: Context, req: PaymentRequest) => {
       const confirmation = ctx.awakeable<PaymentResult>();
 
+      const paymentId = ctx.rand.uuidv4();
       const payRef = await ctx.run("pay", () =>
-        initPayment(req, confirmation.id),
+        initPayment(req, paymentId, confirmation.id),
       );
 
       // <start_or_timeout>

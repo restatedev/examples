@@ -1,14 +1,11 @@
-# Hello world - Java HTTP example
+# Tour of Microservice Orchestration with Restate - Java SDK
 
-Sample project configuration of a Restate service using the Java SDK and HTTP server. 
+Learn how to orchestrate microservices with durable execution, sagas, and async communication patterns.
 
-Have a look at the [Java Quickstart guide](https://docs.restate.dev/get_started/quickstart?sdk=java) for more information on how to use this project.
+[Learn more](https://docs.restate.dev/tour/microservice-orchestration)
 
 To run:
 
 ```shell
 mvn compile exec:java
 ```
-
-Restate SDK uses annotation processing to generate client classes.
-When modifying the annotated services in Intellij, it is suggested to run **CTRL + F9** to re-generate the client classes.
