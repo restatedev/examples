@@ -24,6 +24,3 @@ async def add(ctx: restate.ObjectContext, subscription: str) -> None:
 @user_subscriptions.handler()
 async def get_subscriptions(ctx: restate.ObjectSharedContext) -> List[str]:
     return await ctx.get("subscriptions") or []
-
-
-app = restate.app(services=[user_subscriptions])

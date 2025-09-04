@@ -3,20 +3,41 @@ import uuid
 from datetime import timedelta, datetime
 from typing import TYPE_CHECKING
 
+from restate import TerminalError
+
 if TYPE_CHECKING:
     from app.types import PaymentRequest
 
 
+def fail_on_netflix(subscription: str):
+    if subscription == "Netflix":
+        message = '[👻 SIMULATED] "Netflix subscription failed: Netflix API down..."'
+        print(message)
+        raise Exception(message)
+
+
+def terminal_error_on_disney(subscription: str):
+    if subscription == "Disney":
+        message = '[👻 SIMULATED] "Disney subscription is not available in this region"'
+        print(message)
+        raise TerminalError(message)
+
+
+# <start_subscription>
+def create_subscription(user_id: str, subscription: str, _payment_ref: str) -> str:
+    fail_on_netflix(subscription)
+    terminal_error_on_disney(subscription)
+    print(f">>> Created subscription {subscription} for user {user_id}")
+    return "SUCCESS"
+
+
+# <end_subscription>
+
+
 def create_recurring_payment(credit_card: str, payment_id: str) -> str:
     """Mock function to create recurring payment"""
+    print(f">>> Creating recurring payment for payment {payment_id}")
     return f"payRef-{uuid.uuid4()}"
-
-
-def create_subscription(user_id: str, subscription: str, payment_ref: str) -> None:
-    """Mock function to create subscription"""
-    print(
-        f"Creating subscription for user: {user_id}, subscription: {subscription}, paymentRef: {payment_ref}"
-    )
 
 
 def send_notification(greeting_id: str, name: str):
@@ -58,9 +79,7 @@ def day_before(concert_date: str) -> timedelta:
         return timedelta(0)
 
 
-def init_payment(
-    req: "PaymentRequest", payment_id: str
-) -> str:
+def init_payment(req: "PaymentRequest", payment_id: str) -> str:
     """Mock function to initiate payment"""
     print(f">>> Initiating external payment {payment_id}")
     print(f"  Confirm the payment via:")

@@ -22,7 +22,4 @@ async def process(ctx: restate.Context, req: PaymentRequest) -> PaymentResult:
 @payments.handler()
 async def confirm(ctx: restate.Context, confirmation: ConfirmationRequest) -> None:
     # Resolve the awakeable to continue the payment flow
-    ctx.resolve_awakeable(confirmation["id"], confirmation["result"])
-
-
-app = restate.app(services=[payments])
+    ctx.resolve_awakeable(confirmation.id, confirmation.result)

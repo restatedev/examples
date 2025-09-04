@@ -18,7 +18,7 @@ async def add(ctx: restate.Context, req: SubscriptionRequest) -> None:
     compensations: List[Callable[[], Awaitable[None]]] = []
 
     try:
-        payment_id = ctx.rand_uuid()
+        payment_id = ctx.uuid()
 
         # Add compensation for payment
         compensations.append(
@@ -29,22 +29,22 @@ async def add(ctx: restate.Context, req: SubscriptionRequest) -> None:
 
         # Create payment
         pay_ref = await ctx.run_typed(
-            "pay", lambda: create_recurring_payment(req["creditCard"], payment_id)
+            "pay", lambda: create_recurring_payment(req.credit_card, payment_id)
         )
 
         # Process subscriptions
-        for subscription in req["subscriptions"]:
+        for subscription in req.subscriptions:
             # Add compensation for this subscription
             compensations.append(
                 lambda s=subscription: ctx.run_typed(
-                    f"undo-{s}", lambda: remove_subscription(req["userId"], s)
+                    f"undo-{s}", lambda: remove_subscription(req.user_id, s)
                 )
             )
 
             # Create subscription
             await ctx.run_typed(
                 f"add-{subscription}",
-                lambda s=subscription: create_subscription(req["userId"], s, pay_ref),
+                lambda s=subscription: create_subscription(req.user_id, s, pay_ref),
             )
 
     except restate.TerminalError as e:
@@ -52,6 +52,3 @@ async def add(ctx: restate.Context, req: SubscriptionRequest) -> None:
         for compensation in reversed(compensations):
             await compensation()
         raise e
-
-
-app = restate.app(services=[subscription_saga])
