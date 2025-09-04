@@ -36,8 +36,4 @@ public class ParallelSubscriptionService {
 
     return new SubscriptionResult(true, payRef);
   }
-
-  public static void main(String[] args) {
-    RestateHttpServer.listen(Endpoint.bind(new ParallelSubscriptionService()));
-  }
 }
