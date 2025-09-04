@@ -1,0 +1,6 @@
+.venv
+__pycache__/
+
+# Restate
+.restate
+restate-data

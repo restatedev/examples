@@ -1,0 +1,82 @@
+import random
+import uuid
+from datetime import timedelta, datetime
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.types import PaymentRequest
+
+
+def create_recurring_payment(credit_card: str, payment_id: str) -> str:
+    """Mock function to create recurring payment"""
+    return f"payRef-{uuid.uuid4()}"
+
+
+def create_subscription(user_id: str, subscription: str, payment_ref: str) -> None:
+    """Mock function to create subscription"""
+    print(
+        f"Creating subscription for user: {user_id}, subscription: {subscription}, paymentRef: {payment_ref}"
+    )
+
+
+def send_notification(greeting_id: str, name: str):
+    if random.random() < 0.7 and name == "Alice":  # 70% chance of failure
+        print(f"[👻 SIMULATED] Failed to send notification: {greeting_id} - {name}")
+        raise Exception(
+            f"[👻 SIMULATED] Failed to send notification: {greeting_id} - {name}"
+        )
+    print(f"Notification sent: {greeting_id} - {name}")
+
+
+def send_reminder(greeting_id: str, name: str):
+    if random.random() < 0.7 and name == "Alice":  # 70% chance of failure
+        print(f"[👻 SIMULATED] Failed to send reminder: {greeting_id}")
+        raise Exception(f"[👻 SIMULATED] Failed to send reminder: {greeting_id}")
+    print(f"Reminder sent: {greeting_id}")
+
+def day_before(concert_date: str) -> timedelta:
+    """Calculate delay until day before concert - equivalent to Utils.dayBefore"""
+    try:
+        # Parse concert date
+        concert_datetime = datetime.fromisoformat(concert_date)
+        now = datetime.now()
+
+        # Calculate delay until day before concert
+        one_day_before = concert_datetime - timedelta(days=1)
+        delay = one_day_before - now
+
+        if delay.total_seconds() < 0:
+            print(f"Reminder date is in the past, cannot schedule reminder.")
+            return timedelta(0)
+
+        print(f"Scheduling reminder for {concert_date} with delay {delay}")
+        return delay
+
+    except ValueError as e:
+        print(f"Invalid date format: {concert_date}")
+        return timedelta(0)
+
+
+def init_payment(req: "PaymentRequest", payment_id: str, service_name: str = "Payments") -> str:
+    """Mock function to initiate payment"""
+    print(f">>> Initiating external payment {payment_id}")
+    print(f"  Confirm the payment via:")
+    print(
+        f'  curl localhost:8080/{service_name}/confirm --json \'{{"id": "{payment_id}", "result": {{"success": true, "transactionId": "txn-123"}}}}\''
+    )
+    return f"payRef-{uuid.uuid4()}"
+
+
+def cancel_payment(pay_ref: str) -> None:
+    """Mock function to cancel payment"""
+    print(f">>> Canceling external payment with ref {pay_ref}")
+
+
+def remove_recurring_payment(payment_id: str) -> None:
+    """Mock function to remove recurring payment"""
+    print(f"Removing recurring payment: {payment_id}")
+
+
+def remove_subscription(user_id: str, subscription: str) -> None:
+    """Mock function to remove subscription"""
+    print(f"Removing subscription for user: {user_id}, subscription: {subscription}")
