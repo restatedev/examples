@@ -1,9 +1,11 @@
-# Hello world - Go example
+# Tour of Microservice Orchestration with Restate - Go SDK
 
-Sample project configuration of a Restate service using the Go SDK.
+Learn how to orchestrate microservices with durable execution, sagas, and async communication patterns.
 
-You can run locally with `go run .` and register to Restate with
-`restate dep add http://localhost:9080`. Then you can invoke with `curl localhost:8080/Greeter/Greet --json '"hello"'`.
+[Learn more](https://docs.restate.dev/tour/microservice-orchestration)
 
-You can build a docker image using [ko](https://github.com/ko-build/ko):
-`ko build --platform=all`
+To run:
+
+```shell
+go run .
+```

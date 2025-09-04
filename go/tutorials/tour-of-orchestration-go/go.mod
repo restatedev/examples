@@ -1,4 +1,4 @@
-module github.com/restatedev/examples/go/templates/go-hello-world
+module github.com/restatedev/examples/go/tutorials/tour-of-orchestration-go
 
 go 1.24
 

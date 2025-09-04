@@ -1,24 +1,20 @@
 package objects
 
 import (
-	"context"
-	"log"
 	"time"
 
 	"github.com/restatedev/sdk-go"
-	"github.com/restatedev/sdk-go/server"
 )
 
 type UserSubscriptions struct{}
 
 func (UserSubscriptions) Add(ctx restate.ObjectContext, subscription string) error {
 	// Get current subscriptions
-	var subscriptions []string
-	has, err := restate.Get(ctx, "subscriptions", &subscriptions)
+	subscriptions, err := restate.Get[[]string](ctx, "subscriptions")
 	if err != nil {
 		return err
 	}
-	if !has {
+	if subscriptions == nil {
 		subscriptions = []string{}
 	}
 
@@ -44,13 +40,5 @@ func (UserSubscriptions) Add(ctx restate.ObjectContext, subscription string) err
 }
 
 func (UserSubscriptions) GetSubscriptions(ctx restate.ObjectSharedContext) ([]string, error) {
-	var subscriptions []string
-	has, err := restate.Get(ctx, "subscriptions", &subscriptions)
-	if err != nil {
-		return nil, err
-	}
-	if !has {
-		subscriptions = []string{}
-	}
-	return subscriptions, nil
+	return restate.Get[[]string](ctx, "subscriptions")
 }

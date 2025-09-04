@@ -7,20 +7,27 @@ import (
 
 	restate "github.com/restatedev/sdk-go"
 	"github.com/restatedev/sdk-go/server"
+
+	"github.com/restatedev/examples/go/tutorials/tour-of-orchestration-go/communication"
+	"github.com/restatedev/examples/go/tutorials/tour-of-orchestration-go/concurrenttasks"
+	"github.com/restatedev/examples/go/tutorials/tour-of-orchestration-go/events"
+	"github.com/restatedev/examples/go/tutorials/tour-of-orchestration-go/getstarted"
+	"github.com/restatedev/examples/go/tutorials/tour-of-orchestration-go/objects"
+	"github.com/restatedev/examples/go/tutorials/tour-of-orchestration-go/sagas"
+	"github.com/restatedev/examples/go/tutorials/tour-of-orchestration-go/timers"
 )
 
 func main() {
 	server := server.NewRestate().
-		Bind(restate.Reflect(ParallelSubscriptionService{})).
-		Bind(restate.Reflect(SubscriptionSer{})).
-		Bind(restate.Reflect(PaymentService{})).
-		Bind(restate.Reflect(EmailService{})).
-		Bind(restate.Reflect(Payments{})).
-		Bind(restate.Reflect(SubscriptionService{})).
-		Bind(restate.Reflect(UserSubscriptions{})).
-		Bind(restate.Reflect(SubscriptionSaga{})).
-		Bind(restate.Reflect(PaymentsWithTimeout{})).
-		Bind(restate.Reflect(ConcertTicketingService{}))
+		Bind(restate.Reflect(concurrenttasks.ParallelSubscriptionService{})).
+		Bind(restate.Reflect(sagas.SubscriptionSaga{})).
+		Bind(restate.Reflect(communication.PaymentService{})).
+		Bind(restate.Reflect(communication.EmailService{})).
+		Bind(restate.Reflect(events.Payments{})).
+		Bind(restate.Reflect(getstarted.SubscriptionService{})).
+		Bind(restate.Reflect(objects.UserSubscriptions{})).
+		Bind(restate.Reflect(timers.PaymentsWithTimeout{})).
+		Bind(restate.Reflect(communication.ConcertTicketingService{}))
 
 	if err := server.Start(context.Background(), ":9080"); err != nil {
 		slog.Error("application exited unexpectedly", "err", err.Error())
