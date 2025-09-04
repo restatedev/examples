@@ -81,7 +81,28 @@ func InitPayment(req PaymentRequest, paymentId string, confirmationId string) (s
 	return fmt.Sprintf("payRef-%s", uuid.New().String()), nil
 }
 
-func CancelPayment(payRef string) error {
+func CancelPayment(payRef string) (restate.Void, error) {
 	fmt.Printf(">>> Canceling external payment with ref %s\n", payRef)
+	return restate.Void{}, nil
+}
+
+type PaymentService struct{}
+
+func (PaymentService) Charge(ctx restate.Context, req PurchaseTicketRequest) (string, error) {
+	// Simulate payment processing
+	paymentId := restate.Rand(ctx).UUID().String()
+	fmt.Printf("Processing payment for ticket %s with payment ID %s\n", req.TicketId, paymentId)
+	return paymentId, nil
+}
+
+type EmailService struct{}
+
+func (EmailService) EmailTicket(ctx restate.Context, req PurchaseTicketRequest) error {
+	fmt.Printf("Sending ticket to %s for concert on %s\n", req.CustomerEmail, req.ConcertDate)
+	return nil
+}
+
+func (EmailService) SendReminder(ctx restate.Context, req PurchaseTicketRequest) error {
+	fmt.Printf("Sending reminder for concert on %s to %s\n", req.ConcertDate, req.CustomerEmail)
 	return nil
 }

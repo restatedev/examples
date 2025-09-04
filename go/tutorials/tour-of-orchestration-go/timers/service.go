@@ -1,7 +1,6 @@
 package timers
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/restatedev/sdk-go"
@@ -28,18 +27,14 @@ func (PaymentsWithTimeout) Process(ctx restate.Context, req shared.PaymentReques
 
 	switch selector.Select() {
 	case confirmation:
-		result, err := confirmation.Result()
-		if err != nil {
-			return shared.PaymentResult{}, err
-		}
-		return result, nil
-	case timeout:
+		return confirmation.Result()
+	default:
 		if err := timeout.Done(); err != nil {
 			return shared.PaymentResult{}, err
 		}
 		// Cancel the payment with external provider
 		_, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-			return restate.Void{}, shared.CancelPayment(payRef)
+			return shared.CancelPayment(payRef)
 		}, restate.WithName("cancel-payment"))
 		if err != nil {
 			return shared.PaymentResult{}, err
@@ -49,8 +44,6 @@ func (PaymentsWithTimeout) Process(ctx restate.Context, req shared.PaymentReques
 			Success:      false,
 			ErrorMessage: "Payment timeout",
 		}, nil
-	default:
-		return shared.PaymentResult{}, fmt.Errorf("unexpected selector result")
 	}
 }
 

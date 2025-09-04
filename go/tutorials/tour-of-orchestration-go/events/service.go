@@ -14,21 +14,15 @@ func (Payments) Process(ctx restate.Context, req shared.PaymentRequest) (shared.
 
 	// Initiate payment with external provider (Stripe, PayPal, etc.)
 	paymentId := restate.Rand(ctx).UUID().String()
-	_, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		_, err := shared.InitPayment(req, paymentId, confirmation.Id())
-		return restate.Void{}, err
+	_, err := restate.Run(ctx, func(ctx restate.RunContext) (string, error) {
+		return shared.InitPayment(req, paymentId, confirmation.Id())
 	}, restate.WithName("pay"))
 	if err != nil {
 		return shared.PaymentResult{}, err
 	}
 
 	// Wait for external payment provider to call our webhook
-	result, err := confirmation.Result()
-	if err != nil {
-		return shared.PaymentResult{}, err
-	}
-
-	return result, nil
+	return confirmation.Result()
 }
 
 // Webhook handler called by external payment provider

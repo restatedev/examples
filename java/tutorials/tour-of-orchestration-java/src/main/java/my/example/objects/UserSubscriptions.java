@@ -8,24 +8,22 @@ import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.serde.TypeRef;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @VirtualObject
 public class UserSubscriptions {
-  private static final StateKey<List<String>> SUBSCRIPTIONS =
+  private static final StateKey<Set<String>> SUBSCRIPTIONS =
       StateKey.of("subscriptions", new TypeRef<>() {});
   private static final StateKey<String> LAST_UPDATED = StateKey.of("lastUpdated", String.class);
 
   @Handler
   public void add(ObjectContext ctx, String subscription) {
     // Get current subscriptions
-    List<String> subscriptions = ctx.get(SUBSCRIPTIONS).orElse(new ArrayList<>());
+    Set<String> subscriptions = ctx.get(SUBSCRIPTIONS).orElse(new HashSet<>());
 
     // Add new subscription
-    if (!subscriptions.contains(subscription)) {
-      subscriptions.add(subscription);
-    }
+    subscriptions.add(subscription);
     ctx.set(SUBSCRIPTIONS, subscriptions);
 
     // Update metrics
@@ -33,7 +31,7 @@ public class UserSubscriptions {
   }
 
   @Shared
-  public List<String> getSubscriptions(SharedObjectContext ctx) {
-    return ctx.get(SUBSCRIPTIONS).orElse(new ArrayList<>());
+  public Set<String> getSubscriptions(SharedObjectContext ctx) {
+    return ctx.get(SUBSCRIPTIONS).orElse(new HashSet<>());
   }
 }

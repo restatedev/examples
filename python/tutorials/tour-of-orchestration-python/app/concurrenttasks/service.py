@@ -18,7 +18,7 @@ async def add(ctx: restate.Context, req: SubscriptionRequest) -> SubscriptionRes
         payment_id=payment_id,
     )
 
-    # Start all subscriptions in parallel using asyncio.gather
+    # Start all subscriptions in parallel
     subscription_tasks = []
     for subscription in req.subscriptions:
         task = ctx.run_typed(
