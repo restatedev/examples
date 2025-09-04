@@ -8,13 +8,12 @@ import my.example.auxiliary.types.PurchaseTicketRequest;
 @Service
 public class PaymentService {
 
-    @Handler
-    public String charge(Context ctx, PurchaseTicketRequest req) {
-        // Simulate payment processing
-        String paymentId = ctx.random().nextUUID().toString();
-        System.out.println(
-                "Processing payment for ticket " + req.ticketId() +
-                        " with payment ID " + paymentId);
-        return paymentId;
-    }
+  @Handler
+  public String charge(Context ctx, PurchaseTicketRequest req) {
+    // Simulate payment processing
+    String paymentId = ctx.random().nextUUID().toString();
+    System.out.println(
+        "Processing payment for ticket " + req.ticketId() + " with payment ID " + paymentId);
+    return paymentId;
+  }
 }

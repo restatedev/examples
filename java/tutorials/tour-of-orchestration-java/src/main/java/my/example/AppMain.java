@@ -12,17 +12,15 @@ import my.example.sagas.SubscriptionSaga;
 import my.example.timers.PaymentsWithTimeoutService;
 
 public class AppMain {
-    public static void main(String[] args) {
-        RestateHttpServer.listen(
-                Endpoint.bind(new SubscriptionService())
-                        .bind(new SubscriptionSaga())
-                        .bind(new UserSubscriptions())
-                        .bind(new ConcertTicketingService())
-                        .bind(new Payments())
-                        .bind(new PaymentsWithTimeoutService())
-                        .bind(new ParallelSubscriptionService())
-                        .bind(new PaymentService())
-
-        );
-    }
+  public static void main(String[] args) {
+    RestateHttpServer.listen(
+        Endpoint.bind(new SubscriptionService())
+            .bind(new SubscriptionSaga())
+            .bind(new UserSubscriptions())
+            .bind(new ConcertTicketingService())
+            .bind(new Payments())
+            .bind(new PaymentsWithTimeoutService())
+            .bind(new ParallelSubscriptionService())
+            .bind(new PaymentService()));
+  }
 }

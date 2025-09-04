@@ -8,6 +8,8 @@
 // https://github.com/restatedev/sdk-java/blob/main/LICENSE
 package my.example;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import dev.restate.client.Client;
 import dev.restate.sdk.testing.BindService;
 import dev.restate.sdk.testing.RestateClient;
@@ -17,13 +19,10 @@ import my.example.Greeter.GreetingResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 @RestateTest
 class GreeterTest {
 
-  @BindService
-  private final Greeter greeter = new Greeter();
+  @BindService private final Greeter greeter = new Greeter();
 
   @Test
   @Timeout(value = 10)
