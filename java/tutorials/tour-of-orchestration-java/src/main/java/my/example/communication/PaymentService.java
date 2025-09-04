@@ -12,8 +12,8 @@ public class PaymentService {
   public String charge(Context ctx, PurchaseTicketRequest req) {
     // Simulate payment processing
     String paymentId = ctx.random().nextUUID().toString();
-    System.out.println(
-        "Processing payment for ticket " + req.ticketId() + " with payment ID " + paymentId);
+    System.out.printf(
+        "Processing payment for ticket %s with payment ID %s", req.ticketId(), paymentId);
     return paymentId;
   }
 }

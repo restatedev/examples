@@ -10,13 +10,13 @@ public class EmailService {
 
   @Handler
   public void emailTicket(Context ctx, PurchaseTicketRequest req) {
-    System.out.println(
-        "Sending ticket to " + req.customerEmail() + " for concert on " + req.concertDateTime());
+    System.out.printf(
+        "Sending ticket to %s for concert on %s", req.customerEmail(), req.concertDate());
   }
 
   @Handler
   public void sendReminder(Context ctx, PurchaseTicketRequest req) {
-    System.out.println(
-        "Sending reminder for concert on " + req.concertDateTime() + " to " + req.customerEmail());
+    System.out.printf(
+        "Sending reminder for concert on %s to %s", req.concertDate(), req.customerEmail());
   }
 }

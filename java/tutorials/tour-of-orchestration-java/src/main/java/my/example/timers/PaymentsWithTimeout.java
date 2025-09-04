@@ -13,7 +13,7 @@ import my.example.auxiliary.types.PaymentRequest;
 import my.example.auxiliary.types.PaymentResult;
 
 @Service
-public class PaymentsWithTimeoutService {
+public class PaymentsWithTimeout {
 
   @Handler
   public PaymentResult process(Context ctx, PaymentRequest req) {

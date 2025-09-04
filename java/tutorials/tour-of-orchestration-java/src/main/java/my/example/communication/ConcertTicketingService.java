@@ -1,7 +1,5 @@
 package my.example.communication;
 
-import static my.example.auxiliary.Utils.dayBefore;
-
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
@@ -19,7 +17,7 @@ public class ConcertTicketingService {
     EmailServiceClient.fromContext(ctx).send().emailTicket(req);
 
     // Delayed message - schedule reminder for day before concert
-    EmailServiceClient.fromContext(ctx).send().sendReminder(req, dayBefore(req.concertDateTime()));
+    EmailServiceClient.fromContext(ctx).send().sendReminder(req, req.dayBefore());
 
     return "Ticket purchased successfully with payment reference: " + payRef;
   }

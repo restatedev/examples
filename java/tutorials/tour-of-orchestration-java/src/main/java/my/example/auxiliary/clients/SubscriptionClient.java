@@ -22,7 +22,7 @@ public class SubscriptionClient {
 
   // <start_subscription>
   public static String createSubscription(String userId, String subscription, String paymentRef) {
-//    failOnNetflix(subscription);
+    failOnNetflix(subscription);
     terminalErrorOnDisney(subscription);
     System.out.println(">>> Created subscription " + subscription + " for user " + userId);
     return "SUCCESS";
