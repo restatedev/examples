@@ -15,7 +15,7 @@ subscription_saga = restate.Service("SubscriptionSaga")
 
 @subscription_saga.handler()
 async def add(ctx: restate.Context, req: SubscriptionRequest) -> None:
-    compensations: List[Callable[[], Awaitable[None]]] = []
+    compensations = []
 
     try:
         payment_id = str(ctx.uuid())

@@ -1,12 +1,11 @@
 import random
+import restate
 import uuid
-from datetime import timedelta, datetime
-from typing import TYPE_CHECKING
 
+from datetime import timedelta, datetime
 from restate import TerminalError
 
-if TYPE_CHECKING:
-    from app.types import PaymentRequest
+from app.types import PaymentRequest, PurchaseTicketRequest
 
 
 def fail_on_netflix(subscription: str):
@@ -61,7 +60,19 @@ def day_before(concert_date: str) -> timedelta:
     try:
         # Parse concert date
         concert_datetime = datetime.fromisoformat(concert_date)
-        now = datetime.now()
+
+        # Ensure both datetimes have the same timezone awareness
+        if concert_datetime.tzinfo is not None:
+            # Concert date is timezone-aware, make now timezone-aware too
+            from datetime import timezone
+
+            now = datetime.now(timezone.utc)
+            if concert_datetime.tzinfo != timezone.utc:
+                # Convert concert_datetime to UTC for consistent comparison
+                concert_datetime = concert_datetime.astimezone(timezone.utc)
+        else:
+            # Concert date is timezone-naive, use naive datetime for now
+            now = datetime.now()
 
         # Calculate delay until day before concert
         one_day_before = concert_datetime - timedelta(days=1)
@@ -79,15 +90,15 @@ def day_before(concert_date: str) -> timedelta:
         return timedelta(0)
 
 
-def init_payment(req: "PaymentRequest", payment_id: str) -> str:
+def init_payment(req: PaymentRequest, payment_id: str, confirmation_id: str) -> str:
     """Mock function to initiate payment"""
     print(f">>> Initiating external payment {payment_id}")
     print(f"  Confirm the payment via:")
     print(
-        f'  - For Payments service: curl localhost:8080/Payments/confirm --json \'{{"id": "{payment_id}", "result": {{"success": true, "transactionId": "txn-123"}}}}\''
+        f'  - For Payments service: curl localhost:8080/Payments/confirm --json \'{{"id": "{confirmation_id}", "result": {{"success": true, "transactionId": "txn-123"}}}}\''
     )
     print(
-        f'  - For PaymentsWithTimeout service: curl localhost:8080/PaymentsWithTimeout/confirm --json \'{{"id": "{payment_id}", "result": {{"success": true, "transactionId": "txn-123"}}}}\''
+        f'  - For PaymentsWithTimeout service: curl localhost:8080/PaymentsWithTimeout/confirm --json \'{{"id": "{confirmation_id}", "result": {{"success": true, "transactionId": "txn-123"}}}}\''
     )
     return f"payRef-{uuid.uuid4()}"
 
@@ -105,3 +116,29 @@ def remove_recurring_payment(payment_id: str) -> None:
 def remove_subscription(user_id: str, subscription: str) -> None:
     """Mock function to remove subscription"""
     print(f"Removing subscription for user: {user_id}, subscription: {subscription}")
+
+
+# Payment Service
+payment_service = restate.Service("PaymentService")
+
+
+@payment_service.handler()
+async def charge(ctx: restate.Context, req: PurchaseTicketRequest) -> str:
+    # Simulate payment processing
+    payment_id = str(ctx.uuid())
+    print(f"Processing payment for ticket {req.ticket_id} with payment ID {payment_id}")
+    return payment_id
+
+
+# Email Service
+email_service = restate.Service("EmailService")
+
+
+@email_service.handler()
+async def email_ticket(ctx: restate.Context, req: PurchaseTicketRequest) -> None:
+    print(f"Sending ticket to {req.customer_email} for concert on {req.concert_date}")
+
+
+@email_service.handler()
+async def send_reminder(ctx: restate.Context, req: PurchaseTicketRequest) -> None:
+    print(f"Sending reminder for concert on {req.concert_date} to {req.customer_email}")

@@ -8,7 +8,7 @@ class PurchaseTicketRequest(BaseModel):
     model_config = ConfigDict(populate_by_name=True, alias_generator=camelize)
 
     ticket_id: str
-    concert_date_time: str
+    concert_date: str
     price: float
     customer_email: str
 
@@ -41,8 +41,8 @@ class PaymentResult(BaseModel):
     model_config = ConfigDict(populate_by_name=True, alias_generator=camelize)
 
     success: bool
-    transaction_id: Optional[str]
-    error_message: Optional[str]
+    transaction_id: str | None = None
+    error_message: str | None = None
 
 
 class ConfirmationRequest(BaseModel):

@@ -21,6 +21,6 @@ async def add(ctx: restate.ObjectContext, subscription: str) -> None:
     ctx.set("lastUpdated", datetime.now().isoformat())
 
 
-@user_subscriptions.handler()
+@user_subscriptions.handler("getSubscriptions")
 async def get_subscriptions(ctx: restate.ObjectSharedContext) -> List[str]:
     return await ctx.get("subscriptions") or []

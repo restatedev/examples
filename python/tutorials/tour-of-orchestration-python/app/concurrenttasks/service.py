@@ -31,6 +31,6 @@ async def add(ctx: restate.Context, req: SubscriptionRequest) -> SubscriptionRes
         subscription_tasks.append(task)
 
     # Wait for all subscriptions to complete
-    await asyncio.gather(*subscription_tasks)
+    await restate.gather(*subscription_tasks)
 
     return SubscriptionResult(success=True, payment_ref=pay_ref)

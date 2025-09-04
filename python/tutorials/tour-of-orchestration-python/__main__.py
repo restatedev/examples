@@ -4,8 +4,8 @@ import restate
 
 from app.getstarted.service import subscription_service
 from app.sagas.service import subscription_saga
-from app.communication.service import (
-    concert_ticketing_service,
+from app.communication.service import concert_ticketing_service
+from app.utils import (
     payment_service,
     email_service,
 )
