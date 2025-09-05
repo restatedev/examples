@@ -3,6 +3,8 @@ import { durableCalls, superJson } from "../middleware";
 
 import { openai } from "@ai-sdk/openai";
 import { generateText, ModelMessage, wrapLanguageModel } from "ai";
+import {handlers} from "@restatedev/restate-sdk";
+import shared = handlers.object.shared;
 
 export default restate.object({
   name: "Chat",
@@ -27,5 +29,8 @@ export default restate.object({
       ctx.set("messages", [...messages, ...res.response.messages], superJson);
       return { answer: res.text };
     },
+    getHistory: shared(async (ctx: restate.ObjectSharedContext) =>
+      ctx.get<ModelMessage[]>("messages", superJson)
+    )
   },
 });
