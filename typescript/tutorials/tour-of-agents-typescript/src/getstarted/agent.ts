@@ -5,12 +5,12 @@ import { z } from "zod";
 import { fetchWeather } from "../utils";
 import { durableCalls } from "../middleware";
 
-export const weatherAgent = restate.service({
+export default restate.service({
   name: "WeatherAgent",
   handlers: {
     run: async (ctx: restate.Context, { prompt }: { prompt: string }) => {
       const model = wrapLanguageModel({
-        model: openai("gpt-4o-mini"),
+        model: openai("gpt-4o"),
         middleware: durableCalls(ctx, { maxRetryAttempts: 3 }),
       });
 

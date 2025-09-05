@@ -2,7 +2,7 @@ import * as restate from "@restatedev/restate-sdk";
 import { TerminalError } from "@restatedev/restate-sdk";
 import { z } from "zod";
 import * as crypto from "node:crypto";
-import {randomUUID} from "node:crypto";
+import { randomUUID } from "node:crypto";
 
 // <start_weather>
 export async function fetchWeather(city: string) {
@@ -66,10 +66,21 @@ export function emailCustomer(message: string, responseId: string = "") {
   console.log("Emailing customer:", message);
 }
 
-export function addClaimToLegacySystem(claimId: string, claim: InsuranceClaim) {
+export function submitClaim(claim: InsuranceClaim) {
   // Simulate adding the claim to a legacy system
   console.log("Adding claim to legacy system:", claim);
   return crypto.randomUUID().toString();
+}
+
+export function getMissingFields(claim: InsuranceClaim) {
+  return Object.entries(claim)
+    .filter(
+      ([_, value]) =>
+        value === null ||
+        value === "" ||
+        (Array.isArray(value) && value.length === 0),
+    )
+    .map(([key, _]) => key);
 }
 
 export function doEligibilityCheck(claim: InsuranceClaim) {
@@ -124,9 +135,11 @@ export const fraudCheckAgent = restate.service({
 });
 
 export const InsuranceClaimSchema = z.object({
-  category: z.string().nullable(),
-  reason: z.string().nullable(),
-  amount: z.number().nullable(),
+  date: z.string().nullable().optional(),
+  category: z.string().nullable().optional(),
+  reason: z.string().nullable().optional(),
+  amount: z.number().nullable().optional(),
+  placeOfService: z.string().nullable().optional(),
 });
 
 export type InsuranceClaim = z.infer<typeof InsuranceClaimSchema>;

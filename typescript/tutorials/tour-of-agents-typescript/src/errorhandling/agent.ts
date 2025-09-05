@@ -10,13 +10,13 @@ import {
   rethrowTerminalToolError,
 } from "../middleware";
 
-export const errorHandlingAgent = restate.service({
+export default restate.service({
   name: "ErrorHandlingAgent",
   handlers: {
     run: async (ctx: restate.Context, prompt: string) => {
       // <start_max_attempts_example>
       const model = wrapLanguageModel({
-        model: openai("gpt-4o-mini"),
+        model: openai("gpt-4o"),
         middleware: durableCalls(ctx, { maxRetryAttempts: 3 }),
       });
       // <end_max_attempts_example>

@@ -10,7 +10,7 @@ import {
 } from "../utils";
 import { durableCalls } from "../middleware";
 
-export const parallelClaimAnalyzer = restate.service({
+export default restate.service({
   name: "ParallelClaimAnalyzer",
   handlers: {
     run: async (ctx: restate.Context, claim: InsuranceClaim) => {

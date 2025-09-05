@@ -1,6 +1,6 @@
 import * as restate from "@restatedev/restate-sdk";
 import { openai } from "@ai-sdk/openai";
-import {generateText, stepCountIs, tool, wrapLanguageModel} from "ai";
+import { generateText, stepCountIs, tool, wrapLanguageModel } from "ai";
 import {
   emailCustomer,
   InsuranceClaim,
@@ -11,7 +11,7 @@ import {
 } from "../utils";
 import { durableCalls } from "../middleware";
 
-export const claimAnalysisOrchestrator = restate.service({
+export default restate.service({
   name: "ClaimAnalysisOrchestrator",
   handlers: {
     run: async (ctx: restate.Context, claim: InsuranceClaim) => {

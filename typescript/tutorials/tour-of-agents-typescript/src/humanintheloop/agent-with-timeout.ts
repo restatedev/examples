@@ -7,9 +7,10 @@ import {
   requestHumanReview,
 } from "../utils";
 import { durableCalls } from "../middleware";
+import { TimeoutError } from "@restatedev/restate-sdk";
 
 export default restate.service({
-  name: "ClaimEvaluationAgent",
+  name: "ClaimEvaluationWithTimeoutsAgent",
   handlers: {
     run: async (ctx: restate.Context, { prompt }: { prompt: string }) => {
       const model = wrapLanguageModel({
@@ -17,7 +18,6 @@ export default restate.service({
         middleware: durableCalls(ctx, { maxRetryAttempts: 3 }),
       });
 
-      // <start_here>
       const { text } = await generateText({
         model,
         system:
@@ -30,7 +30,7 @@ export default restate.service({
           humanApproval: tool({
             description: "Ask for human approval for high-value claims.",
             inputSchema: InsuranceClaimSchema,
-            execute: async (claim: InsuranceClaim): Promise<boolean> => {
+            execute: async (claim: InsuranceClaim) => {
               const approval = ctx.awakeable<boolean>();
               await ctx.run("request-review", () =>
                 requestHumanReview(
@@ -38,14 +38,27 @@ export default restate.service({
                   approval.id,
                 ),
               );
-              return approval.promise;
+              // <start_here>
+              try {
+                // At most 3 hours, to reach our SLA
+                const approved = await approval.promise.orTimeout({ hours: 3 });
+                return { approved };
+              } catch (e) {
+                if (e instanceof TimeoutError) {
+                  return {
+                    approved: false,
+                    reason: "Approval timed out - Evaluate with AI",
+                  };
+                }
+                throw e;
+              }
+              // <end_here>
             },
           }),
         },
         stopWhen: [stepCountIs(5)],
         providerOptions: { openai: { parallelToolCalls: false } },
       });
-      // <end_here>
       return text;
     },
   },

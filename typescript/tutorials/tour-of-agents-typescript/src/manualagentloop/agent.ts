@@ -15,14 +15,14 @@ async function getWeather(ctx: restate.Context, req: WeatherRequest) {
   return ctx.run("get weather", () => fetchWeather(req.city));
 }
 
-export const manualLoopAgent = restate.service({
+export default restate.service({
   name: "ManualLoopAgent",
   handlers: {
     run: async (ctx: restate.Context, { prompt }: { prompt: string }) => {
       const messages: ModelMessage[] = [];
 
       const model = wrapLanguageModel({
-        model: openai("gpt-4o-mini"),
+        model: openai("gpt-4o"),
         middleware: durableCalls(ctx, { maxRetryAttempts: 3 }),
       });
 

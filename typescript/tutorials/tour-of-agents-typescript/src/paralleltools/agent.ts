@@ -1,7 +1,7 @@
 import * as restate from "@restatedev/restate-sdk";
 import { RestatePromise } from "@restatedev/restate-sdk";
 import { openai } from "@ai-sdk/openai";
-import {generateText, tool, wrapLanguageModel, Output, stepCountIs} from "ai";
+import { generateText, tool, wrapLanguageModel, Output, stepCountIs } from "ai";
 import {
   compareToStandardRates,
   doEligibilityCheck,
@@ -11,7 +11,7 @@ import {
 } from "../utils";
 import { durableCalls } from "../middleware";
 
-export const claimApprovalAgent = restate.service({
+export default restate.service({
   name: "ClaimApprovalAgent",
   handlers: {
     run: async (ctx: restate.Context, claim: InsuranceClaim) => {
