@@ -2,12 +2,13 @@ import * as restate from "@restatedev/restate-sdk";
 import { TerminalError } from "@restatedev/restate-sdk";
 import { z } from "zod";
 import * as crypto from "node:crypto";
+import {randomUUID} from "node:crypto";
 
 // <start_weather>
 export async function fetchWeather(city: string) {
-  failOnDenver(city)
+  failOnDenver(city);
   const output = await fetchWeatherFromAPI(city);
-  return parseWeatherResponse(output)
+  return parseWeatherResponse(output);
 }
 // <end_weather>
 
@@ -26,7 +27,7 @@ async function fetchWeatherFromAPI(city: string) {
   if (!res.ok) {
     if (res.status === 404 && output) {
       throw new TerminalError(
-          `Unknown location: ${city}. Please provide a valid city name.`,
+        `Unknown location: ${city}. Please provide a valid city name.`,
       );
     }
     throw new Error(`Weather API returned status ${res.status}`);
@@ -52,6 +53,13 @@ async function parseWeatherResponse(output: string) {
       cause: e,
     });
   }
+}
+
+export function requestHumanReview(message: string, responseId: string = "") {
+  console.log(`>>> ${message} \n
+  Submit your claim review via: \n
+    curl localhost:8080/restate/awakeables/${responseId}/resolve --json 'true'
+  `);
 }
 
 export function emailCustomer(message: string, responseId: string = "") {

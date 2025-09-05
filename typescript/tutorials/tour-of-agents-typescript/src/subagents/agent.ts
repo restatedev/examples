@@ -1,6 +1,6 @@
 import * as restate from "@restatedev/restate-sdk";
 import { openai } from "@ai-sdk/openai";
-import { generateText, tool, wrapLanguageModel } from "ai";
+import {generateText, stepCountIs, tool, wrapLanguageModel} from "ai";
 import {
   emailCustomer,
   InsuranceClaim,
@@ -44,6 +44,7 @@ export const claimAnalysisOrchestrator = restate.service({
               ctx.serviceClient(fraudCheckAgent).run(claim),
           }),
         },
+        stopWhen: [stepCountIs(10)],
         providerOptions: { openai: { parallelToolCalls: false } },
       });
 

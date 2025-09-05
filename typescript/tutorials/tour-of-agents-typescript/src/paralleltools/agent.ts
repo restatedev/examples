@@ -1,7 +1,7 @@
 import * as restate from "@restatedev/restate-sdk";
 import { RestatePromise } from "@restatedev/restate-sdk";
 import { openai } from "@ai-sdk/openai";
-import { generateText, tool, wrapLanguageModel, Output } from "ai";
+import {generateText, tool, wrapLanguageModel, Output, stepCountIs} from "ai";
 import {
   compareToStandardRates,
   doEligibilityCheck,
@@ -50,6 +50,7 @@ export const claimApprovalAgent = restate.service({
             },
           }),
         },
+        stopWhen: [stepCountIs(10)],
         providerOptions: { openai: { parallelToolCalls: false } },
       });
       return response.text;

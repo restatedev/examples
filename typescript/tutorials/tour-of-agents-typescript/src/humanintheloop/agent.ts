@@ -1,53 +1,50 @@
 import * as restate from "@restatedev/restate-sdk";
 import { openai } from "@ai-sdk/openai";
-import { generateText, tool, wrapLanguageModel, Output } from "ai";
+import {generateText, tool, wrapLanguageModel, Output, stepCountIs} from "ai";
 import {
-  addClaimToLegacySystem,
-  emailCustomer,
   InsuranceClaim,
   InsuranceClaimSchema,
+  requestHumanReview,
 } from "../utils";
 import { durableCalls } from "../middleware";
 
-export const claimIntakeAgent = restate.service({
-  name: "ClaimIntakeAgent",
+export const claimEvaluationAgent = restate.service({
+  name: "ClaimEvaluationAgent",
   handlers: {
     run: async (ctx: restate.Context, { prompt }: { prompt: string }) => {
-      const claimId = ctx.rand.uuidv4();
-
       const model = wrapLanguageModel({
         model: openai("gpt-4o-mini"),
         middleware: durableCalls(ctx, { maxRetryAttempts: 3 }),
       });
 
-      const response = await generateText({
+      const { text } = await generateText({
         model,
-        system: `Extract claim data and fill in missing fields by asking the customer.`,
+        system:
+          "You are an insurance claim evaluation agent." +
+          "You are provided the amount and the reason, and the following are the rules: " +
+          "* if the amount is more than 1000, ask for human approval, " +
+          "* if the amount is less than 1000, decide by yourself",
         prompt,
         tools: {
-          askMoreInfo: tool({
-            description:
-              "If the claim data is incomplete, ask the customer for additional information.",
+          humanApproval: tool({
+            description: "Ask for human approval for high-value claims.",
             inputSchema: InsuranceClaimSchema,
-            execute: async (claim: InsuranceClaim) => {
-              const responsePromise = ctx.awakeable<string>();
-              await ctx.run("email", () =>
-                emailCustomer(
-                  "Please provide the missing data: " + JSON.stringify(claim),
-                  responsePromise.id,
+            execute: async (claim: InsuranceClaim): Promise<boolean> => {
+              const approval = ctx.awakeable<boolean>();
+              await ctx.run("request-review", () =>
+                requestHumanReview(
+                  `Please review: ${JSON.stringify(claim)}`,
+                  approval.id,
                 ),
               );
-              return `Additional information: ${await responsePromise.promise}`;
+              return approval.promise;
             },
           }),
         },
-        experimental_output: Output.object({ schema: InsuranceClaimSchema }),
+        stopWhen: [stepCountIs(5)],
         providerOptions: { openai: { parallelToolCalls: false } },
       });
-      const claim = response.experimental_output;
-
-      await ctx.run("create", () => addClaimToLegacySystem(claimId, claim));
-      return `Claim ${claimId} for ${claim.amount} due to ${claim.reason} has been processed.`;
+      return text;
     },
   },
 });
