@@ -11,49 +11,44 @@ import {
 } from "../utils";
 import { durableCalls } from "../middleware";
 
-async function runClaimAnalysisOrchestrator(
-  ctx: restate.Context,
-  claim: InsuranceClaim,
-) {
-  const model = wrapLanguageModel({
-    model: openai("gpt-4o-mini"),
-    middleware: durableCalls(ctx),
-  });
-
-  const decision = await generateText({
-    model,
-    prompt: `Analyze the claim ${claim} and use your tools to decide whether to approve.`,
-    system: "You are a claim decision engine.",
-    tools: {
-      analyzeEligibility: tool({
-        description: "Analyze eligibility result.",
-        inputSchema: InsuranceClaimSchema,
-        execute: async (claim: InsuranceClaim) =>
-          ctx.serviceClient(eligibilityAgent).run(claim),
-      }),
-      analyzeCost: tool({
-        description: "Compare cost to standard rates.",
-        inputSchema: InsuranceClaimSchema,
-        execute: async (claim: InsuranceClaim) =>
-          ctx.serviceClient(rateComparisonAgent).run(claim),
-      }),
-      analyzeFraud: tool({
-        description: "Analyze probability of fraud.",
-        inputSchema: InsuranceClaimSchema,
-        execute: async (claim: InsuranceClaim) =>
-          ctx.serviceClient(fraudCheckAgent).run(claim),
-      }),
-    },
-  });
-
-  await ctx.run("notify", () => emailCustomer(decision.text));
-
-  return decision.text;
-}
-
 export const claimAnalysisOrchestrator = restate.service({
   name: "ClaimAnalysisOrchestrator",
   handlers: {
-    run: runClaimAnalysisOrchestrator,
+    run: async (ctx: restate.Context, claim: InsuranceClaim) => {
+      const model = wrapLanguageModel({
+        model: openai("gpt-4o-mini"),
+        middleware: durableCalls(ctx),
+      });
+
+      const decision = await generateText({
+        model,
+        prompt: `Analyze the claim ${claim} and use your tools to decide whether to approve.`,
+        system: "You are a claim decision engine.",
+        tools: {
+          analyzeEligibility: tool({
+            description: "Analyze eligibility result.",
+            inputSchema: InsuranceClaimSchema,
+            execute: async (claim: InsuranceClaim) =>
+              ctx.serviceClient(eligibilityAgent).run(claim),
+          }),
+          analyzeCost: tool({
+            description: "Compare cost to standard rates.",
+            inputSchema: InsuranceClaimSchema,
+            execute: async (claim: InsuranceClaim) =>
+              ctx.serviceClient(rateComparisonAgent).run(claim),
+          }),
+          analyzeFraud: tool({
+            description: "Analyze probability of fraud.",
+            inputSchema: InsuranceClaimSchema,
+            execute: async (claim: InsuranceClaim) =>
+              ctx.serviceClient(fraudCheckAgent).run(claim),
+          }),
+        },
+      });
+
+      await ctx.run("notify", () => emailCustomer(decision.text));
+
+      return decision.text;
+    },
   },
 });

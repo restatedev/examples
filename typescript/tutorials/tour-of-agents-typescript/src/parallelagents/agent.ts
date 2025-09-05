@@ -10,38 +10,33 @@ import {
 } from "../utils";
 import { durableCalls } from "../middleware";
 
-async function runClaimAnalysesInParallel(
-  ctx: restate.Context,
-  claim: InsuranceClaim,
-) {
-  const [eligibility, rateComparison, fraudCheck] = await Promise.all([
-    ctx.serviceClient(eligibilityAgent).run(claim),
-    ctx.serviceClient(rateComparisonAgent).run(claim),
-    ctx.serviceClient(fraudCheckAgent).run(claim),
-  ]);
-
-  const model = wrapLanguageModel({
-    model: openai("gpt-4o-mini"),
-    middleware: durableCalls(ctx),
-  });
-
-  const decision = await generateText({
-    model,
-    prompt: `Make final claim decision based on: 
-                    Eligibility: ${eligibility}
-                    Cost: ${rateComparison} 
-                    Fraud: ${fraudCheck}`,
-    system: "You are a claim decision engine.",
-  });
-
-  await ctx.run("notify", () => emailCustomer(decision.text));
-
-  return decision.text;
-}
-
 export const parallelClaimAnalyzer = restate.service({
   name: "ParallelClaimAnalyzer",
   handlers: {
-    run: runClaimAnalysesInParallel,
+    run: async (ctx: restate.Context, claim: InsuranceClaim) => {
+      const [eligibility, rateComparison, fraudCheck] = await Promise.all([
+        ctx.serviceClient(eligibilityAgent).run(claim),
+        ctx.serviceClient(rateComparisonAgent).run(claim),
+        ctx.serviceClient(fraudCheckAgent).run(claim),
+      ]);
+
+      const model = wrapLanguageModel({
+        model: openai("gpt-4o-mini"),
+        middleware: durableCalls(ctx),
+      });
+
+      const decision = await generateText({
+        model,
+        prompt: `Make final claim decision based on: 
+                    Eligibility: ${eligibility}
+                    Cost: ${rateComparison} 
+                    Fraud: ${fraudCheck}`,
+        system: "You are a claim decision engine.",
+      });
+
+      await ctx.run("notify", () => emailCustomer(decision.text));
+
+      return decision.text;
+    },
   },
 });

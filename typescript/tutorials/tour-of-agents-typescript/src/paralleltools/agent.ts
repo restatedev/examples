@@ -11,51 +11,47 @@ import {
 } from "../utils";
 import { durableCalls } from "../middleware";
 
-async function runClaimApprovalAgent(
-  ctx: restate.Context,
-  claim: InsuranceClaim,
-) {
-  const model = wrapLanguageModel({
-    model: openai("gpt-4o-mini"),
-    middleware: durableCalls(ctx),
-  });
-
-  const response = await generateText({
-    model,
-    prompt: `Analyze the claim ${JSON.stringify(claim)}. 
-        Decide whether to auto-approve or flag for human review.`,
-    tools: {
-      calculateMetrics: tool({
-        description: "Calculate claim metrics.",
-        inputSchema: InsuranceClaimSchema,
-        execute: async (claim: InsuranceClaim) => {
-          // Start analyses in parallel
-          const eligibilityCheck = ctx.run("eligibility check", () =>
-            doEligibilityCheck(claim),
-          );
-          const costReasonablenessScore = ctx.run("cost reasonableness", () =>
-            compareToStandardRates(claim),
-          );
-          const fraudProbability = ctx.run("fraud check", () =>
-            doFraudCheck(claim),
-          );
-
-          // Wait for all analyses to complete
-          return await RestatePromise.allSettled([
-            eligibilityCheck,
-            costReasonablenessScore,
-            fraudProbability,
-          ]);
-        },
-      }),
-    },
-  });
-  return response.text;
-}
-
 export const claimApprovalAgent = restate.service({
   name: "ClaimApprovalAgent",
   handlers: {
-    run: runClaimApprovalAgent,
+    run: async (ctx: restate.Context, claim: InsuranceClaim) => {
+      const model = wrapLanguageModel({
+        model: openai("gpt-4o-mini"),
+        middleware: durableCalls(ctx),
+      });
+
+      const response = await generateText({
+        model,
+        prompt: `Analyze the claim ${JSON.stringify(claim)}. 
+        Decide whether to auto-approve or flag for human review.`,
+        tools: {
+          calculateMetrics: tool({
+            description: "Calculate claim metrics.",
+            inputSchema: InsuranceClaimSchema,
+            execute: async (claim: InsuranceClaim) => {
+              // Start analyses in parallel
+              const eligibilityCheck = ctx.run("eligibility check", () =>
+                doEligibilityCheck(claim),
+              );
+              const costReasonablenessScore = ctx.run(
+                "cost reasonableness",
+                () => compareToStandardRates(claim),
+              );
+              const fraudProbability = ctx.run("fraud check", () =>
+                doFraudCheck(claim),
+              );
+
+              // Wait for all analyses to complete
+              return await RestatePromise.allSettled([
+                eligibilityCheck,
+                costReasonablenessScore,
+                fraudProbability,
+              ]);
+            },
+          }),
+        },
+      });
+      return response.text;
+    },
   },
 });
