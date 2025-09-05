@@ -7,9 +7,10 @@ import {
   requestHumanReview,
 } from "../utils";
 import { durableCalls } from "../middleware";
+import { TimeoutError } from "@restatedev/restate-sdk";
 
 export default restate.service({
-  name: "ClaimEvaluationAgent",
+  name: "ClaimEvaluationWithTimeoutsAgent",
   handlers: {
     run: async (ctx: restate.Context, { prompt }: { prompt: string }) => {
       const model = wrapLanguageModel({
@@ -21,23 +22,16 @@ export default restate.service({
       const { text } = await generateText({
         model,
         system:
-          "You are an insurance claim evaluation agent. Use these rules: " +
-          "* if the amount is more than 1000, ask for human approval, " +
-          "* if the amount is less than 1000, decide by yourself",
+            "You are an insurance claim evaluation agent. Use these rules: " +
+            "* if the amount is more than 1000, ask for human approval, " +
+            "* if the amount is less than 1000, decide by yourself",
         prompt,
         tools: {
           humanApproval: tool({
             description: "Ask for human approval for high-value claims.",
             inputSchema: InsuranceClaimSchema,
-            execute: async (claim: InsuranceClaim): Promise<boolean> => {
-              const approval = ctx.awakeable<boolean>();
-              await ctx.run("request-review", () =>
-                requestHumanReview(
-                  `Please review: ${JSON.stringify(claim)}`,
-                  approval.id,
-                ),
-              );
-              return approval.promise;
+            execute: async (claim: InsuranceClaim) => {
+              return ctx.serviceClient(humanApprovalWorfklow).requestApproval(claim);
             },
           }),
         },
@@ -49,3 +43,21 @@ export default restate.service({
     },
   },
 });
+
+// <start_wf>
+const humanApprovalWorfklow = restate.service({
+    name: "HumanApprovalWorkflow",
+    handlers: {
+        requestApproval: async (ctx: restate.Context, claim: InsuranceClaim) => {
+          const approval = ctx.awakeable<boolean>();
+          await ctx.run("request-review", () =>
+              requestHumanReview(
+                  `Please review: ${JSON.stringify(claim)}`,
+                  approval.id,
+              ),
+          );
+          return approval.promise;
+        },
+    },
+})
+// <end_wf>

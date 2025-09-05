@@ -84,7 +84,7 @@ export function getMissingFields(claim: InsuranceClaim) {
 }
 
 export function doEligibilityCheck(claim: InsuranceClaim) {
-  return undefined;
+  return true;
 }
 
 export function compareToStandardRates(claim: InsuranceClaim) {
