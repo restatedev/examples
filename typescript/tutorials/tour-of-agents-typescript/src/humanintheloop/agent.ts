@@ -9,7 +9,7 @@ import {
 } from "../utils";
 import { durableCalls } from "../middleware";
 
-async function runInsuranceClaimAgent(ctx: restate.Context, prompt: string) {
+async function runClaimIntakeAgent(ctx: restate.Context, prompt: string) {
   const claimId = ctx.rand.uuidv4();
 
   const model = wrapLanguageModel({
@@ -45,11 +45,9 @@ async function runInsuranceClaimAgent(ctx: restate.Context, prompt: string) {
   return `Claim ${claimId} for ${claim.amount} due to ${claim.reason} has been processed.`;
 }
 
-const insuranceClaimAgent = restate.service({
-  name: "InsuranceClaimAgent",
+export const claimIntakeAgent = restate.service({
+  name: "ClaimIntakeAgent",
   handlers: {
-    run: runInsuranceClaimAgent,
+    run: runClaimIntakeAgent,
   },
 });
-
-restate.endpoint().bind(insuranceClaimAgent).listen(9080);

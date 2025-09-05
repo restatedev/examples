@@ -8,8 +8,8 @@ interface ChatState {
   messages: ModelMessage[];
 }
 
-const chatSession = restate.object({
-  name: "chat",
+export const chatSession = restate.object({
+  name: "Chat",
   handlers: {
     message: async (ctx: restate.ObjectContext<ChatState>, message: string) => {
       const model = wrapLanguageModel({

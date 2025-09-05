@@ -72,23 +72,41 @@ export function doFraudCheck(claim: InsuranceClaim) {
   return undefined;
 }
 
-export async function runEligibilityAgent(
+async function runEligibilityAgent(
   ctx: restate.Context,
   claim: InsuranceClaim,
 ) {
   return undefined;
 }
 
-export async function runRateComparisonAgent(
+async function runRateComparisonAgent(
   ctx: restate.Context,
   claim: InsuranceClaim,
 ) {
   return undefined;
 }
 
-export async function runFraudAgent(
-  ctx: restate.Context,
-  claim: InsuranceClaim,
-) {
+async function runFraudAgent(ctx: restate.Context, claim: InsuranceClaim) {
   return undefined;
 }
+
+export const eligibilityAgent = restate.service({
+  name: "EligibilityAgent",
+  handlers: {
+    run: runEligibilityAgent,
+  },
+});
+
+export const rateComparisonAgent = restate.service({
+  name: "RateComparisonAgent",
+  handlers: {
+    run: runRateComparisonAgent,
+  },
+});
+
+export const fraudCheckAgent = restate.service({
+  name: "FraudCheckAgent",
+  handlers: {
+    run: runFraudAgent,
+  },
+});

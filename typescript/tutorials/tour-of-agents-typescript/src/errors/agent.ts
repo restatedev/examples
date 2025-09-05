@@ -10,7 +10,7 @@ import {
   rethrowTerminalToolError,
 } from "../middleware";
 
-const runWeatherAgent = async (ctx: restate.Context, prompt: string) => {
+const runErrorHandlingAgent = async (ctx: restate.Context, prompt: string) => {
   const model = wrapLanguageModel({
     model: openai("gpt-4o-mini"),
     middleware: durableCalls(ctx, { maxRetryAttempts: 3 }),
@@ -81,11 +81,9 @@ const runWeatherAgent = async (ctx: restate.Context, prompt: string) => {
   return text;
 };
 
-const weatherAgent = restate.service({
-  name: "WeatherAgent",
+export const errorHandlingAgent = restate.service({
+  name: "ErrorHandlingAgent",
   handlers: {
-    run: runWeatherAgent,
+    run: runErrorHandlingAgent,
   },
 });
-
-restate.endpoint().bind(weatherAgent).listen(9080);

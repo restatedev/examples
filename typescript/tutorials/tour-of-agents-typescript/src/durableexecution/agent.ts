@@ -30,11 +30,9 @@ const runWeatherAgent = async (ctx: restate.Context, prompt: string) => {
   return text;
 };
 
-const weatherAgent = restate.service({
+export const weatherAgent = restate.service({
   name: "WeatherAgent",
   handlers: {
     run: runWeatherAgent,
   },
 });
-
-restate.endpoint().bind(weatherAgent).listen(9080);

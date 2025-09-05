@@ -1,11 +1,6 @@
 import * as restate from "@restatedev/restate-sdk";
 import { openai } from "@ai-sdk/openai";
-import {
-  generateText,
-  ModelMessage,
-  tool,
-  wrapLanguageModel,
-} from "ai";
+import { generateText, ModelMessage, tool, wrapLanguageModel } from "ai";
 import { z } from "zod";
 import { fetchWeather } from "../utils";
 import { durableCalls } from "../middleware";
@@ -20,7 +15,7 @@ async function getWeather(ctx: restate.Context, req: WeatherRequest) {
   return ctx.run("get weather", () => fetchWeather(req.city));
 }
 
-const runWeatherAgent = async (ctx: restate.Context, prompt: string) => {
+const runManualLoopAgent = async (ctx: restate.Context, prompt: string) => {
   const messages: ModelMessage[] = [];
 
   const model = wrapLanguageModel({
@@ -76,11 +71,9 @@ const runWeatherAgent = async (ctx: restate.Context, prompt: string) => {
   return messages;
 };
 
-const weatherAgent = restate.service({
-  name: "WeatherAgent",
+export const manualLoopAgent = restate.service({
+  name: "ManualLoopAgent",
   handlers: {
-    run: runWeatherAgent,
+    run: runManualLoopAgent,
   },
 });
-
-restate.endpoint().bind(weatherAgent).listen(9080);
