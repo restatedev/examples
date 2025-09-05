@@ -17,7 +17,7 @@ export const claimApprovalAgent = restate.service({
     run: async (ctx: restate.Context, claim: InsuranceClaim) => {
       const model = wrapLanguageModel({
         model: openai("gpt-4o-mini"),
-        middleware: durableCalls(ctx),
+        middleware: durableCalls(ctx, { maxRetryAttempts: 3 }),
       });
 
       const response = await generateText({
@@ -42,7 +42,7 @@ export const claimApprovalAgent = restate.service({
               );
 
               // Wait for all analyses to complete
-              return await RestatePromise.allSettled([
+              return RestatePromise.allSettled([
                 eligibilityCheck,
                 costReasonablenessScore,
                 fraudProbability,
@@ -50,6 +50,7 @@ export const claimApprovalAgent = restate.service({
             },
           }),
         },
+        providerOptions: { openai: { parallelToolCalls: false } },
       });
       return response.text;
     },

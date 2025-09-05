@@ -8,7 +8,7 @@ import { durableCalls } from "../middleware";
 export const weatherAgent = restate.service({
   name: "WeatherAgent",
   handlers: {
-    run: async (ctx: restate.Context, prompt: string) => {
+    run: async (ctx: restate.Context, { prompt }: { prompt: string }) => {
       const model = wrapLanguageModel({
         model: openai("gpt-4o-mini"),
         middleware: durableCalls(ctx, { maxRetryAttempts: 3 }),
@@ -16,18 +16,18 @@ export const weatherAgent = restate.service({
 
       const { text } = await generateText({
         model,
+        system: "You are a helpful agent that provides weather updates.",
+        prompt,
         tools: {
           getWeather: tool({
             description: "Get the current weather for a given city.",
             inputSchema: z.object({ city: z.string() }),
-            execute: async ({ city }) => {
-              return await ctx.run("get weather", () => fetchWeather(city));
-            },
+            execute: async ({ city }) =>
+              ctx.run("get weather", () => fetchWeather(city)),
           }),
         },
         stopWhen: [stepCountIs(5)],
-        system: "You are a helpful agent that provides weather updates.",
-        messages: [{ role: "user", content: prompt }],
+        providerOptions: { openai: { parallelToolCalls: false } },
       });
 
       return text;

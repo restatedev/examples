@@ -18,7 +18,7 @@ async function getWeather(ctx: restate.Context, req: WeatherRequest) {
 export const manualLoopAgent = restate.service({
   name: "ManualLoopAgent",
   handlers: {
-    run: async (ctx: restate.Context, prompt: string) => {
+    run: async (ctx: restate.Context, { prompt }: { prompt: string }) => {
       const messages: ModelMessage[] = [];
 
       const model = wrapLanguageModel({
@@ -29,7 +29,8 @@ export const manualLoopAgent = restate.service({
       while (true) {
         const result = await generateText({
           model,
-          messages: [{ role: "user", content: prompt }],
+          system: "You are a helpful agent that provides weather updates.",
+          prompt,
           tools: {
             getWeather: tool({
               description: "Get the current weather in a given location",

@@ -22,16 +22,16 @@ export const parallelClaimAnalyzer = restate.service({
 
       const model = wrapLanguageModel({
         model: openai("gpt-4o-mini"),
-        middleware: durableCalls(ctx),
+        middleware: durableCalls(ctx, { maxRetryAttempts: 3 }),
       });
 
       const decision = await generateText({
         model,
+        system: "You are a claim decision engine.",
         prompt: `Make final claim decision based on: 
                     Eligibility: ${eligibility}
                     Cost: ${rateComparison} 
                     Fraud: ${fraudCheck}`,
-        system: "You are a claim decision engine.",
       });
 
       await ctx.run("notify", () => emailCustomer(decision.text));

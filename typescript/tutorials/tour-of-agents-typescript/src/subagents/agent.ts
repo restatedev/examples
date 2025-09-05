@@ -17,7 +17,7 @@ export const claimAnalysisOrchestrator = restate.service({
     run: async (ctx: restate.Context, claim: InsuranceClaim) => {
       const model = wrapLanguageModel({
         model: openai("gpt-4o-mini"),
-        middleware: durableCalls(ctx),
+        middleware: durableCalls(ctx, { maxRetryAttempts: 3 }),
       });
 
       const decision = await generateText({
@@ -44,6 +44,7 @@ export const claimAnalysisOrchestrator = restate.service({
               ctx.serviceClient(fraudCheckAgent).run(claim),
           }),
         },
+        providerOptions: { openai: { parallelToolCalls: false } },
       });
 
       await ctx.run("notify", () => emailCustomer(decision.text));

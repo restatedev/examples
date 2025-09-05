@@ -23,8 +23,8 @@ export const chatSession = restate.object({
 
       const res = await generateText({
         model,
-        maxRetries: 0,
         system: "You are a helpful assistant.",
+        maxRetries: 0,
         messages,
       });
 

@@ -34,14 +34,10 @@ export const errorHandlingAgent = restate.service({
             },
           }),
         },
-        providerOptions: {
-          openai: {
-            parallelToolCalls: false,
-          },
-        },
         stopWhen: [stepCountIs(5)],
         system: "You are a helpful agent that provides weather updates.",
         messages: [{ role: "user", content: prompt }],
+        providerOptions: { openai: { parallelToolCalls: false } },
       });
       // <end_option1>
 

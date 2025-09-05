@@ -3,44 +3,38 @@ import { TerminalError } from "@restatedev/restate-sdk";
 import { z } from "zod";
 import * as crypto from "node:crypto";
 
-const WeatherRequestSchema = z.object({
-  city: z.string(),
-});
-
-export type WeatherRequest = z.infer<typeof WeatherRequestSchema>;
-
-export const InsuranceClaimSchema = z.object({
-  category: z.string().nullable(),
-  reason: z.string().nullable(),
-  amount: z.number().nullable(),
-});
-
-export type InsuranceClaim = z.infer<typeof InsuranceClaimSchema>;
-
-export function emailCustomer(message: string, responseId: string = "") {
-  console.log("Emailing customer:", message);
-}
-
-export function addClaimToLegacySystem(claimId: string, claim: InsuranceClaim) {
-  // Simulate adding the claim to a legacy system
-  console.log("Adding claim to legacy system:", claim);
-  return crypto.randomUUID().toString();
-}
-
+// <start_weather>
 export async function fetchWeather(city: string) {
+  failOnDenver(city)
+  const output = await fetchWeatherFromAPI(city);
+  return parseWeatherResponse(output)
+}
+// <end_weather>
+
+function failOnDenver(city: string) {
+  if (city === "Denver") {
+    const message = `[👻 SIMULATED] "Fetching weather failed: Weather API down..."`;
+    console.error(message);
+    throw new Error(message);
+  }
+}
+
+async function fetchWeatherFromAPI(city: string) {
   const url = `https://wttr.in/${encodeURIComponent(city)}?format=j1`;
   const res = await fetch(url);
   const output = await res.text();
-
   if (!res.ok) {
     if (res.status === 404 && output) {
       throw new TerminalError(
-        `Unknown location: ${city}. Please provide a valid city name.`,
+          `Unknown location: ${city}. Please provide a valid city name.`,
       );
     }
     throw new Error(`Weather API returned status ${res.status}`);
   }
+  return output;
+}
 
+async function parseWeatherResponse(output: string) {
   try {
     const data = JSON.parse(output);
     const current = data.current_condition?.[0];
@@ -58,6 +52,16 @@ export async function fetchWeather(city: string) {
       cause: e,
     });
   }
+}
+
+export function emailCustomer(message: string, responseId: string = "") {
+  console.log("Emailing customer:", message);
+}
+
+export function addClaimToLegacySystem(claimId: string, claim: InsuranceClaim) {
+  // Simulate adding the claim to a legacy system
+  console.log("Adding claim to legacy system:", claim);
+  return crypto.randomUUID().toString();
 }
 
 export function doEligibilityCheck(claim: InsuranceClaim) {
@@ -110,3 +114,11 @@ export const fraudCheckAgent = restate.service({
     run: runFraudAgent,
   },
 });
+
+export const InsuranceClaimSchema = z.object({
+  category: z.string().nullable(),
+  reason: z.string().nullable(),
+  amount: z.number().nullable(),
+});
+
+export type InsuranceClaim = z.infer<typeof InsuranceClaimSchema>;

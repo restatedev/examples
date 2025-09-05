@@ -12,17 +12,18 @@ import { durableCalls } from "../middleware";
 export const claimIntakeAgent = restate.service({
   name: "ClaimIntakeAgent",
   handlers: {
-    run: async (ctx: restate.Context, prompt: string) => {
+    run: async (ctx: restate.Context, { prompt }: { prompt: string }) => {
       const claimId = ctx.rand.uuidv4();
 
       const model = wrapLanguageModel({
         model: openai("gpt-4o-mini"),
-        middleware: durableCalls(ctx),
+        middleware: durableCalls(ctx, { maxRetryAttempts: 3 }),
       });
 
       const response = await generateText({
         model,
-        prompt: `Extract claim data: ${prompt} and fill in missing fields by asking the customer.`,
+        system: `Extract claim data and fill in missing fields by asking the customer.`,
+        prompt,
         tools: {
           askMoreInfo: tool({
             description:
@@ -41,6 +42,7 @@ export const claimIntakeAgent = restate.service({
           }),
         },
         experimental_output: Output.object({ schema: InsuranceClaimSchema }),
+        providerOptions: { openai: { parallelToolCalls: false } },
       });
       const claim = response.experimental_output;
 
