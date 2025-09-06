@@ -2,12 +2,10 @@ import * as restate from "@restatedev/restate-sdk";
 import { openai } from "@ai-sdk/openai";
 import { generateText, stepCountIs, tool, wrapLanguageModel } from "ai";
 import {
-  emailCustomer,
   InsuranceClaim,
   InsuranceClaimSchema,
   eligibilityAgent,
   fraudCheckAgent,
-  rateComparisonAgent,
 } from "../utils";
 import { durableCalls } from "../middleware";
 
@@ -16,26 +14,22 @@ export default restate.service({
   handlers: {
     run: async (ctx: restate.Context, claim: InsuranceClaim) => {
       const model = wrapLanguageModel({
-        model: openai("gpt-4o-mini"),
+        model: openai("gpt-4o"),
         middleware: durableCalls(ctx, { maxRetryAttempts: 3 }),
       });
 
-      const decision = await generateText({
+      // <start_here>
+      const { text } = await generateText({
         model,
-        prompt: `Analyze the claim ${claim} and use your tools to decide whether to approve.`,
-        system: "You are a claim decision engine.",
+        prompt: `Claim: ${JSON.stringify(claim)}`,
+        system:
+          "You are a claim decision engine. Analyze the claim  and use your tools to decide whether to approve.",
         tools: {
           analyzeEligibility: tool({
             description: "Analyze eligibility result.",
             inputSchema: InsuranceClaimSchema,
             execute: async (claim: InsuranceClaim) =>
               ctx.serviceClient(eligibilityAgent).run(claim),
-          }),
-          analyzeCost: tool({
-            description: "Compare cost to standard rates.",
-            inputSchema: InsuranceClaimSchema,
-            execute: async (claim: InsuranceClaim) =>
-              ctx.serviceClient(rateComparisonAgent).run(claim),
           }),
           analyzeFraud: tool({
             description: "Analyze probability of fraud.",
@@ -47,10 +41,9 @@ export default restate.service({
         stopWhen: [stepCountIs(10)],
         providerOptions: { openai: { parallelToolCalls: false } },
       });
+      // <end_here>
 
-      await ctx.run("notify", () => emailCustomer(decision.text));
-
-      return decision.text;
+      return text;
     },
   },
 });

@@ -3,7 +3,8 @@ import { openai } from "@ai-sdk/openai";
 import { generateText, ModelMessage, tool, wrapLanguageModel } from "ai";
 import { z } from "zod";
 import { fetchWeather } from "../utils";
-import { durableCalls } from "../middleware";
+import { durableCalls, superJson } from "../middleware";
+import { RestatePromise } from "@restatedev/restate-sdk";
 
 const WeatherRequestSchema = z.object({
   city: z.string(),
@@ -11,15 +12,23 @@ const WeatherRequestSchema = z.object({
 
 export type WeatherRequest = z.infer<typeof WeatherRequestSchema>;
 
-async function getWeather(ctx: restate.Context, req: WeatherRequest) {
+async function getWeather(ctx: restate.ObjectContext, req: WeatherRequest) {
   return ctx.run("get weather", () => fetchWeather(req.city));
 }
 
-export default restate.service({
+const tools: Record<
+  string,
+  (ctx: restate.ObjectContext, req: any) => Promise<any>
+> = {
+  getWeather: getWeather,
+};
+
+export default restate.object({
   name: "ManualLoopAgent",
   handlers: {
-    run: async (ctx: restate.Context, { prompt }: { prompt: string }) => {
-      const messages: ModelMessage[] = [];
+    run: async (ctx: restate.ObjectContext, { prompt }: { prompt: string }) => {
+      const messages =
+        (await ctx.get<ModelMessage[]>("messages", superJson)) ?? [];
 
       const model = wrapLanguageModel({
         model: openai("gpt-4o"),
@@ -42,31 +51,33 @@ export default restate.service({
 
         // Add LLM generated messages to the message history
         messages.push(...result.response.messages);
+        ctx.set("messages", messages, superJson);
 
         if (result.finishReason === "tool-calls") {
           const toolCalls = result.toolCalls;
 
-          // Handle all tool call execution here
-          for (const toolCall of toolCalls) {
-            if (toolCall.toolName === "getWeather") {
-              const toolOutput = await getWeather(
-                ctx,
-                toolCall.input as WeatherRequest,
-              );
-              messages.push({
-                role: "tool",
-                content: [
-                  {
-                    toolName: toolCall.toolName,
-                    toolCallId: toolCall.toolCallId,
-                    type: "tool-result",
-                    output: { type: "json", value: toolOutput },
-                  },
-                ],
-              });
-            }
-            // Handle other tool calls
+          // Handle all tool call execution in parallel
+          const toolResults = await Promise.all(
+            toolCalls.map(async (toolCall) => ({
+              toolCall,
+              result: await tools[toolCall.toolName](ctx, toolCall.input),
+            })),
+          );
+
+          for (const { toolCall, result } of toolResults) {
+            messages.push({
+              role: "tool",
+              content: [
+                {
+                  toolName: toolCall.toolName,
+                  toolCallId: toolCall.toolCallId,
+                  type: "tool-result",
+                  output: { type: "json", value: result },
+                },
+              ],
+            });
           }
+          ctx.set("messages", messages, superJson);
         } else {
           break;
         }

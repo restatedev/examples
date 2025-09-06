@@ -2,7 +2,9 @@ import * as restate from "@restatedev/restate-sdk";
 import { TerminalError } from "@restatedev/restate-sdk";
 import { z } from "zod";
 import * as crypto from "node:crypto";
-import { randomUUID } from "node:crypto";
+import { generateText, wrapLanguageModel } from "ai";
+import { durableCalls } from "./middleware";
+import { openai } from "@ai-sdk/openai";
 
 // <start_weather>
 export async function fetchWeather(city: string) {
@@ -83,54 +85,75 @@ export function getMissingFields(claim: InsuranceClaim) {
     .map(([key, _]) => key);
 }
 
-export function doEligibilityCheck(claim: InsuranceClaim) {
-  return true;
+export function checkEligibility(claim: InsuranceClaim) {
+  return "eligible";
 }
 
 export function compareToStandardRates(claim: InsuranceClaim) {
-  return undefined;
+  return "reasonable";
 }
 
-export function doFraudCheck(claim: InsuranceClaim) {
-  return undefined;
-}
-
-async function runEligibilityAgent(
-  ctx: restate.Context,
-  claim: InsuranceClaim,
-) {
-  return undefined;
-}
-
-async function runRateComparisonAgent(
-  ctx: restate.Context,
-  claim: InsuranceClaim,
-) {
-  return undefined;
-}
-
-async function runFraudAgent(ctx: restate.Context, claim: InsuranceClaim) {
-  return undefined;
+export function checkFraud(claim: InsuranceClaim) {
+  return "low risk";
 }
 
 export const eligibilityAgent = restate.service({
   name: "EligibilityAgent",
   handlers: {
-    run: runEligibilityAgent,
+    run: async (ctx: restate.Context, claim: InsuranceClaim) => {
+      const model = wrapLanguageModel({
+        model: openai("gpt-4o"),
+        middleware: durableCalls(ctx, { maxRetryAttempts: 3 }),
+      });
+      const { text } = await generateText({
+        model,
+        system:
+          "Decide whether the following claim is eligible for reimbursement." +
+          "Respond with eligible if it's a medical claim, and not eligible otherwise.",
+        prompt: JSON.stringify(claim),
+      });
+      return text;
+    },
   },
 });
 
 export const rateComparisonAgent = restate.service({
   name: "RateComparisonAgent",
   handlers: {
-    run: runRateComparisonAgent,
+    run: async (ctx: restate.Context, claim: InsuranceClaim) => {
+      const model = wrapLanguageModel({
+        model: openai("gpt-4o"),
+        middleware: durableCalls(ctx, { maxRetryAttempts: 3 }),
+      });
+      const { text } = await generateText({
+        model,
+        system:
+          "Decide whether the cost of the claim is reasonable given the treatment." +
+          "Respond with reasonable or not reasonable.",
+        prompt: JSON.stringify(claim),
+      });
+      return text;
+    },
   },
 });
 
 export const fraudCheckAgent = restate.service({
   name: "FraudCheckAgent",
   handlers: {
-    run: runFraudAgent,
+    run: async (ctx: restate.Context, claim: InsuranceClaim) => {
+      const model = wrapLanguageModel({
+        model: openai("gpt-4o"),
+        middleware: durableCalls(ctx, { maxRetryAttempts: 3 }),
+      });
+      const { text } = await generateText({
+        model,
+        system:
+          "Decide whether the claim is fraudulent." +
+          "Always respond with low risk, medium risk, or high risk.",
+        prompt: JSON.stringify(claim),
+      });
+      return text;
+    },
   },
 });
 
@@ -143,3 +166,89 @@ export const InsuranceClaimSchema = z.object({
 });
 
 export type InsuranceClaim = z.infer<typeof InsuranceClaimSchema>;
+
+export const HotelBookingSchema = z.object({
+  name: z.string(),
+  dates: z.string(),
+  guests: z.number(),
+});
+
+export type HotelBooking = z.infer<typeof HotelBookingSchema>;
+
+export const FlightBookingSchema = z.object({
+  from: z.string(),
+  to: z.string(),
+  date: z.string(),
+  passengers: z.number(),
+});
+export type FlightBooking = z.infer<typeof FlightBookingSchema>;
+
+export const CarBookingSchema = z.object({
+  location: z.string(),
+  dates: z.string(),
+  type: z.string(),
+});
+
+export type CarBooking = z.infer<typeof CarBookingSchema>;
+
+export async function reserveHotel({ name, guests, dates }: HotelBooking) {
+  const id = crypto.randomUUID().toString();
+  console.log(`Created hotel booking ${id}`);
+  return {
+    id,
+    confirmation: `Hotel ${name} booked for ${guests} guests on ${dates}`,
+  };
+}
+
+export async function reserveFlight({
+  from,
+  to,
+  date,
+  passengers,
+}: FlightBooking) {
+  const id = crypto.randomUUID().toString();
+  console.log(`Created flight booking ${id}`);
+  return {
+    id,
+    confirmation: `Flight from ${from} to ${to} on ${date} for ${passengers} passengers`,
+  };
+}
+
+export async function reserveCar({ type, location, dates }: CarBooking) {
+  if (type === "SUV") {
+    const message = `[👻 SIMULATED] "Car booking failed: No SUVs available..."`;
+    console.error(message);
+    throw new restate.TerminalError(message);
+  }
+
+  const id = crypto.randomUUID().toString();
+  console.log(`Created car booking ${id}`);
+  return {
+    id,
+    confirmation: `${type} car rental in ${location} for ${dates}`,
+  };
+}
+
+export async function confirmHotel(id: string) {
+  console.log(`Confirmed hotel booking ${id}`);
+}
+
+export async function confirmFlight(id: string) {
+  console.log(`Confirmed flight booking ${id}`);
+}
+
+export async function confirmCar(id: string) {
+  console.log(`Confirmed car booking ${id}`);
+}
+
+export async function cancelHotel(id: string) {
+  console.log(`Cancelled hotel booking ${id}`);
+}
+
+export async function cancelFlight(id: string) {
+  console.log(`Cancelled flight booking ${id}`);
+}
+
+export async function cancelCar(id: string) {
+  console.log(`Cancelled car booking ${id}`);
+}

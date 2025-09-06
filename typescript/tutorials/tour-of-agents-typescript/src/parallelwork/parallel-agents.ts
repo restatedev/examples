@@ -2,7 +2,6 @@ import * as restate from "@restatedev/restate-sdk";
 import { openai } from "@ai-sdk/openai";
 import { generateText, wrapLanguageModel } from "ai";
 import {
-  emailCustomer,
   InsuranceClaim,
   eligibilityAgent,
   fraudCheckAgent,
@@ -11,7 +10,7 @@ import {
 import { durableCalls } from "../middleware";
 
 export default restate.service({
-  name: "ParallelClaimAnalyzer",
+  name: "ParallelAgentClaimAnalyzer",
   handlers: {
     run: async (ctx: restate.Context, claim: InsuranceClaim) => {
       const [eligibility, rateComparison, fraudCheck] = await Promise.all([
@@ -21,22 +20,17 @@ export default restate.service({
       ]);
 
       const model = wrapLanguageModel({
-        model: openai("gpt-4o-mini"),
+        model: openai("gpt-4o"),
         middleware: durableCalls(ctx, { maxRetryAttempts: 3 }),
       });
 
-      const decision = await generateText({
+      const { text } = await generateText({
         model,
         system: "You are a claim decision engine.",
-        prompt: `Make final claim decision based on: 
-                    Eligibility: ${eligibility}
-                    Cost: ${rateComparison} 
-                    Fraud: ${fraudCheck}`,
+        prompt: `Decide based on: 
+        Eligibility: ${eligibility}, Cost: ${rateComparison} Fraud: ${fraudCheck}`,
       });
-
-      await ctx.run("notify", () => emailCustomer(decision.text));
-
-      return decision.text;
+      return text;
     },
   },
 });
