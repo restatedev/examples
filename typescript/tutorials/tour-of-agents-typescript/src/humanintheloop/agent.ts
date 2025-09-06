@@ -9,7 +9,7 @@ import {
 import { durableCalls } from "../middleware";
 
 export default restate.service({
-  name: "ClaimEvaluationAgent",
+  name: "HumanClaimApprovalAgent",
   handlers: {
     run: async (ctx: restate.Context, { prompt }: { prompt: string }) => {
       const model = wrapLanguageModel({

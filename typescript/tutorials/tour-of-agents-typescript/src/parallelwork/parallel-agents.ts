@@ -10,7 +10,7 @@ import {
 import { durableCalls } from "../middleware";
 
 export default restate.service({
-  name: "ParallelAgentClaimAnalyzer",
+  name: "ParallelAgentClaimApproval",
   handlers: {
     run: async (ctx: restate.Context, claim: InsuranceClaim) => {
       const [eligibility, rateComparison, fraudCheck] = await Promise.all([

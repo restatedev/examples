@@ -10,7 +10,7 @@ import { durableCalls } from "../middleware";
 import { TimeoutError } from "@restatedev/restate-sdk";
 
 export default restate.service({
-  name: "ClaimEvaluationWithTimeoutsAgent",
+  name: "HumanClaimApprovalWithTimeoutsAgent",
   handlers: {
     run: async (ctx: restate.Context, { prompt }: { prompt: string }) => {
       const model = wrapLanguageModel({

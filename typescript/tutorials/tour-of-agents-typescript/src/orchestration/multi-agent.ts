@@ -10,7 +10,7 @@ import {
 import { durableCalls } from "../middleware";
 
 export default restate.service({
-  name: "ClaimAnalysisOrchestrator",
+  name: "MultiAgentClaimApproval",
   handlers: {
     run: async (ctx: restate.Context, claim: InsuranceClaim) => {
       const model = wrapLanguageModel({
@@ -23,7 +23,7 @@ export default restate.service({
         model,
         prompt: `Claim: ${JSON.stringify(claim)}`,
         system:
-          "You are a claim decision engine. Analyze the claim  and use your tools to decide whether to approve.",
+          "You are a claim approval engine. Analyze the claim and use your tools to decide whether to approve.",
         tools: {
           analyzeEligibility: tool({
             description: "Analyze eligibility result.",

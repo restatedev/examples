@@ -9,8 +9,8 @@ import {
 import { durableCalls } from "../middleware";
 import { TimeoutError } from "@restatedev/restate-sdk";
 
-export const claimEvaluationWithWorkflows = restate.service({
-  name: "ClaimEvaluationWithWorkflows",
+export const subWorkflowClaimApprovalAgent = restate.service({
+  name: "SubWorkflowClaimApprovalAgent",
   handlers: {
     run: async (ctx: restate.Context, { prompt }: { prompt: string }) => {
       const model = wrapLanguageModel({
