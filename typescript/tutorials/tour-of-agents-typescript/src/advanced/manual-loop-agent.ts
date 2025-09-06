@@ -1,88 +1,66 @@
 import * as restate from "@restatedev/restate-sdk";
-import { openai } from "@ai-sdk/openai";
-import { generateText, ModelMessage, tool, wrapLanguageModel } from "ai";
-import { z } from "zod";
-import { fetchWeather } from "../utils";
-import { durableCalls, superJson } from "../middleware";
+import { openai } from '@ai-sdk/openai';
+import {generateText, ModelMessage, tool, wrapLanguageModel} from 'ai';
+import z from 'zod';
+import {durableCalls} from "../middleware";
+import {fetchWeather} from "../utils";
 
-const WeatherRequestSchema = z.object({
-  city: z.string(),
-});
-
-export type WeatherRequest = z.infer<typeof WeatherRequestSchema>;
-
-async function getWeather(ctx: restate.ObjectContext, req: WeatherRequest) {
-  return ctx.run("get weather", () => fetchWeather(req.city));
+async function getWeather(ctx: restate.Context, {city}: { city: string }) {
+  return ctx.run("get-weather", () => fetchWeather(city));
 }
 
-const tools: Record<
-  string,
-  (ctx: restate.ObjectContext, req: any) => Promise<any>
-> = {
-  getWeather: getWeather,
-};
-
-export default restate.object({
+export default restate.service({
   name: "ManualLoopAgent",
   handlers: {
-    run: async (ctx: restate.ObjectContext, { prompt }: { prompt: string }) => {
-      const messages =
-        (await ctx.get<ModelMessage[]>("messages", superJson)) ?? [];
-
-      const model = wrapLanguageModel({
-        model: openai("gpt-4o"),
-        middleware: durableCalls(ctx, { maxRetryAttempts: 3 }),
-      });
+    run: async (ctx: restate.Context, {prompt}: { prompt: string }) => {
+      const messages = [{role: 'user', content: prompt} as ModelMessage];
 
       while (true) {
+        const model = wrapLanguageModel({
+          model: openai("gpt-4o"),
+          middleware: durableCalls(ctx, {maxRetryAttempts: 3}),
+        });
+
         const result = await generateText({
           model,
-          system: "You are a helpful agent that provides weather updates.",
-          prompt,
+          messages,
           tools: {
             getWeather: tool({
-              description: "Get the current weather in a given location",
-              inputSchema: WeatherRequestSchema,
+              name: 'getWeather',
+              description: 'Get the current weather in a given location',
+              inputSchema: z.object({
+                city: z.string(),
+              }),
             }),
             // add more tools here, omitting the execute function so you handle it yourself
           },
         });
 
-        // Add LLM generated messages to the message history
         messages.push(...result.response.messages);
-        ctx.set("messages", messages, superJson);
 
-        if (result.finishReason === "tool-calls") {
-          const toolCalls = result.toolCalls;
-
-          // Handle all tool call execution in parallel
-          const toolResults = await Promise.all(
-            toolCalls.map(async (toolCall) => ({
-              toolCall,
-              result: await tools[toolCall.toolName](ctx, toolCall.input),
-            })),
-          );
-
-          for (const { toolCall, result } of toolResults) {
-            messages.push({
-              role: "tool",
-              content: [
-                {
-                  toolName: toolCall.toolName,
-                  toolCallId: toolCall.toolCallId,
-                  type: "tool-result",
-                  output: { type: "json", value: result },
-                },
-              ],
-            });
+        if (result.finishReason === 'tool-calls') {
+          // Handle all tool call execution here
+          for (const toolCall of result.toolCalls) {
+            if (toolCall.toolName === 'getWeather') {
+              const toolOutput = await getWeather(ctx, toolCall.input as { city: string });
+              messages.push({
+                role: 'tool',
+                content: [
+                  {
+                    toolName: toolCall.toolName,
+                    toolCallId: toolCall.toolCallId,
+                    type: 'tool-result',
+                    output: {type: 'json', value: toolOutput},
+                  },
+                ],
+              });
+            }
+            // Handle other tool calls
           }
-          ctx.set("messages", messages, superJson);
         } else {
-          break;
+          return result.text;
         }
       }
-
-      return messages;
-    },
-  },
+    }
+  }
 });

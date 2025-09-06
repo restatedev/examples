@@ -8,12 +8,13 @@ import {
   rateComparisonAgent,
 } from "../utils";
 import { durableCalls } from "../middleware";
+import {RestatePromise} from "@restatedev/restate-sdk";
 
 export default restate.service({
   name: "ParallelAgentClaimApproval",
   handlers: {
     run: async (ctx: restate.Context, claim: InsuranceClaim) => {
-      const [eligibility, rateComparison, fraudCheck] = await Promise.all([
+      const [eligibility, rateComparison, fraudCheck] = await RestatePromise.all([
         ctx.serviceClient(eligibilityAgent).run(claim),
         ctx.serviceClient(rateComparisonAgent).run(claim),
         ctx.serviceClient(fraudCheckAgent).run(claim),
