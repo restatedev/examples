@@ -11,17 +11,19 @@ import {
 } from "../middleware";
 
 export default restate.service({
-  name: "StopOnTerminalErrorAgent",
+  name: "FailOnTerminalErrorAgent",
   handlers: {
     run: async (ctx: restate.Context, prompt: string) => {
+      // <start_max_attempts_example>
       const model = wrapLanguageModel({
         model: openai("gpt-4o"),
         middleware: durableCalls(ctx, { maxRetryAttempts: 3 }),
       });
+      // <end_max_attempts_example>
 
-      // OPTION 3: stop the agent when a terminal tool error occurs and handle it manually
-      // <start_option3>
-      const { steps, text } = await generateText({
+      // Rethrow terminal tool errors as exceptions to fail the workflow
+      // <start_option2>
+      const { text } = await generateText({
         model,
         tools: {
           getWeather: tool({
@@ -32,16 +34,12 @@ export default restate.service({
             },
           }),
         },
-        stopWhen: [stepCountIs(5), hasTerminalToolError],
+        stopWhen: [stepCountIs(5)],
+        onStepFinish: rethrowTerminalToolError,
         system: "You are a helpful agent that provides weather updates.",
         messages: [{ role: "user", content: prompt }],
       });
-
-      const terminalSteps = getTerminalToolSteps(steps);
-      if (terminalSteps.length > 0) {
-        // Do something with the terminal tool error steps
-      }
-      // <end_option3>
+      // <end_option2>
 
       return text;
     },

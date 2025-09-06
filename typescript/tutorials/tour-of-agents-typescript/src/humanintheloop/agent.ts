@@ -1,6 +1,6 @@
 import * as restate from "@restatedev/restate-sdk";
 import { openai } from "@ai-sdk/openai";
-import { generateText, tool, wrapLanguageModel, Output, stepCountIs } from "ai";
+import { generateText, tool, wrapLanguageModel, stepCountIs } from "ai";
 import {
   InsuranceClaim,
   InsuranceClaimSchema,

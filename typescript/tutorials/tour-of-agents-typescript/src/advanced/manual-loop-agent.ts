@@ -4,7 +4,6 @@ import { generateText, ModelMessage, tool, wrapLanguageModel } from "ai";
 import { z } from "zod";
 import { fetchWeather } from "../utils";
 import { durableCalls, superJson } from "../middleware";
-import { RestatePromise } from "@restatedev/restate-sdk";
 
 const WeatherRequestSchema = z.object({
   city: z.string(),

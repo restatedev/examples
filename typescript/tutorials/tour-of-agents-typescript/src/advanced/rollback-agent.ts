@@ -20,6 +20,7 @@ import {
   HotelBookingSchema,
 } from "../utils";
 
+// <start_here>
 const book = async (ctx: restate.Context, { prompt }: { prompt: string }) => {
   const on_rollback: { (): restate.RestatePromise<any> }[] = [];
   const on_success: { (): restate.RestatePromise<any> }[] = [];
@@ -99,8 +100,9 @@ const book = async (ctx: restate.Context, { prompt }: { prompt: string }) => {
     throw error;
   }
 };
+// <end_here>
 
 export default restate.service({
-  name: "BookingAgent",
+  name: "BookingWithRollbackAgent",
   handlers: { book },
 });
