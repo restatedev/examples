@@ -1,0 +1,18 @@
+package my.example.utils;
+
+import dev.restate.sdk.Context;
+import dev.restate.sdk.annotation.Handler;
+import dev.restate.sdk.annotation.Service;
+import my.example.types.EmailServiceResponse;
+import my.example.types.User;
+
+import static my.example.utils.Utils.sendWelcomeEmail;
+
+@Service
+public class EmailService {
+  @Handler
+  public EmailServiceResponse sendWelcome(Context ctx, User user) {
+    ctx.run(() -> sendWelcomeEmail(user));
+    return new EmailServiceResponse(true, "Email sent successfully");
+  }
+}

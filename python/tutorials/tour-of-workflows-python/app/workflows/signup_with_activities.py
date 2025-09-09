@@ -10,6 +10,7 @@ signup_with_activities = restate.Workflow("SignupWithActivitiesWorkflow")
 async def run(ctx: WorkflowContext, user: User) -> bool:
     user_id = ctx.key()
 
+    # <start_activities>
     # Move user DB interaction to dedicated service
     success = await ctx.service_call(
         create_user_handler, arg=CreateUserRequest(user_id=user_id, user=user)
@@ -20,4 +21,5 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
     # Execute other steps inline
     await ctx.run_typed("activate", activate_user, user_id=user_id)
     await ctx.run_typed("welcome", send_welcome_email, user=user)
+    # <end_activities>
     return success

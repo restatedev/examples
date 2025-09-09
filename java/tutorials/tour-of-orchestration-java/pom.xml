@@ -6,16 +6,15 @@
 
   <groupId>my.example</groupId>
   <artifactId>greeter</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.0.1</version>
 
-  <name>greeter</name>
-  <url>http://www.example.com</url>
+  <name>tour-of-orchestration</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
-    <restate.version>2.2.0</restate.version>
+    <restate.version>2.3.0</restate.version>
   </properties>
 
   <dependencies>
