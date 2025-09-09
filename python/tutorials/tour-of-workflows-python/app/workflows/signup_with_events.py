@@ -21,6 +21,6 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
     return success
 
 
-@signup_with_events.handler()
+@signup_with_events.handler("waitForUserCreation")
 async def wait_for_user_creation(ctx: WorkflowSharedContext) -> str:
     return await ctx.promise("user-created").value()

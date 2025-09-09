@@ -47,10 +47,10 @@ def delete_user(user_id: str) -> bool:
 def send_verification_email(user_id: str, user: User, verification_secret: str):
     print(f"Verification email sent: {user.email}")
     print(
-        f'For the signals section, verify via: curl localhost:8080/signup-with-signals/{user_id}/verify_email --json \'{{"secret": "{verification_secret}"}}\''
+        f'For the signals section, verify via: curl localhost:8080/SignupWithSignalsWorkflow/{user_id}/verifyEmail --json \'{{"secret": "{verification_secret}"}}\''
     )
     print(
-        f'For the timers section, verify via: curl localhost:8080/signup-with-timers/{user_id}/verify_email --json \'{{"secret": "{verification_secret}"}}\''
+        f'For the timers section, verify via: curl localhost:8080/SignupWithTimersWorkflow/{user_id}/verifyEmail --json \'{{"secret": "{verification_secret}"}}\''
     )
 
 

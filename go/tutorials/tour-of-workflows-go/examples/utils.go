@@ -76,13 +76,14 @@ func DeleteUser(userID string) error {
 
 func SendVerificationEmail(userID string, user User, verificationSecret string) error {
 	fmt.Printf("Verification email sent: %s\n", user.Email)
-	fmt.Printf("For the signals section, verify via: curl localhost:8080/SignalsWorkflow/%s/VerifyEmail --json '{\"secret\": \"%s\"}'\n", userID, verificationSecret)
-	fmt.Printf("For the timers section, verify via: curl localhost:8080/TimersWorkflow/%s/VerifyEmail --json '{\"secret\": \"%s\"}'\n", userID, verificationSecret)
+	fmt.Printf("For the signals section, verify via: curl localhost:8080/SignupWithSignalsWorkflow/%s/VerifyEmail --json '{\"secret\": \"%s\"}'\n", userID, verificationSecret)
+	fmt.Printf("For the timers section, verify via: curl localhost:8080/SignupWithTimersWorkflow/%s/VerifyEmail --json '{\"secret\": \"%s\"}'\n", userID, verificationSecret)
 	return nil
 }
 
-func SendReminderEmail(user User) error {
+func SendReminderEmail(userID string, user User, verificationSecret string) error {
 	fmt.Printf("Reminder email sent: %s\n", user.Email)
+	fmt.Printf("For the timers section, verify via: curl localhost:8080/SignupWithTimersWorkflow/%s/VerifyEmail --json '{\"secret\": \"%s\"}'\n", userID, verificationSecret)
 	return nil
 }
 

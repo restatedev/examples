@@ -46,6 +46,6 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
                 raise TerminalError("Email verification timed out after 24 hours")
 
 
-@signup_with_timers.handler()
+@signup_with_timers.handler("verifyEmail")
 async def verify_email(ctx: WorkflowSharedContext, req: VerifyEmailRequest) -> None:
     await ctx.promise("email-verified").resolve(req.secret)

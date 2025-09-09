@@ -41,21 +41,27 @@ public class Utils {
   public static void sendVerificationEmail(String userId, User user, String verificationSecret) {
     System.out.println("Verification email sent: " + user.email());
     System.out.println(
-        "For the signals section, verify via: curl localhost:8080/signup-with-signals/"
+        "For the signals section, verify via: curl localhost:8080/SignupWithSignalsWorkflow/"
             + userId
             + "/verifyEmail --json '{\"secret\": \""
             + verificationSecret
             + "\"}'");
     System.out.println(
-        "For the timers section, verify via: curl localhost:8080/signup-with-timers/"
+        "For the timers section, verify via: curl localhost:8080/SignupWithTimersWorkflow/"
             + userId
             + "/verifyEmail --json '{\"secret\": \""
             + verificationSecret
             + "\"}'");
   }
 
-  public static void sendReminderEmail(User user) {
+  public static void sendReminderEmail(String userId, User user, String verificationSecret) {
     System.out.println("Reminder email sent: " + user.email());
+    System.out.println(
+        "For the timers section, verify via: curl localhost:8080/SignupWithTimersWorkflow/"
+            + userId
+            + "/verifyEmail --json '{\"secret\": \""
+            + verificationSecret
+            + "\"}'");
   }
 
   public static void activateUser(String userId) {

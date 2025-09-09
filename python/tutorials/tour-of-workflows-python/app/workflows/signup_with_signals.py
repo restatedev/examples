@@ -24,7 +24,7 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
     return clicked_secret == secret
 
 
-@signup_with_signals.handler()
+@signup_with_signals.handler("verifyEmail")
 async def verify_email(ctx: WorkflowSharedContext, req: VerifyEmailRequest) -> None:
     # Resolve the promise to continue the main workflow
     await ctx.promise("email-verified").resolve(req.secret)

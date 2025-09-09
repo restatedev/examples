@@ -32,10 +32,10 @@ export const signupWithTimers = restate.workflow({
 
         switch (result) {
           case "verified":
-            const clickedSecret = await ctx.promise<string>("email-verified");
+            const clickedSecret = await clickedPromise;
             return { success: clickedSecret === secret };
           case "reminder":
-            await ctx.run("remind", () => sendReminderEmail(user));
+            await ctx.run("send reminder", () => sendReminderEmail(userId, user, secret));
             break;
           case "timeout":
             throw new TerminalError(

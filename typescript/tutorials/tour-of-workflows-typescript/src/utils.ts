@@ -47,12 +47,17 @@ export function sendVerificationEmail(
   verificationSecret: string,
 ) {
   console.log(`Verification email sent: ${user.email} \n 
-  For the signals section, verify via: curl localhost:8080/signup-with-signals/${id}/verifyEmail --json '{"secret": "${verificationSecret}"} \n'
-  For the timers section, verify via: curl localhost:8080/signup-with-timers/${id}/verifyEmail --json '{"secret": "${verificationSecret}"} \n'`);
+  For the signals section, verify via: curl localhost:8080/SignupWithSignalsWorkflow/${id}/verifyEmail --json '{"secret": "${verificationSecret}"} \n'
+  For the timers section, verify via: curl localhost:8080/SignupWithTimersWorkflow/${id}/verifyEmail --json '{"secret": "${verificationSecret}"} \n'`);
 }
 
-export function sendReminderEmail(user: User) {
-  console.log(`Reminder email sent: ${user.email}`);
+export function sendReminderEmail(
+  id: string,
+  user: User,
+  verificationSecret: string,
+)  {
+  console.log(`Reminder email sent: ${user.email} \n 
+  For the timers section, verify via: curl localhost:8080/SignupWithTimersWorkflow/${id}/verifyEmail --json '{"secret": "${verificationSecret}"} \n'`);
 }
 
 export function activateUser(userId: string) {

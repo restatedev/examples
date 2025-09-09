@@ -27,6 +27,6 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
     return success
 
 
-@signup_with_queries.handler()
+@signup_with_queries.handler("getStatus")
 async def get_status(ctx: WorkflowSharedContext) -> StatusResponse:
     return StatusResponse(status=await ctx.get("status"), user=await ctx.get("user"))

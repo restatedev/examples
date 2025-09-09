@@ -21,13 +21,14 @@ public class SignupWithTimersWorkflow {
       DurablePromiseKey.of("email-verified", String.class);
 
     @Workflow
-    public String run(WorkflowContext ctx, User user) {
+    public boolean run(WorkflowContext ctx, User user) {
         String userId = ctx.key();
 
-        var confirmationFuture = ctx.awakeable(Boolean.class);
+        var confirmationFuture = ctx.promise(EMAIL_VERIFIED_PROMISE).future();
+        var secret = ctx.random().nextUUID().toString();
         ctx.run(
                 "verify",
-                () -> sendVerificationEmail(userId, user, confirmationFuture.id()));
+                () -> sendVerificationEmail(userId, user, secret));
 
         var verificationTimeout = ctx.timer(Duration.ofDays(1));
 
@@ -36,20 +37,19 @@ public class SignupWithTimersWorkflow {
 
             var selected =
                     Select.<String>select()
-                            .when(confirmationFuture, res -> res ? "success" : "failure")
+                            .when(confirmationFuture, res -> "verified")
                             .when(reminderTimer, unused -> "reminder")
                             .when(verificationTimeout, unused -> "timeout")
                             .await();
 
             switch (selected) {
-                case "success":
-                    return "Email verified";
-                case "failure":
-                    return "Email rejected";
+                case "verified":
+                    var clickedSecret = confirmationFuture.await();
+                    return secret.equals(clickedSecret);
                 case "reminder":
                     ctx.run(
                             "send reminder",
-                            () -> sendReminderEmail(user));
+                            () -> sendReminderEmail(userId, user, secret));
                     break;
                 case "timeout":
                     throw new TerminalException("Verification timed out");
