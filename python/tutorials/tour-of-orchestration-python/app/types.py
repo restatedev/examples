@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel as camelize
