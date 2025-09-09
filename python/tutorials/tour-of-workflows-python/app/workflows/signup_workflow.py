@@ -4,6 +4,7 @@ from app.utils import User, create_user, activate_user, send_welcome_email
 
 signup_workflow = restate.Workflow("SignupWorkflow")
 
+
 @signup_workflow.main()
 async def run(ctx: WorkflowContext, user: User) -> bool:
     user_id = ctx.key()  # workflow ID = user ID

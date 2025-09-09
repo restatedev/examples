@@ -24,6 +24,7 @@ public class SignupWithRetriesWorkflow {
     ctx.run("activate", () -> activateUser(userId));
 
     // Configure retry policy
+    // <start_retries>
     try {
       RetryPolicy myRunRetryPolicy =
           RetryPolicy.defaultPolicy()
@@ -37,6 +38,7 @@ public class SignupWithRetriesWorkflow {
     } catch (TerminalException error) {
       System.err.println("Failed to send welcome email after retries: " + error.getMessage());
     }
+    // <end_retries>
 
     return true;
   }

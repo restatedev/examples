@@ -1,8 +1,15 @@
 import restate
 from restate import WorkflowContext, WorkflowSharedContext
-from app.utils import User, StatusResponse, create_user, activate_user, send_welcome_email
+from app.utils import (
+    User,
+    StatusResponse,
+    create_user,
+    activate_user,
+    send_welcome_email,
+)
 
 signup_with_queries = restate.Workflow("SignupWithQueriesWorkflow")
+
 
 @signup_with_queries.main()
 async def run(ctx: WorkflowContext, user: User) -> bool:
@@ -19,9 +26,7 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
     await ctx.run_typed("welcome", send_welcome_email, user=user)
     return success
 
+
 @signup_with_queries.handler()
 async def get_status(ctx: WorkflowSharedContext) -> StatusResponse:
-    return StatusResponse(
-        status=await ctx.get("status"),
-        user=await ctx.get("user")
-    )
+    return StatusResponse(status=await ctx.get("status"), user=await ctx.get("user"))

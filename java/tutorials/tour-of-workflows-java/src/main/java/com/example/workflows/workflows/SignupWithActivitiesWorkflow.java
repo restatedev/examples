@@ -15,6 +15,7 @@ public class SignupWithActivitiesWorkflow {
   public boolean run(WorkflowContext ctx, User user) {
     String userId = ctx.key();
 
+    // <start_activities>
     // Move user DB interaction to dedicated service
     CreateUserRequest createUserReq = new CreateUserRequest(userId, user);
     boolean success = true;//UserServiceClient.fromContext(ctx).createUser(createUserReq).await();
@@ -26,6 +27,7 @@ public class SignupWithActivitiesWorkflow {
     // Execute other steps inline
     ctx.run("activate", () -> activateUser(userId));
     ctx.run("welcome", () -> sendWelcomeEmail(user));
+    // <end_activities>
 
     return true;
   }

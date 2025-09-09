@@ -5,13 +5,14 @@ import dev.restate.sdk.common.TerminalException;
 
 public class Utils {
 
-  // Utility functions
+  // <start_here>
   private static void failOnAlice(String name, String action) {
     if ("Alice".equals(name)) {
       System.err.println("[👻 SIMULATED] Failed to " + action + ": " + name);
       throw new RuntimeException("[👻 SIMULATED] Failed to " + action + ": " + name);
     }
   }
+  // <end_here>
 
   private static void terminalErrorOnAlice(String name, String action) {
     if ("Alice".equals(name)) {

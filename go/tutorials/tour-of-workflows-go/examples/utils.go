@@ -34,7 +34,18 @@ type StatusResponse struct {
 	User   *User   `json:"user"`
 }
 
-// Utility functions
+// <start_here>
+func SendWelcomeEmail(user User) error {
+	err := failOnAlice(user.Name, "send welcome email")
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Welcome email sent: %s\n", user.Email)
+	return nil
+}
+
+// <end_here>
+
 func failOnAlice(name, action string) error {
 	if name == "Alice" {
 		msg := fmt.Sprintf("[👻 SIMULATED] Failed to %s: %s", action, name)
@@ -50,15 +61,6 @@ func terminalErrorOnAlice(name, action string) error {
 		log.Println(msg)
 		return restate.TerminalError(fmt.Errorf(msg))
 	}
-	return nil
-}
-
-func SendWelcomeEmail(user User) error {
-	err := failOnAlice(user.Name, "send welcome email")
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Welcome email sent: %s\n", user.Email)
 	return nil
 }
 

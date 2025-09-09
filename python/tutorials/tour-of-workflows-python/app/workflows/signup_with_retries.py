@@ -5,6 +5,7 @@ from app.utils import User, create_user, activate_user, send_welcome_email
 
 signup_with_retries = restate.Workflow("SignupWithRetriesWorkflow")
 
+
 @signup_with_retries.main()
 async def run(ctx: WorkflowContext, user: User) -> bool:
     user_id = ctx.key()
@@ -18,13 +19,12 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
     # Configure retry policy
     try:
         await ctx.run_typed(
-            "welcome", 
+            "welcome",
             send_welcome_email,
             restate.RunOptions(
-                max_attempts=3,
-                max_retry_duration=timedelta(seconds=30)
+                max_attempts=3, max_retry_duration=timedelta(seconds=30)
             ),
-            user=user
+            user=user,
         )
     except TerminalError as error:
         print(f"Failed to send welcome email after retries: {error}")

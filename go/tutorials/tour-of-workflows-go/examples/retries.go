@@ -27,7 +27,7 @@ func (RetriesWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error)
 		return false, err
 	}
 
-	// Configure retry policy using defer for Go-style error handling
+	// <start_retries>
 	_, err = restate.Run(ctx,
 		func(ctx restate.RunContext) (restate.Void, error) {
 			return restate.Void{}, SendWelcomeEmail(user)
@@ -38,6 +38,7 @@ func (RetriesWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error)
 	if err != nil {
 		return false, err
 	}
+	// <end_retries>
 
 	return true, nil
 }
