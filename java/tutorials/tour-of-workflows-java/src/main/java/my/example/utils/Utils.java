@@ -5,15 +5,14 @@ import my.example.types.User;
 
 public class Utils {
 
-  // <start_here>
   private static void failOnAlice(String name, String action) {
     if ("Alice".equals(name)) {
       System.err.println("[👻 SIMULATED] Failed to " + action + ": " + name);
       throw new RuntimeException("[👻 SIMULATED] Failed to " + action + ": " + name);
     }
   }
-  // <end_here>
 
+  // <start_here>
   private static void terminalErrorOnAlice(String name, String action) {
     if ("Alice".equals(name)) {
       String message =
@@ -22,6 +21,7 @@ public class Utils {
       throw new TerminalException(message);
     }
   }
+  // <end_here>
 
   public static void sendWelcomeEmail(User user) {
     failOnAlice(user.name(), "send welcome email");
