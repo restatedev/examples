@@ -2,17 +2,15 @@ package main
 
 import (
 	"context"
-	"log/slog"
-	"os"
-
 	restate "github.com/restatedev/sdk-go"
 	"github.com/restatedev/sdk-go/server"
+	"log"
 
 	"github.com/restatedev/examples/go/tutorials/tour-of-orchestration-go/examples"
 )
 
 func main() {
-	server := server.NewRestate().
+	if err := server.NewRestate().
 		Bind(restate.Reflect(examples.ParallelSubscriptionService{})).
 		Bind(restate.Reflect(examples.SubscriptionSaga{})).
 		Bind(restate.Reflect(examples.Payments{})).
@@ -21,10 +19,8 @@ func main() {
 		Bind(restate.Reflect(examples.PaymentsWithTimeout{})).
 		Bind(restate.Reflect(examples.ConcertTicketingService{})).
 		Bind(restate.Reflect(examples.PaymentService{})).
-		Bind(restate.Reflect(examples.EmailService{}))
-
-	if err := server.Start(context.Background(), ":9080"); err != nil {
-		slog.Error("application exited unexpectedly", "err", err.Error())
-		os.Exit(1)
+		Bind(restate.Reflect(examples.EmailService{})).
+		Start(context.Background(), ":9080"); err != nil {
+		log.Fatal(err)
 	}
 }

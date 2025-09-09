@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"os"
 
 	"github.com/restatedev/examples/go/tutorials/tour-of-workflows-go/examples"
 	restate "github.com/restatedev/sdk-go"
@@ -11,8 +10,7 @@ import (
 )
 
 func main() {
-	server := server.NewRestate().
-
+	if err := server.NewRestate().
 		// Bind workflows
 		Bind(restate.Reflect(examples.SignupWorkflow{})).
 		Bind(restate.Reflect(examples.SignupWithActivitiesWorkflow{})).
@@ -25,10 +23,8 @@ func main() {
 
 		// Bind utility services
 		Bind(restate.Reflect(examples.EmailService{})).
-		Bind(restate.Reflect(examples.UserService{}))
-
-	if err := server.Start(context.Background(), ":8000"); err != nil {
-		log.Printf("application exited unexpectedly: %v", err)
-		os.Exit(1)
+		Bind(restate.Reflect(examples.UserService{})).
+		Start(context.Background(), ":9080"); err != nil {
+		log.Fatal(err)
 	}
 }
