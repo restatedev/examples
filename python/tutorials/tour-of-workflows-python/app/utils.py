@@ -54,8 +54,11 @@ def send_verification_email(user_id: str, user: User, verification_secret: str):
     )
 
 
-def send_reminder_email(user: User):
+def send_reminder_email(user_id: str, user: User, verification_secret: str):
     print(f"Reminder email sent: {user.email}")
+    print(
+        f'Verify via: curl localhost:8080/SignupWithTimersWorkflow/{user_id}/verifyEmail --json \'{{"secret": "{verification_secret}"}}\''
+    )
 
 
 def activate_user(user_id: str):

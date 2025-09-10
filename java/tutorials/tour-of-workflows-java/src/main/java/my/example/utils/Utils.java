@@ -58,7 +58,7 @@ public class Utils {
   public static void sendReminderEmail(String userId, User user, String verificationSecret) {
     System.out.println("Reminder email sent: " + user.email());
     System.out.println(
-        "For the timers section, verify via: curl localhost:8080/SignupWithTimersWorkflow/"
+        "Verify via: curl localhost:8080/SignupWithTimersWorkflow/"
             + userId
             + "/verifyEmail --json '{\"secret\": \""
             + verificationSecret

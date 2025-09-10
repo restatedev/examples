@@ -41,7 +41,13 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
             case ["verification", clicked_secret]:
                 return clicked_secret == secret
             case ["reminder", _]:
-                await ctx.run_typed("remind", send_reminder_email, user=user)
+                await ctx.run_typed(
+                    "remind",
+                    send_reminder_email,
+                    user_id=user_id,
+                    user=user,
+                    verification_secret=secret,
+                )
             case ["timeout", _]:
                 raise TerminalError("Email verification timed out after 24 hours")
 

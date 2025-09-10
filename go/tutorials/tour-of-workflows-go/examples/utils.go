@@ -74,7 +74,7 @@ func SendVerificationEmail(userID string, user User, verificationSecret string) 
 
 func SendReminderEmail(userID string, user User, verificationSecret string) (restate.Void, error) {
 	fmt.Printf("Reminder email sent: %s\n", user.Email)
-	fmt.Printf("For the timers section, verify via: curl localhost:8080/SignupWithTimersWorkflow/%s/VerifyEmail --json '{\"secret\": \"%s\"}'\n", userID, verificationSecret)
+	fmt.Printf("Verify via: curl localhost:8080/SignupWithTimersWorkflow/%s/VerifyEmail --json '{\"secret\": \"%s\"}'\n", userID, verificationSecret)
 	return restate.Void{}, nil
 }
 
