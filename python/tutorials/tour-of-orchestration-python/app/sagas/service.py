@@ -1,5 +1,4 @@
 import restate
-from typing import Callable, Awaitable, List
 
 from app.utils import (
     create_recurring_payment,

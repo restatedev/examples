@@ -35,7 +35,6 @@ async def process(ctx: restate.Context, req: PaymentRequest) -> PaymentResult:
             )
 
 
-
 @payments_with_timeout.handler()
 async def confirm(ctx: restate.Context, confirmation: ConfirmationRequest) -> None:
     ctx.resolve_awakeable(confirmation.id, confirmation.result)
