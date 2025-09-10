@@ -1,5 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import { emailService, userService } from "./utils";
+import { userService } from "./utils";
 import { signupWorkflow } from "./workflows/signup-workflow";
 import { signupWithActivities } from "./workflows/signup-with-activities";
 import { signupWithEvents } from "./workflows/signup-with-events";
@@ -21,6 +21,5 @@ restate
   .bind(signupWithRetries)
   .bind(signupWithSagas)
   // Utils
-  .bind(emailService)
   .bind(userService)
   .listen(9080);

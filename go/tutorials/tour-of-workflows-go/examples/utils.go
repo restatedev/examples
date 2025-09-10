@@ -21,11 +21,6 @@ type VerifyEmailRequest struct {
 	Secret string `json:"secret"`
 }
 
-type EmailServiceResponse struct {
-	Success bool   `json:"success"`
-	Message string `json:"message"`
-}
-
 type StatusResponse struct {
 	Status *string `json:"status"`
 	User   *User   `json:"user"`
@@ -107,26 +102,10 @@ func CancelSubscription(user User) (restate.Void, error) {
 	return restate.Void{}, nil
 }
 
-type EmailService struct{}
-
-func (EmailService) SendWelcome(ctx restate.Context, user User) (EmailServiceResponse, error) {
-	_, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return SendWelcomeEmail(user)
-	})
-	if err != nil {
-		return EmailServiceResponse{}, err
-	}
-
-	return EmailServiceResponse{
-		Success: true,
-		Message: "Email sent successfully",
-	}, nil
-}
-
 type UserService struct{}
 
 func (UserService) CreateUser(ctx restate.Context, req CreateUserRequest) (bool, error) {
 	return restate.Run(ctx, func(ctx restate.RunContext) (bool, error) {
 		return CreateUser(req.UserID, req.User)
-	}, restate.WithName("create"))
+	}, restate.WithName("create user"))
 }

@@ -92,33 +92,16 @@ class WorkflowResult(BaseModel):
     success: bool
 
 
-class EmailServiceResponse(BaseModel):
-    success: bool
-    message: str
-
-
 class StatusResponse(BaseModel):
     status: str | None
     user: dict | None
 
 
-# Services
-email_service = restate.Service("EmailService")
-
-
-@email_service.handler()
-async def send_welcome_handler(
-    ctx: restate.Context, user: User
-) -> EmailServiceResponse:
-    await ctx.run_typed("send_welcome_email", send_welcome_email, user=user)
-    return EmailServiceResponse(success=True, message="Email sent successfully")
-
-
 user_service = restate.Service("UserService")
 
 
-@user_service.handler()
+@user_service.handler("createUser")
 async def create_user_handler(ctx: restate.Context, req: CreateUserRequest) -> bool:
     return await ctx.run_typed(
-        "create_user", create_user, user_id=req.user_id, user=req.user
+        "create user", create_user, user_id=req.user_id, user=req.user
     )

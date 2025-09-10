@@ -2,7 +2,6 @@ package my.example;
 
 import dev.restate.sdk.endpoint.Endpoint;
 import dev.restate.sdk.http.vertx.RestateHttpServer;
-import my.example.utils.EmailService;
 import my.example.utils.UserService;
 import my.example.workflows.*;
 
@@ -21,7 +20,6 @@ public class AppMain {
             .bind(new SignupWithSignalsWorkflow())
             .bind(new SignupWithTimersWorkflow())
             // Utils
-            .bind(new EmailService())
             .bind(new UserService()));
   }
 }

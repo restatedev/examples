@@ -3,7 +3,7 @@ import asyncio
 import restate
 
 # Import all workflows and services
-from app.utils import email_service, user_service
+from app.utils import user_service
 from app.workflows.signup_workflow import signup_workflow
 from app.workflows.signup_with_activities import signup_with_activities
 from app.workflows.signup_with_events import signup_with_events
@@ -26,7 +26,6 @@ app = restate.app(
         signup_with_signals,
         signup_with_timers,
         # Utility services
-        email_service,
         user_service,
     ]
 )

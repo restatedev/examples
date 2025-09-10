@@ -79,16 +79,6 @@ export function cancelSubscription(user: User) {
   return true;
 }
 
-export const emailService = restate.service({
-  name: "EmailService",
-  handlers: {
-    sendWelcome: async (ctx: restate.Context, user: User) => {
-      await ctx.run(() => sendWelcomeEmail(user));
-      return { success: true, message: "Email sent successfully" };
-    },
-  },
-});
-
 export const userService = restate.service({
   name: "UserService",
   handlers: {
@@ -96,7 +86,7 @@ export const userService = restate.service({
       ctx: restate.Context,
       req: { userId: string; user: User },
     ) => {
-      return ctx.run(() => createUser(req.userId, req.user));
+      return ctx.run("create user", () => createUser(req.userId, req.user));
     },
   },
 });

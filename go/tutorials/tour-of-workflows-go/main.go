@@ -22,7 +22,6 @@ func main() {
 		Bind(restate.Reflect(examples.SignupWithTimersWorkflow{})).
 
 		// Bind utility services
-		Bind(restate.Reflect(examples.EmailService{})).
 		Bind(restate.Reflect(examples.UserService{})).
 		Start(context.Background(), ":9080"); err != nil {
 		log.Fatal(err)
