@@ -13,11 +13,8 @@ func (SignupWithActivitiesWorkflow) Run(ctx restate.WorkflowContext, user User) 
 	// Move user DB interaction to dedicated service
 	success, err := restate.Service[bool](ctx, "UserService", "CreateUser").
 		Request(CreateUserRequest{UserID: userID, User: user})
-	if err != nil {
+	if err != nil || !success {
 		return false, err
-	}
-	if !success {
-		return false, nil
 	}
 
 	// Execute other steps inline

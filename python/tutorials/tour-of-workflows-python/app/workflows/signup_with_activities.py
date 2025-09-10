@@ -16,10 +16,10 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
         create_user_handler, arg=CreateUserRequest(user_id=user_id, user=user)
     )
     if not success:
-        return success
+        return False
 
     # Execute other steps inline
     await ctx.run_typed("activate", activate_user, user_id=user_id)
     await ctx.run_typed("welcome", send_welcome_email, user=user)
     # <end_activities>
-    return success
+    return True

@@ -33,8 +33,7 @@ type StatusResponse struct {
 
 // <start_here>
 func SendWelcomeEmail(user User) (restate.Void, error) {
-	err := failOnAlice(user.Name, "send welcome email")
-	if err != nil {
+	if err := failOnAlice(user.Name, "send welcome email"); err != nil {
 		return restate.Void{}, err
 	}
 	fmt.Printf("Welcome email sent: %s\n", user.Email)

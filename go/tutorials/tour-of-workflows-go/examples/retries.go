@@ -12,10 +12,7 @@ func (RetriesWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error)
 	success, err := restate.Run(ctx, func(ctx restate.RunContext) (bool, error) {
 		return CreateUser(userID, user)
 	}, restate.WithName("create"))
-	if err != nil {
-		return false, err
-	}
-	if !success {
+	if err != nil || !success {
 		return false, nil
 	}
 

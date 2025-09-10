@@ -12,9 +12,9 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
     # Write to database
     success = await ctx.run_typed("create", create_user, user_id=user_id, user=user)
     if not success:
-        return success
+        return False
 
     # Call APIs
     await ctx.run_typed("activate", activate_user, user_id=user_id)
     await ctx.run_typed("welcome", send_welcome_email, user=user)
-    return success
+    return True

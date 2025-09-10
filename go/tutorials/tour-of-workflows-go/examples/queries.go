@@ -13,12 +13,9 @@ func (SignupWithQueriesWorkflow) Run(ctx restate.WorkflowContext, user User) (bo
 	success, err := restate.Run(ctx, func(ctx restate.RunContext) (bool, error) {
 		return CreateUser(userID, user)
 	}, restate.WithName("create"))
-	if err != nil {
-		return false, err
-	}
-	if !success {
+	if err != nil || !success {
 		restate.Set(ctx, "status", "failed")
-		return success, nil
+		return false, nil
 	}
 	restate.Set(ctx, "status", "created")
 

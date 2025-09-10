@@ -12,7 +12,7 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
 
     success = await ctx.run_typed("create", create_user, user_id=user_id, user=user)
     if not success:
-        return success
+        return False
 
     await ctx.run_typed("activate", activate_user, user_id=user_id)
 
@@ -29,4 +29,4 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
     except TerminalError as error:
         print(f"Failed to send welcome email after retries: {error}")
 
-    return success
+    return True

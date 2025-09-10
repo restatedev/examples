@@ -14,14 +14,9 @@ func (SignupWithEventsWorkflow) Run(ctx restate.WorkflowContext, user User) (boo
 	success, err := restate.Run(ctx, func(ctx restate.RunContext) (bool, error) {
 		return CreateUser(userID, user)
 	}, restate.WithName("create"))
-	if err != nil {
+	if err != nil || !success {
+		err = restate.Promise[string](ctx, "user-created").Reject(fmt.Errorf("creation failed"))
 		return false, err
-	}
-	if !success {
-		if err := restate.Promise[string](ctx, "user-created").Reject(fmt.Errorf("creation failed")); err != nil {
-			return false, err
-		}
-		return false, nil
 	}
 
 	if err := restate.Promise[string](ctx, "user-created").Resolve("User created."); err != nil {

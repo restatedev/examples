@@ -13,11 +13,8 @@ func (SignupWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error) 
 	success, err := restate.Run(ctx, func(ctx restate.RunContext) (bool, error) {
 		return CreateUser(userID, user)
 	}, restate.WithName("create"))
-	if err != nil {
+	if err != nil || !success {
 		return false, err
-	}
-	if !success {
-		return false, nil
 	}
 
 	// Call APIs
