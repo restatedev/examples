@@ -16,7 +16,7 @@ func main() {
 		Bind(restate.Reflect(examples.SignupWithActivitiesWorkflow{})).
 		Bind(restate.Reflect(examples.SignupWithEventsWorkflow{})).
 		Bind(restate.Reflect(examples.SignupWithQueriesWorkflow{})).
-		Bind(restate.Reflect(examples.RetriesWorkflow{})).
+		Bind(restate.Reflect(examples.SignupWithRetriesWorkflow{})).
 		Bind(restate.Reflect(examples.SagasWorkflow{})).
 		Bind(restate.Reflect(examples.SignupWithSignalsWorkflow{})).
 		Bind(restate.Reflect(examples.SignupWithTimersWorkflow{})).

@@ -27,6 +27,8 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
             user=user,
         )
     except TerminalError as error:
+        # This gets hit on retry exhaustion with a terminal error
+		# Log and continue; without letting the workflow fail
         print(f"Failed to send welcome email after retries: {error}")
 
     return True

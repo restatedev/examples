@@ -11,6 +11,8 @@ func (SagasWorkflow) Run(ctx restate.WorkflowContext, user User) (res bool, err 
 	var compensations []func() error
 
 	defer func() {
+		// All errors that end up here are terminal errors, so run compensations
+		// (Retry-able errors got returned by the SDK without ending up here)
 		if err != nil {
 			for i := len(compensations) - 1; i >= 0; i-- {
 				if compErr := compensations[i](); compErr != nil {

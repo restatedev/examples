@@ -1,12 +1,13 @@
 package examples
 
 import (
+	"fmt"
 	restate "github.com/restatedev/sdk-go"
 )
 
-type RetriesWorkflow struct{}
+type SignupWithRetriesWorkflow struct{}
 
-func (RetriesWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error) {
+func (SignupWithRetriesWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error) {
 	userID := restate.Key(ctx)
 
 	success, err := restate.Run(ctx, func(ctx restate.RunContext) (bool, error) {
@@ -33,7 +34,9 @@ func (RetriesWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error)
 		restate.WithInitialRetryInterval(1000),
 	)
 	if err != nil {
-		return false, err
+		// This gets hit on retry exhaustion with a terminal error
+		// Log and continue; without letting the workflow fail
+		fmt.Printf("Couldn't send the email due to terminal error %s", err)
 	}
 	// <end_retries>
 

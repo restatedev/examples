@@ -21,6 +21,8 @@ export const signupWithRetries = restate.workflow({
         };
         await ctx.run("welcome", () => sendWelcomeEmail(user), retryPolicy);
       } catch (error) {
+        // This gets hit on retry exhaustion with a terminal error
+        // Log and continue; without letting the workflow fail
         console.error("Failed to send welcome email after retries:", error);
       }
       // <end_retries>

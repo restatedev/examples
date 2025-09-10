@@ -13,7 +13,7 @@ func (SignupWithSignalsWorkflow) Run(ctx restate.WorkflowContext, user User) (bo
 	secret := restate.Rand(ctx).UUID().String()
 	_, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
 		return SendVerificationEmail(userID, user, secret)
-	})
+	}, restate.WithName("verify"))
 	if err != nil {
 		return false, err
 	}

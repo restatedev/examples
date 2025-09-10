@@ -15,7 +15,7 @@ func (SignupWithTimersWorkflow) Run(ctx restate.WorkflowContext, user User) (boo
 	secret := restate.Rand(ctx).UUID().String()
 	_, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
 		return SendVerificationEmail(userID, user, secret)
-	})
+	}, restate.WithName("verify"))
 	if err != nil {
 		return false, err
 	}
@@ -43,7 +43,7 @@ func (SignupWithTimersWorkflow) Run(ctx restate.WorkflowContext, user User) (boo
 		case reminderTimerFuture:
 			_, err = restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
 				return SendReminderEmail(userID, user, secret)
-			})
+			}, restate.WithName("send reminder"))
 			if err != nil {
 				return false, err
 			}

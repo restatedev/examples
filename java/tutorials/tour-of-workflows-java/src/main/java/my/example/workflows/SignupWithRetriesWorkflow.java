@@ -36,6 +36,8 @@ public class SignupWithRetriesWorkflow {
 
       ctx.run("welcome", myRunRetryPolicy, () -> sendWelcomeEmail(user));
     } catch (TerminalException error) {
+      // This gets hit on retry exhaustion with a terminal error
+      // Log and continue; without letting the workflow fail
       System.err.println("Failed to send welcome email after retries: " + error.getMessage());
     }
     // <end_retries>
