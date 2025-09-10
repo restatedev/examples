@@ -55,7 +55,7 @@ export function sendReminderEmail(
   id: string,
   user: User,
   verificationSecret: string,
-)  {
+) {
   console.log(`Reminder email sent: ${user.email} \n 
   Verify via: curl localhost:8080/SignupWithTimersWorkflow/${id}/verifyEmail --json '{"secret": "${verificationSecret}"} \n'`);
 }
