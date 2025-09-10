@@ -1,5 +1,5 @@
 import * as clients from "@restatedev/restate-sdk-clients";
-import { signupWorkflow } from "./getstarted/workflow";
+import { signupWorkflow } from "./workflows/signup-workflow";
 
 async function submitWorkflow({
   id,
