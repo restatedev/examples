@@ -80,7 +80,7 @@ export function cancelSubscription(user: User) {
 }
 
 export const emailService = restate.service({
-  name: "email-service",
+  name: "EmailService",
   handlers: {
     sendWelcome: async (ctx: restate.Context, user: User) => {
       await ctx.run(() => sendWelcomeEmail(user));
@@ -90,7 +90,7 @@ export const emailService = restate.service({
 });
 
 export const userService = restate.service({
-  name: "user-service",
+  name: "UserService",
   handlers: {
     createUser: async (
       ctx: restate.Context,

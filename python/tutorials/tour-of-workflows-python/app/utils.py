@@ -103,7 +103,7 @@ class StatusResponse(BaseModel):
 
 
 # Services
-email_service = restate.Service("email-service")
+email_service = restate.Service("EmailService")
 
 
 @email_service.handler()
@@ -114,7 +114,7 @@ async def send_welcome_handler(
     return EmailServiceResponse(success=True, message="Email sent successfully")
 
 
-user_service = restate.Service("user-service")
+user_service = restate.Service("UserService")
 
 
 @user_service.handler()
