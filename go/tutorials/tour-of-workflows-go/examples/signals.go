@@ -4,7 +4,6 @@ import (
 	restate "github.com/restatedev/sdk-go"
 )
 
-// SignupWithSignalsWorkflow - Workflow with external signals
 type SignupWithSignalsWorkflow struct{}
 
 func (SignupWithSignalsWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error) {
@@ -13,7 +12,7 @@ func (SignupWithSignalsWorkflow) Run(ctx restate.WorkflowContext, user User) (bo
 	// Generate verification secret and send email
 	secret := restate.Rand(ctx).UUID().String()
 	_, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return restate.Void{}, SendVerificationEmail(userID, user, secret)
+		return SendVerificationEmail(userID, user, secret)
 	})
 	if err != nil {
 		return false, err

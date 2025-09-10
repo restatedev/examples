@@ -1,6 +1,7 @@
 plugins {
   java
   application
+  id("com.diffplug.spotless") version "6.25.0"
 }
 
 repositories {
@@ -32,5 +33,15 @@ application {
     mainClass.set(project.property("mainClass") as String)
   } else {
     mainClass.set("my.example.AppMain")
+  }
+}
+
+spotless {
+  java {
+    googleJavaFormat()
+    importOrder()
+    removeUnusedImports()
+    formatAnnotations()
+    toggleOffOn("//", "/n")
   }
 }

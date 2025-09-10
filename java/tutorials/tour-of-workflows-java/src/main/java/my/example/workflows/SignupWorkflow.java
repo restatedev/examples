@@ -1,10 +1,10 @@
 package my.example.workflows;
 
+import static my.example.utils.Utils.*;
+
 import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Workflow;
 import my.example.types.User;
-
-import static my.example.utils.Utils.*;
 
 @Workflow
 public class SignupWorkflow {

@@ -1,15 +1,14 @@
 package my.example.workflows;
 
+import static my.example.utils.Utils.*;
+
 import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.common.TerminalException;
-import my.example.types.User;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static my.example.utils.Utils.*;
+import my.example.types.User;
 
 @Workflow
 public class SignupWithSagasWorkflow {

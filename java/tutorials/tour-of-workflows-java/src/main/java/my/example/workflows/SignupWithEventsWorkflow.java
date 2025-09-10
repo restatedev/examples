@@ -1,13 +1,13 @@
 package my.example.workflows;
 
+import static my.example.utils.Utils.*;
+
 import dev.restate.sdk.SharedWorkflowContext;
 import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.common.DurablePromiseKey;
 import my.example.types.User;
-
-import static my.example.utils.Utils.*;
 
 @Workflow
 public class SignupWithEventsWorkflow {

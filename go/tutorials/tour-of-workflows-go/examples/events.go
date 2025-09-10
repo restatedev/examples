@@ -6,7 +6,6 @@ import (
 	restate "github.com/restatedev/sdk-go"
 )
 
-// SignupWithEventsWorkflow - Workflow with promises/events
 type SignupWithEventsWorkflow struct{}
 
 func (SignupWithEventsWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error) {
@@ -14,7 +13,7 @@ func (SignupWithEventsWorkflow) Run(ctx restate.WorkflowContext, user User) (boo
 
 	success, err := restate.Run(ctx, func(ctx restate.RunContext) (bool, error) {
 		return CreateUser(userID, user)
-	})
+	}, restate.WithName("create"))
 	if err != nil {
 		return false, err
 	}
@@ -30,15 +29,15 @@ func (SignupWithEventsWorkflow) Run(ctx restate.WorkflowContext, user User) (boo
 	}
 
 	_, err = restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return restate.Void{}, ActivateUser(userID)
-	})
+		return ActivateUser(userID)
+	}, restate.WithName("activate"))
 	if err != nil {
 		return false, err
 	}
 
 	_, err = restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return restate.Void{}, SendWelcomeEmail(user)
-	})
+		return SendWelcomeEmail(user)
+	}, restate.WithName("welcome"))
 	if err != nil {
 		return false, err
 	}

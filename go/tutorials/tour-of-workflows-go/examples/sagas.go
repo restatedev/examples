@@ -4,7 +4,6 @@ import (
 	restate "github.com/restatedev/sdk-go"
 )
 
-// SagasWorkflow - Workflow with saga/compensation pattern
 type SagasWorkflow struct{}
 
 func (SagasWorkflow) Run(ctx restate.WorkflowContext, user User) (res bool, err error) {
@@ -24,14 +23,14 @@ func (SagasWorkflow) Run(ctx restate.WorkflowContext, user User) (res bool, err 
 	// Add compensation for user creation
 	compensations = append(compensations, func() error {
 		_, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-			return restate.Void{}, DeleteUser(userID)
+			return DeleteUser(userID)
 		})
 		return err
 	})
 
 	_, err = restate.Run(ctx, func(ctx restate.RunContext) (bool, error) {
 		return CreateUser(userID, user)
-	})
+	}, restate.WithName("create"))
 	if err != nil {
 		return false, err
 	}
@@ -39,13 +38,13 @@ func (SagasWorkflow) Run(ctx restate.WorkflowContext, user User) (res bool, err 
 	// Add compensation for user activation
 	compensations = append(compensations, func() error {
 		_, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-			return restate.Void{}, DeactivateUser(userID)
+			return DeactivateUser(userID)
 		})
 		return err
 	})
 
 	_, err = restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return restate.Void{}, ActivateUser(userID)
+		return ActivateUser(userID)
 	})
 	if err != nil {
 		return false, err
@@ -54,7 +53,7 @@ func (SagasWorkflow) Run(ctx restate.WorkflowContext, user User) (res bool, err 
 	// Add compensation for subscription
 	compensations = append(compensations, func() error {
 		_, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-			return restate.Void{}, CancelSubscription(user)
+			return CancelSubscription(user)
 		})
 		return err
 	})

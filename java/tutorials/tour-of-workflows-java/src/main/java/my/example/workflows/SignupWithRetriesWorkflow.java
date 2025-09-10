@@ -1,14 +1,13 @@
 package my.example.workflows;
 
+import static my.example.utils.Utils.*;
+
 import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.common.RetryPolicy;
 import dev.restate.sdk.common.TerminalException;
-import my.example.types.User;
-
 import java.time.Duration;
-
-import static my.example.utils.Utils.*;
+import my.example.types.User;
 
 @Workflow
 public class SignupWithRetriesWorkflow {

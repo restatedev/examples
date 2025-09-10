@@ -7,19 +7,16 @@ import (
 	restate "github.com/restatedev/sdk-go"
 )
 
-// User represents a user with name and email
 type User struct {
 	Name  string `json:"name"`
 	Email string `json:"email"`
 }
 
-// CreateUserRequest represents a request to create a user
 type CreateUserRequest struct {
 	UserID string `json:"userId"`
 	User   User   `json:"user"`
 }
 
-// VerifyEmailRequest represents a request to verify email
 type VerifyEmailRequest struct {
 	Secret string `json:"secret"`
 }
@@ -35,13 +32,13 @@ type StatusResponse struct {
 }
 
 // <start_here>
-func SendWelcomeEmail(user User) error {
+func SendWelcomeEmail(user User) (restate.Void, error) {
 	err := failOnAlice(user.Name, "send welcome email")
 	if err != nil {
-		return err
+		return restate.Void{}, err
 	}
 	fmt.Printf("Welcome email sent: %s\n", user.Email)
-	return nil
+	return restate.Void{}, nil
 }
 
 // <end_here>
@@ -69,32 +66,32 @@ func CreateUser(userID string, user User) (bool, error) {
 	return true, nil
 }
 
-func DeleteUser(userID string) error {
+func DeleteUser(userID string) (restate.Void, error) {
 	fmt.Printf("User entry deleted in DB: %s\n", userID)
-	return nil
+	return restate.Void{}, nil
 }
 
-func SendVerificationEmail(userID string, user User, verificationSecret string) error {
+func SendVerificationEmail(userID string, user User, verificationSecret string) (restate.Void, error) {
 	fmt.Printf("Verification email sent: %s\n", user.Email)
 	fmt.Printf("For the signals section, verify via: curl localhost:8080/SignupWithSignalsWorkflow/%s/VerifyEmail --json '{\"secret\": \"%s\"}'\n", userID, verificationSecret)
 	fmt.Printf("For the timers section, verify via: curl localhost:8080/SignupWithTimersWorkflow/%s/VerifyEmail --json '{\"secret\": \"%s\"}'\n", userID, verificationSecret)
-	return nil
+	return restate.Void{}, nil
 }
 
-func SendReminderEmail(userID string, user User, verificationSecret string) error {
+func SendReminderEmail(userID string, user User, verificationSecret string) (restate.Void, error) {
 	fmt.Printf("Reminder email sent: %s\n", user.Email)
 	fmt.Printf("For the timers section, verify via: curl localhost:8080/SignupWithTimersWorkflow/%s/VerifyEmail --json '{\"secret\": \"%s\"}'\n", userID, verificationSecret)
-	return nil
+	return restate.Void{}, nil
 }
 
-func ActivateUser(userID string) error {
+func ActivateUser(userID string) (restate.Void, error) {
 	fmt.Printf("User account activated: %s\n", userID)
-	return nil
+	return restate.Void{}, nil
 }
 
-func DeactivateUser(userID string) error {
+func DeactivateUser(userID string) (restate.Void, error) {
 	fmt.Printf("User account deactivated: %s\n", userID)
-	return nil
+	return restate.Void{}, nil
 }
 
 func SubscribeToPaidPlan(user User) (bool, error) {
@@ -106,17 +103,16 @@ func SubscribeToPaidPlan(user User) (bool, error) {
 	return true, nil
 }
 
-func CancelSubscription(user User) error {
+func CancelSubscription(user User) (restate.Void, error) {
 	fmt.Printf("User subscription cancelled: %s\n", user.Name)
-	return nil
+	return restate.Void{}, nil
 }
 
-// EmailService represents the email service
 type EmailService struct{}
 
 func (EmailService) SendWelcome(ctx restate.Context, user User) (EmailServiceResponse, error) {
 	_, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return restate.Void{}, SendWelcomeEmail(user)
+		return SendWelcomeEmail(user)
 	})
 	if err != nil {
 		return EmailServiceResponse{}, err
@@ -128,11 +124,10 @@ func (EmailService) SendWelcome(ctx restate.Context, user User) (EmailServiceRes
 	}, nil
 }
 
-// UserService represents the user service
 type UserService struct{}
 
 func (UserService) CreateUser(ctx restate.Context, req CreateUserRequest) (bool, error) {
 	return restate.Run(ctx, func(ctx restate.RunContext) (bool, error) {
 		return CreateUser(req.UserID, req.User)
-	})
+	}, restate.WithName("create"))
 }

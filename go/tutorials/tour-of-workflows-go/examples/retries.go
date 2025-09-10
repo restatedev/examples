@@ -4,7 +4,6 @@ import (
 	restate "github.com/restatedev/sdk-go"
 )
 
-// RetriesWorkflow - Workflow with custom retry policies
 type RetriesWorkflow struct{}
 
 func (RetriesWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error) {
@@ -12,7 +11,7 @@ func (RetriesWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error)
 
 	success, err := restate.Run(ctx, func(ctx restate.RunContext) (bool, error) {
 		return CreateUser(userID, user)
-	})
+	}, restate.WithName("create"))
 	if err != nil {
 		return false, err
 	}
@@ -21,8 +20,8 @@ func (RetriesWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error)
 	}
 
 	_, err = restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return restate.Void{}, ActivateUser(userID)
-	})
+		return ActivateUser(userID)
+	}, restate.WithName("activate"))
 	if err != nil {
 		return false, err
 	}
@@ -30,8 +29,9 @@ func (RetriesWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error)
 	// <start_retries>
 	_, err = restate.Run(ctx,
 		func(ctx restate.RunContext) (restate.Void, error) {
-			return restate.Void{}, SendWelcomeEmail(user)
+			return SendWelcomeEmail(user)
 		},
+		restate.WithName("welcome"),
 		restate.WithMaxRetryAttempts(3),
 		restate.WithInitialRetryInterval(1000),
 	)

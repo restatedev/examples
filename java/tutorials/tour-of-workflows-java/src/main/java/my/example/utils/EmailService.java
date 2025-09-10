@@ -1,12 +1,12 @@
 package my.example.utils;
 
+import static my.example.utils.Utils.sendWelcomeEmail;
+
 import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import my.example.types.EmailServiceResponse;
 import my.example.types.User;
-
-import static my.example.utils.Utils.sendWelcomeEmail;
 
 @Service
 public class EmailService {

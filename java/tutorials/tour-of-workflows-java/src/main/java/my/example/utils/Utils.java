@@ -21,6 +21,7 @@ public class Utils {
       throw new TerminalException(message);
     }
   }
+
   // <end_here>
 
   public static void sendWelcomeEmail(User user) {

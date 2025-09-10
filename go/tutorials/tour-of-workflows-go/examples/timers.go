@@ -7,7 +7,6 @@ import (
 	restate "github.com/restatedev/sdk-go"
 )
 
-// SignupWithTimersWorkflow - Workflow with durable timers
 type SignupWithTimersWorkflow struct{}
 
 func (SignupWithTimersWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error) {
@@ -15,7 +14,7 @@ func (SignupWithTimersWorkflow) Run(ctx restate.WorkflowContext, user User) (boo
 
 	secret := restate.Rand(ctx).UUID().String()
 	_, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return restate.Void{}, SendVerificationEmail(userID, user, secret)
+		return SendVerificationEmail(userID, user, secret)
 	})
 	if err != nil {
 		return false, err
@@ -43,7 +42,7 @@ func (SignupWithTimersWorkflow) Run(ctx restate.WorkflowContext, user User) (boo
 			return clickedSecret == secret, nil
 		case reminderTimerFuture:
 			_, err = restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-				return restate.Void{}, SendReminderEmail(userID, user, secret)
+				return SendReminderEmail(userID, user, secret)
 			})
 			if err != nil {
 				return false, err

@@ -4,7 +4,6 @@ import (
 	restate "github.com/restatedev/sdk-go"
 )
 
-// SignupWithQueriesWorkflow - Workflow with state queries
 type SignupWithQueriesWorkflow struct{}
 
 func (SignupWithQueriesWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error) {
@@ -13,7 +12,7 @@ func (SignupWithQueriesWorkflow) Run(ctx restate.WorkflowContext, user User) (bo
 	restate.Set(ctx, "user", user)
 	success, err := restate.Run(ctx, func(ctx restate.RunContext) (bool, error) {
 		return CreateUser(userID, user)
-	})
+	}, restate.WithName("create"))
 	if err != nil {
 		return false, err
 	}
@@ -24,15 +23,15 @@ func (SignupWithQueriesWorkflow) Run(ctx restate.WorkflowContext, user User) (bo
 	restate.Set(ctx, "status", "created")
 
 	_, err = restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return restate.Void{}, ActivateUser(userID)
-	})
+		return ActivateUser(userID)
+	}, restate.WithName("activate"))
 	if err != nil {
 		return false, err
 	}
 
 	_, err = restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return restate.Void{}, SendWelcomeEmail(user)
-	})
+		return SendWelcomeEmail(user)
+	}, restate.WithName("welcome"))
 	if err != nil {
 		return false, err
 	}

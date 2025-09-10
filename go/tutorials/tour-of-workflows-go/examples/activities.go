@@ -4,7 +4,6 @@ import (
 	restate "github.com/restatedev/sdk-go"
 )
 
-// SignupWithActivitiesWorkflow - Workflow example using service calls for activities
 type SignupWithActivitiesWorkflow struct{}
 
 func (SignupWithActivitiesWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error) {
@@ -23,15 +22,15 @@ func (SignupWithActivitiesWorkflow) Run(ctx restate.WorkflowContext, user User) 
 
 	// Execute other steps inline
 	_, err = restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return restate.Void{}, ActivateUser(userID)
-	})
+		return ActivateUser(userID)
+	}, restate.WithName("activate"))
 	if err != nil {
 		return false, err
 	}
 
 	_, err = restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return restate.Void{}, SendWelcomeEmail(user)
-	})
+		return SendWelcomeEmail(user)
+	}, restate.WithName("welcome"))
 	if err != nil {
 		return false, err
 	}

@@ -4,7 +4,6 @@ import (
 	restate "github.com/restatedev/sdk-go"
 )
 
-// SignupWorkflow - Basic workflow example
 type SignupWorkflow struct{}
 
 func (SignupWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error) {
@@ -13,7 +12,7 @@ func (SignupWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error) 
 	// Write to database
 	success, err := restate.Run(ctx, func(ctx restate.RunContext) (bool, error) {
 		return CreateUser(userID, user)
-	})
+	}, restate.WithName("create"))
 	if err != nil {
 		return false, err
 	}
@@ -23,15 +22,15 @@ func (SignupWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error) 
 
 	// Call APIs
 	_, err = restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return restate.Void{}, ActivateUser(userID)
-	})
+		return ActivateUser(userID)
+	}, restate.WithName("activate"))
 	if err != nil {
 		return false, err
 	}
 
 	_, err = restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
-		return restate.Void{}, SendWelcomeEmail(user)
-	})
+		return SendWelcomeEmail(user)
+	}, restate.WithName("welcome"))
 	if err != nil {
 		return false, err
 	}

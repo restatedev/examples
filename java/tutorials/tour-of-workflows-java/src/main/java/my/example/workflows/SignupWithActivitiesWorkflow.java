@@ -1,13 +1,13 @@
 package my.example.workflows;
 
+import static my.example.utils.Utils.activateUser;
+import static my.example.utils.Utils.sendWelcomeEmail;
+
 import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Workflow;
 import my.example.types.CreateUserRequest;
 import my.example.types.User;
 import my.example.utils.UserServiceClient;
-
-import static my.example.utils.Utils.activateUser;
-import static my.example.utils.Utils.sendWelcomeEmail;
 
 @Workflow
 public class SignupWithActivitiesWorkflow {
