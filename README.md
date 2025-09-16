@@ -106,14 +106,13 @@ Or have a look at the general catalog below:
 [<img src="https://skillicons.dev/icons?i=kotlin&theme=light" width="24" height="24">](kotlin/templates)
 [<img src="https://skillicons.dev/icons?i=rust&theme=light" width="24" height="24">](rust/templates)
 
-#### Tour of Restate Tutorial
+#### Tutorials
 
-[<img src="https://skillicons.dev/icons?i=ts" width="24" height="24">](typescript/tutorials/tour-of-restate-typescript)
-[<img src="https://skillicons.dev/icons?i=go" width="24" height="24">](go/tutorials/tour-of-restate-go)
-[<img src="https://skillicons.dev/icons?i=python&theme=light" width="24" height="24">](python/tutorials/tour-of-restate-python)
-[<img src="https://skillicons.dev/icons?i=java&theme=light" width="24" height="24">](java/tutorials/tour-of-restate-java)
-[<img src="https://skillicons.dev/icons?i=rust&theme=light" width="24" height="24">](rust/tutorials/tour-of-restate-rust)
-
+| Tutorial Name                                                | Languages                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+|-------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Tour of Workflows  | [<img src="https://skillicons.dev/icons?i=ts" width="24" height="24">](typescript/tutorials/tour-of-workflows-typescript) [<img src="https://skillicons.dev/icons?i=go" width="24" height="24">](go/tutorials/tour-of-workflows-go) [<img src="https://skillicons.dev/icons?i=python&theme=light" width="24" height="24">](python/tutorials/tour-of-workflows-python) [<img src="https://skillicons.dev/icons?i=java&theme=light" width="24" height="24">](java/tutorials/tour-of-workflows-java) |
+| Tour of Orchestration  | [<img src="https://skillicons.dev/icons?i=ts" width="24" height="24">](typescript/tutorials/tour-of-orchestration-typescript) [<img src="https://skillicons.dev/icons?i=go" width="24" height="24">](go/tutorials/tour-of-orchestration-go) [<img src="https://skillicons.dev/icons?i=python&theme=light" width="24" height="24">](python/tutorials/tour-of-orchestration-python) [<img src="https://skillicons.dev/icons?i=java&theme=light" width="24" height="24">](java/tutorials/tour-of-orchestration-java) |
+| Tour of Agents  | [<img src="https://skillicons.dev/icons?i=ts" width="24" height="24">](https://github.com/restatedev/ai-examples/tree/main/vercel-ai/tour-of-agents)  |
 
 ## Joining the community
 

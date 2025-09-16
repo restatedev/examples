@@ -18,6 +18,8 @@ pushd $PROJECT_ROOT/python/templates/python && python_mypi_lint && popd
 pushd $PROJECT_ROOT/python/basics && python_mypi_lint && popd
 pushd $PROJECT_ROOT/python/patterns-use-cases && python_mypi_lint && popd
 pushd $PROJECT_ROOT/python/tutorials/tour-of-restate-python && python_mypi_lint && popd
+pushd $PROJECT_ROOT/python/tutorials/tour-of-orchestration-python && python_mypi_lint && popd
+pushd $PROJECT_ROOT/python/tutorials/tour-of-workflows-python && python_mypi_lint && popd
 pushd $PROJECT_ROOT/python/integrations/deployment-lambda-cdk/lib/lambda && python_mypi_lint && popd
 pushd $PROJECT_ROOT/python/end-to-end-applications/chat-bot/chatbot && python_mypi_lint && popd
 pushd $PROJECT_ROOT/python/end-to-end-applications/rag-ingestion && python_mypi_lint && popd

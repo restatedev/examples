@@ -24,6 +24,8 @@ create_release_zip python/integrations/deployment-lambda-cdk python-hello-world-
 create_release_zip python/patterns-use-cases python-patterns-use-cases
 create_release_zip python/templates/python python-hello-world
 create_release_zip python/tutorials/tour-of-restate-python python-tour-of-restate
+create_release_zip python/tutorials/tour-of-orchestration-python python-tour-of-orchestration
+create_release_zip python/tutorials/tour-of-workflows-python python-tour-of-workflows
 
 create_release_zip java/basics java-basics
 create_release_zip java/end-to-end-applications/food-ordering java-food-ordering
@@ -35,6 +37,8 @@ create_release_zip java/templates/java-maven java-hello-world-maven
 create_release_zip java/templates/java-maven-spring-boot java-hello-world-maven-spring-boot
 create_release_zip java/templates/java-maven-quarkus java-hello-world-maven-quarkus
 create_release_zip java/tutorials/tour-of-restate-java java-tour-of-restate
+create_release_zip java/tutorials/tour-of-orchestration-java java-tour-of-orchestration
+create_release_zip java/tutorials/tour-of-workflows-java java-tour-of-workflows
 
 create_release_zip kotlin/basics kotlin-basics
 create_release_zip kotlin/end-to-end-applications/food-ordering kotlin-food-ordering
@@ -56,6 +60,8 @@ create_release_zip typescript/templates/cloudflare-worker typescript-cloudflare-
 create_release_zip typescript/templates/deno typescript-deno-hello-world
 create_release_zip typescript/templates/nextjs typescript-nextjs-hello-world
 create_release_zip typescript/tutorials/tour-of-restate-typescript typescript-tour-of-restate
+create_release_zip typescript/tutorials/tour-of-orchestration-typescript typescript-tour-of-orchestration
+create_release_zip typescript/tutorials/tour-of-workflows-typescript typescript-tour-of-workflows
 
 create_release_zip go/basics go-basics
 create_release_zip go/integrations/go-lambda-cdk go-hello-world-lambda-cdk
@@ -63,6 +69,8 @@ create_release_zip go/integrations/knative-go go-knative-go
 create_release_zip go/patterns-use-cases go-patterns-use-cases
 create_release_zip go/templates/go go-hello-world
 create_release_zip go/tutorials/tour-of-restate-go go-tour-of-restate
+create_release_zip go/tutorials/tour-of-orchestration-go go-tour-of-orchestration
+create_release_zip go/tutorials/tour-of-workflows-go go-tour-of-workflows
 
 create_release_zip rust/basics rust-basics
 create_release_zip rust/templates/rust rust-hello-world

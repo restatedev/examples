@@ -29,6 +29,8 @@ jobs:
                   python-hello-world-lambda-cdk.zip
                   python-patterns-use-cases.zip
                   python-tour-of-restate.zip
+                  python-tour-of-orchestration.zip
+                  python-tour-of-workflows.zip
                   python-chat-bot.zip
                   python-food-ordering.zip
                   python-rag-ingestion.zip
@@ -43,6 +45,8 @@ jobs:
                   java-hello-world-maven-quarkus.zip
                   java-hello-world-lambda-cdk.zip
                   java-tour-of-restate.zip
+                  java-tour-of-orchestration.zip
+                  java-tour-of-workflows.zip
                   kotlin-basics.zip
                   kotlin-food-ordering.zip
                   kotlin-kmp-android-todo-app.zip
@@ -62,12 +66,16 @@ jobs:
                   typescript-deno-hello-world.zip
                   typescript-nextjs-hello-world.zip
                   typescript-tour-of-restate.zip
+                  typescript-tour-of-orchestration.zip
+                  typescript-tour-of-workflows.zip
                   go-basics.zip
                   go-hello-world-lambda-cdk.zip
                   go-knative-go.zip
                   go-patterns-use-cases.zip
                   go-hello-world.zip
                   go-tour-of-restate.zip
+                  go-tour-of-orchestration.zip
+                  go-tour-of-workflows.zip
                   rust-basics.zip
                   rust-hello-world.zip
                   rust-shuttle-hello-world.zip
