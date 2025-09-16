@@ -13,7 +13,7 @@ repositories {
 	mavenCentral()
 }
 
-val restateVersion = "2.3.0"
+val restateVersion = "2.4.0"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
