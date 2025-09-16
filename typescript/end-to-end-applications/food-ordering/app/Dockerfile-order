@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:22-alpine
 
 # dumb-init helps handling SIGTERM and SIGINT correctly
 RUN apk add dumb-init
