@@ -38,7 +38,7 @@ func RemoveRecurringPayment(paymentId string) (restate.Void, error) {
 
 func failOnNetflix(subscription string) error {
 	if subscription == "Netflix" {
-		fmt.Println(`[👻 SIMULATED] "Netflix subscription failed: Netflix API down..."`)
+		fmt.Printf(`[👻 SIMULATED] "Netflix subscription failed: Netflix API down..."`)
 		return fmt.Errorf(`[👻 SIMULATED] "Netflix subscription failed: Netflix API down..."`)
 	}
 	return nil
@@ -46,7 +46,7 @@ func failOnNetflix(subscription string) error {
 
 func terminalErrorOnDisney(subscription string) error {
 	if subscription == "Disney" {
-		fmt.Println(`[👻 SIMULATED] "Disney subscription is not available in this region"`)
+		fmt.Printf(`[👻 SIMULATED] "Disney subscription is not available in this region"`)
 		return restate.TerminalError(fmt.Errorf(`[👻 SIMULATED] "Disney subscription is not available in this region"`))
 	}
 	return nil
