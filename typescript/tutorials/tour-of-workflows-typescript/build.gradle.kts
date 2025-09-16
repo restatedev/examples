@@ -15,7 +15,7 @@ dependencies {
     annotationProcessor("dev.restate:sdk-api-gen:2.3.0")
     
     // Logging
-    implementation("org.apache.logging.log4j:log4j-core:2.20.0")
+    implementation("org.apache.logging.log4j:log4j-core:2.24.2")
 }
 
 application {
