@@ -7,5 +7,5 @@ Learn how to orchestrate microservices with durable execution, sagas, and async 
 To run:
 
 ```shell
-mvn compile exec:java
+./gradlew run
 ```

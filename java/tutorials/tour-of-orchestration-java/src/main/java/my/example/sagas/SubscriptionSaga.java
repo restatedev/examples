@@ -5,6 +5,7 @@ import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.common.TerminalException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import my.example.auxiliary.clients.PaymentClient;
 import my.example.auxiliary.clients.SubscriptionClient;
@@ -38,6 +39,8 @@ public class SubscriptionSaga {
             () -> SubscriptionClient.createSubscription(req.userId(), subscription, payRef));
       }
     } catch (TerminalException e) {
+      // Run compensations in reverse order
+      Collections.reverse(compensations);
       for (Runnable compensation : compensations) {
         compensation.run();
       }

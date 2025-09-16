@@ -15,7 +15,6 @@ dependencies {
 
   // Restate SDK
   implementation("dev.restate:sdk-java-http:$restateVersion")
-  implementation("dev.restate:client:${restateVersion}")
 
   // Logging
   implementation("org.apache.logging.log4j:log4j-api:2.24.1")

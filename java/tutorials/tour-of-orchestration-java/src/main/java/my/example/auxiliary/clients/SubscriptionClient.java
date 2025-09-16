@@ -27,6 +27,7 @@ public class SubscriptionClient {
     System.out.println(">>> Created subscription " + subscription + " for user " + userId);
     return "SUCCESS";
   }
+
   // <end_subscription>
 
   public static void removeSubscription(String userId, String subscription) {

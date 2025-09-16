@@ -20,7 +20,8 @@ public class PaymentsWithTimeout {
     var confirmation = ctx.awakeable(PaymentResult.class);
 
     var paymentId = ctx.random().nextUUID().toString();
-    String payRef = ctx.run("pay", String.class, () -> initPayment(req, paymentId, confirmation.id()));
+    String payRef =
+        ctx.run("pay", String.class, () -> initPayment(req, paymentId, confirmation.id()));
 
     try {
       return confirmation.await(Duration.ofSeconds(30));

@@ -1,12 +1,14 @@
 package my.example.auxiliary.types;
 
 import java.math.BigDecimal;
-import java.time.*;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
 public record PurchaseTicketRequest(
-        String ticketId, String concertDate, BigDecimal price, String customerEmail) {
+    String ticketId, String concertDate, BigDecimal price, String customerEmail) {
 
   private static final DateTimeFormatter FORMATTER =
       DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

@@ -7,8 +7,6 @@ import dev.restate.sdk.Context;
 import dev.restate.sdk.DurableFuture;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
-import dev.restate.sdk.endpoint.Endpoint;
-import dev.restate.sdk.http.vertx.RestateHttpServer;
 import java.util.ArrayList;
 import java.util.List;
 import my.example.auxiliary.types.SubscriptionRequest;
