@@ -1,42 +1,38 @@
 {
   "version": "5",
   "specifiers": {
-    "npm:@restatedev/restate-sdk-zod@^1.8.4": "1.8.4_zod@3.24.1",
-    "npm:@restatedev/restate-sdk@^1.8.4": "1.8.4",
-    "npm:zod@3.24.1": "3.24.1"
+    "npm:@restatedev/restate-sdk-zod@*": "1.9.0_zod@4.1.8",
+    "npm:@restatedev/restate-sdk-zod@^1.9.0": "1.9.0_zod@4.1.8",
+    "npm:@restatedev/restate-sdk@*": "1.9.0",
+    "npm:@restatedev/restate-sdk@^1.9.0": "1.9.0",
+    "npm:zod@*": "4.1.8",
+    "npm:zod@^4.1.0": "4.1.8"
   },
   "npm": {
-    "@restatedev/restate-sdk-core@1.8.4": {
-      "integrity": "sha512-fhK1TCdO0NXVmmFhlycu5SbkJai37aT/jFBLjV/4ZcRRVGlyu+ltdCA0xuMJoLxF7htkLxb4jzr7rLAiCBNMUw=="
+    "@restatedev/restate-sdk-core@1.9.0": {
+      "integrity": "sha512-q3S7hnxcP3zU8cDcaAkYmO50zT8dykzaBm65D+hyJgba74gs/h5HMjbS8gbZgRezbJHtRrRsJmnNFet/qCj4pQ=="
     },
-    "@restatedev/restate-sdk-zod@1.8.4_zod@3.24.1": {
-      "integrity": "sha512-tOSu8CeJbxsv1r6lOf2J8p8mJcnRAUkW9zT5/0+FuWqK3vAEAQQnpzMklY7s9pM0LU18d5ET+iB0yzrbXc9dHQ==",
-      "dependencies": [
-        "zod",
-        "zod-to-json-schema"
-      ]
-    },
-    "@restatedev/restate-sdk@1.8.4": {
-      "integrity": "sha512-ZnGDu4wqIR9fRM9O4KzcJj4TMpF3vrzQwhk5Ss5JszFLLLRrmfRWFemJ2foduJQGTfzbF1Sk7pyrZPk4PY56EQ==",
-      "dependencies": [
-        "@restatedev/restate-sdk-core"
-      ]
-    },
-    "zod-to-json-schema@3.24.3_zod@3.24.1": {
-      "integrity": "sha512-HIAfWdYIt1sssHfYZFCXp4rU1w2r8hVVXYIlmoa0r0gABLs5di3RCqPU5DDROogVz1pAdYBaz7HK5n9pSUNs3A==",
+    "@restatedev/restate-sdk-zod@1.9.0_zod@4.1.8": {
+      "integrity": "sha512-0edkryb8YSo6ErM2OIeHYtR1FNyN7NwHzujwjmz3ag8ayptSjdBA8B80IZhZ8o8mniYtbJNcj+Yhcyvq6LHzHQ==",
       "dependencies": [
         "zod"
       ]
     },
-    "zod@3.24.1": {
-      "integrity": "sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A=="
+    "@restatedev/restate-sdk@1.9.0": {
+      "integrity": "sha512-PSvFpiD7qGN1DVBWuFHR4x5j8Mk6rAl5r75/XUAfW/YN/YchuTK4jIO4nqBLvbJ4dzioDlFbLmLZprKBVfX2tA==",
+      "dependencies": [
+        "@restatedev/restate-sdk-core"
+      ]
+    },
+    "zod@4.1.8": {
+      "integrity": "sha512-5R1P+WwQqmmMIEACyzSvo4JXHY5WiAFHRMg+zBZKgKS+Q1viRa0C1hmUKtHltoIFKtIdki3pRxkmpP74jnNYHQ=="
     }
   },
   "workspace": {
     "dependencies": [
-      "npm:@restatedev/restate-sdk-zod@^1.8.4",
-      "npm:@restatedev/restate-sdk@^1.8.4",
-      "npm:zod@3.24.1"
+      "npm:@restatedev/restate-sdk-zod@^1.9.0",
+      "npm:@restatedev/restate-sdk@^1.9.0",
+      "npm:zod@^4.1.0"
     ]
   }
 }
