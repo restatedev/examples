@@ -14,7 +14,7 @@ async function uploadData(user: { id: string; email: string }) {
 
   const uploadClient = restateClient.workflowClient<DataUploadService>(
     { name: "dataUploader" },
-    user.id
+    user.id,
   );
   await uploadClient.workflowSubmit();
 

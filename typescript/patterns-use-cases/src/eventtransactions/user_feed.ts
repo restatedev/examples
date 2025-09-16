@@ -33,8 +33,9 @@ const userFeed = restate.object({
   },
 });
 
-restate.endpoint().bind(userFeed).listen();
-
+restate.serve({
+  services: [userFeed],
+});
 // Process new posts for users via Kafka or by calling the endpoint over HTTP:
 /*
 curl localhost:8080/userFeed/userid1/processPost --json '{"content": "Hi! This is my first post!", "metadata": "public"}'

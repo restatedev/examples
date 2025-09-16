@@ -42,7 +42,7 @@ async function processPayment(ctx: restate.Context, request: PaymentRequest) {
       idempotencyKey,
       intentWebhookId,
       delayedStatus,
-    })
+    }),
   );
 
   if (paymentIntent.status !== "processing") {
@@ -56,7 +56,7 @@ async function processPayment(ctx: restate.Context, request: PaymentRequest) {
   // We did not get the response on the synchronous path, talking to Stripe.
   // No worries, Stripe will let us know when it is done processing via a webhook.
   ctx.console.log(
-    `Payment intent for ${idempotencyKey} still 'processing', awaiting webhook call...`
+    `Payment intent for ${idempotencyKey} still 'processing', awaiting webhook call...`,
   );
 
   // We will now wait for the webhook call to complete this promise.
@@ -83,19 +83,19 @@ async function processWebhook(ctx: restate.Context) {
   if (!webhookPromise) {
     throw new restate.TerminalError(
       "Missing callback property: " + stripe_utils.RESTATE_CALLBACK_ID,
-      { errorCode: 404 }
+      { errorCode: 404 },
     );
   }
   ctx.resolveAwakeable(webhookPromise, paymentIntent);
   return { received: true };
 }
 
-restate
-  .endpoint()
-  .bind(
+restate.serve({
+  services: [
     restate.service({
       name: "payments",
       handlers: { processPayment, processWebhook },
-    })
-  )
-  .listen(9080);
+    }),
+  ],
+  port: 9080,
+});

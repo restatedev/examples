@@ -17,8 +17,7 @@ export const ticketObject = restate.object({
   handlers: {
     // <start_reserve>
     async reserve(ctx: restate.ObjectContext) {
-      const status =
-          (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
+      const status = (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
 
       if (status === TicketStatus.Available) {
         ctx.set("status", TicketStatus.Reserved);
@@ -31,8 +30,7 @@ export const ticketObject = restate.object({
 
     // <start_unreserve>
     async unreserve(ctx: restate.ObjectContext) {
-      const status =
-          (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
+      const status = (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
 
       if (status !== TicketStatus.Sold) {
         ctx.clear("status");
@@ -42,15 +40,14 @@ export const ticketObject = restate.object({
 
     // <start_mark_as_sold>
     async markAsSold(ctx: restate.ObjectContext) {
-      const status =
-          (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
+      const status = (await ctx.get<TicketStatus>("status")) ?? TicketStatus.Available;
 
       if (status === TicketStatus.Reserved) {
         ctx.set("status", TicketStatus.Sold);
       }
     },
     // <end_mark_as_sold>
-  }
+  },
 });
 
 export const TicketObject: typeof ticketObject = { name: "TicketObject" };

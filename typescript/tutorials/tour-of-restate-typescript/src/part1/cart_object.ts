@@ -10,8 +10,8 @@
  */
 
 import * as restate from "@restatedev/restate-sdk";
-import {TicketObject} from "./ticket_object";
-import {CheckoutService} from "./checkout_service";
+import { TicketObject } from "./ticket_object";
+import { CheckoutService } from "./checkout_service";
 
 export const cartObject = restate.object({
   name: "CartObject",
@@ -28,8 +28,9 @@ export const cartObject = restate.object({
     // <start_checkout>
     async checkout(ctx: restate.ObjectContext) {
       // !mark(1:2)
-      const success = await ctx.serviceClient(CheckoutService)
-          .handle({userId: ctx.key, tickets: ["seat2B"]});
+      const success = await ctx
+        .serviceClient(CheckoutService)
+        .handle({ userId: ctx.key, tickets: ["seat2B"] });
 
       return success;
     },
@@ -41,7 +42,7 @@ export const cartObject = restate.object({
       ctx.objectSendClient(TicketObject, ticketId).unreserve();
     },
     // <end_expire_ticket>
-  }
+  },
 });
 
 // <start_user_session_api>

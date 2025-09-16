@@ -1,10 +1,5 @@
 import * as restate from "@restatedev/restate-sdk";
-import { service } from "@restatedev/restate-sdk";
-import {
-  SubscriptionRequest,
-  createRecurringPayment,
-  createSubscription,
-} from "./utils/stubs";
+import { SubscriptionRequest, createRecurringPayment, createSubscription } from "./utils/stubs";
 
 // Restate helps you implement resilient applications:
 //  - Automatic retries
@@ -27,34 +22,30 @@ import {
 // After a failure, a retry is triggered and this log gets replayed to recover the state of the handler.
 
 const subscriptionService = restate.service({
-    name: "SubscriptionService",
-    handlers: {
-        add: async (ctx: restate.Context, req: SubscriptionRequest) => {
-            // Restate persists the result of all `ctx` actions and recovers them after failures
-            // For example, generate a stable idempotency key:
-            const paymentId = ctx.rand.uuidv4();
+  name: "SubscriptionService",
+  handlers: {
+    add: async (ctx: restate.Context, req: SubscriptionRequest) => {
+      // Restate persists the result of all `ctx` actions and recovers them after failures
+      // For example, generate a stable idempotency key:
+      const paymentId = ctx.rand.uuidv4();
 
-            // ctx.run persists results of successful actions and skips execution on retries
-            // Failed actions (timeouts, API downtime, etc.) get retried
-            const payRef = await ctx.run(() =>
-                createRecurringPayment(req.creditCard, paymentId)
-            );
+      // ctx.run persists results of successful actions and skips execution on retries
+      // Failed actions (timeouts, API downtime, etc.) get retried
+      const payRef = await ctx.run(() => createRecurringPayment(req.creditCard, paymentId));
 
-            for (const subscription of req.subscriptions) {
-                await ctx.run(() =>
-                    createSubscription(req.userId, subscription, payRef)
-                );
-            }
-        },
+      for (const subscription of req.subscriptions) {
+        await ctx.run(() => createSubscription(req.userId, subscription, payRef));
+      }
     },
-})
+  },
+});
 
 // Create an HTTP endpoint to serve your services on port 9080
-// or use .handler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
-restate
-  .endpoint()
-  .bind(subscriptionService)
-  .listen(9080);
+// or use createEndpointHandler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
+restate.serve({
+  services: [subscriptionService],
+  port: 9080,
+});
 
 /*
 Check the README to learn how to run Restate.
