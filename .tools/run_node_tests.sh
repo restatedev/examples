@@ -20,6 +20,8 @@ npm_install_check $PROJECT_ROOT/typescript/templates/typescript-testing
 npm --prefix $PROJECT_ROOT/typescript/templates/typescript-testing run test
 
 npm_install_check $PROJECT_ROOT/typescript/tutorials/tour-of-restate-typescript
+npm_install_check $PROJECT_ROOT/typescript/tutorials/tour-of-orchestration-typescript
+npm_install_check $PROJECT_ROOT/typescript/tutorials/tour-of-workflows-typescript
 
 npm_install_check $PROJECT_ROOT/typescript/patterns-use-cases
 
