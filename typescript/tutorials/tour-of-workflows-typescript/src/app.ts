@@ -9,17 +9,19 @@ import { signupWithTimers } from "./workflows/signup-with-timers";
 import { signupWithSagas } from "./workflows/signup-with-sagas";
 import { signupWithRetries } from "./workflows/signup-with-retries";
 
-restate
-  .endpoint()
-  // Workflows
-  .bind(signupWorkflow)
-  .bind(signupWithActivities)
-  .bind(signupWithEvents)
-  .bind(signupWithQueries)
-  .bind(signupWithSignals)
-  .bind(signupWithTimers)
-  .bind(signupWithRetries)
-  .bind(signupWithSagas)
-  // Utils
-  .bind(userService)
-  .listen(9080);
+restate.serve({
+  services: [
+    // Workflows
+    signupWorkflow,
+    signupWithActivities,
+    signupWithEvents,
+    signupWithQueries,
+    signupWithSignals,
+    signupWithTimers,
+    signupWithRetries,
+    signupWithSagas,
+    // Utils
+    userService,
+  ],
+  port: 9080,
+});

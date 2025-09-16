@@ -19,6 +19,6 @@ restate.serve({
     parallelSubscriptionService,
     paymentService,
     emailService
-  ]
+  ],
   port: 9080
 })
