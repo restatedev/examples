@@ -12,7 +12,7 @@ dependencies {
     implementation("dev.restate:sdk-java-http:2.3.0")
     
     // Code generator for service clients
-    annotationProcessor("dev.restate:sdk-api-gen:2.0.0")
+    annotationProcessor("dev.restate:sdk-api-gen:2.3.0")
     
     // Logging
     implementation("org.apache.logging.log4j:log4j-core:2.20.0")
