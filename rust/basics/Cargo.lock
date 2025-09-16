@@ -218,6 +218,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
 
 [[package]]
+name = "foldhash"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d9c4f5dac5e15c24eb999c26181a6ca40b39fe946cbe4c263c7209467bc83af2"
+
+[[package]]
 name = "futures"
 version = "0.3.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -367,6 +373,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "hashbrown"
+version = "0.15.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9229cfe53dfd69f0609a49f65461bd93001ea1ef889cd5529dd176593f5338a1"
+dependencies = [
+ "allocator-api2",
+ "equivalent",
+ "foldhash",
+]
+
+[[package]]
 name = "heck"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -467,7 +484,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "93ead53efc7ea8ed3cfb0c79fc8023fbb782a5432b52830b6518941cebe6505c"
 dependencies = [
  "equivalent",
- "hashbrown",
+ "hashbrown 0.14.5",
 ]
 
 [[package]]
@@ -837,17 +854,17 @@ version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0eae2a1ebfecc58aff952ef8ccd364329abe627762f5bf09ff42eb9d98522479"
 dependencies = [
- "hashbrown",
+ "hashbrown 0.14.5",
  "memchr",
 ]
 
 [[package]]
 name = "regress"
-version = "0.10.0"
+version = "0.10.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "16fe0a24af5daaae947294213d2fd2646fbf5e1fbacc1d4ba3e84b2393854842"
+checksum = "78ef7fa9ed0256d64a688a3747d0fef7a88851c18a5e1d57f115f38ec2e09366"
 dependencies = [
- "hashbrown",
+ "hashbrown 0.15.5",
  "memchr",
 ]
 
@@ -866,13 +883,14 @@ dependencies = [
 
 [[package]]
 name = "restate-sdk"
-version = "0.6.0"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a6581ff709b523bc4abbb69e51bb23abdc3cf10fea11382fe45c01746c775dfe"
+checksum = "85223caeb8e261893229c27a47d98ad95abf8365b725e6515e5cce2d976138d3"
 dependencies = [
  "bytes",
  "futures",
  "http",
+ "http-body",
  "http-body-util",
  "hyper",
  "hyper-util",
@@ -880,7 +898,7 @@ dependencies = [
  "pin-project-lite",
  "prettyplease",
  "rand 0.9.0",
- "regress 0.10.0",
+ "regress 0.10.3",
  "restate-sdk-macros",
  "restate-sdk-shared-core",
  "serde",
@@ -896,9 +914,9 @@ dependencies = [
 
 [[package]]
 name = "restate-sdk-macros"
-version = "0.6.0"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "56e32995cb558bd7138ae2ac8dd29febf32c27870bb6ca172dc61a174b15e205"
+checksum = "96bd4f6bd3bbf00428590ef7290b413d9864217a0a65627fd9855a59296f77a6"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -907,9 +925,9 @@ dependencies = [
 
 [[package]]
 name = "restate-sdk-shared-core"
-version = "0.4.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3f424311f9250ef7274efe7257472b1bec604d895d7c1e7a9b8671697fac74c9"
+checksum = "c538c3af8f41229e3dd5aba4a31acdd84909c6653a3cc6b8ea64fd7fb54abb21"
 dependencies = [
  "base64 0.22.1",
  "bs58",
