@@ -8,15 +8,17 @@ import { paymentsWithTimeout } from "./timers/service";
 import { payments } from "./events/service";
 import { parallelSubscriptionService } from "./concurrenttasks/service";
 
-restate
-  .endpoint()
-  .bind(subscriptionService)
-  .bind(subscriptionSaga)
-  .bind(userSubscriptions)
-  .bind(concertTicketingService)
-  .bind(payments)
-  .bind(paymentsWithTimeout)
-  .bind(parallelSubscriptionService)
-  .bind(paymentService)
-  .bind(emailService)
-  .listen(9080);
+restate.serve({
+  services: [
+    subscriptionService,
+    subscriptionSaga,
+    userSubscriptions,
+    concertTicketingService,
+    payments,
+    paymentsWithTimeout,
+    parallelSubscriptionService,
+    paymentService,
+    emailService
+  ]
+  port: 9080
+})
