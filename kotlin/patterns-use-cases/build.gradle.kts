@@ -8,7 +8,7 @@ plugins {
 
 repositories { mavenCentral() }
 
-val restateVersion = "2.3.0"
+val restateVersion = "2.4.0"
 
 dependencies {
   // Annotation processor

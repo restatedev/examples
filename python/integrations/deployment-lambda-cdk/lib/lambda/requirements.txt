@@ -1,1 +1,1 @@
-restate_sdk==0.9.0
+restate_sdk==0.10.0
