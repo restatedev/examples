@@ -32,6 +32,6 @@ public class UserSubscriptions {
 
   @Shared
   public Set<String> getSubscriptions(SharedObjectContext ctx) {
-    return ctx.get(SUBSCRIPTIONS).orElse(new HashSet<>());
+    return ctx.get(SUBSCRIPTIONS).orElse(Set.of());
   }
 }
