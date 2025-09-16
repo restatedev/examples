@@ -39,16 +39,16 @@ func SendWelcomeEmail(user User) (restate.Void, error) {
 
 func failOnAlice(name, action string) error {
 	if name == "Alice" {
-		log.Println(fmt.Sprintf("[👻 SIMULATED] Failed to %s: %s", action, name))
-		return fmt.Errorf(fmt.Sprintf("[👻 SIMULATED] Failed to %s: %s", action, name))
+		log.Println("[👻 SIMULATED] Failed to %s: %s", action, name)
+		return fmt.Errorf("[👻 SIMULATED] Failed to %s: %s", action, name)
 	}
 	return nil
 }
 
 func terminalErrorOnAlice(name, action string) error {
 	if name == "Alice" {
-		log.Println(fmt.Sprintf("[👻 SIMULATED] Failed to %s for %s: not available in this country", action, name))
-		return restate.TerminalError(fmt.Errorf(fmt.Sprintf("[👻 SIMULATED] Failed to %s for %s: not available in this country", action, name)))
+		log.Println("[👻 SIMULATED] Failed to %s for %s: not available in this country", action, name)
+		return restate.TerminalError(fmt.Errorf("[👻 SIMULATED] Failed to %s for %s: not available in this country", action, name))
 	}
 	return nil
 }
