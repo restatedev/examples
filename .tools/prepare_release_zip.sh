@@ -69,10 +69,10 @@ create_release_zip go/integrations/knative-go go-knative-go
 create_release_zip go/patterns-use-cases go-patterns-use-cases
 create_release_zip go/templates/go go-hello-world
 create_release_zip go/tutorials/tour-of-restate-go go-tour-of-restate
+create_release_zip go/tutorials/tour-of-orchestration-go go-tour-of-orchestration
+create_release_zip go/tutorials/tour-of-workflows-go go-tour-of-workflows
 
 create_release_zip rust/basics rust-basics
 create_release_zip rust/templates/rust rust-hello-world
 create_release_zip rust/templates/rust-shuttle rust-shuttle-hello-world
 create_release_zip rust/tutorials/tour-of-restate-rust rust-tour-of-restate
-create_release_zip rust/tutorials/tour-of-orchestration-rust rust-tour-of-orchestration
-create_release_zip rust/tutorials/tour-of-workflows-rust rust-tour-of-workflows
