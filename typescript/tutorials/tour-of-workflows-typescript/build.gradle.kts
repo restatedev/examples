@@ -9,7 +9,7 @@ repositories {
 
 dependencies {
     // Restate SDK
-    implementation("dev.restate:sdk-java-http:2.0.0")
+    implementation("dev.restate:sdk-java-http:2.3.0")
     
     // Code generator for service clients
     annotationProcessor("dev.restate:sdk-api-gen:2.0.0")
