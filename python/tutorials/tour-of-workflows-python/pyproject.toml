@@ -8,7 +8,7 @@ dependencies = [
     "hypercorn>=0.17.3",
     "pydantic>=2.10.6",
     "requests>=2.32.5",
-    "restate_sdk[serde]>=0.9.1",
+    "restate_sdk[serde]>=0.10.0",
 ]
 
 [tool.hatch.build.targets.wheel]
