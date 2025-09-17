@@ -23,22 +23,19 @@ jobs:
         with:
           # create a draft release which needs manual approval
           draft: true
+          # NOTE: order here matters!
           files: |
-                  python-basics.zip
                   python-hello-world.zip
                   python-hello-world-lambda-cdk.zip
-                  python-patterns-use-cases.zip
                   python-tour-of-restate.zip
                   python-tour-of-orchestration.zip
                   python-tour-of-workflows.zip
+                  python-basics.zip
+                  python-patterns-use-cases.zip
                   python-chat-bot.zip
                   python-food-ordering.zip
                   python-rag-ingestion.zip
-                  java-basics.zip
-                  java-food-ordering.zip
-                  java-subway-fare-calculator.zip
-                  java-workflow-interpreter.zip
-                  java-patterns-use-cases.zip
+            
                   java-hello-world-gradle.zip
                   java-hello-world-maven.zip
                   java-hello-world-maven-spring-boot.zip
@@ -47,36 +44,45 @@ jobs:
                   java-tour-of-restate.zip
                   java-tour-of-orchestration.zip
                   java-tour-of-workflows.zip
+                  java-basics.zip
+                  java-patterns-use-cases.zip
+                  java-food-ordering.zip
+                  java-subway-fare-calculator.zip
+                  java-workflow-interpreter.zip
+            
+                  kotlin-hello-world-gradle.zip
+                  kotlin-hello-world-gradle-spring-boot.zip
                   kotlin-basics.zip
+                  kotlin-patterns-use-cases.zip
                   kotlin-food-ordering.zip
                   kotlin-kmp-android-todo-app.zip
                   kotlin-hello-world-lambda-cdk.zip
-                  kotlin-patterns-use-cases.zip
-                  kotlin-hello-world-gradle.zip
-                  kotlin-hello-world-gradle-spring-boot.zip
-                  typescript-basics.zip
-                  typescript-food-ordering.zip
-                  typescript-chat-bot.zip
-                  typescript-ai-image-workflows.zip
-                  typescript-hello-world-lambda-cdk.zip
-                  typescript-patterns-use-cases.zip
+            
                   typescript-hello-world.zip
-                  typescript-bun-hello-world.zip
-                  typescript-cloudflare-worker-hello-world.zip
-                  typescript-deno-hello-world.zip
-                  typescript-nextjs-hello-world.zip
+                  typescript-hello-world-bun.zip
+                  typescript-hello-world-cloudflare-worker.zip
+                  typescript-hello-world-deno.zip
+                  typescript-hello-world-nextjs.zip
+                  typescript-hello-world-lambda-cdk.zip
                   typescript-tour-of-restate.zip
                   typescript-tour-of-orchestration.zip
                   typescript-tour-of-workflows.zip
-                  go-basics.zip
-                  go-hello-world-lambda-cdk.zip
-                  go-knative-go.zip
-                  go-patterns-use-cases.zip
+                  typescript-food-ordering.zip
+                  typescript-basics.zip
+                  typescript-patterns-use-cases.zip
+                  typescript-chat-bot.zip
+                  typescript-ai-image-workflows.zip
+            
                   go-hello-world.zip
+                  go-hello-world-lambda-cdk.zip
                   go-tour-of-restate.zip
                   go-tour-of-orchestration.zip
                   go-tour-of-workflows.zip
-                  rust-basics.zip
+                  go-basics.zip
+                  go-patterns-use-cases.zip
+                  go-knative-go.zip
+            
                   rust-hello-world.zip
-                  rust-shuttle-hello-world.zip
-                  rust-tour-of-restate.zip
+                  rust-hello-world-shuttle.zip
+                  rust-tour-of-restate.zip    
+                  rust-basics.zip

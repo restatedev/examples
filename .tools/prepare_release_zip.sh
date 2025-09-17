@@ -55,10 +55,10 @@ create_release_zip typescript/end-to-end-applications/ai-image-workflows typescr
 create_release_zip typescript/integrations/deployment-lambda-cdk typescript-hello-world-lambda-cdk
 create_release_zip typescript/patterns-use-cases typescript-patterns-use-cases
 create_release_zip typescript/templates/node typescript-hello-world
-create_release_zip typescript/templates/bun typescript-bun-hello-world
-create_release_zip typescript/templates/cloudflare-worker typescript-cloudflare-worker-hello-world
-create_release_zip typescript/templates/deno typescript-deno-hello-world
-create_release_zip typescript/templates/nextjs typescript-nextjs-hello-world
+create_release_zip typescript/templates/bun typescript-hello-world-bun
+create_release_zip typescript/templates/cloudflare-worker typescript-hello-world-cloudflare-worker
+create_release_zip typescript/templates/deno typescript-hello-world-deno
+create_release_zip typescript/templates/nextjs typescript-hello-world-nextjs
 create_release_zip typescript/tutorials/tour-of-restate-typescript typescript-tour-of-restate
 create_release_zip typescript/tutorials/tour-of-orchestration-typescript typescript-tour-of-orchestration
 create_release_zip typescript/tutorials/tour-of-workflows-typescript typescript-tour-of-workflows
@@ -74,5 +74,5 @@ create_release_zip go/tutorials/tour-of-workflows-go go-tour-of-workflows
 
 create_release_zip rust/basics rust-basics
 create_release_zip rust/templates/rust rust-hello-world
-create_release_zip rust/templates/rust-shuttle rust-shuttle-hello-world
+create_release_zip rust/templates/rust-shuttle rust-hello-world-shuttle
 create_release_zip rust/tutorials/tour-of-restate-rust rust-tour-of-restate
