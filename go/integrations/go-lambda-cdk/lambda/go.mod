@@ -6,7 +6,7 @@ toolchain go1.24.6
 
 require (
 	github.com/aws/aws-lambda-go v1.47.0
-	github.com/restatedev/sdk-go v0.19.0
+	github.com/restatedev/sdk-go v0.20.0
 )
 
 require (

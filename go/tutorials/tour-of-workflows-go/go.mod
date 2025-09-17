@@ -4,7 +4,7 @@ go 1.24
 
 toolchain go1.24.6
 
-require github.com/restatedev/sdk-go v0.19.0
+require github.com/restatedev/sdk-go v0.20.0
 
 require (
 	github.com/bahlo/generic-list-go v0.2.0 // indirect
