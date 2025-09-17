@@ -16,7 +16,7 @@ on:
         required: false
         type: string
       sdkGoVersion:
-        description: "sdk-go version (WITH the prepending v). Leave empty if you do not want to update it."
+        description: "sdk-go version (without the prepending v). Leave empty if you do not want to update it."
         required: false
         type: string
       sdkPythonVersion:

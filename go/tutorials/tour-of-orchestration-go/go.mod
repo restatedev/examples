@@ -4,7 +4,10 @@ go 1.24
 
 toolchain go1.24.6
 
-require github.com/restatedev/sdk-go v0.19.0
+require (
+	github.com/google/uuid v1.6.0
+	github.com/restatedev/sdk-go v0.20.0
+)
 
 require (
 	github.com/bahlo/generic-list-go v0.2.0 // indirect
@@ -12,7 +15,6 @@ require (
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.3 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/invopop/jsonschema v0.13.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
