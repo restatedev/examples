@@ -31,4 +31,6 @@ const greeter = restate.service({
   },
 });
 
-export default restate.createEndpointHandler({ services: [greeter] });
+export default {
+    fetch: restate.createEndpointHandler({ services: [greeter] })
+};
