@@ -11,15 +11,13 @@
   },
   "dependencies": {
     "@restatedev/restate-sdk-cloudflare-workers": "^1.9.0",
-    "@restatedev/restate-sdk-zod": "^1.9.0"
+    "@restatedev/restate-sdk-zod": "^1.9.0",
+    "zod": "^4.1.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240605.0",
     "prettier": "^3.3.2",
     "typescript": "^5.4.5",
     "wrangler": "^4.16.1"
-  },
-  "overrides": {
-    "zod": "3.25.58"
   }
 }
