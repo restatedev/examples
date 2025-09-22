@@ -135,6 +135,7 @@ jobs:
             **/build.gradle.kts
             **/pom.xml
             **/requirements.txt
+            **/pyproject.toml
             **/go.mod
             **/go.sum
             **/Cargo.lock
