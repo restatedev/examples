@@ -11,10 +11,12 @@ function python_mypi_lint() {
     uv add --dev mypy
     uv run mypy .
   elif [ -f "requirements.txt" ]; then
-    uv venv
-    uv pip install -r requirements.txt
-    uv pip install mypy
-    uv run mypy .
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements.txt
+    pip install mypy
+    python3 -m mypy .
+    deactivate
   else
     echo "No pyproject.toml or requirements.txt found in $(pwd)"
     exit 1
