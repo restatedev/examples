@@ -7,7 +7,7 @@ user_subscriptions = restate.VirtualObject("UserSubscriptions")
 
 
 @user_subscriptions.handler()
-async def add(ctx: restate.ObjectContext, subscription: str) -> None:
+async def add(ctx: restate.ObjectContext, subscription: str):
     # Get current subscriptions
     subscriptions = await ctx.get("subscriptions") or []
 
