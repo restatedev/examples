@@ -15,7 +15,7 @@ const GreetingResponse = z.object({
 export const greeter = restate.service({
   name: "Greeter",
   handlers: {
-    greet: restate.handlers.handler(
+    greet: restate.createServiceHandler(
       { input: serde.zod(Greeting), output: serde.zod(GreetingResponse) },
       async (ctx: restate.Context, { name }) => {
         // Durably execute a set of steps; resilient against failures
