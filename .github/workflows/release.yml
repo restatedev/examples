@@ -63,6 +63,7 @@ jobs:
                   typescript-hello-world-cloudflare-worker.zip
                   typescript-hello-world-deno.zip
                   typescript-hello-world-nextjs.zip
+                  typescript-hello-world-lambda.zip
                   typescript-hello-world-lambda-cdk.zip
                   typescript-tour-of-restate.zip
                   typescript-tour-of-orchestration.zip

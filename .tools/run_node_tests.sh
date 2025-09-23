@@ -12,6 +12,7 @@ function npm_install_check() {
 npm_install_check $PROJECT_ROOT/typescript/basics
 
 npm_install_check $PROJECT_ROOT/typescript/templates/node
+npm_install_check $PROJECT_ROOT/typescript/templates/lambda
 RESTATE_ENV_ID=env_test RESTATE_API_KEY=key_test npm_install_check $PROJECT_ROOT/typescript/integrations/deployment-lambda-cdk
 npm_install_check $PROJECT_ROOT/typescript/templates/cloudflare-worker
 npm_install_check $PROJECT_ROOT/typescript/templates/nextjs

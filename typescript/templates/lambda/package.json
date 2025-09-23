@@ -1,0 +1,28 @@
+{
+  "name": "restate-ts-template",
+  "version": "0.0.1",
+  "description": "Template for JavaScript/TypeScript services running with Restate (https://github.com/restatedev/) ",
+  "main": "app.js",
+  "type": "commonjs",
+  "scripts": {
+    "prebuild": "rm -rf dist",
+    "build": "esbuild src/app.ts --bundle --minify --sourcemap --platform=node --target=es2020 --outfile=dist/app.js",
+    "prebundle": "npm run build",
+    "bundle": "cd dist && zip -r ../app.zip app.js*",
+    "start": "node ./dist/local_app.js",
+    "dev": "tsx watch ./src/local_app.ts",
+    "app": "npm run start",
+    "app-dev": "npm run dev"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "^1.9.0",
+    "@restatedev/restate-sdk-zod": "^1.9.0",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.18.6",
+    "esbuild": "^0.25.4",
+    "tsx": "^4.19.2",
+    "typescript": "^5.4.5"
+  }
+}
