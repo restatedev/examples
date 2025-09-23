@@ -94,7 +94,9 @@ export const cronJob = restate.object({
       // Clear the job state
       ctx.clearAll();
     },
-    getInfo: async (ctx: restate.ObjectSharedContext) => ctx.get<JobInfo>(JOB_STATE),
+    getInfo: restate.handlers.object.shared(async (ctx: restate.ObjectSharedContext) => {
+      return ctx.get<JobInfo>(JOB_STATE);
+    }),
   },
 });
 
