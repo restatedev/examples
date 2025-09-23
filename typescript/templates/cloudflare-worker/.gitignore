@@ -3,3 +3,5 @@
 # Restate
 .restate
 restate-data
+
+node_modules
