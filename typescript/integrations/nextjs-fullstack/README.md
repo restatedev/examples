@@ -9,7 +9,7 @@ The services are implemented in TypeScript and use the Restate SDK for TypeScrip
 Most important files:
 - [`restate/services/greeter.ts`](restate/services/greeter.ts): The Restate service that implements the greeting logic.
 - [`app/page.tsx`](app/page.tsx): A Next.js page that renders the UI and calls the Restate service.
-- [`restate/serve.ts`](restate/serve.ts): Defines the Restate fetch endpoint that runs the services and is initialized in [`app/restate/v1/[[...services]]/route.ts`](app/restate/v1/[[...services]]/route.ts) by the Next.js app.
+- [`restate/serve.ts`](restate/serve.ts): Defines the Restate fetch endpoint that runs the services and is initialized in [`app/restate/[[...services]]/route.ts`](app/restate/v1/[[...services]]/route.ts) by the Next.js app.
 
 ## Getting Started
 
@@ -29,7 +29,7 @@ npm run dev
 Register Restate services, in `app/restate/[[...services]]/route.ts`:
 
 ```shell
-restate deployments register http://localhost:3000/restate/v1 --use-http1.1
+restate deployments register http://localhost:3000/restate --use-http1.1
 ```
 
 Check out the UI at `http://localhost:3000` and send a greeting.
