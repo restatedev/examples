@@ -1,8 +1,8 @@
-import * as restate from "npm:@restatedev/restate-sdk/fetch";
-import { serde } from "npm:@restatedev/restate-sdk-zod";
-import { sendNotification, sendReminder } from "./utils.ts";
+import * as restate from "@restatedev/restate-sdk/lambda";
+import { serde } from "@restatedev/restate-sdk-zod";
+import { sendNotification, sendReminder } from "./utils";
 
-import { z } from "npm:zod";
+import { z } from "zod";
 
 const Greeting = z.object({
   name: z.string(),
@@ -31,9 +31,6 @@ export const greeter = restate.service({
   },
 });
 
-const handler = restate.createEndpointHandler({
-  services: [greeter],
-  bidirectional: true,
+export const handler = restate.createEndpointHandler({
+    services: [greeter],
 });
-
-Deno.serve({ port: 9080 }, handler);

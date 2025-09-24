@@ -55,6 +55,7 @@ create_release_zip typescript/end-to-end-applications/ai-image-workflows typescr
 create_release_zip typescript/integrations/deployment-lambda-cdk typescript-hello-world-lambda-cdk
 create_release_zip typescript/patterns-use-cases typescript-patterns-use-cases
 create_release_zip typescript/templates/node typescript-hello-world
+create_release_zip typescript/templates/lambda typescript-hello-world-lambda
 create_release_zip typescript/templates/bun typescript-hello-world-bun
 create_release_zip typescript/templates/cloudflare-worker typescript-hello-world-cloudflare-worker
 create_release_zip typescript/templates/deno typescript-hello-world-deno
