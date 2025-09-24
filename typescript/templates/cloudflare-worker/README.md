@@ -23,7 +23,7 @@ npm run dev
 
 Connect your local service to Restate:
 ```bash
-restate dep add http://localhost:9080 --use-http1.1
+npx @restatedev/restate dep add http://localhost:9080 --use-http1.1
 ```
 
 > 💡 **Note**: The `--use-http1.1` flag is required **only** when running locally.

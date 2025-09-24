@@ -23,7 +23,7 @@ npm run dev
 
 Connect your local service to Restate:
 ```shell
-restate dep add http://localhost:9080
+npx @restatedev/restate dep add http://localhost:9080
 ```
 
 Iterate! 🔧
