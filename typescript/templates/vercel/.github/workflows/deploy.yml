@@ -9,12 +9,6 @@ jobs:
     if: github.event_name == 'repository_dispatch'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.client_payload.git.sha }}
-      - name: Log event
-        run: echo "${{ toJson(github.event) }}"
-
       - name: Register Restate deployment
         env:
           # In your Restate Cloud dashboard, go to Developers > API Keys > Create API Key, and make sure to select **Admin** for role
