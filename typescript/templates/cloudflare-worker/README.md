@@ -39,7 +39,7 @@ This template includes a GitHub Actions workflow setup for automated deployment.
 To set up the repository, add the following secrets:
 
 - `CLOUDFLARE_API_TOKEN`: Your Cloudflare API token. To get a token, check https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/
-- `RESTATE_AUTH_TOKEN`: Your Restate Cloud auth token. To get one, go to Developers > API Keys > Create API Key, and make sure to select **Admin** for role
+- `RESTATE_AUTH_TOKEN`: Your Restate Cloud auth token. To get one, go to [Developers > API Keys > Create API Key](https://cloud.restate.dev?createApiKey=true&createApiKeyDescription=deployment-key&createApiKeyRole=rst:role::AdminAccess), and make sure to select **Admin** for role
 - `RESTATE_ADMIN_URL`: The Admin URL. You can find that out in Developers > Invoke. For example: `https://some-environment-private-id.env.us.restate.cloud:9070`
 
 Once the repo is set up, **just push to the main branch** and you'll get your services updated.
