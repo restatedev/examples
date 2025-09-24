@@ -62,7 +62,7 @@ jobs:
                   typescript-hello-world-bun.zip
                   typescript-hello-world-cloudflare-worker.zip
                   typescript-hello-world-deno.zip
-                  typescript-hello-world-nextjs.zip
+                  typescript-hello-world-vercel.zip
                   typescript-hello-world-lambda.zip
                   typescript-hello-world-lambda-cdk.zip
                   typescript-tour-of-restate.zip
@@ -73,6 +73,7 @@ jobs:
                   typescript-patterns-use-cases.zip
                   typescript-chat-bot.zip
                   typescript-ai-image-workflows.zip
+                  typescript-nextjs-fullstack.zip
             
                   go-hello-world.zip
                   go-hello-world-lambda-cdk.zip

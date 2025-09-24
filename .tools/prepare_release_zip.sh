@@ -52,14 +52,15 @@ create_release_zip typescript/basics typescript-basics
 create_release_zip typescript/end-to-end-applications/food-ordering typescript-food-ordering
 create_release_zip typescript/end-to-end-applications/chat-bot typescript-chat-bot
 create_release_zip typescript/end-to-end-applications/ai-image-workflows typescript-ai-image-workflows
-create_release_zip typescript/integrations/deployment-lambda-cdk typescript-hello-world-lambda-cdk
 create_release_zip typescript/patterns-use-cases typescript-patterns-use-cases
 create_release_zip typescript/templates/node typescript-hello-world
 create_release_zip typescript/templates/lambda typescript-hello-world-lambda
 create_release_zip typescript/templates/bun typescript-hello-world-bun
 create_release_zip typescript/templates/cloudflare-worker typescript-hello-world-cloudflare-worker
 create_release_zip typescript/templates/deno typescript-hello-world-deno
-create_release_zip typescript/templates/nextjs typescript-hello-world-nextjs
+create_release_zip typescript/templates/vercel typescript-hello-world-vercel
+create_release_zip typescript/integrations/nextjs-fullstack typescript-nextjs-fullstack
+create_release_zip typescript/integrations/deployment-lambda-cdk typescript-hello-world-lambda-cdk
 create_release_zip typescript/tutorials/tour-of-restate-typescript typescript-tour-of-restate
 create_release_zip typescript/tutorials/tour-of-orchestration-typescript typescript-tour-of-orchestration
 create_release_zip typescript/tutorials/tour-of-workflows-typescript typescript-tour-of-workflows
