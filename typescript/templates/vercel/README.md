@@ -16,7 +16,7 @@ Launch the local Restate server:
 npx @restatedev/restate-server
 ```
 
-Start the Deno server locally:
+Start Next.js locally:
 ```bash
 npm run dev
 ```
