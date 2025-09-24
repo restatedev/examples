@@ -59,7 +59,8 @@ create_release_zip typescript/templates/bun typescript-hello-world-bun
 create_release_zip typescript/templates/cloudflare-worker typescript-hello-world-cloudflare-worker
 create_release_zip typescript/templates/deno typescript-hello-world-deno
 create_release_zip typescript/templates/vercel typescript-hello-world-vercel
-create_release_zip typescript/integrations/nextjs-fullstack typescript-nextjs-fullstack
+# Not using the name hello-world for this one to make clear it's more than a getting started template
+create_release_zip typescript/templates/nextjs typescript-nextjs-fullstack
 create_release_zip typescript/integrations/deployment-lambda-cdk typescript-hello-world-lambda-cdk
 create_release_zip typescript/tutorials/tour-of-restate-typescript typescript-tour-of-restate
 create_release_zip typescript/tutorials/tour-of-orchestration-typescript typescript-tour-of-orchestration

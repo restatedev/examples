@@ -70,6 +70,7 @@ Starter templates for new projects:
 - **[Bun Template](templates/bun)**
 - **[CloudFlare Workers Template](templates/cloudflare-worker)**
 - **[Deno Template](templates/deno)**
+- **[Vercel](templates/vercel)**
 - **[Next.js Template](templates/nextjs)**
 
 ## Tutorials
