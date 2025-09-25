@@ -22,7 +22,7 @@ async def process_text(ctx: restate.WorkflowContext, request: NewTextDocument):
         text_bytes = await object_store.aget_object(request["bucket_name"], request["object_name"])
         return text_bytes.decode("utf-8")
 
-    text: str = await ctx.run("Download", download)
+    text: str = await ctx.run_typed("Download", download)
 
     #
     # 2. Extract the snippets from the PDF
@@ -39,7 +39,7 @@ async def process_text(ctx: restate.WorkflowContext, request: NewTextDocument):
         vectors = await model.aembed_documents(chunks)
         return vectors
 
-    vectors = await ctx.run("compute embeddings", compute_embeddings)
+    vectors = await ctx.run_typed("compute embeddings", compute_embeddings)
 
     #
     # 4. Add the documents to the vector store
@@ -53,6 +53,6 @@ async def process_text(ctx: restate.WorkflowContext, request: NewTextDocument):
         store = get_vector_store()
         await store.aupsert(chunks, vectors, metadata)
 
-    await ctx.run("Add documents", add_documents)
+    await ctx.run_typed("Add documents", add_documents)
 
     return "ok"

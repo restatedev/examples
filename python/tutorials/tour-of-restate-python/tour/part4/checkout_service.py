@@ -31,22 +31,24 @@ checkout = Service("CheckoutService")
 async def handle(ctx: ObjectContext, order: Order) -> bool:
     total_price = len(order["tickets"]) * 40
 
-    idempotency_key = await ctx.run("idempotency_key", lambda: str(uuid.uuid4()))
+    idempotency_key = str(ctx.uuid())
 
     async def pay():
         return await payment_client.call(idempotency_key, total_price)
 
-    success = await ctx.run("payment", pay)
+    success = await ctx.run_typed("payment", pay)
 
     if success:
-        await ctx.run(
+        await ctx.run_typed(
             "send_success_email",
-            lambda: email_client.notify_user_of_payment_success(order["user_id"]),
+            email_client.notify_user_of_payment_success,
+            user_id=order["user_id"],
         )
     else:
-        await ctx.run(
+        await ctx.run_typed(
             "send_failure_email",
-            lambda: email_client.notify_user_of_payment_failure(order["user_id"]),
+            email_client.notify_user_of_payment_failure,
+            user_id=order["user_id"],
         )
 
     return success

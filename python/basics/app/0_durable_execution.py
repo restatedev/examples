@@ -40,19 +40,24 @@ subscription_service = Service("SubscriptionService")
 async def add(ctx: Context, req: SubscriptionRequest):
     # Restate persists the result of all `ctx` actions and recovers them after failures
     # For example, generate a stable idempotency key:
-    payment_id = await ctx.run("payment id", lambda: str(uuid.uuid4()))
+    payment_id = str(ctx.uuid())
 
-    # ctx.run persists results of successful actions and skips execution on retries
+    # ctx.run_typed persists results of successful actions and skips execution on retries
     # Failed actions (timeouts, API downtime, etc.) get retried
-    pay_ref = await ctx.run(
+    pay_ref = await ctx.run_typed(
         "recurring payment",
-        lambda: create_recurring_payment(req.credit_card, payment_id),
-    )
+        create_recurring_payment,
+        credit_card=req.credit_card,
+        payment_id=payment_id
+    ),
 
     for subscription in req.subscriptions:
-        await ctx.run(
+        await ctx.run_typed(
             "subscription",
-            lambda: create_subscription(req.user_id, subscription, pay_ref),
+            create_subscription,
+            user_id=req.user_id,
+            subscription=subscription,
+            payment_ref=pay_ref
         )
 
 

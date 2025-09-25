@@ -39,8 +39,8 @@ async def run(ctx: WorkflowContext, order: Order):
 
     ctx.set("status", Status.CREATED)
 
-    token = await ctx.run("payment ID", lambda: str(uuid.uuid4()))
-    paid = await ctx.run("payment", lambda: payment_client.charge(token, total_cost))
+    token = str(ctx.uuid())
+    paid = await ctx.run_typed("payment", payment_client.charge, token=token, amount=total_cost)
 
     if not paid:
         ctx.set("status", Status.REJECTED)
@@ -49,13 +49,13 @@ async def run(ctx: WorkflowContext, order: Order):
     ctx.set("status", Status.SCHEDULED)
     await ctx.sleep(timedelta(milliseconds=delivery_delay))
 
-    await ctx.run("prepare", lambda: restaurant_client.prepare(id))
+    await ctx.run_typed("prepare", restaurant_client.prepare, order_id=id)
     ctx.set("status", Status.IN_PREPARATION)
 
     await ctx.promise("preparation_finished").value()
     ctx.set("status", Status.SCHEDULING_DELIVERY)
 
-    delivery_id = await ctx.run("delivery ID", lambda: str(uuid.uuid4()))
+    delivery_id = str(ctx.uuid())
     ctx.object_send(delivery_manager.start, delivery_id, arg=order)
 
     await ctx.promise("driver_selected").value()

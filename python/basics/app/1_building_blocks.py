@@ -68,9 +68,9 @@ async def run(ctx: restate.Context):
     # Use this for non-deterministic actions or interaction with APIs, DBs, ...
     # For example, generate idempotency keys that are stable across retries
     # Then use these to call other APIs and let them deduplicate
-    payment_deduplication_id = await ctx.run("payment id", lambda: str(uuid.uuid4()))
+    payment_deduplication_id = str(ctx.uuid())
 
-    async def charge() -> bool:
-        return await charge_bank_account(payment_deduplication_id, 100)
-
-    result = await ctx.run("charge", charge)
+    result = await ctx.run_typed("charge",
+                                 charge_bank_account,
+                                 payment_deduplication_id=payment_deduplication_id,
+                                 amount=100)

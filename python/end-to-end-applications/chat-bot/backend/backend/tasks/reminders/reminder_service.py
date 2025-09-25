@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 from typing import Any
 
 from utils.types import ReminderOpts, TaskSpec, TaskHandlers
-from utils.utils import time_now
 
 reminder_service = restate.Workflow("ReminderService")
 
@@ -13,7 +12,7 @@ reminder_service = restate.Workflow("ReminderService")
 async def run(ctx: restate.WorkflowContext, opts: ReminderOpts):
     logging.info(f"Running reminder workflow for: {opts}")
     ctx.set("timestamp", opts.timestamp)
-    timestamp = await time_now(ctx)
+    timestamp = round(await ctx.time() * 1000)
 
     await ctx.sleep(timedelta(milliseconds=opts.timestamp - timestamp))
 
@@ -26,7 +25,7 @@ async def get_current_status(ctx: restate.WorkflowSharedContext) -> dict:
     if not timestamp:
         return {"remaining_time": -1}
 
-    current_time = await time_now(ctx)
+    current_time = round(await ctx.time() * 1000)
     time_remaining = timestamp - current_time
     return {"remaining_time": time_remaining if time_remaining > 0 else 0}
 

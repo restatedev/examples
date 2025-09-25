@@ -11,7 +11,7 @@ class HotelRequest(BaseModel):
     departure_date: str
 
 
-async def book(customer_id: str, request: HotelRequest):
+async def book(customer_id: str, hotel: HotelRequest):
     # this should implement the communication with the hotel
     # provider's APIs
     logger.error("[👻 SIMULATED] This hotel is fully booked!")

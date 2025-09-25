@@ -1,5 +1,4 @@
 import restate
-import uuid
 
 from datetime import timedelta
 from pydantic import BaseModel
@@ -22,10 +21,10 @@ greeter = restate.Service("Greeter")
 @greeter.handler()
 async def greet(ctx: restate.Context, req: GreetingRequest) -> Greeting:
     # Durably execute a set of steps; resilient against failures
-    greeting_id = await ctx.run("generate UUID", lambda: str(uuid.uuid4()))
-    await ctx.run("notification", send_notification, args=(greeting_id, req.name))
+    greeting_id = str(ctx.uuid())
+    await ctx.run_typed("notification", send_notification, greeting_id=greeting_id, name=req.name)
     await ctx.sleep(timedelta(seconds=1))
-    await ctx.run("reminder", send_reminder, args=(greeting_id, req.name))
+    await ctx.run_typed("reminder", send_reminder, greeting_id=greeting_id, name=req.name)
 
     # Respond to caller
     return Greeting(message=f"You said hi to {req.name}!")

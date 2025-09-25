@@ -57,19 +57,19 @@ async def run(ctx: restate.Context, req: BookingRequest):
     try:
         # For each action, we register a compensation that will be executed on failures
         compensations.append(
-            lambda: ctx.run("Cancel flight", flight_client.cancel, args=(req.customer_id,))
+            lambda: ctx.run_typed("Cancel flight", flight_client.cancel, customer_id=req.customer_id)
         )
-        await ctx.run("Book flight", flight_client.book, args=(req.customer_id, req.flight))
+        await ctx.run_typed("Book flight", flight_client.book, customer_id=req.customer_id, flight=req.flight)
 
         compensations.append(
-            lambda: ctx.run("Cancel car", car_rental_client.cancel, args=(req.customer_id,))
+            lambda: ctx.run_typed("Cancel car", car_rental_client.cancel, customer_id=req.customer_id)
         )
-        await ctx.run("Book car", car_rental_client.book, args=(req.customer_id, req.car))
+        await ctx.run_typed("Book car", car_rental_client.book, customer_id=req.customer_id, car=req.car)
 
         compensations.append(
-            lambda: ctx.run("Cancel hotel", hotel_client.cancel, args=(req.customer_id,))
+            lambda: ctx.run_typed("Cancel hotel", hotel_client.cancel, customer_id=req.customer_id)
         )
-        await ctx.run("Book hotel", hotel_client.book, args=(req.customer_id, req.hotel))
+        await ctx.run_typed("Book hotel", hotel_client.book, customer_id=req.customer_id, hotel=req.hotel)
 
     # Terminal errors are not retried by Restate, so undo previous actions and fail the workflow
     except TerminalError as e:

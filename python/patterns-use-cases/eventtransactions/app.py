@@ -27,15 +27,15 @@ async def process_post(ctx: restate.ObjectContext, post: SocialMediaPost):
     user_id = ctx.key()
 
     # event handler is a durably executed function that can use all the features of Restate
-    post_id = await ctx.run("profile update", lambda: create_post(user_id, post))
+    post_id = await ctx.run_typed("profile update", create_post, user_id=user_id, post=post)
 
     # Delay processing until content moderation is complete (handler suspends when on FaaS).
     # This only blocks other posts for this user (Virtual Object), not for other users.
 
-    while await ctx.run("post status", lambda: get_post_status(post_id)) == Status.PENDING:
+    while await ctx.run_typed("post status", get_post_status, post_id=post_id) == Status.PENDING:
         await ctx.sleep(timedelta(seconds=5))
 
-    await ctx.run("update feed", lambda: update_user_feed(user_id, post_id))
+    await ctx.run_typed("update feed", update_user_feed, user_id=user_id, post_id=post_id)
 
 
 app = restate.app(services=[user_feed])

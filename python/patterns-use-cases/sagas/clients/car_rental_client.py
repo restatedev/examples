@@ -10,7 +10,7 @@ class CarRentalRequest(BaseModel):
     rental_date: str
 
 
-async def book(customer_id: str, request: CarRentalRequest):
+async def book(customer_id: str, car: CarRentalRequest):
     # this should implement the communication with the rental
     # provider's APIs
     logger.info(f"Car rental reservation created for customer: {customer_id}")

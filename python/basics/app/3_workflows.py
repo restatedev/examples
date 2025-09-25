@@ -30,14 +30,11 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
     user_id = ctx.key()
 
     # Durably executed action; write to other system
-    async def create_user():
-        return await create_user_entry(user)
-
-    await ctx.run("create_user", create_user)
+    await ctx.run_typed("create_user", create_user_entry, user=user)
 
     # Send the email with the verification link
-    secret = await ctx.run("secret", lambda: str(uuid.uuid4()))
-    await ctx.run("send_email", lambda: send_email_with_link(user_id, user.email, secret))
+    secret = str(ctx.uuid())
+    await ctx.run_typed("send_email", send_email_with_link, user_id=user_id, email=user.email, secret=secret)
 
     # Wait until user clicked email verification link
     # Promise gets resolved or rejected by the other handlers
