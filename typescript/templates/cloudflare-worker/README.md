@@ -55,6 +55,7 @@ For more info on how to deploy manually, check:
 
 ## 🎯 Next Steps
 
+- 🔐 Secure your endpoint as shown in your [Restate Cloud Dashboard > Developers > Security](https://cloud.restate.dev/to/developers/integration#security)
 - 📖 Explore the [Restate documentation](https://docs.restate.dev)
 - 🔍 Check out more [examples and tutorials](https://github.com/restatedev/examples)
 - 💬 Join the [Restate Discord community](https://discord.gg/skW3AZ6uGd)
