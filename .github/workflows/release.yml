@@ -97,3 +97,24 @@ jobs:
     with:
       source-directory: typescript/templates/deno
       destination-repo: deno-template
+  copy-vercel-template:
+    name: Copy vercel template to vercel-template repo
+    uses: ./.github/workflows/copy-to-repo.yml
+    secrets: inherit
+    with:
+      source-directory: typescript/templates/vercel
+      destination-repo: vercel-template
+  copy-cloudflare-workers-template:
+    name: Copy cloudflare-worker template to cloudflare-workers-template repo
+    uses: ./.github/workflows/copy-to-repo.yml
+    secrets: inherit
+    with:
+      source-directory: typescript/templates/cloudflare-worker
+      destination-repo: cloudflare-workers-template
+  copy-lambda-template:
+    name: Copy lambda template to lambda-template repo
+    uses: ./.github/workflows/copy-to-repo.yml
+    secrets: inherit
+    with:
+      source-directory: typescript/templates/lambda
+      destination-repo: lambda-typescript-template
