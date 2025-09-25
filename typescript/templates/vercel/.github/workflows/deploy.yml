@@ -15,7 +15,14 @@ jobs:
           RESTATE_ADMIN_URL: ${{ secrets.RESTATE_ADMIN_URL }}
           # You can find this out in Developers > Invoke. For example: `https://some-environment-private-id.env.us.restate.cloud:9070`
           RESTATE_AUTH_TOKEN: ${{ secrets.RESTATE_AUTH_TOKEN }}
-        # Create a Vercel Protection Bypass Token in your Vercel dashboard 
-        # https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation
+
+        # In order for Restate Cloud to reach your Vercel deployment, you need to either:
+        # * Disable Vercel Authentication in Project > Settings > Deployment Protection > Vercel Authentication
+        # * Create a Vercel Protection Bypass Token in Project > Settings > Deployment Protection > Protection Bypass for Automation,
+        #   and add it to this repo as secret VERCEL_PROTECTION_BYPASS_TOKEN.
+        #   For more info: https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation
         run: |
-            npx -y @restatedev/restate deployment register -y --use-http1.1 --extra-header x-vercel-protection-bypass=${{ secrets.VERCEL_PROTECTION_BYPASS_TOKEN }} ${{ github.event.client_payload.url }}/restate
+          npx -y @restatedev/restate deployment register -y \
+            --use-http1.1 \
+            ${{ secrets.VERCEL_PROTECTION_BYPASS_TOKEN && format('--extra-header x-vercel-protection-bypass={0}', secrets.VERCEL_PROTECTION_BYPASS_TOKEN) }} \
+            ${{ github.event.client_payload.url }}/restate
