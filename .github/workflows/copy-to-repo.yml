@@ -1,0 +1,76 @@
+name: Copy to repo
+
+on:
+  workflow_call:
+    inputs:
+      source-directory:
+        description: "Source directory"
+        required: true
+        default: ""
+        type: string
+      destination-repo:
+        description: "Destination repository"
+        required: true
+        default: ""
+        type: string
+
+  workflow_dispatch:
+    inputs:
+      source-directory:
+        description: "Source directory"
+        required: true
+        default: ""
+        type: string
+      destination-repo:
+        description: "Destination repository"
+        required: true
+        default: ""
+        type: string
+
+jobs:
+  copy-to-repo:
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'restatedev'
+
+    steps:
+      - name: Checkout examples repo
+        uses: actions/checkout@v4
+        with:
+          path: examples
+
+      - name: Checkout ${{ inputs.destination-repo }} repo
+        uses: actions/checkout@v4
+        with:
+          repository: restatedev/${{ inputs.destination-repo }}
+          path: destination
+          token: ${{ secrets.COPY_TO_REPO_TOKEN }}
+
+      - name: Copy over the template to the destination repo
+        shell: bash
+        run: |
+          cd examples/${{ inputs.source-directory }}
+          # We use git archive here because it respects .gitignore and friends
+          git archive HEAD -o temp.zip
+          cd destination
+          unzip examples/${{ inputs.source-directory }}/temp.zip
+
+      - name: Commit and push changes (if any)
+        shell: bash
+        env:
+          CI_COMMIT_MESSAGE: Update template
+          CI_COMMIT_AUTHOR: github-actions[bot]
+          CI_COMMIT_EMAIL: username@users.noreply.github.com
+        run: |
+          cd destination
+          git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+          git config --global user.email "${{ env.CI_COMMIT_EMAIL }}"
+          if [[ `git status --porcelain --untracked-files=no` ]]; then
+            # Changes
+            git add .
+            git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
+            git push
+          else
+            # No changes
+            echo "no changes to the destination"
+            exit 0
+          fi
