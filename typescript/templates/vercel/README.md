@@ -1,13 +1,13 @@
-# 🚀 Restate + Deno Deploy Template
+# 🚀 Restate + Vercel Template
 
-Welcome to the **Restate TypeScript + Deno Deploy** template! ✨
+Welcome to the **Restate TypeScript + Vercel** template! ✨
 
 ## 🏁 Getting Started
 
 ### Prerequisites
-- 📦 Deno runtime installed
+- 📦 Node runtime installed
 - 🔧 npm or yarn package manager
-- 🌐 Deno account (for deployment)
+- 🌐 Vercel account (for deployment)
 
 ## 🛠️ Local Development
 
@@ -16,9 +16,9 @@ Launch the local Restate server:
 npx @restatedev/restate-server
 ```
 
-Start the Deno server locally:
+Start Next.js locally:
 ```bash
-deno task dev
+npm run dev
 ```
 
 Connect your local service to Restate:
@@ -34,23 +34,22 @@ Iterate! 🔧
 
 This template includes a GitHub Actions workflow setup for automated deployment. To set up:
 
-* Create the project going to https://dash.deno.com/new_project linking this repository. Make sure the **project name** matches the one configured in [deploy.yml](.github/workflows/deploy.yml), and check **Just link the repo, I’ll set up GitHub Actions myself**.
+* Create the project importing this repository: https://vercel.com/new
 * Add the following secrets to the repository:
+  - `VERCEL_PROTECTION_BYPASS_TOKEN`: Token for [Protection Bypass](https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation). This is used by Restate to hit the specific Restate deployment.
   - `RESTATE_AUTH_TOKEN`: Your Restate Cloud auth token. To get one, go to [Developers > API Keys > Create API Key](https://cloud.restate.dev?createApiKey=true&createApiKeyDescription=deployment-key&createApiKeyRole=rst:role::AdminAccess), and make sure to select **Admin** for role
   - `RESTATE_ADMIN_URL`: The Admin URL. You can find that out in Developers > Invoke. For example: `https://some-environment-private-id.env.us.restate.cloud:9070`
 
-Once the repo is set up, **just push to the main branch** and you'll get your services updated.
+Once the repo is set up, **just push to the main branch**, Vercel will deploy and promote the `main` branch, and the action configured in [deploy.yml](.github/workflows/deploy.yml) will automatically register the deployment to Restate.
 
-Check the [workflow deploy.yml](.github/workflows/deploy.yml) for more details.
-
-> 💡 **Note**: This setup uses [Deno deploy classic](https://docs.deno.com/deploy/classic/). For deno deploy EA, refer to their [documentation](https://docs.deno.com/deploy/early-access/).
+> 💡 **Note**: If you don't want to use Vercel's _Protection Bypass_, you can also just disable [Vercel authentication](https://vercel.com/docs/deployment-protection/methods-to-protect-deployments/vercel-authentication) and instead setup the Restate's Identity verification key as described in the Restate Cloud Dashboard > Developers > Security
 
 ### 🔧 Manual Deployment
 
 For more info on how to deploy manually, check:
 
 * For cloud: https://docs.restate.dev/cloud/connecting-services
-* For on-prem Restate deployments: https://docs.restate.dev/services/deploy/deno-deploy
+* For on-prem Restate deployments: https://docs.restate.dev/services/deploy
 
 ## 🎯 Next Steps
 

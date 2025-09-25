@@ -40,6 +40,7 @@ bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/typescript-testing
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/integrations/deployment-lambda-cdk
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/bun
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/nextjs
+bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/vercel
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/cloudflare-worker
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/tutorials/tour-of-restate-typescript
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/tutorials/tour-of-orchestration-typescript

@@ -1,6 +1,6 @@
 import * as restate from "@restatedev/restate-sdk";
 import { serde } from "@restatedev/restate-sdk-zod";
-import { sendNotification, sendReminder } from "@/restate/services/utils";
+import { sendNotification, sendReminder } from "@/restate/utils";
 
 import { z } from "zod";
 

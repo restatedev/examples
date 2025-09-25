@@ -1,0 +1,21 @@
+name: Register to Restate
+
+on:
+  repository_dispatch:
+    types:
+      - 'vercel.deployment.promoted'
+jobs:
+  deploy-to-restate:
+    if: github.event_name == 'repository_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Register Restate deployment
+        env:
+          # In your Restate Cloud dashboard, go to Developers > API Keys > Create API Key, and make sure to select **Admin** for role
+          RESTATE_ADMIN_URL: ${{ secrets.RESTATE_ADMIN_URL }}
+          # You can find this out in Developers > Invoke. For example: `https://some-environment-private-id.env.us.restate.cloud:9070`
+          RESTATE_AUTH_TOKEN: ${{ secrets.RESTATE_AUTH_TOKEN }}
+        # Create a Vercel Protection Bypass Token in your Vercel dashboard 
+        # https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation
+        run: |
+            npx -y @restatedev/restate deployment register -y --use-http1.1 --extra-header x-vercel-protection-bypass=${{ secrets.VERCEL_PROTECTION_BYPASS_TOKEN }} ${{ github.event.client_payload.url }}/restate
