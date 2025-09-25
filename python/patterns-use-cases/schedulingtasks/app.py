@@ -19,7 +19,7 @@ async def on_payment_failure(ctx: restate.ObjectContext, event: StripeEvent):
     reminder_count = await ctx.get("reminder_count") or 0
     if reminder_count < 3:
         ctx.set("reminder_count", reminder_count + 1)
-        await ctx.run("send_reminder", lambda: send_reminder_email(event))
+        await ctx.run_typed("send_reminder", send_reminder_email, event=event)
 
         # Schedule next reminder via a delayed self call
         ctx.object_send(
@@ -29,7 +29,7 @@ async def on_payment_failure(ctx: restate.ObjectContext, event: StripeEvent):
             send_delay=timedelta(days=1),
         )
     else:
-        await ctx.run("escalate", lambda: escalate_to_human(event))
+        await ctx.run_typed("escalate", escalate_to_human, event=event)
 
 
 app = restate.app([payment_tracker])

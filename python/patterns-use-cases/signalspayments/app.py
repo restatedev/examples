@@ -29,7 +29,7 @@ async def process_payment(ctx: restate.Context, req: PaymentRequest):
     verify_payment_request(req)
 
     # Generate a deterministic idempotency key
-    idempotency_key = await ctx.run("idempotency key", lambda: str(uuid.uuid4()))
+    idempotency_key = str(ctx.uuid())
 
     # Initiate a listener for external calls for potential webhook callbacks
     intent_webhook_id, intent_promise = ctx.awakeable()
@@ -46,7 +46,7 @@ async def process_payment(ctx: restate.Context, req: PaymentRequest):
             }
         )
 
-    payment_intent = await ctx.run("stripe call", payment_intent)
+    payment_intent = await ctx.run_typed("stripe call", payment_intent)
 
     if payment_intent["status"] != "processing":
         # The call to Stripe completed immediately / synchronously: processing done

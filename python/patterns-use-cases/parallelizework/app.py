@@ -34,11 +34,11 @@ fan_out_worker = restate.Service("FanOutWorker")
 @fan_out_worker.handler()
 async def run(ctx: restate.Context, task: Task) -> Result:
     # Split the task in subtasks
-    subtasks = await ctx.run("split task", split, args=(task,))
+    subtasks = await ctx.run_typed("split task", split, task=task)
 
     # Fan out the subtasks - run them in parallel
     result_promises = [
-        ctx.run(f"execute {subtask}", execute_subtask, args=(subtask,))
+        ctx.run_typed(f"execute {subtask}", execute_subtask, subtask=subtask)
         for subtask in subtasks.subtasks
     ]
 

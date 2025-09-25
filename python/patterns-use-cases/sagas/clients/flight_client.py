@@ -10,7 +10,7 @@ class FlightRequest(BaseModel):
     passenger_name: str
 
 
-async def book(customer_id: str, request: FlightRequest):
+async def book(customer_id: str, flight: FlightRequest):
     # this should implement the communication with the flight
     # provider's APIs
     logging.info(f"Flight reservation created for customer: {customer_id}")
