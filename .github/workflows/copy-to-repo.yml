@@ -48,9 +48,10 @@ jobs:
       - name: Copy over the template to the destination repo
         shell: bash
         run: |
-          cd examples/${{ inputs.source-directory }}
+          pushd examples/${{ inputs.source-directory }}
           # We use git archive here because it respects .gitignore and friends
           git archive HEAD -o temp.zip
+          popd
           cd destination
           unzip examples/${{ inputs.source-directory }}/temp.zip
 
