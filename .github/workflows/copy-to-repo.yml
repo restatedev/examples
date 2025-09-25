@@ -49,11 +49,10 @@ jobs:
         shell: bash
         # We use git archive here because it respects .gitignore and friends
         run: |
-          pushd examples/${{ inputs.source-directory }}
+          cd $GITHUB_WORKSPACE/examples/${{ inputs.source-directory }}
           git archive HEAD -o temp.zip
-          popd
-          cd destination
-          unzip examples/${{ inputs.source-directory }}/temp.zip
+          cd $GITHUB_WORKSPACE/destination
+          unzip $GITHUB_WORKSPACE/examples/${{ inputs.source-directory }}/temp.zip
 
       - name: Commit and push changes (if any)
         shell: bash
