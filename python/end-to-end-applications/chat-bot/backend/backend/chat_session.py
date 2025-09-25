@@ -2,7 +2,6 @@ import restate
 
 from utils.types import ActiveTasks, TaskResult, ChatEntry, ChatHistory
 from utils.command_router import execute_command
-from utils.utils import time_now
 from gpt import gpt_client
 from gpt.gpt_parser import parse_to_command
 from gpt.prompt_utils import to_prompt
@@ -28,13 +27,17 @@ async def on_message(ctx: restate.ObjectContext, message: ChatEntry):
 
     # Call LLM
     prompt = to_prompt(chat_history, active_tasks, message)
-    gpt_response = await ctx.run("call GPT", lambda: gpt_client.chat(prompt))
+    gpt_response = await ctx.run_typed("call GPT", gpt_client.chat, prompt=prompt)
 
     # Interpret the response and execute the command
     command = parse_to_command(gpt_response)
     output = await execute_command(ctx, ctx.key(), active_tasks, command)
     ctx.set("active_tasks", output.new_active_tasks)
-    chat_history.entries.append(ChatEntry(role="system", content=command.message, timestamp=await time_now(ctx)))
+    chat_history.entries.append(ChatEntry(
+        role="system",
+        content=command.message,
+        timestamp=round(await ctx.time() * 1000)
+    ))
     ctx.set("chat_history", chat_history)
 
 

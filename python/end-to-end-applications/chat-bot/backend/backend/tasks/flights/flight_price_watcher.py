@@ -22,9 +22,11 @@ async def run(ctx: restate.WorkflowContext, opts: FlightPriceOpts):
 
     while True:
         attempt += 1
-        best_offer_so_far = await ctx.run(
+        best_offer_so_far = await ctx.run_typed(
             "Probing prices #" + str(attempt),
-            lambda: get_best_quote(opts, opts.price_threshold_usd),
+            get_best_quote,
+            trip=opts,
+            price_threshold=opts.price_threshold_usd,
         )
 
         if best_offer_so_far["price"] <= opts.price_threshold_usd:

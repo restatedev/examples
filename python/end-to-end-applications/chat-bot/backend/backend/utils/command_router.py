@@ -102,7 +102,7 @@ async def start_task(ctx: restate.Context, session_id: str, task_opts: TaskOpts)
         raise ValueError(f"Unknown task type: {task_opts.task_type}")
 
     task_params = task.params_parser(task_opts.params)
-    task_id = await ctx.run("task_id", lambda: str(uuid.uuid4()))
+    task_id = str(ctx.uuid())
 
     ctx.service_send(
         task_executor.execute,

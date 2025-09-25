@@ -39,9 +39,9 @@ async def start_driver(ctx: ObjectContext):
 
     print(f"Driver {ctx.key()} starting up")
 
-    location = await ctx.run("random_location", lambda: geo.random_location())
+    location = await ctx.run_typed("random_location", geo.random_location)
     ctx.set(CURRENT_LOCATION, location)
-    await ctx.run("sending_location_to_kafka", lambda: send_location_to_kafka(ctx.key(), location))
+    await ctx.run_typed("sending_location_to_kafka", send_location_to_kafka(ctx.key(), location))
 
     ctx.object_send(driver_digital_twin.set_driver_available, ctx.key(), DEMO_REGION)
     ctx.object_send(poll_for_work, ctx.key(), arg=None)
@@ -74,9 +74,11 @@ async def move(ctx: ObjectContext):
     new_location, arrived = update_location(current_location, next_target)
 
     ctx.set(CURRENT_LOCATION, new_location)
-    await ctx.run(
+    await ctx.run_typed(
         "send_location_to_kafka",
-        lambda: send_location_to_kafka(ctx.key(), current_location),
+        send_location_to_kafka,
+        driver_id=ctx.key(),
+        location=current_location,
     )
 
     if arrived:

@@ -1,6 +1,7 @@
 from typing import List
 
 import restate
+from restate import RunOptions
 from restate.serde import BytesSerde
 
 from langchain_community.document_loaders.parsers import PyPDFParser
@@ -35,7 +36,7 @@ async def process_pdf(ctx: restate.WorkflowContext, request: NewPdfDocument):
         object_store = get_object_store_client()
         return await object_store.aget_object(request["bucket_name"], request["object_name"])
 
-    pdf_bytes = await ctx.run("Download PDF", download_pdf, serde=BytesSerde())
+    pdf_bytes = await ctx.run_typed("Download PDF", download_pdf, RunOptions(serde=BytesSerde()))
 
     #
     # 2. Extract the snippets from the PDF
@@ -62,6 +63,6 @@ async def process_pdf(ctx: restate.WorkflowContext, request: NewPdfDocument):
         store = get_vector_store()
         await store.aupsert(texts, vectors, metadata)
 
-    await ctx.run("Add documents", add_documents)
+    await ctx.run_typed("Add documents", add_documents)
 
     return "ok"

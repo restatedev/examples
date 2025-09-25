@@ -18,7 +18,7 @@ DELIVERY_INFO = "DELIVERY_INFO"
 
 @delivery_manager.handler()
 async def start(ctx: ObjectContext, order: Order):
-    restaurant_location, customer_location = await ctx.run(
+    restaurant_location, customer_location = await ctx.run_typed(
         "locations", lambda: [geo.random_location(), geo.random_location()]
     )
 
