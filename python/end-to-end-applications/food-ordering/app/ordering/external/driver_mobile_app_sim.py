@@ -41,7 +41,7 @@ async def start_driver(ctx: ObjectContext):
 
     location = await ctx.run_typed("random_location", geo.random_location)
     ctx.set(CURRENT_LOCATION, location)
-    await ctx.run_typed("sending_location_to_kafka", send_location_to_kafka(ctx.key(), location))
+    await ctx.run_typed("sending_location_to_kafka", send_location_to_kafka, driver_id=ctx.key(), location=location)
 
     ctx.object_send(driver_digital_twin.set_driver_available, ctx.key(), DEMO_REGION)
     ctx.object_send(poll_for_work, ctx.key(), arg=None)
