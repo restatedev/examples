@@ -18,9 +18,9 @@ def maybe_crash(probability: float = 0.5) -> None:
 
 
 # Simulates calling a subscription API, with a random probability of API downtime.
-def create_subscription(user_id: str, subscription: str, _payment_ref: str) -> str:
+def create_subscription(user_id: str, subscription: str, payment_ref: str) -> str:
     maybe_crash(0.3)
-    print(f">>> Creating subscription {subscription} for user {user_id}")
+    print(f">>> Creating subscription {subscription} for user {user_id} and payment ref {payment_ref}")
     return "SUCCESS"
 
 
