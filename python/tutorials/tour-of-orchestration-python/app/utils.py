@@ -103,17 +103,17 @@ def init_payment(req: PaymentRequest, payment_id: str, confirmation_id: str) -> 
     return f"payRef-{uuid.uuid4()}"
 
 
-def cancel_payment(pay_ref: str) -> None:
+def cancel_payment(pay_ref: str):
     """Mock function to cancel payment"""
     print(f">>> Canceling external payment with ref {pay_ref}")
 
 
-def remove_recurring_payment(payment_id: str) -> None:
+def remove_recurring_payment(payment_id: str):
     """Mock function to remove recurring payment"""
     print(f"Removing recurring payment: {payment_id}")
 
 
-def remove_subscription(user_id: str, subscription: str) -> None:
+def remove_subscription(user_id: str, subscription: str):
     """Mock function to remove subscription"""
     print(f"Removing subscription for user: {user_id}, subscription: {subscription}")
 
@@ -140,5 +140,5 @@ async def email_ticket(ctx: restate.Context, req: PurchaseTicketRequest) -> None
 
 
 @email_service.handler()
-async def send_reminder(ctx: restate.Context, req: PurchaseTicketRequest) -> None:
+async def send_reminder_email(ctx: restate.Context, req: PurchaseTicketRequest) -> None:
     print(f"Sending reminder for concert on {req.concert_date} to {req.customer_email}")
