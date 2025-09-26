@@ -110,9 +110,10 @@ For more info, check https://github.com/aws-actions/aws-lambda-deploy?tab=readme
 To perform the Restate registration, you'll need another role, for which you need to configure the arn as secret `AWS_RESTATE_ROLE_TO_ASSUME`.
 To set up this role, open the Restate Dashboard at Developers > Security > AWS Lambda.
 
-Finally, you can configure the Restate credentials:
+Finally, add the following to **Github Actions repository secrets**:
 
 - `RESTATE_AUTH_TOKEN`: Your Restate Cloud auth token. To get one, go to [Developers > API Keys > Create API Key](https://cloud.restate.dev?createApiKey=true&createApiKeyDescription=deployment-key&createApiKeyRole=rst:role::AdminAccess), and make sure to select **Admin** for role
+![Screenshot of Restate Cloud Create Admin Token](https://docs.restate.dev/img/services/deploy/deployment-token.png)
 - `RESTATE_ADMIN_URL`: The Admin URL. You can find that out in Developers > Invoke. For example: `https://some-environment-private-id.env.us.restate.cloud:9070`
 
 Once the repo is set up, **just push to the main branch** and you'll get your services updated.

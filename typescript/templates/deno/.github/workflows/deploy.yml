@@ -9,7 +9,7 @@ env:
   # Create the Deno project going to https://dash.deno.com/new_project linking this repository.
   # When creating the project, check **Just link the repo, I’ll set up GitHub Actions myself**.
   # Make sure this project name matches the deno project.
-  DENO_PROJECT_NAME: greeter
+  DENO_PROJECT_NAME: ${{ vars.DENO_PROJECT_NAME }}
 
 jobs:
   deploy:
