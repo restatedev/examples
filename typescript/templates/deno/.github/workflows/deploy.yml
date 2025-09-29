@@ -11,9 +11,9 @@ jobs:
     steps:
       - name: Register Restate deployment
         env:
-          # In your Restate Cloud dashboard, go to Developers > API Keys > Create API Key, and make sure to select **Admin** for role
+          # Admin URL of your Cloud environment. You can find it in Developers > Admin URL: https://cloud.restate.dev/to/developers/integration#admin
           RESTATE_ADMIN_URL: ${{ secrets.RESTATE_ADMIN_URL }}
-          # You can find this out in Developers > Invoke. For example: `https://some-environment-private-id.env.us.restate.cloud:9070`
+          # Auth token with Admin Role. To get one, go to Developers > API Keys > Create API Key: https://cloud.restate.dev?createApiKey=true&createApiKeyDescription=deployment-key&createApiKeyRole=rst:role::AdminAccess
           RESTATE_AUTH_TOKEN: ${{ secrets.RESTATE_AUTH_TOKEN }}
         # Revision URL https://docs.deno.com/deploy/classic/deployments/#production-vs.-preview-deployments
         run: npx -y @restatedev/restate deployment register -y ${{ github.event.client_payload.revision.preview_url }}
