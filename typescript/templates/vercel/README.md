@@ -23,7 +23,7 @@ npm run dev
 
 Connect your local service to Restate:
 ```bash
-npx @restatedev/restate dep add http://localhost:9080
+npx @restatedev/restate dep add --use-http1.1 http://localhost:9080
 ```
 
 Iterate! 🔧
@@ -46,10 +46,7 @@ Once the repo is set up, **just push to the main branch**, Vercel will deploy an
 
 ### 🔧 Manual Deployment
 
-For more info on how to deploy manually, check:
-
-* For cloud: https://docs.restate.dev/cloud/connecting-services
-* For on-prem Restate deployments: https://docs.restate.dev/services/deploy
+For more info on how to deploy manually, check the [Restate + Vercel documentation](https://docs.restate.dev/services/deploy/vercel).
 
 ## 🎯 Next Steps
 
