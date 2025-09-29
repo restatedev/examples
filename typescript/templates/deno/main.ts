@@ -1,8 +1,8 @@
-import * as restate from "npm:@restatedev/restate-sdk/fetch";
-import { serde } from "npm:@restatedev/restate-sdk-zod";
+import * as restate from "@restatedev/restate-sdk/fetch";
+import { serde } from "@restatedev/restate-sdk-zod";
 import { sendNotification, sendReminder } from "./utils.ts";
 
-import { z } from "npm:zod";
+import { z } from "zod";
 
 const Greeting = z.object({
   name: z.string(),
