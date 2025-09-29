@@ -46,7 +46,11 @@ Once the repo is set up, **just push to the main branch**, Vercel will deploy an
 
 ### 🔧 Manual Deployment
 
-For more info on how to deploy manually, check the [Restate + Vercel documentation](https://docs.restate.dev/services/deploy/vercel).
+You can also deploy manually by following the [Restate + Vercel documentation](https://docs.restate.dev/services/deploy/vercel).
+
+## 🎮 Test Your Service
+
+Once deployed, you can test your service using the [Restate Playground](https://cloud.restate.dev/to/overview?servicePlayground=Greeter#/operations/greet).
 
 ## 🎯 Next Steps
 
