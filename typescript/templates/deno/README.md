@@ -2,11 +2,13 @@
 
 Welcome to the **Restate TypeScript + Deno Deploy** template! ✨
 
+[![Deploy on Deno](https://deno.com/button)](https://console.deno.com/new?clone=https://github.com/restatedev/deno-template)
+
 ## 🏁 Getting Started
 
 ### Prerequisites
 - 📦 Deno runtime installed
-- 🔧 npm or yarn package manager
+- 🔧 npx
 - 🌐 Deno account (for deployment)
 
 ## 🛠️ Local Development
@@ -30,33 +32,28 @@ Iterate! 🔧
 
 ## 🚀 Deploy
 
+If you haven't done it yet, create the project in the Deno console: https://console.deno.com/ 
+
 ### 📦 On Restate Cloud
 
-This template includes a GitHub Actions workflow setup for automated deployment. To set up:
-
-* Create the Deno project by going to https://dash.deno.com/new_project linking this repository, check **Just link the repo, I’ll set up GitHub Actions myself**.
-<img src="https://raw.githubusercontent.com/restatedev/docs-restate/refs/heads/main/docs/img/services/deploy/deno-deploy-create-project.png" style="width:50%;height:50%;">
+This template includes a GitHub Actions workflow setup for automated registration of the service to Restate. To set up:
 
 * Add the following to **Github Actions repository secrets**:
-  - `RESTATE_ADMIN_URL`: The Admin URL. You can find that out in Developers > Invoke. For example: `https://some-environment-private-id.env.us.restate.cloud:9070`
+  - `RESTATE_ADMIN_URL`: The Admin URL. You can find it in [Developers > Admin URL](https://cloud.restate.dev/to/developers/integration#admin)
   - `RESTATE_AUTH_TOKEN`: Your Restate Cloud auth token. To get one, go to [Developers > API Keys > Create API Key](https://cloud.restate.dev?createApiKey=true&createApiKeyDescription=deployment-key&createApiKeyRole=rst:role::AdminAccess), and make sure to select **Admin** for role
 <img src="https://raw.githubusercontent.com/restatedev/docs-restate/refs/heads/main/docs/img/services/deploy/deployment-token.png" style="width:50%;height:50%;" />
 
-* Add the following to **Github Actions repository variables**:
-  - `DENO_PROJECT_NAME`: Project name of the just created deno project
+Once the repo is set up, **just push to the main branch**, Deno Deploy will deploy the service, and [workflow deploy.yml](.github/workflows/deploy.yml) kicks in to register the service to Restate.
 
-Once the repo is set up, **just push to the main branch** and you'll get your services updated.
-
-Check the [workflow deploy.yml](.github/workflows/deploy.yml) for more details.
-
-> 💡 **Note**: This setup uses [Deno deploy classic](https://docs.deno.com/deploy/classic/). For deno deploy EA, refer to their [documentation](https://docs.deno.com/deploy/early-access/).
+> 💡 **Note**: This setup uses [Deno deploy EA](https://docs.deno.com/deploy/early-access/). For Deno deploy Classic, refer to our [documentation](https://docs.restate.dev/services/deploy/deno-deploy).
 
 ### 🔧 Manual Deployment
 
-For more info on how to deploy manually, check:
+You can also register manually by following the [Restate + Deno Deploy documentation](https://docs.restate.dev/services/deploy/deno-deploy).
 
-* For cloud: https://docs.restate.dev/cloud/connecting-services
-* For on-prem Restate deployments: https://docs.restate.dev/services/deploy/deno-deploy
+## 🎮 Test Your Service
+
+Once deployed, you can test your service using the [Restate Cloud Playground](https://cloud.restate.dev/to/overview?servicePlayground=Greeter#/operations/greet).
 
 ## 🎯 Next Steps
 

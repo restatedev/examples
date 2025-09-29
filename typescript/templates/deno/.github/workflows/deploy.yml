@@ -1,41 +1,19 @@
-name: Deploy Deno
+name: Register to Restate
 
 on:
-  push:
-    branches:
-      - main
-
-env:
-  # Create the Deno project going to https://dash.deno.com/new_project linking this repository.
-  # When creating the project, check **Just link the repo, I’ll set up GitHub Actions myself**.
-  # Make sure this project name matches the deno project.
-  DENO_PROJECT_NAME: ${{ vars.DENO_PROJECT_NAME }}
+  repository_dispatch:
+    # This is triggered by Deno Deploy on successful builds
+    types: [deno_deploy.build.routed]
 
 jobs:
-  deploy:
-    permissions:
-      id-token: write # required
-      contents: read
+  notify:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
-
-      - name: Deploy to Deno Deploy
-        uses: denoland/deployctl@v1
-        id: deploy
-        with:
-          project: ${{ env.DENO_PROJECT_NAME }}
-          entrypoint: main.ts
-
       - name: Register Restate deployment
         env:
-          # In your Restate Cloud dashboard, go to Developers > API Keys > Create API Key, and make sure to select **Admin** for role
+          # Admin URL of your Cloud environment. You can find it in Developers > Admin URL: https://cloud.restate.dev/to/developers/integration#admin
           RESTATE_ADMIN_URL: ${{ secrets.RESTATE_ADMIN_URL }}
-          # You can find this out in Developers > Invoke. For example: `https://some-environment-private-id.env.us.restate.cloud:9070`
+          # Auth token with Admin Role. To get one, go to Developers > API Keys > Create API Key: https://cloud.restate.dev?createApiKey=true&createApiKeyDescription=deployment-key&createApiKeyRole=rst:role::AdminAccess
           RESTATE_AUTH_TOKEN: ${{ secrets.RESTATE_AUTH_TOKEN }}
         # Revision URL https://docs.deno.com/deploy/classic/deployments/#production-vs.-preview-deployments
-        run: npx -y @restatedev/restate deployment register -y https://${{ env.DENO_PROJECT_NAME }}-${{ steps.deploy.outputs.deployment-id }}.deno.dev
+        run: npx -y @restatedev/restate deployment register -y ${{ github.event.client_payload.revision.preview_url }}
