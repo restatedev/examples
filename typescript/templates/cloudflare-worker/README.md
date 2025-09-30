@@ -44,15 +44,15 @@ Iterate! 🔧
 
 ### 📦 On Restate Cloud
 
-First, create your Worker project by running:
+This template includes a GitHub Actions workflow setup for automated deployment.
 
-```
+Create your CloudFlare Worker project. You can do so by running:
+
+```shell
 npx wrangler deploy
 ```
 
-This template includes a GitHub Actions workflow setup for automated deployment.
-
-To set up the repository, add the following to **Github Actions repository secrets**:
+Add the following to **Github Actions repository secrets**:
 
 - `CLOUDFLARE_ACCOUNT_ID`: Your Cloudflare Account. To get your account id, check https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/#cloudflare-account-id
 - `CLOUDFLARE_API_TOKEN`: Your Cloudflare API token. To get a token, check https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/. You can use the "Edit Cloudflare Workers" template for creating a token.
