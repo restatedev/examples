@@ -44,6 +44,12 @@ Iterate! 🔧
 
 ### 📦 On Restate Cloud
 
+First, create your Worker project by running:
+
+```
+npx wrangler deploy
+```
+
 This template includes a GitHub Actions workflow setup for automated deployment.
 
 To set up the repository, add the following to **Github Actions repository secrets**:
