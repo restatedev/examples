@@ -46,7 +46,7 @@ Iterate! 🔧
 
 This template includes a GitHub Actions workflow setup for automated deployment.
 
-Create your CloudFlare Worker project. You can do so by running:
+Create your Cloudflare Worker project. You can do so by running:
 
 ```shell
 npx wrangler deploy
