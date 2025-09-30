@@ -11,6 +11,11 @@ Welcome to the **Restate TypeScript + AWS Lambda** template! ✨
 
 ## 🛠️ Local Development
 
+Install dependencies:
+```bash
+npm install
+```
+
 Launch the local Restate server:
 ```shell
 npx @restatedev/restate-server

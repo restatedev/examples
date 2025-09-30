@@ -11,6 +11,11 @@ Welcome to the **Restate TypeScript + Cloudflare Workers** template! ✨
 
 ## 🛠️ Local Development
 
+Install dependencies:
+```bash
+npm install
+```
+
 Launch the local Restate server:
 ```bash
 npx @restatedev/restate-server

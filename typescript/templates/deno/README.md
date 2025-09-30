@@ -13,6 +13,11 @@ Welcome to the **Restate TypeScript + Deno Deploy** template! ✨
 
 ## 🛠️ Local Development
 
+Install dependencies:
+```bash
+deno install
+```
+
 Launch the local Restate server:
 ```bash
 npx @restatedev/restate-server
