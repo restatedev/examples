@@ -34,8 +34,6 @@ restate deployments register http://localhost:3000/restate --use-http1.1
 
 Check out the UI at `http://localhost:3000` and send a greeting.
 
-<img src="next_ui.png" alt="Next.js UI" width="300px"/>
-
 You should see the greeting response `You said hi to Bob!` in the UI.
 
 ## See Durable Execution in action
@@ -51,8 +49,6 @@ SIMULATE_FAILURES=true npm run dev
 ```
 
 Submit another greeting from the UI and then check the invocation tab of the Restate UI to see the retries: `http://localhost:9070`
-
-<img src="restate_ui.png" alt="Restate UI" width="1000px"/>
 
 Or in the app logs:
 
