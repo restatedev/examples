@@ -20,7 +20,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           # Add a message to the deployment with the commit
-          command: versions upload --latest --message "Deployed via GitHub Actions - commit ${{ github.sha }}"
+          command: versions upload --message "Deployed via GitHub Actions - commit ${{ github.sha }}"
       - name: Get deployment URL
         id: get-url
         env:
