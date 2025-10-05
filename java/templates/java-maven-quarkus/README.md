@@ -13,3 +13,9 @@ To start the service, simply run:
 ```shell
 $ quarkus dev
 ```
+
+## Unit testing
+
+The restate `RestateExtension` junit extension does currently not work together with quarkus CDI, so you cannot combine 
+`@RestateTest` with `@QuarkusTest`, so if you want to use `@Inject` in unit test with restate services, you must use 
+the `RestateRunner` directly as shown in the `GreeterCdiTest`.
