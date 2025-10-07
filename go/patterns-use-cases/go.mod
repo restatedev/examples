@@ -6,7 +6,7 @@ toolchain go1.24.6
 
 require (
 	github.com/google/uuid v1.6.0
-	github.com/restatedev/sdk-go v0.20.0
+	github.com/restatedev/sdk-go v0.20.1
 	github.com/robfig/cron/v3 v3.0.1
 )
 
