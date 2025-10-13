@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"log"
+	"slices"
+
 	restate "github.com/restatedev/sdk-go"
 	"github.com/restatedev/sdk-go/server"
-	"log"
 )
 
 type BookingRequest struct {
@@ -51,7 +53,7 @@ func (BookingWorkflow) Run(ctx restate.Context, req BookingRequest) (err error) 
 	// Run compensations at the end if err != nil
 	defer func() {
 		if err != nil {
-			for _, compensation := range compensations {
+			for _, compensation := range slices.Backward(compensations) {
 				if _, compErr := compensation(); compErr != nil {
 					err = compErr
 				}
