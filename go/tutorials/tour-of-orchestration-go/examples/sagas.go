@@ -2,6 +2,7 @@ package examples
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/restatedev/sdk-go"
 )
@@ -14,8 +15,8 @@ func (SubscriptionSaga) Add(ctx restate.Context, req SubscriptionRequest) (err e
 	// Run compensations at the end if err != nil
 	defer func() {
 		if err != nil {
-			for i := len(compensations) - 1; i >= 0; i-- {
-				if compErr := compensations[i](); compErr != nil {
+			for _, compensation := range slices.Backward(compensations) {
+				if compErr := compensation(); compErr != nil {
 					err = compErr
 				}
 			}
