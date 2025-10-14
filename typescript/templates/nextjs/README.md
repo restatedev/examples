@@ -7,9 +7,9 @@ The Next.js app implements and exposes a set of Restate services that are invoke
 The services are implemented in TypeScript and use the Restate SDK for TypeScript.
 
 Most important files:
-- [`restate/services/greeter.ts`](restate/services/greeter.ts): The Restate service that implements the greeting logic.
+- [`restate/services/greeter.ts`](restate/greeter.ts): The Restate service that implements the greeting logic.
 - [`app/page.tsx`](app/page.tsx): A Next.js page that renders the UI and calls the Restate service.
-- [`restate/serve.ts`](restate/serve.ts): Defines the Restate fetch endpoint that runs the services and is initialized in [`app/restate/[[...services]]/route.ts`](app/restate/v1/[[...services]]/route.ts) by the Next.js app.
+- [`restate/serve.ts`](restate/serve.ts): Defines the Restate fetch endpoint that runs the services and is initialized in [`app/restate/[[...services]]/route.ts`](app/restate/[[...services]]/route.ts) by the Next.js app.
 
 ## Getting Started
 
@@ -40,7 +40,7 @@ You should see the greeting response `You said hi to Bob!` in the UI.
 
 Let's have a look at how Restate makes this application resilient, by introducing simulated failures.
 
-The [greeter](restate/services/greeter.ts) service first sends a notification, then waits a second and then sends a reminder, and then returns a greeting.
+The [greeter](restate/greeter.ts) service first sends a notification, then waits a second and then sends a reminder, and then returns a greeting.
 
 If you run the app, with the `SIMULATE_FAILURES=true` it will crash repeatedly on the sending of the reminder. 
 
