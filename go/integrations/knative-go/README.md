@@ -13,7 +13,7 @@ Requirements:
 * [`kn-quickstart`](https://knative.dev/docs/install/quickstart-install/#install-the-knative-quickstart-plugin)
 * [`ko`](https://ko.build/)
 * [`helm`](https://helm.sh/docs/intro/quickstart/)
-* [`restate` CLI](https://restate.dev/get-restate/)
+* [`restate` CLI](https://docs.restate.dev/quickstart)
 
 ## Set up the cluster
 

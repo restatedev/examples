@@ -26,7 +26,7 @@ verification, deduplication, tracking message timestamps, etc.
 
 You need an [OpenAI]() access key to access GPT-4o. Export it as an environment variable like `export OPENAI_API_KEY=sk-proj-...`
 
-Start the Restate Server (see ["Get Restate"](https://restate.dev/get-restate/) if you don't have it downloaded, yet.)
+Start the Restate Server (see ["Get Restate"](https://docs.restate.dev/quickstart) if you don't have it downloaded, yet.)
 
 Make sure you install the dependencies via `npm install`.
 
