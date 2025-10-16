@@ -4,7 +4,7 @@ plugins {
   kotlin("plugin.serialization") version "2.2.10"
   id("com.google.devtools.ksp") version "2.2.10-2.0.2"
 
-	id("org.springframework.boot") version "3.4.4"
+	id("org.springframework.boot") version "3.5.6"
 	id("io.spring.dependency-management") version "1.1.7"
 }
 
