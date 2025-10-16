@@ -8,12 +8,11 @@ PROJECT_ROOT="$(dirname "$SELF_PATH")/.."
 
 function search_and_replace_version() {
   echo "upgrading Python version of $1 to $NEW_VERSION"
-  if [ -e "$1/requirements.txt" ]; then
-    sed -i 's/restate_sdk==[0-9A-Za-z.-]*/restate_sdk=='"$NEW_VERSION"'/' "$1/requirements.txt"
-  fi;
-  if [ -e "$1/pyproject.toml" ]; then
-    sed -i 's/restate-sdk==[0-9A-Za-z.-]*/restate-sdk=='"$NEW_VERSION"'/' "$1/pyproject.toml"
-    sed -i 's/restate_sdk\[serde\]>=[0-9A-Za-z.-]*/restate_sdk[serde]>='"$NEW_VERSION"'/' "$1/pyproject.toml"
+  if [ -e "pyproject.toml" ]; then
+    # Use uv for pyproject.toml projects
+    uv add "restate-sdk[serde]>=$NEW_VERSION"
+  elif [ -e "requirements.txt" ]; then
+    sed -i 's/restate[_-]sdk\[serde\][>=!<~][^[:space:]]*/restate-sdk[serde]=='$NEW_VERSION'/' requirements.txt
   fi;
 }
 

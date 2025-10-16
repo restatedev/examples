@@ -108,12 +108,12 @@ def cancel_payment(pay_ref: str):
     print(f">>> Canceling external payment with ref {pay_ref}")
 
 
-def remove_recurring_payment(payment_id: str):
+def remove_recurring_payment(payment_id: str) -> None:
     """Mock function to remove recurring payment"""
     print(f"Removing recurring payment: {payment_id}")
 
 
-def remove_subscription(user_id: str, subscription: str):
+def remove_subscription(user_id: str, subscription: str) -> None:
     """Mock function to remove subscription"""
     print(f"Removing subscription for user: {user_id}, subscription: {subscription}")
 

@@ -9,7 +9,7 @@ user_subscriptions = restate.VirtualObject("UserSubscriptions")
 @user_subscriptions.handler()
 async def add(ctx: restate.ObjectContext, subscription: str):
     # Get current subscriptions
-    subscriptions = await ctx.get("subscriptions") or []
+    subscriptions = await ctx.get("subscriptions", type_hint=List[str]) or []
 
     # Add new subscription
     if subscription not in subscriptions:
