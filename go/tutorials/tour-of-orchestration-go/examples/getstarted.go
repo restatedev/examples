@@ -9,7 +9,7 @@ import (
 type SubscriptionService struct{}
 
 func (SubscriptionService) Add(ctx restate.Context, req SubscriptionRequest) error {
-	paymentId := restate.Rand(ctx).UUID().String()
+	paymentId := restate.UUID(ctx).String()
 
 	payRef, err := restate.Run(ctx, func(ctx restate.RunContext) (string, error) {
 		return CreateRecurringPayment(req.CreditCard, paymentId)

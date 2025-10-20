@@ -1,8 +1,9 @@
 package main
 
 import (
-	restate "github.com/restatedev/sdk-go"
 	"time"
+
+	restate "github.com/restatedev/sdk-go"
 )
 
 // Greeter is a struct which represents a Restate service; reflection will turn exported methods into service handlers
@@ -10,7 +11,7 @@ type Greeter struct{}
 
 func (Greeter) Greet(ctx restate.Context, name string) (string, error) {
 	//  Durably execute a set of steps; resilient against failures
-	greetingId := restate.Rand(ctx).UUID().String()
+	greetingId := restate.UUID(ctx).String()
 
 	if _, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
 		return restate.Void{}, SendNotification(greetingId, name)

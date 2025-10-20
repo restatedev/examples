@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	restate "github.com/restatedev/sdk-go"
-	"github.com/restatedev/sdk-go/server"
 	"log/slog"
 	"os"
+
+	restate "github.com/restatedev/sdk-go"
+	"github.com/restatedev/sdk-go/server"
 )
 
 /**
@@ -39,18 +40,19 @@ func (FanOutWorker) Run(ctx restate.Context, task Task) (Result, error) {
 	}
 
 	// Fan out the subtasks - run them in parallel
-	subtaskFutures := make([]restate.Selectable, 0, len(subtasks))
+	subtaskFutures := make([]restate.Future, 0, len(subtasks))
 	for _, subtask := range subtasks {
 		subtaskFutures = append(subtaskFutures,
 			restate.Service[SubTaskResult](ctx, "FanOutWorker", "RunSubtask").RequestFuture(subtask))
 	}
 
-	selector := restate.Select(ctx, subtaskFutures...)
-
 	// Fan in - Aggregate the results
 	subResults := make([]SubTaskResult, 0, len(subtasks))
-	for selector.Remaining() {
-		response, err := selector.Select().(restate.ResponseFuture[SubTaskResult]).Response()
+	for fut, err := range restate.Wait(ctx, subtaskFutures...) {
+		if err != nil {
+			return Result{}, err
+		}
+		response, err := fut.(restate.ResponseFuture[SubTaskResult]).Response()
 		if err != nil {
 			return Result{}, err
 		}

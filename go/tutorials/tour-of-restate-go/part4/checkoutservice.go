@@ -16,7 +16,7 @@ type CheckoutRequest struct {
 func (CheckoutService) Handle(ctx restate.Context, request CheckoutRequest) (bool, error) {
 	totalPrice := len(request.Tickets) * 40
 
-	idempotencyKey := restate.Rand(ctx).UUID().String()
+	idempotencyKey := restate.UUID(ctx).String()
 	if _, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
 		return restate.Void{}, auxiliary.PaymentClient{}.Call(idempotencyKey, totalPrice)
 	}); err != nil {

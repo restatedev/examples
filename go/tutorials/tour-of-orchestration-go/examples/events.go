@@ -11,7 +11,7 @@ func (Payments) Process(ctx restate.Context, req PaymentRequest) (PaymentResult,
 	confirmation := restate.Awakeable[PaymentResult](ctx)
 
 	// Initiate payment with external provider (Stripe, PayPal, etc.)
-	paymentId := restate.Rand(ctx).UUID().String()
+	paymentId := restate.UUID(ctx).String()
 	_, err := restate.Run(ctx, func(ctx restate.RunContext) (string, error) {
 		return InitPayment(req, paymentId, confirmation.Id())
 	}, restate.WithName("pay"))

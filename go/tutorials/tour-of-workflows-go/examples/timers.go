@@ -12,7 +12,7 @@ type SignupWithTimersWorkflow struct{}
 func (SignupWithTimersWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error) {
 	userID := restate.Key(ctx)
 
-	secret := restate.Rand(ctx).UUID().String()
+	secret := restate.UUID(ctx).String()
 	_, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
 		return SendVerificationEmail(userID, user, secret)
 	}, restate.WithName("verify"))
@@ -27,13 +27,16 @@ func (SignupWithTimersWorkflow) Run(ctx restate.WorkflowContext, user User) (boo
 		reminderTimerFuture := restate.After(ctx, 15*time.Second)
 
 		// Create futures for racing
-		selector := restate.Select(ctx,
+		resFut, err := restate.WaitFirst(ctx,
 			clickedPromise,
 			reminderTimerFuture,
 			verificationTimeoutFuture,
 		)
+		if err != nil {
+			return false, err
+		}
 
-		switch selector.Select() {
+		switch resFut {
 		case clickedPromise:
 			clickedSecret, err := clickedPromise.Result()
 			if err != nil {
@@ -47,7 +50,7 @@ func (SignupWithTimersWorkflow) Run(ctx restate.WorkflowContext, user User) (boo
 			if err != nil {
 				return false, err
 			}
-			break // Break out of selector loop to continue main loop
+			break // Break out the switch to continue the main loop
 		case verificationTimeoutFuture:
 			return false, restate.TerminalError(fmt.Errorf("email verification timed out after 24 hours"))
 		}
