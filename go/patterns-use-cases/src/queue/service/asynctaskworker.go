@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	restate "github.com/restatedev/sdk-go"
-	"github.com/restatedev/sdk-go/server"
 	"log/slog"
 	"os"
+
+	restate "github.com/restatedev/sdk-go"
+	"github.com/restatedev/sdk-go/server"
 )
 
 type TaskOpts struct {
@@ -35,5 +36,7 @@ func main() {
 
 func someHeavyWork(task TaskOpts) (Result, error) {
 	// Implement doing the heavy work...
-	return Result{}, nil
+	return Result{
+		Description: task.Description,
+	}, nil
 }

@@ -10,7 +10,7 @@ func (SignupWithSignalsWorkflow) Run(ctx restate.WorkflowContext, user User) (bo
 	userID := restate.Key(ctx)
 
 	// Generate verification secret and send email
-	secret := restate.Rand(ctx).UUID().String()
+	secret := restate.UUID(ctx).String()
 	_, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
 		return SendVerificationEmail(userID, user, secret)
 	}, restate.WithName("verify"))

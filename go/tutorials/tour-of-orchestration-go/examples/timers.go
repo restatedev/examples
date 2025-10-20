@@ -11,7 +11,7 @@ type PaymentsWithTimeout struct{}
 func (PaymentsWithTimeout) Process(ctx restate.Context, req PaymentRequest) (PaymentResult, error) {
 	confirmation := restate.Awakeable[PaymentResult](ctx)
 
-	paymentId := restate.Rand(ctx).UUID().String()
+	paymentId := restate.UUID(ctx).String()
 	payRef, err := restate.Run(ctx, func(ctx restate.RunContext) (string, error) {
 		return InitPayment(req, paymentId, confirmation.Id())
 	}, restate.WithName("pay"))
@@ -21,9 +21,12 @@ func (PaymentsWithTimeout) Process(ctx restate.Context, req PaymentRequest) (Pay
 
 	// Race between payment confirmation and timeout
 	timeout := restate.After(ctx, 30*time.Second)
-	selector := restate.Select(ctx, confirmation, timeout)
+	resFut, err := restate.WaitFirst(ctx, confirmation, timeout)
+	if err != nil {
+		return PaymentResult{}, err
+	}
 
-	switch selector.Select() {
+	switch resFut {
 	case confirmation:
 		return confirmation.Result()
 	default:

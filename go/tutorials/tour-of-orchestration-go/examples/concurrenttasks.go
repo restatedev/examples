@@ -9,7 +9,7 @@ import (
 type ParallelSubscriptionService struct{}
 
 func (ParallelSubscriptionService) Add(ctx restate.Context, req SubscriptionRequest) (SubscriptionResult, error) {
-	paymentId := restate.Rand(ctx).UUID().String()
+	paymentId := restate.UUID(ctx).String()
 
 	payRef, err := restate.Run(ctx, func(ctx restate.RunContext) (string, error) {
 		return CreateRecurringPayment(req.CreditCard, paymentId)
@@ -19,7 +19,7 @@ func (ParallelSubscriptionService) Add(ctx restate.Context, req SubscriptionRequ
 	}
 
 	// Process all subscriptions sequentially
-	var subscriptionFutures []restate.Selectable
+	var subscriptionFutures []restate.Future
 	for _, subscription := range req.Subscriptions {
 		future := restate.RunAsync(ctx, func(ctx restate.RunContext) (string, error) {
 			return CreateSubscription(req.UserId, subscription, payRef)
@@ -27,10 +27,11 @@ func (ParallelSubscriptionService) Add(ctx restate.Context, req SubscriptionRequ
 		subscriptionFutures = append(subscriptionFutures, future)
 	}
 
-	selector := restate.Select(ctx, subscriptionFutures...)
-
-	for selector.Remaining() {
-		_, err := selector.Select().(restate.RunAsyncFuture[string]).Result()
+	for fut, err := range restate.Wait(ctx, subscriptionFutures...) {
+		if err != nil {
+			return SubscriptionResult{}, err
+		}
+		_, err := fut.(restate.RunAsyncFuture[string]).Result()
 		if err != nil {
 			return SubscriptionResult{}, err
 		}

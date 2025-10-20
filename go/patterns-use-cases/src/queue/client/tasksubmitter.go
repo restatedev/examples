@@ -1,11 +1,11 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
+	"context"
 	"log/slog"
-	"net/http"
+
+	restate "github.com/restatedev/sdk-go"
+	"github.com/restatedev/sdk-go/ingress"
 )
 
 const RESTATE_URL = "http://localhost:8080"
@@ -15,39 +15,38 @@ type TaskOpts struct {
 	Description string `json:"description"`
 }
 
+type Result struct {
+	Description string `json:"description"`
+}
+
 func SubmitAndAwaitTask(task TaskOpts) error {
 	idempotencyKey := task.Id
-	slog.Info("Submitting task with idempotency key: " + idempotencyKey)
-	client := &http.Client{}
 
-	// submit the task; similar to publishing a message to a queue (by adding /send to the url)
-	// Restate ensures the task is executed exactly once
-	// Optionally set a delay for the task by adding `?delay=10s` to the URL
-	url := fmt.Sprintf("%s/AsyncTaskWorker/RunTask/Send", RESTATE_URL)
-	taskData, _ := json.Marshal(task)
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(taskData))
+	ingressClient := ingress.NewClient(RESTATE_URL)
+
+	invocationHandle, err := ingress.Service[TaskOpts, Result](ingressClient,
+		"AsyncTaskWorker",
+		"RunTask").
+		Send(context.Background(),
+			task,
+			// use a stable uuid as an idempotency key; Restate deduplicates for us
+			restate.WithIdempotencyKey(idempotencyKey),
+			// Optionally add delay
+			// restate.WithDelay(10 * time.Second),
+		)
 	if err != nil {
 		return err
 	}
-	req.Header.Set("Content-Type", "application/json")
-	// use a stable uuid as an idempotency key; Restate deduplicates for us
-	req.Header.Set("idempotency-key", idempotencyKey)
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
 
 	// ... do other things while the task is being processed ...
 
 	// Later on, you can retrieve the result of the task (possibly in a different process)
-	attachUrl := fmt.Sprintf("%s/restate/invocation/AsyncTaskWorker/RunTask/%s/attach", RESTATE_URL, idempotencyKey)
-	resp, err = http.DefaultClient.Get(attachUrl)
+	res, err := invocationHandle.Attach(context.Background())
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+
+	slog.Info("Task result", "result", res)
 
 	// ... Process the result ...
 

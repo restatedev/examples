@@ -1,9 +1,10 @@
 package main
 
 import (
-	restate "github.com/restatedev/sdk-go"
 	"log/slog"
 	"time"
+
+	restate "github.com/restatedev/sdk-go"
 )
 
 type SubscriptionRequest struct {
@@ -69,8 +70,11 @@ func (MyService) Run(ctx restate.Context) error {
 	}
 	// Example of waiting on a promise (awakeable/call/...) or a timeout
 	timeout := restate.After(ctx, 5*time.Second)
-	selector := restate.Select(ctx, awakeable, timeout)
-	switch selector.Select() {
+	resultFut, err := restate.WaitFirst(ctx, awakeable, timeout)
+	if err != nil {
+		return err
+	}
+	switch resultFut {
 	case awakeable:
 		result, err := awakeable.Result()
 		if err != nil {

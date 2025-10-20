@@ -46,7 +46,7 @@ type CronJobInitiator struct{}
 func (CronJobInitiator) Create(ctx restate.Context, req JobRequest) (string, error) {
 	// Create a new job ID and initiate the cron job object for that ID
 	// We can then address this job object by its ID
-	jobID := restate.Rand(ctx).UUID().String()
+	jobID := restate.UUID(ctx).String()
 
 	fmt.Printf("Creating new cron job with ID %s for service %s and method %s", jobID, req.Service, req.Method)
 	job, err := restate.Object[*JobInfo](ctx, "CronJob", jobID, "Initiate").Request(req)

@@ -2,8 +2,9 @@ package examples
 
 import (
 	"fmt"
-	restate "github.com/restatedev/sdk-go"
 	"time"
+
+	restate "github.com/restatedev/sdk-go"
 
 	"github.com/google/uuid"
 )
@@ -88,7 +89,7 @@ type PaymentService struct{}
 
 func (PaymentService) Charge(ctx restate.Context, req PurchaseTicketRequest) (string, error) {
 	// Simulate payment processing
-	paymentId := restate.Rand(ctx).UUID().String()
+	paymentId := restate.UUID(ctx).String()
 	fmt.Printf("Processing payment for ticket %s with payment ID %s\n", req.TicketId, paymentId)
 	return paymentId, nil
 }

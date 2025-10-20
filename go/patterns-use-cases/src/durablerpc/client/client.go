@@ -1,11 +1,12 @@
 package main
 
 import (
+	"context"
 	"flag"
-	"fmt"
-	"io"
 	"log/slog"
-	"net/http"
+
+	restate "github.com/restatedev/sdk-go"
+	"github.com/restatedev/sdk-go/ingress"
 )
 
 // This example sends HTTP call to Restate to submit a task
@@ -14,34 +15,22 @@ import (
 const RESTATE_URL = "http://localhost:8080"
 
 func ReserveProduct(productId string, reservationId string) {
-	client := &http.Client{}
+	ingressClient := ingress.NewClient(RESTATE_URL)
 
-	// Durable RPC call to the product service
-	// Restate registers the request and makes sure it runs to completion exactly once
-	// This is a call to Virtual Object so we can be sure only one reservation is made concurrently
-	url := fmt.Sprintf("%s/ProductService/%s/Book", RESTATE_URL, productId)
-	req, err := http.NewRequest("POST", url, nil)
+	result, err := ingress.Object[restate.Void, bool](ingressClient,
+		"ProductService",
+		productId,
+		"Reserve").Request(context.Background(),
+		restate.Void{},
+		// use a stable uuid as an idempotency key; Restate deduplicates for us
+		restate.WithIdempotencyKey(reservationId),
+	)
 	if err != nil {
-		slog.Error("Book product failed", "err", err.Error())
-		return
-	}
-	// use a stable uuid as an idempotency key; Restate deduplicates for us
-	req.Header.Set("idempotency-key", reservationId)
-
-	resp, err := client.Do(req)
-	if err != nil {
-		slog.Error("Book product failed", "err", err.Error())
-		return
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		slog.Error("Book product failed", "err", err.Error())
+		slog.Error("Book product failed", "err", err)
 		return
 	}
 
-	slog.Info("Response: " + string(body))
+	slog.Info("Response", "response", result)
 }
 
 func main() {

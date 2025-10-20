@@ -23,7 +23,7 @@ func (SubscriptionSaga) Add(ctx restate.Context, req SubscriptionRequest) (err e
 		}
 	}()
 
-	paymentId := restate.Rand(ctx).UUID().String()
+	paymentId := restate.UUID(ctx).String()
 
 	// Add compensation for payment
 	compensations = append(compensations, func() error {
