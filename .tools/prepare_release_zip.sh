@@ -23,6 +23,7 @@ create_release_zip python/end-to-end-applications/rag-ingestion python-rag-inges
 create_release_zip python/integrations/deployment-lambda-cdk python-hello-world-lambda-cdk
 create_release_zip python/patterns-use-cases python-patterns-use-cases
 create_release_zip python/templates/python python-hello-world
+create_release_zip python/templates/lambda python-hello-world-lambda
 create_release_zip python/tutorials/tour-of-restate-python python-tour-of-restate
 create_release_zip python/tutorials/tour-of-orchestration-python python-tour-of-orchestration
 create_release_zip python/tutorials/tour-of-workflows-python python-tour-of-workflows

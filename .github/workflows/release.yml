@@ -25,6 +25,7 @@ jobs:
           # NOTE: order here matters!
           files: |
                   python-hello-world.zip
+                  python-hello-world-lambda.zip
                   python-hello-world-lambda-cdk.zip
                   python-tour-of-restate.zip
                   python-tour-of-orchestration.zip
@@ -111,10 +112,17 @@ jobs:
     with:
       source-directory: typescript/templates/cloudflare-worker
       destination-repo: cloudflare-workers-template
-  copy-lambda-template:
-    name: Copy lambda template to lambda-template repo
+  copy-ts-lambda-template:
+    name: Copy Typescript Lambda template to lambda-typescript-template repo
     uses: ./.github/workflows/copy-to-repo.yml
     secrets: inherit
     with:
       source-directory: typescript/templates/lambda
       destination-repo: lambda-typescript-template
+  copy-py-lambda-template:
+    name: Copy Python Lambda template to lambda-python-template repo
+    uses: ./.github/workflows/copy-to-repo.yml
+    secrets: inherit
+    with:
+      source-directory: python/templates/lambda
+      destination-repo: lambda-python-template
