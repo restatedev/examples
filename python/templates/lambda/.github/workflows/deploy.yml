@@ -1,0 +1,63 @@
+name: Deploy to AWS Lambda
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write   # This is required for OIDC authentication
+  contents: read    # This is required to checkout the repository
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      AWS_REGION: us-east-1
+      PYTHON_VERSION: 3.13
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      
+      - name: Set up Python
+        # Keep this python version in sync with the Lambda runtime
+        run: uv python install ${{ env.PYTHON_VERSION }}
+
+      - name: Build Lambda package
+        run: |
+          mkdir -p dist
+          # Install project and dependencies directly into dist using uv pip
+          uv pip install --python ${{ env.PYTHON_VERSION }} --target dist .
+          # Copy source code
+          cp *.py dist/
+
+      - name: Deploy Lambda Function
+        uses: aws-actions/aws-lambda-deploy@v1.1.0
+        id: deploy
+        with:
+          function-name: my-greeter
+          code-artifacts-dir: dist
+          handler: handler.app
+          runtime: python${{ env.PYTHON_VERSION }}
+          publish: true
+
+      - name: Register Restate deployment
+        env:
+          # Admin URL of your Cloud environment. You can find it in Developers > Admin URL: https://cloud.restate.dev/to/developers/integration#admin
+          RESTATE_ADMIN_URL: ${{ secrets.RESTATE_ADMIN_URL }}
+          # Auth token with Admin Role. To get one, go to Developers > API Keys > Create API Key: https://cloud.restate.dev?createApiKey=true&createApiKeyDescription=deployment-key&createApiKeyRole=rst:role::AdminAccess
+          RESTATE_AUTH_TOKEN: ${{ secrets.RESTATE_AUTH_TOKEN }}
+        run: npx -y @restatedev/restate deployment register -y ${{ steps.deploy.outputs.function-arn }} --assume-role-arn ${{ secrets.AWS_INVOKE_ROLE_TO_ASSUME }}
