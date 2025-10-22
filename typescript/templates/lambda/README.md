@@ -39,8 +39,12 @@ Iterate! 🔧
 
 This template includes a GitHub Actions workflow setup for automated deployment.
 
-Before setting up the repository, create the AWS Lambda from the AWS console: https://docs.aws.amazon.com/lambda/latest/dg/getting-started.html.
-This will make sure all the roles to execute the function are set up. 
+Before setting up the repository, **create the AWS Lambda from the AWS console**: https://docs.aws.amazon.com/lambda/latest/dg/getting-started.html. Then, you'll need two AWS roles to setup:
+
+* The role to **invoke**, to configure in the Github actions secrets as `AWS_INVOKE_ROLE_TO_ASSUME`
+* The role to **deploy**, to configure in the Github actions secrets as `AWS_DEPLOY_ROLE_TO_ASSUME`
+
+First, obtain the role to invoke the Lambda. To do so, visit the Restate Dashboard at [Developers > Security > AWS Lambda](https://cloud.restate.dev/to/developers/integration#lambda). When configured, set it up in the Github actions secrets as `AWS_INVOKE_ROLE_TO_ASSUME`.
 
 To set up the repository, you need to configure your [AWS account for the Github OIDC provider](https://github.com/aws-actions/configure-aws-credentials/tree/main?tab=readme-ov-file#configuring-iam-to-trust-github).
 
@@ -51,9 +55,7 @@ aws iam create-open-id-connect-provider \
     --client-id-list sts.amazonaws.com
 ```
 
-Then create the role to deploy and set the role ARN as secret `AWS_LAMBDA_ROLE_TO_ASSUME`.
-
-The role should have the following Trust policy:
+Now you can create the deploy role. The role should have the following Trust policy:
 
 ```json
 {
@@ -103,17 +105,16 @@ And the following permissions:
         "iam:PassRole"
       ],
       "Resource":[
-        "arn:aws:iam::<ACCOUNT_ID>:role/<FUNCTION_EXECUTION_ROLE>"
+        "<AWS_INVOKE_ROLE_TO_ASSUME>"
       ]
     }
   ]
 }
 ```
 
-For more info, check https://github.com/aws-actions/aws-lambda-deploy?tab=readme-ov-file#credentials-and-region
+Once the role is configured, set it up in the Github actions secrets as `AWS_DEPLOY_ROLE_TO_ASSUME`.
 
-To perform the Restate registration, you'll need another role, for which you need to configure the arn as secret `AWS_RESTATE_ROLE_TO_ASSUME`.
-To set up this role, open the Restate Dashboard at Developers > Security > AWS Lambda.
+For more info, check https://github.com/aws-actions/aws-lambda-deploy?tab=readme-ov-file#credentials-and-region
 
 Finally, add the following to **Github Actions repository secrets**:
 

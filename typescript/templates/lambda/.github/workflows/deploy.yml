@@ -25,7 +25,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_LAMBDA_ROLE_TO_ASSUME }}
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_TO_ASSUME }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Install dependencies
@@ -49,4 +49,4 @@ jobs:
           RESTATE_ADMIN_URL: ${{ secrets.RESTATE_ADMIN_URL }}
           # Auth token with Admin Role. To get one, go to Developers > API Keys > Create API Key: https://cloud.restate.dev?createApiKey=true&createApiKeyDescription=deployment-key&createApiKeyRole=rst:role::AdminAccess
           RESTATE_AUTH_TOKEN: ${{ secrets.RESTATE_AUTH_TOKEN }}
-        run: npx -y @restatedev/restate deployment register -y ${{ steps.deploy.outputs.function-arn }} --assume-role-arn ${{ secrets.AWS_RESTATE_ROLE_TO_ASSUME }}
+        run: npx -y @restatedev/restate deployment register -y ${{ steps.deploy.outputs.function-arn }} --assume-role-arn ${{ secrets.AWS_INVOKE_ROLE_TO_ASSUME }}
