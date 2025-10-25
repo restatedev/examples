@@ -1,7 +1,7 @@
 import restate
 from app.utils import day_before
 from app.types import PurchaseTicketRequest
-from app.utils import charge, email_ticket, send_reminder
+from app.utils import charge, email_ticket, send_reminder_email
 
 
 # Concert Ticketing Service
@@ -17,6 +17,6 @@ async def buy(ctx: restate.Context, req: PurchaseTicketRequest) -> str:
     ctx.service_send(email_ticket, req)
 
     # Delayed message - schedule reminder for day before concert
-    ctx.service_send(send_reminder, req, send_delay=day_before(req.concert_date))
+    ctx.service_send(send_reminder_email, req, send_delay=day_before(req.concert_date))
 
     return f"Ticket purchased successfully with payment reference: {pay_ref}"
