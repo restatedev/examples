@@ -8,14 +8,14 @@
     "start": "next start"
   },
   "dependencies": {
+    "@restatedev/restate-sdk": "^1.9.1",
+    "@restatedev/restate-sdk-zod": "^1.9.1",
     "next": "15.5.4",
-    "@restatedev/restate-sdk": "^1.9.0",
-    "@restatedev/restate-sdk-zod": "^1.9.0",
     "zod": "^4.1.0"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
-    "@types/react": "^19"
+    "@types/react": "^19",
+    "typescript": "^5"
   }
 }
