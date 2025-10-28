@@ -33,7 +33,7 @@ jobs:
     # prevent from running on forks
     if: github.repository_owner == 'restatedev'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40
     env:
       RESTATE_DISABLE_TELEMETRY: "true"
 
