@@ -13,6 +13,7 @@ function search_and_replace_version() {
     uv add "restate-sdk[serde]>=$NEW_VERSION"
   elif [ -e "requirements.txt" ]; then
     sed -i 's/restate[_-]sdk\[serde\][>=!<~][^[:space:]]*/restate-sdk[serde]=='$NEW_VERSION'/' requirements.txt
+  fi
 }
 
 search_and_replace_version $PROJECT_ROOT/python/templates/python
