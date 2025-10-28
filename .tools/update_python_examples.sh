@@ -21,7 +21,6 @@ search_and_replace_version $PROJECT_ROOT/python/templates/python
 search_and_replace_version $PROJECT_ROOT/python/templates/lambda
 search_and_replace_version $PROJECT_ROOT/python/basics
 search_and_replace_version $PROJECT_ROOT/python/patterns-use-cases
-search_and_replace_version $PROJECT_ROOT/python/tutorials/tour-of-restate-python
 search_and_replace_version $PROJECT_ROOT/python/tutorials/tour-of-orchestration-python
 search_and_replace_version $PROJECT_ROOT/python/tutorials/tour-of-workflows-python
 search_and_replace_version $PROJECT_ROOT/python/integrations/deployment-lambda-cdk/lib/lambda

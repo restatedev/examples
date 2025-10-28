@@ -3,10 +3,6 @@ name: Pre-release updates
 on:
   workflow_dispatch:
     inputs:
-      restateVersion:
-        description: "Restate runtime version (without prepending v). Leave empty if you do not want to update it."
-        required: false
-        type: string
       sdkTypescriptVersion:
         description: "sdk-typescript version (without prepending v). Leave empty if you do not want to update it."
         required: false
@@ -45,15 +41,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Bump Restate
-        if: github.event.inputs.restateVersion != ''
-        run: ./.tools/update_restate.sh ${{ inputs.restateVersion }}
-
       # Bump Typescript SDK
       - uses: actions/setup-node@v3
         if: github.event.inputs.sdkTypescriptVersion != ''
         with:
-          node-version: "19.x"
+          node-version: "20.x"
           registry-url: "https://registry.npmjs.org"
       - name: Bump sdk-typescript
         if: github.event.inputs.sdkTypescriptVersion != ''
@@ -127,13 +119,14 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          title: "[GithubActions] Update Restate ${{ inputs.restateVersion != '' && format('Runtime {0} ', inputs.restateVersion) }}${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }}${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0} ', inputs.sdkJavaVersion) }}${{ inputs.cdkVersion != '' && format('CDK {0} ', inputs.cdkVersion) }}${{ inputs.sdkGoVersion != '' && format('SDK-Go {0} ', inputs.sdkGoVersion) }}${{ inputs.sdkRustVersion != '' && format('SDK-Rust {0} ', inputs.sdkRustVersion) }}"
-          commit-message: "[GithubActions] Update Restate ${{ inputs.restateVersion != '' && format('Runtime {0} ', inputs.restateVersion) }}${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }}${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0} ', inputs.sdkJavaVersion) }}${{ inputs.cdkVersion != '' && format('CDK {0} ', inputs.cdkVersion) }}${{ inputs.sdkGoVersion != '' && format('SDK-Go {0} ', inputs.sdkGoVersion) }}${{ inputs.sdkRustVersion != '' && format('SDK-Rust {0} ', inputs.sdkRustVersion) }}"
+          title: "[GithubActions] Update ${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }}${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0} ', inputs.sdkJavaVersion) }}${{ inputs.cdkVersion != '' && format('CDK {0} ', inputs.cdkVersion) }}${{ inputs.sdkGoVersion != '' && format('SDK-Go {0} ', inputs.sdkGoVersion) }}${{ inputs.sdkRustVersion != '' && format('SDK-Rust {0} ', inputs.sdkRustVersion) }}"
+          commit-message: "[GithubActions] Update ${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }}${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0} ', inputs.sdkJavaVersion) }}${{ inputs.cdkVersion != '' && format('CDK {0} ', inputs.cdkVersion) }}${{ inputs.sdkGoVersion != '' && format('SDK-Go {0} ', inputs.sdkGoVersion) }}${{ inputs.sdkRustVersion != '' && format('SDK-Rust {0} ', inputs.sdkRustVersion) }}"
           add-paths: |
             **/package.json
             **/package-lock.json
             **/build.gradle.kts
             **/pom.xml
+            **/pyproject.toml
             **/requirements.txt
             **/go.mod
             **/go.sum

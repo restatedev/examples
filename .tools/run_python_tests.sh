@@ -17,7 +17,6 @@ function python_mypi_lint() {
 pushd $PROJECT_ROOT/python/templates/python && python_mypi_lint && popd
 pushd $PROJECT_ROOT/python/basics && python_mypi_lint && popd
 pushd $PROJECT_ROOT/python/patterns-use-cases && python_mypi_lint && popd
-pushd $PROJECT_ROOT/python/tutorials/tour-of-restate-python && python_mypi_lint && popd
 pushd $PROJECT_ROOT/python/tutorials/tour-of-orchestration-python && python_mypi_lint && popd
 pushd $PROJECT_ROOT/python/tutorials/tour-of-workflows-python && python_mypi_lint && popd
 pushd $PROJECT_ROOT/python/integrations/deployment-lambda-cdk/lib/lambda && python_mypi_lint && popd

@@ -16,4 +16,3 @@ function bump_rust_sdk() {
 bump_rust_sdk $PROJECT_ROOT/rust/basics
 bump_rust_sdk $PROJECT_ROOT/rust/templates/rust
 bump_rust_sdk $PROJECT_ROOT/rust/templates/rust-shuttle
-bump_rust_sdk $PROJECT_ROOT/rust/tutorials/tour-of-restate-rust
