@@ -1,6 +1,6 @@
 import restate
-from accounts import account
-from payment_processor import payment_processor
+from statemachinepayments.accounts import account
+from statemachinepayments.payment_processor import payment_processor
 
 app = restate.app([payment_processor, account])
 

@@ -4,9 +4,9 @@ import restate
 from pydantic import BaseModel
 from restate.exceptions import TerminalError
 
-import clients.flight_client as flight_client
-import clients.car_rental_client as car_rental_client
-import clients.hotel_client as hotel_client
+from sagas.clients import flight_client
+from sagas.clients import car_rental_client
+from sagas.clients import hotel_client
 
 logging.basicConfig(
     level=logging.INFO,

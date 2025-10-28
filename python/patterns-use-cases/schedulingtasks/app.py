@@ -1,6 +1,6 @@
 import restate
 from datetime import timedelta
-from utils import send_reminder_email, escalate_to_human, StripeEvent
+from schedulingtasks.utils import send_reminder_email, escalate_to_human, StripeEvent
 
 payment_tracker = restate.VirtualObject("PaymentTracker")  # one instance per invoice ID
 
@@ -16,7 +16,7 @@ async def on_payment_failure(ctx: restate.ObjectContext, event: StripeEvent):
     if await ctx.get("paid", type_hint=bool):
         return
 
-    reminder_count = await ctx.get("reminder_count") or 0
+    reminder_count = await ctx.get("reminder_count", type_hint=int) or 0
     if reminder_count < 3:
         ctx.set("reminder_count", reminder_count + 1)
         await ctx.run_typed("send_reminder", send_reminder_email, event=event)

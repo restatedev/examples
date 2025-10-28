@@ -31,7 +31,7 @@ def parse_webhook_call(request_body, signature):
         raise TerminalError(f"Webhook Error: {err}", status_code=400)
 
 
-async def create_payment_intent(request) -> dict:
+async def create_payment_intent(request: dict) -> dict:
     request_options = {
         "idempotency_key": request["idempotency_key"],
     }
@@ -54,15 +54,15 @@ async def create_payment_intent(request) -> dict:
             payment_intent["status"] = "processing"
 
         return payment_intent
-    except stripe.error.CardError as error:
-        payment_intent = error.error.payment_intent
-        if request.get("delayed_status") and payment_intent:
+    except stripe.CardError as error:
+
+        if request.get("delayed_status") and error.error and error.error.payment_intent:
+            payment_intent = error.error.payment_intent
             payment_intent["status"] = "processing"
             return payment_intent
         else:
-            raise TerminalError(
-                f"Payment declined: {payment_intent.get('status')} - {error.user_message}"
-            )
+            status = error.error.payment_intent.get('status') if error.error and error.error.payment_intent else "unknown status"
+            raise TerminalError(f"Payment declined: {status} - {error.user_message}")
     except Exception as error:
         raise error
 

@@ -2,7 +2,7 @@ import restate
 
 from datetime import timedelta
 
-from utils import (
+from eventtransactions.utils import (
     create_post,
     get_post_status,
     update_user_feed,
@@ -35,7 +35,7 @@ async def process_post(ctx: restate.ObjectContext, post: SocialMediaPost):
     while await ctx.run_typed("post status", get_post_status, post_id=post_id) == Status.PENDING:
         await ctx.sleep(timedelta(seconds=5))
 
-    await ctx.run_typed("update feed", update_user_feed, user_id=user_id, post_id=post_id)
+    await ctx.run_typed("update feed", lambda: update_user_feed(user_id, post_id))
 
 
 app = restate.app(services=[user_feed])

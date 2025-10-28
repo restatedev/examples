@@ -1,6 +1,6 @@
 import restate
 
-from utils import (
+from parallelizework.utils import (
     Result,
     Task,
     split,

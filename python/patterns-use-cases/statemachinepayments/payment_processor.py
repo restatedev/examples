@@ -1,9 +1,8 @@
-import typing
 import restate
 
 from datetime import timedelta
 from pydantic import BaseModel
-from accounts import withdraw, deposit
+from statemachinepayments.accounts import withdraw, deposit
 
 # A service that processes the payment requests.
 # This is implemented as a virtual object to ensure that only one concurrent request can happen
@@ -28,13 +27,10 @@ class Payment(BaseModel):
     amount_cents: int
 
 
-PaymentStatus = typing.Literal["NEW", "COMPLETED_SUCCESSFULLY", "CANCELED"]
-
-
 @payment_processor.handler("makePayment")
 async def make_payment(ctx: restate.ObjectContext, payment: Payment) -> str:
     payment_id = ctx.key()
-    status = await ctx.get(STATUS, type_hint=PaymentStatus) or "NEW"
+    status = await ctx.get(STATUS, type_hint=str) or "NEW"
 
     if status == "CANCELED":
         return "Payment already cancelled"
@@ -58,7 +54,7 @@ async def make_payment(ctx: restate.ObjectContext, payment: Payment) -> str:
 
 @payment_processor.handler("cancelPayment")
 async def cancel_payment(ctx: restate.ObjectContext):
-    status = await ctx.get(STATUS, type_hint=PaymentStatus) or "NEW"
+    status = await ctx.get(STATUS, type_hint=str) or "NEW"
 
     if status == "NEW":
         # not seen this payment-id before, mark as canceled, in case the cancellation
@@ -70,11 +66,13 @@ async def cancel_payment(ctx: restate.ObjectContext):
         pass
 
     elif status == "COMPLETED_SUCCESSFULLY":
+        payment = await ctx.get(PAYMENT, type_hint=Payment)
+        if not payment:
+            raise restate.TerminalError("No payment info found for cancellation")
         # remember this as cancelled
         ctx.set(STATUS, "CANCELED")
 
         # undo the payment
-        payment = await ctx.get(PAYMENT, type_hint=Payment)
         ctx.object_send(deposit, key=payment.account_id, arg=payment.amount_cents)
 
 

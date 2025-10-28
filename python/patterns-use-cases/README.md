@@ -44,7 +44,10 @@ Every request gets processed durably, and deduplicated based on the idempotency 
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
 2. Start the service: `uv run durablerpc/app.py`
-3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+3. Register the services (with `--force` to override the endpoint during **development**): 
+```shell
+restate -y deployments register --force localhost:9080`
+```
 
 Run the client to let it send a request to reserve a product:
 ```shell
@@ -69,7 +72,7 @@ Restate deduplicated the request (with the reservation ID as idempotency key) an
 </details>
 
 ## (Delayed) Message Queue
-[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](queue/client.py)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](queueing/client.py)
 
 Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.
 
@@ -85,10 +88,10 @@ Files to look at:
 <summary><strong>Running the example</strong></summary>
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `uv run queue/app.py`
+2. Start the service: `uv run queueing/app.py`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
-Submit a task with a delay: `uv run queue/client.py task12345`
+Submit a task with a delay: `uv run queueing/client.py task123`
 
 You will see the task executed after
 ```
@@ -97,7 +100,7 @@ Task submitted: {'invocationId': 'inv_1lloi4vK3cnG0T2Tsteh8rd99NrGpgtsYh', 'stat
 Task result: Finished work on task: task123
 ```
 
-If we resubmit the same task: `uv run queue/client.py task123`,
+If we resubmit the same task: `uv run queueing/client.py task123`,
 you will see that the task is not executed again (signals `PreviouslyAccepted`), but the same result is returned:
 ```
 Submitting task with idempotency key: task123

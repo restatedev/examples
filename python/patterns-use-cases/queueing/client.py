@@ -2,7 +2,7 @@ import argparse
 import logging
 import httpx
 
-from app import TaskOpts
+from queueing.app import TaskOpts
 
 logging.basicConfig(
     level=logging.INFO,
@@ -33,15 +33,9 @@ def submit_and_await_task(task: TaskOpts):
 
     # Attach back to the task to retrieve the result
     response = httpx.get(
-        f"{RESTATE_URL}/restate/invocation/AsyncTaskWorker/run/{idempotency_key}/attach"
+        f"{RESTATE_URL}/restate/invocation/AsyncTaskWorker/run/{idempotency_key}/attach",
     )
     logging.info(f"Task result: {response.json()}")
-
-    # Or cancel it
-    invocation_id = handle.json().get("invocationId")
-    response = httpx.delete(f"{RESTATE_ADMIN_URL}/invocations/{invocation_id}")
-    if response.status_code == 202:
-        logging.info(f"Task {invocation_id} cancelled successfully")
 
 
 if __name__ == "__main__":

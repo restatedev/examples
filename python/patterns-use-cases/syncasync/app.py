@@ -1,7 +1,7 @@
 import logging
 import restate
 
-from utils import upload_data, create_s3_bucket, send_email
+from syncasync.utils import upload_data, create_s3_bucket, send_email
 
 logging.basicConfig(
     level=logging.INFO,
@@ -18,15 +18,15 @@ async def run(ctx: restate.WorkflowContext) -> str:
 
     await ctx.run_typed("upload", upload_data, target=url)
 
-    await ctx.promise("url").resolve(url)
+    await ctx.promise("url", type_hint=str).resolve(url)
     return url
 
 
 @data_upload_service.handler("resultAsEmail")
 async def result_as_email(ctx: restate.WorkflowSharedContext, email: str):
     logging.info("Slow upload: client requested to be notified via email")
-    url = await ctx.promise("url").value()
-    await ctx.run_type(
+    url = await ctx.promise("url", type_hint=str).value()
+    await ctx.run_typed(
         "email",
         send_email,
         email=email,
