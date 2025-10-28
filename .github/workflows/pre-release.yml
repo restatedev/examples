@@ -78,6 +78,8 @@ jobs:
         if: github.event.inputs.sdkPythonVersion != ''
         with:
           python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
       - name: Bump Python SDK
         if: github.event.inputs.sdkPythonVersion != ''
         run: ./.tools/update_python_examples.sh ${{ inputs.sdkPythonVersion }}
