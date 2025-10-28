@@ -38,7 +38,7 @@ async def add(ctx: restate.Context, req: SubscriptionRequest) -> None:
         for subscription in req.subscriptions:
             # Add compensation for this subscription
             compensations.append(
-                lambda s=subscription: ctx.run_typed(
+                lambda s=subscription: ctx.run_typed( # type: ignore
                     f"undo-{s}",
                     remove_subscription,
                     user_id=req.user_id,
