@@ -42,7 +42,6 @@ bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/bun
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/nextjs
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/vercel
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/cloudflare-worker
-bump_restate_sdk_deps $PROJECT_ROOT/typescript/tutorials/tour-of-restate-typescript
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/tutorials/tour-of-orchestration-typescript
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/tutorials/tour-of-workflows-typescript
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/patterns-use-cases

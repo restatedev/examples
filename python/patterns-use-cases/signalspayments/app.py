@@ -1,12 +1,11 @@
 import json
 import logging
-import uuid
 import restate
 
 from restate.exceptions import TerminalError
 
-import stripe_utils
-from stripe_utils import (
+from signalspayments import stripe_utils
+from signalspayments.stripe_utils import (
     PaymentRequest,
     verify_payment_request,
     create_payment_intent,
@@ -32,21 +31,16 @@ async def process_payment(ctx: restate.Context, req: PaymentRequest):
     idempotency_key = str(ctx.uuid())
 
     # Initiate a listener for external calls for potential webhook callbacks
-    intent_webhook_id, intent_promise = ctx.awakeable()
+    intent_webhook_id, intent_promise = ctx.awakeable(type_hint=dict)
 
     # Make a synchronous call to the payment service
-    async def payment_intent() -> dict:
-        return await create_payment_intent(
-            {
+    payment_intent = await ctx.run_typed("stripe call", create_payment_intent, request={
                 "payment_method_id": req.payment_method_id,
                 "amount": req.amount,
                 "idempotency_key": idempotency_key,
                 "intent_webhook_id": intent_webhook_id,
                 "delayed_status": req.delayed_status,
-            }
-        )
-
-    payment_intent = await ctx.run_typed("stripe call", payment_intent)
+            })
 
     if payment_intent["status"] != "processing":
         # The call to Stripe completed immediately / synchronously: processing done

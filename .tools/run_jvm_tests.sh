@@ -21,7 +21,6 @@ pushd $PROJECT_ROOT/kotlin/integrations/kotlin-gradle-lambda-cdk/lambda && ./gra
 pushd $PROJECT_ROOT/java/patterns-use-cases && ./gradlew --console=plain check && popd
 pushd $PROJECT_ROOT/kotlin/patterns-use-cases && ./gradlew --console=plain check && popd
 
-pushd $PROJECT_ROOT/java/tutorials/tour-of-restate-java && ./gradlew --console=plain check && popd
 pushd $PROJECT_ROOT/java/tutorials/tour-of-orchestration-java && ./gradlew --console=plain check && popd
 pushd $PROJECT_ROOT/java/tutorials/tour-of-workflows-java && ./gradlew --console=plain check && popd
 

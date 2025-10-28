@@ -27,7 +27,6 @@ jobs:
                   python-hello-world.zip
                   python-hello-world-lambda.zip
                   python-hello-world-lambda-cdk.zip
-                  python-tour-of-restate.zip
                   python-tour-of-orchestration.zip
                   python-tour-of-workflows.zip
                   python-basics.zip
@@ -41,7 +40,6 @@ jobs:
                   java-hello-world-maven-spring-boot.zip
                   java-hello-world-maven-quarkus.zip
                   java-hello-world-lambda-cdk.zip
-                  java-tour-of-restate.zip
                   java-tour-of-orchestration.zip
                   java-tour-of-workflows.zip
                   java-basics.zip
@@ -65,7 +63,6 @@ jobs:
                   typescript-hello-world-vercel.zip
                   typescript-hello-world-lambda.zip
                   typescript-hello-world-lambda-cdk.zip
-                  typescript-tour-of-restate.zip
                   typescript-tour-of-orchestration.zip
                   typescript-tour-of-workflows.zip
                   typescript-food-ordering.zip
@@ -77,7 +74,6 @@ jobs:
             
                   go-hello-world.zip
                   go-hello-world-lambda-cdk.zip
-                  go-tour-of-restate.zip
                   go-tour-of-orchestration.zip
                   go-tour-of-workflows.zip
                   go-basics.zip
@@ -86,7 +82,6 @@ jobs:
             
                   rust-hello-world.zip
                   rust-hello-world-shuttle.zip
-                  rust-tour-of-restate.zip    
                   rust-basics.zip
 
 

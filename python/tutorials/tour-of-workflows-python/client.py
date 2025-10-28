@@ -1,5 +1,5 @@
 import asyncio
-import requests
+import httpx
 
 
 async def main():
@@ -10,7 +10,7 @@ async def main():
     payload = {"name": "John Doe", "email": "john@mail.com"}
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
 
-    response = requests.post(url, json=payload, headers=headers)
+    response = httpx.post(url, json=payload, headers=headers)
     # <end_submit>
 
     print(response.json())

@@ -50,6 +50,5 @@ Starter templates for new projects:
 
 Step-by-step guides to learn Restate:
 
-- **[Tour of Restate](tutorials/tour-of-restate-go)**: An introduction to the SDK features as described in the [documentation](https://docs.restate.dev/get_started/tour).
 - **[Tour of Orchestration](tutorials/tour-of-orchestration-go)**: An introduction to microservice orchestration with Restate as described in the [documentation](https://docs.restate.dev/tour/microservice-orchestration).
 - **[Tour of Workflows](tutorials/tour-of-workflows-go)**: An introduction to resilient workflows with Restate as described in the [documentation](https://docs.restate.dev/tour/workflows).

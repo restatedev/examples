@@ -1,6 +1,6 @@
 import restate
 
-from utils import bring_up_machine, Status, tear_down_machine
+from statefulactors.utils import bring_up_machine, Status, tear_down_machine
 
 # This is a State Machine implemented with a Virtual Object
 #
@@ -20,7 +20,7 @@ async def set_up(ctx: restate.ObjectContext):
     machine_id = ctx.key()
 
     # Ignore duplicate calls to 'setUp'
-    status = await ctx.get("status")
+    status = await ctx.get("status", type_hint=str)
     if status == Status.UP:
         return f"{machine_id} is already up, so nothing to do"
 
@@ -35,7 +35,7 @@ async def set_up(ctx: restate.ObjectContext):
 async def tear_down(ctx: restate.ObjectContext):
     machine_id = ctx.key()
 
-    status = await ctx.get("status")
+    status = await ctx.get("status", type_hint=str)
     if status != Status.UP:
         return f"{machine_id} is not up, cannot tear down"
 

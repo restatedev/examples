@@ -14,4 +14,3 @@ function cargo_build_check() {
 cargo_build_check $PROJECT_ROOT/rust/basics
 cargo_build_check $PROJECT_ROOT/rust/templates/rust
 cargo_build_check $PROJECT_ROOT/rust/templates/rust-shuttle
-cargo_build_check $PROJECT_ROOT/rust/tutorials/tour-of-restate-rust

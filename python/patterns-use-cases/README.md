@@ -4,7 +4,7 @@ Common tasks and patterns implemented with Restate:
 
 #### Communication
 - **[Durable RPC, Idempotency and Concurrency](README.md#durable-rpc-idempotency--concurrency)**: Restate persists requests and makes sure they execute exactly-once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](durablerpc/client.py)
-- **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](queue/client.py)
+- **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](queueing/client.py)
 - **[Convert Sync Tasks to Async](README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](syncasync/client.py)
 
 #### Orchestration patterns
@@ -24,13 +24,6 @@ Common tasks and patterns implemented with Restate:
 #### AI: agents, A2A, MCP,...
 [Go to AI examples repository](https://github.com/restatedev/ai-examples)
 
-To get started, create a venv and install the requirements file (Python >= 3.11):
-
-```shell
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
 
 ## Durable RPC, Idempotency & Concurrency
 [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](durablerpc/client.py)
@@ -50,52 +43,55 @@ Every request gets processed durably, and deduplicated based on the idempotency 
 <summary><strong>Running the example</strong></summary>
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `python durablerpc/app.py`
-3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
+2. Start the service: `uv run durablerpc/app.py`
+3. Register the services (with `--force` to override the endpoint during **development**): 
+```shell
+restate -y deployments register --force localhost:9080`
+```
 
 Run the client to let it send a request to reserve a product:
 ```shell
-python durablerpc/client.py product1 reservation1
+uv run durablerpc/client.py product1 reservation1
 ```
 
 This will give us `{"reserved": True}`.
 
 Let's change the reservation ID and run the request again:
 ```shell
-python durablerpc/client.py product1 reservation2
+uv run durablerpc/client.py product1 reservation2
 ```
 
 This will give us `{"reserved": False}` because this product is already reserved, so we can't reserve it again.
 
 However, if we run the first request again with same reservation ID, we will get `{"reserved": True}` again:
 ```shell
-python durablerpc/client.py product1 reservation1
+uv run durablerpc/client.py product1 reservation1
 ```
 Restate deduplicated the request (with the reservation ID as idempotency key) and returned the first response.
 
 </details>
 
 ## (Delayed) Message Queue
-[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](queue/client.py)
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](queueing/client.py)
 
 Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.
 
 Files to look at:
-- [Task Submitter](queue/client.py): schedules tasks via send requests with and idempotency key.
+- [Task Submitter](queueing/client.py): schedules tasks via send requests with and idempotency key.
     - The **send requests** put the tasks in Restate's queue. The task submitter does not wait for the task response.
     - The **idempotency key** in the header is used by Restate to deduplicate requests.
     - If a delay is set, the task will be executed later and Restate will track the timer durably, like a **delayed task queue**.
-- [Async Task Worker](queue/app.py): gets invoked by Restate for each task in the queue.
+- [Async Task Worker](queueing/app.py): gets invoked by Restate for each task in the queue.
 
 
 <details>
 <summary><strong>Running the example</strong></summary>
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `python queue/app.py`
+2. Start the service: `uv run queueing/app.py`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
-Submit a task with a delay: `python queue/client.py task12345`
+Submit a task with a delay: `uv run queueing/client.py task123`
 
 You will see the task executed after
 ```
@@ -104,7 +100,7 @@ Task submitted: {'invocationId': 'inv_1lloi4vK3cnG0T2Tsteh8rd99NrGpgtsYh', 'stat
 Task result: Finished work on task: task123
 ```
 
-If we resubmit the same task: `python queue/client.py task123`,
+If we resubmit the same task: `uv run queueing/client.py task123`,
 you will see that the task is not executed again (signals `PreviouslyAccepted`), but the same result is returned:
 ```
 Submitting task with idempotency key: task123
@@ -129,10 +125,10 @@ If the upload takes too long, however, the client asks the upload service to sen
 <summary><strong>Running the example</strong></summary>
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `python syncasync/app.py`
+2. Start the service: `uv run syncasync/app.py`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
-Run the upload client with a userId: `python syncasync/client.py my_user_id123`
+Run the upload client with a userId: `uv run syncasync/client.py my_user_id123`
 
 This will submit an upload workflow to the data upload service.
 The workflow will run only once per ID, so you need to provide a new ID for each run.
@@ -205,7 +201,7 @@ restate-server
 ```
 2. Start the service: 
 ```
-python sagas/app.py
+uv run sagas/app.py
 ```
 3. Register the services (with `--force` to override the endpoint during **development**): 
 ```
@@ -272,7 +268,7 @@ avoiding accidental state corruption and concurrency issues.
 <summary><strong>Running the example</strong></summary>
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `python statefulactors/app.py`
+2. Start the service: `uv run statefulactors/app.py`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 ### Demo scenario
@@ -355,7 +351,7 @@ and failures.
 <summary><strong>Running the example</strong></summary>
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `python statemachinepayments/app.py`
+2. Start the service: `uv run statemachinepayments/app.py`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 Send some requests:
@@ -416,7 +412,7 @@ This example shows:
 To run the example, you might want to reduce the time between scheduled calls to see the scheduling in action.
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `python schedulingtasks/app.py`
+2. Start the service: `uv run schedulingtasks/app.py`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 Send some requests:
@@ -481,7 +477,7 @@ You can run this on FaaS infrastructure, like AWS Lambda, and it will scale auto
 <summary><strong>Running the example</strong></summary>
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `python parallelizework/app.py`
+2. Start the service: `uv run parallelizework/app.py`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 Send a request:
@@ -534,7 +530,7 @@ If you want to run everything locally, you also need a tool like _ngrok_ to forw
 webhooks to your local machine.
 
 1. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) in a separate shell: `restate-server`
-2. Start the service: `python signalspayments/app.py`
+2. Start the service: `uv run signalspayments/app.py`
 3. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 
 4. Create a free Stripe test account. This requires no verification, but you can only work
@@ -627,7 +623,7 @@ Processing events (from Kafka) to update various downstream systems.
 
 1. Start the Kafka broker via Docker Compose: `docker compose up -d`.
 2. [Start the Restate Server](https://docs.restate.dev/develop/local_dev) with the Kafka broker configuration in a separate shell: `restate-server --config-file restate.toml`
-3. Start the service: `python eventtransactions/app.py`
+3. Start the service: `uv run eventtransactions/app.py`
 4. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 5. Let Restate subscribe to the Kafka topic `social-media-posts` and invoke `UserFeed/processPost` on each message.
     ```shell
@@ -705,7 +701,7 @@ The Package Tracker Virtual Object tracks the package details and its location h
 
 1. Start the Kafka broker via Docker Compose: `docker compose up -d`.
 2. Start Restate Server with the Kafka broker configuration in a separate shell: `restate-server --config-file restate.toml`
-3. Start the service: `python eventenrichment/app.py`
+3. Start the service: `uv run eventenrichment/app.py`
 4. Register the services (with `--force` to override the endpoint during **development**): `restate -y deployments register --force localhost:9080`
 5. Let Restate subscribe to the Kafka topic `package-location-updates` and invoke `package-tracker/updateLocation` on each message.
     ```shell

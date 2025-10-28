@@ -67,7 +67,7 @@ func (CronJob) Initiate(ctx restate.ObjectContext, req JobRequest) (*JobInfo, er
 		return nil, err
 	}
 	if jobState != nil {
-		return nil, restate.TerminalErrorf("jobState already exists for this ID", 500)
+		return nil, restate.TerminalErrorf("jobState already exists for this ID")
 	}
 
 	return scheduleNextExecution(ctx, req)
@@ -80,7 +80,7 @@ func (CronJob) Execute(ctx restate.ObjectContext) error {
 		return err
 	}
 	if jobState == nil {
-		return restate.TerminalErrorf("job not found", 500)
+		return restate.TerminalErrorf("job not found")
 	}
 
 	// Add key if it's a virtual object call
@@ -104,7 +104,7 @@ func (CronJob) Cancel(ctx restate.ObjectContext) error {
 		return err
 	}
 	if job == nil {
-		return restate.TerminalErrorf("job not found for cancellation", 404)
+		return restate.TerminalError(fmt.Errorf("job not found for cancellation"), 404)
 	}
 	restate.CancelInvocation(ctx, job.NextExecutionID)
 
@@ -122,7 +122,7 @@ func scheduleNextExecution(ctx restate.ObjectContext, req JobRequest) (*JobInfo,
 	parser := cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow)
 	schedule, err := parser.Parse(req.CronExpression)
 	if err != nil {
-		return nil, restate.TerminalErrorf("invalid cron expression: %v", err, 500)
+		return nil, restate.TerminalErrorf("invalid cron expression: %v", err)
 	}
 
 	// Get current time deterministically from Restate

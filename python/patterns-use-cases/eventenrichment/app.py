@@ -42,7 +42,10 @@ async def update_location(ctx: restate.ObjectContext, location_update: LocationU
 # Called by the delivery dashboard to get the package details
 @package_tracker.handler("getPackageInfo", kind="shared")
 async def get_package_info(ctx: restate.ObjectSharedContext) -> PackageInfo:
-    return await ctx.get("package-info", type_hint=PackageInfo)
+    package_info = await ctx.get("package-info", type_hint=PackageInfo)
+    if not package_info:
+        raise TerminalError("Package not found")
+    return package_info
 
 
 app = restate.app(services=[package_tracker])

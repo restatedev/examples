@@ -19,7 +19,7 @@ Learn the key concepts of Restate:
 
 #### Communication
 - **[Durable RPC, Idempotency and Concurrency](patterns-use-cases/README.md#durable-rpc-idempotency--concurrency)**, Idempotency \& Concurrency: Restate persists requests and makes sure they execute exactly-once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/durablerpc/client.py)
-- **[(Delayed) Message Queue](patterns-use-cases/README.md#delayed-message-queue)**: Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/queue/client.py)
+- **[(Delayed) Message Queue](patterns-use-cases/README.md#delayed-message-queue)**: Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/queueing/client.py)
 - **[Convert Sync Tasks to Async](patterns-use-cases/README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](patterns-use-cases/syncasync/client.py)
 
 #### Orchestration patterns
@@ -55,7 +55,6 @@ Starter templates for new projects:
 
 Step-by-step guides to learn Restate:
 
-- **[Tour of Restate](tutorials/tour-of-restate-python)**: An introduction to the SDK features as described in the [documentation](https://docs.restate.dev/get_started/tour).
 - **[Tour of Orchestration](tutorials/tour-of-orchestration-python)**: An introduction to microservice orchestration with Restate as described in the [documentation](https://docs.restate.dev/tour/microservice-orchestration).
 - **[Tour of Workflows](tutorials/tour-of-workflows-python)**: An introduction to resilient workflows with Restate as described in the [documentation](https://docs.restate.dev/tour/workflows).
 

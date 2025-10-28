@@ -1,4 +1,4 @@
-package main
+package webhookcallbacks
 
 import restate "github.com/restatedev/sdk-go"
 

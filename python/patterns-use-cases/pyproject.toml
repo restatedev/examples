@@ -1,0 +1,31 @@
+[project]
+name = "restate-patterns-use-cases"
+version = "0.1.0"
+description = "Common tasks and patterns implemented with Restate"
+authors = [
+    {name = "Restate Team", email = "team@restate.dev"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "hypercorn",
+    "restate_sdk[serde]==0.11.0",
+    "pydantic",
+    "httpx",
+    "stripe",
+    "black",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.18.2",
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["queueing*", "eventenrichment*", "eventtransactions*", "parallelizework*", "sagas*", "schedulingtasks*", "signalspayments*", "statefulactors*", "statemachinepayments*", "syncasync*"]
+

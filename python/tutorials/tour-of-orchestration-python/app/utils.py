@@ -140,5 +140,5 @@ async def email_ticket(ctx: restate.Context, req: PurchaseTicketRequest) -> None
 
 
 @email_service.handler()
-async def send_reminder(ctx: restate.Context, req: PurchaseTicketRequest) -> None:
+async def send_reminder_email(ctx: restate.Context, req: PurchaseTicketRequest) -> None:
     print(f"Sending reminder for concert on {req.concert_date} to {req.customer_email}")

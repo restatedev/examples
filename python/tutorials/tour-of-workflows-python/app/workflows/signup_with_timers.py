@@ -24,7 +24,7 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
         verification_secret=secret,
     )
 
-    clicked_promise = ctx.promise("email-verified")
+    clicked_promise = ctx.promise("email-verified", type_hint=str)
     verification_timeout = ctx.sleep(timedelta(days=1))
 
     while True:
@@ -54,4 +54,4 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
 
 @signup_with_timers.handler("verifyEmail")
 async def verify_email(ctx: WorkflowSharedContext, req: VerifyEmailRequest) -> None:
-    await ctx.promise("email-verified").resolve(req.secret)
+    await ctx.promise("email-verified", type_hint=str).resolve(req.secret)
