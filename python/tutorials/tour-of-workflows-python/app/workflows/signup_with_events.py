@@ -14,7 +14,7 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
         await ctx.promise("user-created").reject("Creation failed.")
         return False
 
-    await ctx.promise("user-created").resolve("User created.")
+    await ctx.promise("user-created", type_hint=str).resolve("User created.")
 
     await ctx.run_typed("activate", activate_user, user_id=user_id)
     await ctx.run_typed("welcome", send_welcome_email, user=user)

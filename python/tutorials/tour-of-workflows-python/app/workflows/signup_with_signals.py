@@ -20,11 +20,11 @@ async def run(ctx: WorkflowContext, user: User) -> bool:
     )
 
     # Wait for user to click verification link
-    clicked_secret = await ctx.promise("email-verified").value()
+    clicked_secret = await ctx.promise("email-verified", type_hint=str).value()
     return clicked_secret == secret
 
 
 @signup_with_signals.handler("verifyEmail")
 async def verify_email(ctx: WorkflowSharedContext, req: VerifyEmailRequest) -> None:
     # Resolve the promise to continue the main workflow
-    await ctx.promise("email-verified").resolve(req.secret)
+    await ctx.promise("email-verified", type_hint=str).resolve(req.secret)
