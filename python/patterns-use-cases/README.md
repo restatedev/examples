@@ -4,7 +4,7 @@ Common tasks and patterns implemented with Restate:
 
 #### Communication
 - **[Durable RPC, Idempotency and Concurrency](README.md#durable-rpc-idempotency--concurrency)**: Restate persists requests and makes sure they execute exactly-once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](durablerpc/client.py)
-- **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](queue/client.py)
+- **[(Delayed) Message Queue](README.md#delayed-message-queue)**: Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](queueing/client.py)
 - **[Convert Sync Tasks to Async](README.md#convert-sync-tasks-to-async)**: Kick off a synchronous task (e.g. data upload) and turn it into an asynchronous one if it takes too long. [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](syncasync/client.py)
 
 #### Orchestration patterns
@@ -77,11 +77,11 @@ Restate deduplicated the request (with the reservation ID as idempotency key) an
 Use Restate as a queue. Schedule tasks for now or later and ensure the task is only executed once.
 
 Files to look at:
-- [Task Submitter](queue/client.py): schedules tasks via send requests with and idempotency key.
+- [Task Submitter](queueing/client.py): schedules tasks via send requests with and idempotency key.
     - The **send requests** put the tasks in Restate's queue. The task submitter does not wait for the task response.
     - The **idempotency key** in the header is used by Restate to deduplicate requests.
     - If a delay is set, the task will be executed later and Restate will track the timer durably, like a **delayed task queue**.
-- [Async Task Worker](queue/app.py): gets invoked by Restate for each task in the queue.
+- [Async Task Worker](queueing/app.py): gets invoked by Restate for each task in the queue.
 
 
 <details>
