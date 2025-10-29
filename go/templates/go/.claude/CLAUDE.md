@@ -210,8 +210,18 @@ if err != nil {
 ❌ Never use `rand.Float64()` - non-deterministic and breaks replay logic.
 ✅ Use `restate.Rand()` or `restate.UUID()` - Restate journals the result for deterministic replay.
 
+```go {"CODE_LOAD::go/develop/journalingresults.go#uuid"}  theme={null}
+uuid := restate.UUID(ctx)
+```
+
+```go {"CODE_LOAD::go/develop/journalingresults.go#random_nb"}  theme={null}
+randomInt := restate.Rand(ctx).Uint64()
+randomFloat := restate.Rand(ctx).Float64()
+mathRandV2 := rand.New(restate.RandSource(ctx))
+```
+
 ❌ Never use `time.Now()` - returns different values during replay.
-✅ Use `restate.Now()` - Restate records and replays the same timestamp.
+✅ Wrap `time.Now()` in `restate.Run` to let Restate record the timestamp.
 
 ### Durable Timers and Sleep
 
@@ -276,7 +286,7 @@ if err != nil {
 
 ## Concurrency
 
-Always use Restate combinators (`restate.Select`) instead of Go's native goroutines and channels - they journal execution order for deterministic replay.
+Always use Restate `Wait*` functions instead of Go's native goroutines and channels - they journal execution order for deterministic replay.
 
 ### Select the first successful completion
 
@@ -284,8 +294,11 @@ Always use Restate combinators (`restate.Select`) instead of Go's native gorouti
 sleepFuture := restate.After(ctx, 30*time.Second)
 callFuture := restate.Service[string](ctx, "MyService", "MyHandler").RequestFuture("hi")
 
-selector := restate.Select(ctx, sleepFuture, callFuture)
-switch selector.Select() {
+fut, err := restate.WaitFirst(ctx, sleepFuture, callFuture)
+if err != nil {
+  return "", err
+}
+switch fut {
 case sleepFuture:
   if err := sleepFuture.Done(); err != nil {
     return "", err
@@ -300,20 +313,19 @@ case callFuture:
 }
 ```
 
-Select blocks on the next completed operation or returns `nil` if there are none left.
-
 ### Wait for all tasks to complete
 
 ```go {"CODE_LOAD::go/develop/journalingresults.go#all"}  theme={null}
 callFuture1 := restate.Service[string](ctx, "MyService", "MyHandler").RequestFuture("hi")
 callFuture2 := restate.Service[string](ctx, "MyService", "MyHandler").RequestFuture("hi again")
 
-selector := restate.Select(ctx, callFuture1, callFuture2)
-
 // Collect all results
 var subResults []string
-for selector.Remaining() {
-  response, err := selector.Select().(restate.ResponseFuture[string]).Response()
+for fut, err := range restate.Wait(ctx, callFuture1, callFuture2) {
+  if err != nil {
+    return "", err
+  }
+  response, err := fut.(restate.ResponseFuture[string]).Response()
   if err != nil {
     return "", err
   }
