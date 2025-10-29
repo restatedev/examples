@@ -14,6 +14,16 @@ function search_and_replace_version() {
   elif [ -e "requirements.txt" ]; then
     sed -i 's/restate[_-]sdk\[serde\][>=!<~][^[:space:]]*/restate-sdk[serde]=='$NEW_VERSION'/' requirements.txt
   fi
+
+  # If this is a template directory and has existing agents documentation, update it
+  if [[ "$project_dir" == *"/templates/"* ]] && [ -f "$project_dir/.cursor/rules/AGENTS.md" ]; then
+      echo "Updating agents documentation for template in $project_dir"
+      wget -O "$project_dir/.cursor/rules/AGENTS.md" https://docs.restate.dev/develop/python/agents.md
+  fi
+  if [[ "$project_dir" == *"/templates/"* ]] && [ -f "$project_dir/.claude/CLAUDE.md" ]; then
+      echo "Updating agents documentation for template in $project_dir"
+      wget -O "$project_dir/.claude/CLAUDE.md" https://docs.restate.dev/develop/python/agents.md
+  fi
 }
 
 search_and_replace_version $PROJECT_ROOT/python/templates/python

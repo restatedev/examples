@@ -34,7 +34,11 @@ function bump_restate_sdk_deps() {
     # If this is a template directory and has existing agents documentation, update it
     if [[ "$project_dir" == *"/templates/"* ]] && [ -f "$project_dir/.cursor/rules/AGENTS.md" ]; then
         echo "Updating agents documentation for template in $project_dir"
-        wget -O "$project_dir/.cursor/rules/AGENTS.md" https://raw.githubusercontent.com/restatedev/docs-restate/refs/heads/main/docs/develop/ts/agents.md
+        wget -O "$project_dir/.cursor/rules/AGENTS.md" https://docs.restate.dev/develop/ts/agents.md
+    fi
+    if [[ "$project_dir" == *"/templates/"* ]] && [ -f "$project_dir/.claude/CLAUDE.md" ]; then
+        echo "Updating agents documentation for template in $project_dir"
+        wget -O "$project_dir/.claude/CLAUDE.md" https://docs.restate.dev/develop/ts/agents.md
     fi
 }
 
