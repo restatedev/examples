@@ -14,6 +14,7 @@ function bump_go_sdk() {
 
 
     # If this is a template directory and has existing agents documentation, update it
+    local project_dir=$1
     if [[ "$project_dir" == *"/templates/"* ]] && [ -f "$project_dir/.cursor/rules/AGENTS.md" ]; then
         echo "Updating agents documentation for template in $project_dir"
         wget -O "$project_dir/.cursor/rules/AGENTS.md" https://docs.restate.dev/develop/go/agents.md
