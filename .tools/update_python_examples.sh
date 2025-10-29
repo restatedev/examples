@@ -13,7 +13,7 @@ function search_and_replace_version() {
     # Use uv for pyproject.toml projects
     uv add "restate-sdk[serde]>=$NEW_VERSION"
   elif [ -e "requirements.txt" ]; then
-    sed -i 's/restate[_-]sdk\[serde\][>=!<~][^[:space:]]*/restate-sdk[serde]=='$NEW_VERSION'/' requirements.txt
+    sed -i 's/restate[_-]sdk\[serde\][>=!<~][^[:space:]]*/restate_sdk[serde]>='$NEW_VERSION'/' requirements.txt
   else
     echo "No pyproject.toml or requirements.txt found in $(pwd)"
     exit 1
