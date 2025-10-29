@@ -30,6 +30,12 @@ function bump_restate_sdk_deps() {
         echo "Installing $dep@^$NEW_VERSION in $project_dir"
         npm --prefix $project_dir install $dep@^$NEW_VERSION
     done
+
+    # If this is a template directory and has existing agents documentation, update it
+    if [[ "$project_dir" == *"/templates/"* ]] && [ -f "$project_dir/.cursor/rules/AGENTS.md" ]; then
+        echo "Updating agents documentation for template in $project_dir"
+        wget -O "$project_dir/.cursor/rules/AGENTS.md" https://docs.restate.dev/develop/ts/agents.md
+    fi
 }
 
 # Update all projects with package.json
@@ -37,11 +43,11 @@ bump_restate_sdk_deps $PROJECT_ROOT/typescript/basics
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/node
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/lambda
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/typescript-testing
-bump_restate_sdk_deps $PROJECT_ROOT/typescript/integrations/deployment-lambda-cdk
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/bun
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/nextjs
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/vercel
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/cloudflare-worker
+bump_restate_sdk_deps $PROJECT_ROOT/typescript/integrations/deployment-lambda-cdk
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/tutorials/tour-of-orchestration-typescript
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/tutorials/tour-of-workflows-typescript
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/patterns-use-cases
