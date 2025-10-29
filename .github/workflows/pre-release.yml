@@ -132,3 +132,5 @@ jobs:
             **/go.sum
             **/Cargo.lock
             **/Cargo.toml
+            **/AGENTS.md
+            **/CLAUDE.md
