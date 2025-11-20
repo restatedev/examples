@@ -150,10 +150,10 @@ response = await ctx.service_call(
 
 ```python {"CODE_LOAD::python/src/develop/agentsmd/actions.py#durable_steps"}  theme={null}
 # Wrap non-deterministic code in ctx.run
-result = await ctx.run_typed("my-side-effect", call_external_api, query="weather", some_id="123")
+result = await ctx.run_typed("my-side-effect", lambda: call_external_api("weather", "123"))
 
 # Or with typed version for better type safety
-result = await ctx.run_typed("my-side-effect", call_external_api)
+result = await ctx.run_typed("my-side-effect", call_external_api, query="weather", some_id="123")
 ```
 
 ### Deterministic randoms and time
@@ -204,10 +204,10 @@ ctx.reject_awakeable(awakeable_id, "Cannot be reviewed")
 
 ```python {"CODE_LOAD::python/src/develop/agentsmd/actions.py#workflow_promises"}  theme={null}
 # Wait for promise
-review = await ctx.promise("review").value()
+review = await ctx.promise("review", type_hint=str).value()
 
 # Resolve promise
-await ctx.promise("review").resolve("approval")
+await ctx.promise("review", type_hint=str).resolve("approval")
 ```
 
 ## Concurrency
