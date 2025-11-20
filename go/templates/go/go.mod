@@ -1,10 +1,10 @@
 module github.com/restatedev/examples/go/templates/go-hello-world
 
-go 1.24
+go 1.24.0
 
 toolchain go1.24.6
 
-require github.com/restatedev/sdk-go v0.21.0
+require github.com/restatedev/sdk-go v0.22.0
 
 require (
 	github.com/bahlo/generic-list-go v0.2.0 // indirect
@@ -19,9 +19,9 @@ require (
 	github.com/tetratelabs/wazero v1.9.0 // indirect
 	github.com/wk8/go-ordered-map/v2 v2.1.8 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
-	go.opentelemetry.io/otel v1.37.0 // indirect
-	go.opentelemetry.io/otel/metric v1.37.0 // indirect
-	go.opentelemetry.io/otel/trace v1.37.0 // indirect
-	google.golang.org/protobuf v1.36.6 // indirect
+	go.opentelemetry.io/otel v1.38.0 // indirect
+	go.opentelemetry.io/otel/metric v1.38.0 // indirect
+	go.opentelemetry.io/otel/trace v1.38.0 // indirect
+	google.golang.org/protobuf v1.36.10 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
