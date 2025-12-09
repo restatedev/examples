@@ -49,7 +49,7 @@ async def add(ctx: Context, req: SubscriptionRequest):
         create_recurring_payment,
         credit_card=req.credit_card,
         payment_id=payment_id
-    ),
+    )
 
     for subscription in req.subscriptions:
         await ctx.run_typed(
@@ -61,8 +61,7 @@ async def add(ctx: Context, req: SubscriptionRequest):
         )
 
 
-# Create an HTTP endpoint to serve your services on port 9080
-# or use .handler() to run on Lambda, Deno, Bun, Cloudflare Workers, ...
+# Define 'app' used by hypercorn (or other HTTP servers) to serve the SDK
 app = restate.app([subscription_service])
 
 """

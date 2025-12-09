@@ -25,7 +25,7 @@ def create_subscription(user_id: str, subscription: str, payment_ref: str) -> st
 
 
 # Simulates calling a payment API, with a random probability of API downtime.
-def create_recurring_payment(_credit_card: str, payment_id: str) -> str:
+def create_recurring_payment(credit_card: str, payment_id: str) -> str:
     maybe_crash(0.3)
     print(f">>> Creating recurring payment {payment_id}")
     return "payment-reference"

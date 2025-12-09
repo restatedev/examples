@@ -49,6 +49,7 @@ async def click(ctx: WorkflowSharedContext, secret: str):
     await ctx.promise("link_clicked").resolve(secret)
 
 
+# Define 'app' used by hypercorn (or other HTTP servers) to serve the SDK
 app = restate.app(services=[user_signup])
 
 """

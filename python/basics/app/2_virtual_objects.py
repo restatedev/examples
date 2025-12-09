@@ -37,6 +37,7 @@ async def ungreet(ctx: ObjectContext) -> str:
     return f"Goodbye {ctx.key()}, taking one greeting back: {count}."
 
 
+# Define 'app' used by hypercorn (or other HTTP servers) to serve the SDK
 app = restate.app(services=[greeter_object])
 
 """
