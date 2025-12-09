@@ -1,4 +1,3 @@
-import uuid
 from datetime import timedelta
 
 import restate
@@ -70,7 +69,12 @@ async def run(ctx: restate.Context):
     # Then use these to call other APIs and let them deduplicate
     payment_deduplication_id = str(ctx.uuid())
 
-    result = await ctx.run_typed("charge",
-                                 charge_bank_account,
-                                 payment_deduplication_id=payment_deduplication_id,
-                                 amount=100)
+    result = await ctx.run_typed(
+        "charge",
+        charge_bank_account,
+        payment_deduplication_id=payment_deduplication_id,
+        amount=100)
+
+
+# Define 'app' used by hypercorn (or other HTTP servers) to serve the SDK
+app = restate.app([my_service, subscription_service])
