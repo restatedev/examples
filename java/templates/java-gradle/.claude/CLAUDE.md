@@ -144,15 +144,25 @@ Call a service without using the generated client, but just String names.
 ```java {"CODE_LOAD::java/src/main/java/develop/agentsmd/Actions.java#generic_calls"}  theme={null}
 // Generic service call
 Target target = Target.service("MyService", "myHandler");
-String response = ctx.call(Request.of(target, TypeTag.of(String.class), TypeTag.of(String.class), request)).await();
+String response =
+    ctx.call(Request.of(target, TypeTag.of(String.class), TypeTag.of(String.class), request))
+        .await();
 
 // Generic object call
 Target objectTarget = Target.virtualObject("MyObject", "object-key", "myHandler");
-String objResponse = ctx.call(Request.of(objectTarget, TypeTag.of(String.class), TypeTag.of(String.class), request)).await();
+String objResponse =
+    ctx.call(
+            Request.of(
+                objectTarget, TypeTag.of(String.class), TypeTag.of(String.class), request))
+        .await();
 
 // Generic workflow call
 Target workflowTarget = Target.workflow("MyWorkflow", "wf-id", "run");
-String wfResponse = ctx.call(Request.of(workflowTarget, TypeTag.of(String.class), TypeTag.of(String.class), request)).await();
+String wfResponse =
+    ctx.call(
+            Request.of(
+                workflowTarget, TypeTag.of(String.class), TypeTag.of(String.class), request))
+        .await();
 ```
 
 #### One-Way Messages
@@ -215,7 +225,9 @@ ctx.sleep(Duration.ofSeconds(30));
 
 // Schedule delayed call (different from sleep + send)
 Target target = Target.service("MyService", "myHandler");
-ctx.send(Request.of(target, TypeTag.of(String.class), TypeTag.of(String.class), "Hi"), Duration.ofHours(5));
+ctx.send(
+    Request.of(target, TypeTag.of(String.class), TypeTag.of(String.class), "Hi"),
+    Duration.ofHours(5));
 ```
 
 ### Awakeables (External Events)
@@ -278,9 +290,9 @@ int indexCompleted = DurableFuture.any(call1, call2).await();
 
 ```java {"CODE_LOAD::java/src/main/java/develop/agentsmd/Actions.java#cancel"}  theme={null}
 var handle =
-        MyServiceClient.fromContext(ctx)
-                .send()
-                .myHandler(request, req -> req.idempotencyKey("abc123"));
+    MyServiceClient.fromContext(ctx)
+        .send()
+        .myHandler(request, req -> req.idempotencyKey("abc123"));
 var response = handle.attach().await();
 // Cancel invocation
 handle.cancel();
@@ -386,6 +398,11 @@ MyServiceClient.fromClient(restateClient).send().myHandler("Hi", Duration.ofSeco
 
 // With idempotency key
 MyObjectClient.fromClient(restateClient, "Mary")
-        .send()
-        .myHandler("Hi", opt -> opt.idempotencyKey("abc"));
+    .send()
+    .myHandler("Hi", opt -> opt.idempotencyKey("abc"));
 ```
+
+
+---
+
+> To find navigation and other pages in this documentation, fetch the llms.txt file at: https://docs.restate.dev/llms.txt
