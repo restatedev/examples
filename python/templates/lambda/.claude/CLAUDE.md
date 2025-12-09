@@ -128,7 +128,7 @@ ctx.service_send(
 Call a service without using the generated client, but just String names.
 
 ```python {"CODE_LOAD::python/src/develop/agentsmd/actions.py#request_response_generic"}  theme={null}
-response = await ctx.generic_call(
+response_bytes = await ctx.generic_call(
     "MyObject", "my_handler", key="Mary", arg=json.dumps("Hi").encode("utf-8")
 )
 ```
@@ -364,3 +364,8 @@ with restate.test_harness(app) as harness:
     restate_client = harness.ingress_client()
     print(restate_client.post("/greeter/greet", json="Alice").json())
 ```
+
+
+---
+
+> To find navigation and other pages in this documentation, fetch the llms.txt file at: https://docs.restate.dev/llms.txt
