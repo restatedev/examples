@@ -8,7 +8,7 @@ plugins {
 group = "dev.restate.examples.noteapp"
 version = "1.0.0"
 
-val restateVersion = "2.4.0"
+val restateVersion = "2.4.2"
 
 kotlin {
     jvmToolchain(17)
