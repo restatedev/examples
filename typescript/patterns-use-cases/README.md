@@ -994,3 +994,26 @@ You should observe that only one request is processed per second. You can then t
 and sending more requests.
 
 </details>
+
+## Limiting concurrency
+[<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/show-code.svg">](src/semaphore)
+
+An example of implementing a heirarchical concurrency limiter using Restate state and awakeables.
+
+
+<details>
+<summary><strong>Running the example</strong></summary>
+
+Run the example with `npx tsx watch ./src/semaphore/app.ts`.
+
+You can simulate adding work to the queue like this:
+```shell
+# add a single entry
+curl localhost:8080/myService/expensiveMethod/send -H 'content-type:application/json' -d "{\"left\": $(( ( RANDOM % 10 )  + 1 )), \"right\": $(( ( RANDOM % 10 )  + 1 ))}"
+# add lots
+for i in $(seq 1 50); do curl localhost:8080/myService/expensiveMethod/send -H 'content-type:application/json' -d "{\"left\": $(( ( RANDOM % 10 )  + 1 )), \"right\": $(( ( RANDOM % 10 )  + 1 ))}"; done
+```
+
+As you do so, you can observe the logs; typically the handler-scoped limit defined on a particular input number will be the binding limit, but occasionally the global limit may come close to being used up as well.
+
+</details>
