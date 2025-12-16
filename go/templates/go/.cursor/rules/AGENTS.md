@@ -392,3 +392,8 @@ restateingress.ServiceSend[string](
   restateClient, "MyService", "MyHandler").
   Send(context.Background(), "Hi", restate.WithDelay(1*time.Hour))
 ```
+
+
+---
+
+> To find navigation and other pages in this documentation, fetch the llms.txt file at: https://docs.restate.dev/llms.txt
