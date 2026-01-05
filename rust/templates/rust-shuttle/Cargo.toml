@@ -6,9 +6,9 @@ edition = "2021"
 [dependencies]
 restate-sdk = "0.7.0"
 tokio = "1"
-shuttle-runtime = "0.47.0"
+shuttle-runtime = "0.57.0"
 hyper = { version = "1.4", features = ["http1", "server"] }
 hyper-util = { version = "0.1.7", features = ["http1", "server", "server-graceful"] }
 tracing = "0.1"
-rand = "0.8.5"
+rand = "0.9"
 anyhow = "1.0.86"
