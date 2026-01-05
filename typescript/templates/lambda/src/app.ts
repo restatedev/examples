@@ -1,5 +1,4 @@
 import * as restate from "@restatedev/restate-sdk/lambda";
-import { serde } from "@restatedev/restate-sdk-zod";
 import { sendNotification, sendReminder } from "./utils";
 
 import { z } from "zod";
@@ -16,7 +15,7 @@ export const greeter = restate.service({
   name: "Greeter",
   handlers: {
     greet: restate.createServiceHandler(
-      { input: serde.zod(Greeting), output: serde.zod(GreetingResponse) },
+      { input: restate.serde.schema(Greeting), output: restate.serde.schema(GreetingResponse) },
       async (ctx: restate.Context, { name }) => {
         // Durably execute a set of steps; resilient against failures
         const greetingId = ctx.rand.uuidv4();
