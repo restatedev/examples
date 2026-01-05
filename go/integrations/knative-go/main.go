@@ -11,7 +11,7 @@ import (
 )
 
 func sendEmail(log *slog.Logger, username string, id string) error {
-	log.Info("Sending email to activate account %s. To simulate the click on the email button, send a request to: POST http://localhost:8080/restate/awakeables/%s/resolve", username, id)
+	log.Info(fmt.Sprintf("Sending email to activate account %s. To simulate the click on the email button: curl -v -X POST http://localhost:8080/restate/awakeables/%s/resolve", username, id))
 	return nil
 }
 
