@@ -119,10 +119,9 @@ ctx.workflowSendClient(myWorkflow, "wf-id").run("Hi");
 #### Delayed Messages
 
 ```ts {"CODE_LOAD::ts/src/develop/agentsmd/agentsmd-actions.ts#delayed_messages"}  theme={null}
-ctx.serviceSendClient(myService).myHandler(
-    "Hi",
-    restate.rpc.sendOpts({ delay: { hours: 5 } })
-);
+ctx
+  .serviceSendClient(myService)
+  .myHandler("Hi", restate.rpc.sendOpts({ delay: { hours: 5 } }));
 ```
 
 #### Generic Calls
@@ -169,17 +168,16 @@ const result = await ctx.run("my-side-effect", async () => {
 await ctx.sleep({ seconds: 30 });
 
 // Schedule delayed call (different from sleep + send)
-ctx.serviceSendClient(myService).myHandler(
-    "Hi",
-    restate.rpc.sendOpts({ delay: { hours: 5 } })
-);
+ctx
+  .serviceSendClient(myService)
+  .myHandler("Hi", restate.rpc.sendOpts({ delay: { hours: 5 } }));
 ```
 
 ### Awakeables (External Events)
 
 ```ts {"CODE_LOAD::ts/src/develop/agentsmd/agentsmd-actions.ts#awakeables"}  theme={null}
 // Create awakeable
-const {id, promise} = ctx.awakeable<string>();
+const { id, promise } = ctx.awakeable<string>();
 
 // Send ID to external system
 await ctx.run(() => requestHumanReview(name, id));
@@ -248,7 +246,7 @@ const result1 = await Promise.any([call1, call2]);
 // ✅ GOOD
 const result2 = await RestatePromise.any([
   ctx.run(() => callLLM("gpt-4", prompt)),
-  ctx.run(() => callLLM("claude", prompt))
+  ctx.run(() => callLLM("claude", prompt)),
 ]);
 ```
 
@@ -263,7 +261,7 @@ const results1 = await Promise.allSettled([call1, call2]);
 // ✅ GOOD
 const results2 = await RestatePromise.allSettled([
   ctx.serviceClient(service1).call(),
-  ctx.serviceClient(service2).call()
+  ctx.serviceClient(service2).call(),
 ]);
 
 results2.forEach((result, i) => {
@@ -278,10 +276,9 @@ results2.forEach((result, i) => {
 ### Invocation Management
 
 ```ts {"CODE_LOAD::ts/src/develop/agentsmd/agentsmd-actions.ts#cancel"}  theme={null}
-const handle = ctx.serviceSendClient(myService).myHandler(
-    "Hi",
-    restate.rpc.sendOpts({ idempotencyKey: "my-key" })
-);
+const handle = ctx
+  .serviceSendClient(myService)
+  .myHandler("Hi", restate.rpc.sendOpts({ idempotencyKey: "my-key" }));
 const invocationId = await handle.invocationId;
 const response = await ctx.attach(invocationId);
 
@@ -370,51 +367,58 @@ throw new Error("Temporary failure - will retry");
 import { RestateTestEnvironment } from "@restatedev/restate-sdk-testcontainers";
 import * as clients from "@restatedev/restate-sdk-clients";
 import { describe, it, beforeAll, afterAll, expect } from "vitest";
-import {greeter} from "./greeter-service";
+import { greeter } from "./greeter-service";
 
 describe("MyService", () => {
-    let restateTestEnvironment: RestateTestEnvironment;
-    let restateIngress: clients.Ingress;
+  let restateTestEnvironment: RestateTestEnvironment;
+  let restateIngress: clients.Ingress;
 
-    beforeAll(async () => {
-        restateTestEnvironment = await RestateTestEnvironment.start({services: [greeter]});
-        restateIngress = clients.connect({ url: restateTestEnvironment.baseUrl() });
-    }, 20_000);
-
-    afterAll(async () => {
-        await restateTestEnvironment?.stop();
+  beforeAll(async () => {
+    restateTestEnvironment = await RestateTestEnvironment.start({
+      services: [greeter],
     });
+    restateIngress = clients.connect({ url: restateTestEnvironment.baseUrl() });
+  }, 20_000);
 
-    it("Can call methods", async () => {
-        const client = restateIngress.objectClient(greeter, "myKey");
-        await client.greet("Test!");
-    });
+  afterAll(async () => {
+    await restateTestEnvironment?.stop();
+  });
 
-    it("Can read/write state", async () => {
-        const state = restateTestEnvironment.stateOf(greeter, "myKey");
-        await state.set("count", 123);
-        expect(await state.get("count")).toBe(123);
-    });
+  it("Can call methods", async () => {
+    const client = restateIngress.objectClient(greeter, "myKey");
+    await client.greet("Test!");
+  });
+
+  it("Can read/write state", async () => {
+    const state = restateTestEnvironment.stateOf(greeter, "myKey");
+    await state.set("count", 123);
+    expect(await state.get("count")).toBe(123);
+  });
 });
 ```
 
 ## SDK Clients (External Invocations)
 
 ```typescript {"CODE_LOAD::ts/src/develop/agentsmd/agentsmd-clients.ts#here"}  theme={null}
-const restateClient = clients.connect({url: "http://localhost:8080"});
+const restateClient = clients.connect({ url: "http://localhost:8080" });
 
 // Request-response
 const result = await restateClient
-    .serviceClient<MyService>({name: "MyService"})
-    .myHandler("Hi");
+  .serviceClient<MyService>({ name: "MyService" })
+  .myHandler("Hi");
 
 // One-way
 await restateClient
-    .serviceSendClient<MyService>({name: "MyService"})
-    .myHandler("Hi");
+  .serviceSendClient<MyService>({ name: "MyService" })
+  .myHandler("Hi");
 
 // Delayed
 await restateClient
-    .serviceSendClient<MyService>({name: "MyService"})
-    .myHandler("Hi", clients.rpc.sendOpts({delay: {seconds: 1}}));
+  .serviceSendClient<MyService>({ name: "MyService" })
+  .myHandler("Hi", clients.rpc.sendOpts({ delay: { seconds: 1 } }));
 ```
+
+
+---
+
+> To find navigation and other pages in this documentation, fetch the llms.txt file at: https://docs.restate.dev/llms.txt

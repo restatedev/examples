@@ -7,8 +7,9 @@ SELF_PATH=${BASH_SOURCE[0]:-"$(command -v -- "$0")"}
 PROJECT_ROOT="$(dirname "$SELF_PATH")/.."
 
 function bump_restate_sdk_deps() {
+    pushd $1
     local project_dir=$1
-    local package_json="$project_dir/package.json"
+    local package_json="./package.json"
 
     # Check if package.json exists
     if [ ! -f "$package_json" ]; then
@@ -28,18 +29,19 @@ function bump_restate_sdk_deps() {
     # Install each dependency with the new version
     for dep in $deps; do
         echo "Installing $dep@^$NEW_VERSION in $project_dir"
-        npm --prefix $project_dir install $dep@^$NEW_VERSION
+        npm install $dep@^$NEW_VERSION
     done
 
     # If this is a template directory and has existing agents documentation, update it
-    if [[ "$project_dir" == *"/templates/"* ]] && [ -f "$project_dir/.cursor/rules/AGENTS.md" ]; then
+    if [[ "$project_dir" == *"/templates/"* ]] && [ -f "./.cursor/rules/AGENTS.md" ]; then
         echo "Updating agents documentation for template in $project_dir"
-        wget -O "$project_dir/.cursor/rules/AGENTS.md" https://docs.restate.dev/develop/ts/agents.md
+        wget -O "./.cursor/rules/AGENTS.md" https://docs.restate.dev/develop/ts/agents.md
     fi
-    if [[ "$project_dir" == *"/templates/"* ]] && [ -f "$project_dir/.claude/CLAUDE.md" ]; then
+    if [[ "$project_dir" == *"/templates/"* ]] && [ -f "./.claude/CLAUDE.md" ]; then
         echo "Updating agents documentation for template in $project_dir"
-        wget -O "$project_dir/.claude/CLAUDE.md" https://docs.restate.dev/develop/ts/agents.md
+        wget -O "./.claude/CLAUDE.md" https://docs.restate.dev/develop/ts/agents.md
     fi
+    popd
 }
 
 # Update all projects with package.json
