@@ -16,8 +16,8 @@
     "test": "TESTCONTAINERS_RYUK_DISABLED=true DEBUG=testcontainers,testcontainers:exec,testcontainers:containers jest --maxWorkers=1 --detectOpenHandles"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.10.0",
-    "@restatedev/restate-sdk-testcontainers": "^1.10.0",
+    "@restatedev/restate-sdk": "^1.10.1",
+    "@restatedev/restate-sdk-testcontainers": "^1.10.1",
     "testcontainers": "^10.24.1"
   },
   "devDependencies": {

@@ -16,7 +16,7 @@
     "dev": "RESTATE_DEBUG_LOGGING=JOURNAL ts-node-dev --watch src --respawn --transpile-only src/order-app/app.ts"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.10.0",
+    "@restatedev/restate-sdk": "^1.10.1",
     "@types/node": "^20.6.3",
     "@types/uuid": "^9.0.0",
     "axios": "^1.4.0",
