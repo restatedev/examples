@@ -10,19 +10,20 @@ function bump_go_sdk() {
     pushd $1
     go get github.com/restatedev/sdk-go@$NEW_VERSION
     go mod tidy
-    popd
 
 
     # If this is a template directory and has existing agents documentation, update it
     local project_dir=$1
-    if [[ "$project_dir" == *"/templates/"* ]] && [ -f "$project_dir/.cursor/rules/AGENTS.md" ]; then
+    if [[ "$project_dir" == *"/templates/"* ]] && [ -f "./.cursor/rules/AGENTS.md" ]; then
         echo "Updating agents documentation for template in $project_dir"
-        wget -O "$project_dir/.cursor/rules/AGENTS.md" https://docs.restate.dev/develop/go/agents.md
+        wget -O "./.cursor/rules/AGENTS.md" https://docs.restate.dev/develop/go/agents.md
     fi
-    if [[ "$project_dir" == *"/templates/"* ]] && [ -f "$project_dir/.claude/CLAUDE.md" ]; then
+    if [[ "$project_dir" == *"/templates/"* ]] && [ -f "./.claude/CLAUDE.md" ]; then
         echo "Updating agents documentation for template in $project_dir"
-        wget -O "$project_dir/.claude/CLAUDE.md" https://docs.restate.dev/develop/go/agents.md
+        wget -O "./.claude/CLAUDE.md" https://docs.restate.dev/develop/go/agents.md
     fi
+
+    popd
 }
 
 bump_go_sdk $PROJECT_ROOT/go/basics
