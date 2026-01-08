@@ -8,6 +8,7 @@ PROJECT_ROOT="$(dirname "$SELF_PATH")/.."
 
 function search_and_replace_version() {
   pushd $1
+  local project_dir=$1
   echo "upgrading Python version of $1 to $NEW_VERSION"
   if [ -e "pyproject.toml" ]; then
     # Use uv for pyproject.toml projects
@@ -18,18 +19,17 @@ function search_and_replace_version() {
     echo "No pyproject.toml or requirements.txt found in $(pwd)"
     exit 1
   fi
-  popd
 
-  local project_dir=$1
   # If this is a template directory and has existing agents documentation, update it
-  if [[ "$project_dir" == *"/templates/"* ]] && [ -f "$project_dir/.cursor/rules/AGENTS.md" ]; then
+  if [[ "$project_dir" == *"/templates/"* ]] && [ -f "./.cursor/rules/AGENTS.md" ]; then
       echo "Updating agents documentation for template in $project_dir"
-      wget -O "$project_dir/.cursor/rules/AGENTS.md" https://docs.restate.dev/develop/python/agents.md
+      wget -O "./.cursor/rules/AGENTS.md" https://docs.restate.dev/develop/python/agents.md
   fi
-  if [[ "$project_dir" == *"/templates/"* ]] && [ -f "$project_dir/.claude/CLAUDE.md" ]; then
+  if [[ "$project_dir" == *"/templates/"* ]] && [ -f "./.claude/CLAUDE.md" ]; then
       echo "Updating agents documentation for template in $project_dir"
-      wget -O "$project_dir/.claude/CLAUDE.md" https://docs.restate.dev/develop/python/agents.md
+      wget -O "./.claude/CLAUDE.md" https://docs.restate.dev/develop/python/agents.md
   fi
+  popd
 }
 
 search_and_replace_version $PROJECT_ROOT/python/templates/python
