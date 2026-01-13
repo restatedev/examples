@@ -7,33 +7,37 @@ SELF_PATH=${BASH_SOURCE[0]:-"$(command -v -- "$0")"}
 PROJECT_ROOT="$(dirname "$SELF_PATH")/.."
 
 function search_and_replace_version_gradle() {
-  sed -i 's/val restateVersion = "[0-9A-Z.-]*"/val restateVersion = "'$NEW_VERSION'"/' $1/build.gradle.kts
-
+  pushd $1
   local project_dir=$1
+  sed -i 's/val restateVersion = "[0-9A-Z.-]*"/val restateVersion = "'$NEW_VERSION'"/' ./build.gradle.kts
+
   # If this is a template directory and has existing agents documentation, update it
-  if [[ "$project_dir" == *"/templates/"* ]] && [ -f "$project_dir/.cursor/rules/AGENTS.md" ]; then
+  if [[ "$project_dir" == *"/templates/"* ]] && [ -f "./.cursor/rules/AGENTS.md" ]; then
       echo "Updating agents documentation for template in $project_dir"
-      wget -O "$project_dir/.cursor/rules/AGENTS.md" https://docs.restate.dev/develop/java/agents.md
+      wget -O "./.cursor/rules/AGENTS.md" https://docs.restate.dev/develop/java/agents.md
   fi
-  if [[ "$project_dir" == *"/templates/"* ]] && [ -f "$project_dir/.claude/CLAUDE.md" ]; then
+  if [[ "$project_dir" == *"/templates/"* ]] && [ -f "./.claude/CLAUDE.md" ]; then
       echo "Updating agents documentation for template in $project_dir"
-      wget -O "$project_dir/.claude/CLAUDE.md" https://docs.restate.dev/develop/java/agents.md
+      wget -O "./.claude/CLAUDE.md" https://docs.restate.dev/develop/java/agents.md
   fi
+  popd
 }
 
 function search_and_replace_version_maven() {
-  pushd $1 && mvn -B versions:set-property -Dproperty=restate.version -DnewVersion=$NEW_VERSION && popd || exit
-
+  pushd $1
   local project_dir=$1
+  mvn -B versions:set-property -Dproperty=restate.version -DnewVersion=$NEW_VERSION
+
   # If this is a template directory and has existing agents documentation, update it
-  if [[ "$project_dir" == *"/templates/"* ]] && [ -f "$project_dir/.cursor/rules/AGENTS.md" ]; then
+  if [[ "$project_dir" == *"/templates/"* ]] && [ -f "./.cursor/rules/AGENTS.md" ]; then
       echo "Updating agents documentation for template in $project_dir"
-      wget -O "$project_dir/.cursor/rules/AGENTS.md" https://docs.restate.dev/develop/java/agents.md
+      wget -O "./.cursor/rules/AGENTS.md" https://docs.restate.dev/develop/java/agents.md
   fi
-  if [[ "$project_dir" == *"/templates/"* ]] && [ -f "$project_dir/.claude/CLAUDE.md" ]; then
+  if [[ "$project_dir" == *"/templates/"* ]] && [ -f "./.claude/CLAUDE.md" ]; then
       echo "Updating agents documentation for template in $project_dir"
-      wget -O "$project_dir/.claude/CLAUDE.md" https://docs.restate.dev/develop/java/agents.md
+      wget -O "./.claude/CLAUDE.md" https://docs.restate.dev/develop/java/agents.md
   fi
+  popd
 }
 
 search_and_replace_version_gradle $PROJECT_ROOT/java/templates/java-gradle
