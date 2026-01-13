@@ -17,8 +17,8 @@ public class Greeter {
 
   @ConfigProperty(name = "greetingPrefix") String greetingPrefix;
 
-  record Greeting(String name) {}
-  record GreetingResponse(String message) {}
+  public record Greeting(String name) {}
+  public record GreetingResponse(String message) {}
 
   @Handler
   public GreetingResponse greet(Context ctx, Greeting req) {

@@ -14,8 +14,8 @@ import static my.example.Utils.sendReminder;
 @Service
 public class Greeter {
 
-    record Greeting(String name) {}
-    record GreetingResponse(String message) {}
+    public record Greeting(String name) {}
+    public record GreetingResponse(String message) {}
 
     @Handler
     public GreetingResponse greet(Greeting req) {
