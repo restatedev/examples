@@ -34,7 +34,10 @@ create_release_zip java/integrations/java-gradle-lambda-cdk java-hello-world-lam
 create_release_zip java/patterns-use-cases java-patterns-use-cases
 create_release_zip java/templates/java-gradle java-hello-world-gradle
 create_release_zip java/templates/java-maven java-hello-world-maven
+create_release_zip java/templates/java-new-api-gradle java-hello-world-new-api-gradle
+create_release_zip java/templates/java-new-api-maven java-hello-world-new-api-maven
 create_release_zip java/templates/java-maven-spring-boot java-hello-world-maven-spring-boot
+create_release_zip java/templates/java-new-api-maven-spring-boot java-hello-world-new-api-maven-spring-boot
 create_release_zip java/templates/java-maven-quarkus java-hello-world-maven-quarkus
 create_release_zip java/tutorials/tour-of-orchestration-java java-tour-of-orchestration
 create_release_zip java/tutorials/tour-of-workflows-java java-tour-of-workflows

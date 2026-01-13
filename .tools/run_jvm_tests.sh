@@ -7,8 +7,11 @@ PROJECT_ROOT="$(dirname "$SELF_PATH")/.."
 
 pushd $PROJECT_ROOT/java/templates/java-gradle && ./gradlew --console=plain check && popd
 pushd $PROJECT_ROOT/java/templates/java-maven && mvn -B verify && popd
+pushd $PROJECT_ROOT/java/templates/java-new-api-gradle && ./gradlew --console=plain check && popd
+pushd $PROJECT_ROOT/java/templates/java-new-api-maven && mvn -B verify && popd
 pushd $PROJECT_ROOT/java/templates/java-maven-quarkus && mvn -B verify && popd
 pushd $PROJECT_ROOT/java/templates/java-maven-spring-boot && mvn -B verify && popd
+pushd $PROJECT_ROOT/java/templates/java-new-api-maven-spring-boot && mvn -B verify && popd
 pushd $PROJECT_ROOT/kotlin/templates/kotlin-gradle && ./gradlew --console=plain check && popd
 pushd $PROJECT_ROOT/kotlin/templates/kotlin-gradle-spring-boot && ./gradlew --console=plain check && popd
 

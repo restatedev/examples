@@ -37,7 +37,10 @@ jobs:
             
                   java-hello-world-gradle.zip
                   java-hello-world-maven.zip
+                  java-hello-world-new-api-gradle.zip
+                  java-hello-world-new-api-maven.zip
                   java-hello-world-maven-spring-boot.zip
+                  java-hello-world-new-api-maven-spring-boot.zip
                   java-hello-world-maven-quarkus.zip
                   java-hello-world-lambda-cdk.zip
                   java-tour-of-orchestration.zip
