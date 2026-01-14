@@ -124,3 +124,66 @@ jobs:
     with:
       source-directory: python/templates/lambda
       destination-repo: lambda-python-template
+  copy-java-maven-template:
+    name: Copy Java Maven template to java-maven-template repo
+    uses: ./.github/workflows/copy-to-repo.yml
+    secrets: inherit
+    with:
+      source-directory: java/templates/java-maven
+      destination-repo: java-maven-template
+  copy-java-gradle-template:
+    name: Copy Java Gradle template to java-gradle-template repo
+    uses: ./.github/workflows/copy-to-repo.yml
+    secrets: inherit
+    with:
+      source-directory: java/templates/java-gradle
+      destination-repo: java-gradle-template
+  copy-java-spring-boot-template:
+    name: Copy Java Spring boot template to java-spring-boot-template repo
+    uses: ./.github/workflows/copy-to-repo.yml
+    secrets: inherit
+    with:
+      source-directory: java/templates/java-maven-spring-boot
+      destination-repo: java-spring-boot-template
+  copy-java-new-api-maven-template:
+    name: Copy Java New API Maven template to java-new-api-maven-template repo
+    uses: ./.github/workflows/copy-to-repo.yml
+    secrets: inherit
+    with:
+      source-directory: java/templates/java-new-api-maven
+      destination-repo: java-new-api-maven-template
+  copy-java-new-api-gradle-template:
+    name: Copy Java New API Gradle template to java-new-api-gradle-template repo
+    uses: ./.github/workflows/copy-to-repo.yml
+    secrets: inherit
+    with:
+      source-directory: java/templates/java-new-api-gradle
+      destination-repo: java-new-api-gradle-template
+  copy-java-new-api-spring-boot-template:
+    name: Copy Java New API Spring boot template to java-new-api-spring-boot-template repo
+    uses: ./.github/workflows/copy-to-repo.yml
+    secrets: inherit
+    with:
+      source-directory: java/templates/java-new-api-maven-spring-boot
+      destination-repo: java-new-api-spring-boot-template
+  copy-kotlin-template:
+    name: Copy Kotlin template to kotlin-template repo
+    uses: ./.github/workflows/copy-to-repo.yml
+    secrets: inherit
+    with:
+      source-directory: kotlin/templates/kotlin-gradle
+      destination-repo: kotlin-template
+  copy-kotlin-spring-boot-template:
+    name: Copy Kotlin Spring boot template to kotlin-spring-boot-template repo
+    uses: ./.github/workflows/copy-to-repo.yml
+    secrets: inherit
+    with:
+      source-directory: kotlin/templates/kotlin-gradle-spring-boot
+      destination-repo: kotlin-spring-boot-template
+  copy-go-template:
+    name: Copy Go template to go-template repo
+    uses: ./.github/workflows/copy-to-repo.yml
+    secrets: inherit
+    with:
+      source-directory: go/templates/go
+      destination-repo: go-template
