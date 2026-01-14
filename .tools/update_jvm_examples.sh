@@ -29,13 +29,9 @@ function search_and_replace_version_maven() {
   mvn -B versions:set-property -Dproperty=restate.version -DnewVersion=$NEW_VERSION
 
   # If this is a template directory and has existing agents documentation, update it
-  if [[ "$project_dir" == *"/templates/"* ]] && [ -f "./.cursor/rules/AGENTS.md" ]; then
+  if [[ "$project_dir" == *"/templates/"* ]] && [ -f "./AGENTS.md" ]; then
       echo "Updating agents documentation for template in $project_dir"
-      wget -O "./.cursor/rules/AGENTS.md" https://docs.restate.dev/develop/java/agents.md
-  fi
-  if [[ "$project_dir" == *"/templates/"* ]] && [ -f "./.claude/CLAUDE.md" ]; then
-      echo "Updating agents documentation for template in $project_dir"
-      wget -O "./.claude/CLAUDE.md" https://docs.restate.dev/develop/java/agents.md
+      wget -O "./AGENTS.md" https://docs.restate.dev/develop/java/agents.md
   fi
   popd
 }

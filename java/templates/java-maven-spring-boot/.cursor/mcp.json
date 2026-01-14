@@ -1,7 +1,1 @@
-{
-  "mcpServers": {
-    "restate-docs": {
-      "url": "https://docs.restate.dev/mcp"
-    }
-  }
-}
+../.ai/mcp/mcp.json
