@@ -12,7 +12,7 @@ const restateClient = restate.connect({ url: RESTATE_URL });
 // You can also invoke a handler from within a Restate handler.
 // Check the service communication docs for more info
 
-app.post("/reserve/:productId/:reservationId", async (req: Request, res: Response) => {
+app.post("/reserve/:productId/:reservationId", async (req: Request<{ productId: string; reservationId: string }>, res: Response) => {
   const { productId, reservationId } = req.params;
 
   // Durable RPC call to the product service
