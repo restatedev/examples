@@ -9,7 +9,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "hypercorn",
-    "restate-sdk[serde]>=0.14.1",
+    "restate-sdk[serde]>=0.14.2",
     "pydantic",
     "httpx",
     "stripe",
