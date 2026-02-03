@@ -10,7 +10,7 @@ repositories {
   mavenCentral()
 }
 
-val restateVersion = "2.5.0"
+val restateVersion = "2.6.0"
 
 dependencies {
   // Annotation processor
