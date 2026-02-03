@@ -10,6 +10,7 @@ function npm_install_check() {
 }
 
 npm_install_check $PROJECT_ROOT/typescript/basics
+npm_install_check $PROJECT_ROOT/typescript/tracing
 
 npm_install_check $PROJECT_ROOT/typescript/templates/node
 npm_install_check $PROJECT_ROOT/typescript/templates/lambda
