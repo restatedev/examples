@@ -1,0 +1,28 @@
+{
+  "name": "@restatedev/examples-tracing",
+  "version": "0.0.1",
+  "description": "End-to-end OpenTelemetry tracing with Restate",
+  "license": "MIT",
+  "author": "Restate developers",
+  "email": "code@restate.dev",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc --noEmitOnError",
+    "service": "tsx ./src/restate-service.ts",
+    "client": "tsx ./src/client.ts",
+    "downstream": "tsx ./src/downstream.ts"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/exporter-trace-otlp-grpc": "^0.57.0",
+    "@opentelemetry/resources": "^1.30.0",
+    "@opentelemetry/sdk-node": "^0.57.0",
+    "@opentelemetry/semantic-conventions": "^1.28.0",
+    "@restatedev/restate-sdk": "^1.10.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.4.5"
+  }
+}
