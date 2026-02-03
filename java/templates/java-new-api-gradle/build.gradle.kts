@@ -13,11 +13,12 @@ dependencies {
   // Restate SDK
   implementation("dev.restate:sdk-java-http:$restateVersion")
 
-  // Logging (optional)
+  // Logging
   implementation("org.apache.logging.log4j:log4j-api:2.24.1")
 
-  testImplementation(platform("org.junit:junit-bom:5.11.3"))
-  testImplementation("org.junit.jupiter:junit-jupiter")
+  // JUnit (API & test launcher)
+  testImplementation("org.junit.jupiter:junit-jupiter:5.14.1")
+  testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.14.2")
   testImplementation("dev.restate:sdk-testing:$restateVersion")
 }
 
