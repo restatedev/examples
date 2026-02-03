@@ -1,0 +1,16 @@
+# Node
+node_modules
+dist
+
+# debug
+npm-debug.log*
+
+# env files
+.env*
+
+# typescript
+*.tsbuildinfo
+
+# Restate
+.restate
+restate-data
