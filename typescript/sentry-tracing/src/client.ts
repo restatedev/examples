@@ -7,7 +7,8 @@ Sentry.init({
   sendDefaultPii: true,
 });
 
-const RESTATE_INGRESS = "http://localhost:8080";
+const RESTATE_INGRESS = process.env.RESTATE_INGRESS ?? "http://localhost:8080";
+const RESTATE_AUTHORIZATION = process.env.RESTATE_AUTHORIZATION;
 
 // Convert sentry-trace header to W3C traceparent format
 // sentry-trace: {trace_id}-{span_id}-{sampled}
@@ -22,7 +23,8 @@ async function main() {
   const name = process.argv[2] || "World";
 
   console.log("=== Client App ===");
-  console.log(`Calling Restate Greeter service with name: ${name}`);
+  console.log(`Restate ingress: ${RESTATE_INGRESS}`);
+  console.log(`Calling Greeter service with name: ${name}`);
 
   try {
     const result = await Sentry.startSpan(
@@ -43,6 +45,9 @@ async function main() {
         const headers: Record<string, string> = {
           "Content-Type": "application/json",
         };
+        if (RESTATE_AUTHORIZATION) {
+          headers["Authorization"] = RESTATE_AUTHORIZATION;
+        }
         const propagationContext = Sentry.getTraceData();
         if (propagationContext["sentry-trace"]) {
           // Restate uses OpenTelemetry which expects W3C traceparent format

@@ -1,0 +1,21 @@
+{
+  "name": "restate-sentry-cloudflare-worker",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "tsc --noEmitOnError",
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev --port 9080",
+    "start": "wrangler dev --port 9080",
+    "secret:sentry": "wrangler secret put SENTRY_DSN"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk-cloudflare-workers": "^1.10.2",
+    "@sentry/cloudflare": "^9.1.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240605.0",
+    "typescript": "^5.4.5",
+    "wrangler": "^4.38.0"
+  }
+}
