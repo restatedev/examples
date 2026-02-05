@@ -1,0 +1,24 @@
+{
+  "name": "@restatedev/examples-sentry-tracing",
+  "version": "0.0.1",
+  "description": "End-to-end Sentry tracing with Restate",
+  "license": "MIT",
+  "author": "Restate developers",
+  "email": "code@restate.dev",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc --noEmitOnError",
+    "service": "tsx ./src/restate-service.ts",
+    "client": "tsx ./src/client.ts",
+    "downstream": "tsx ./src/downstream.ts"
+  },
+  "dependencies": {
+    "@sentry/node": "^9.1.0",
+    "@restatedev/restate-sdk": "^1.10.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.4.5"
+  }
+}
