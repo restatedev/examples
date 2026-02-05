@@ -1,0 +1,5 @@
+default-num-partitions = 1
+tracing-endpoint = "otlp+https://o4510823408467968.ingest.us.sentry.io/api/4510823409582080/integration/otlp/v1/traces"
+
+[tracing-headers]
+"x-sentry-auth" = "sentry sentry_key=0b4c7bf1996036e4f5fcc2ed168092ad"

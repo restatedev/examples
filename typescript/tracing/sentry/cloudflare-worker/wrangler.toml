@@ -1,0 +1,7 @@
+name = "restate-sentry-greeter"
+main = "./src/index.ts"
+
+preview_urls = true
+
+compatibility_date = "2025-09-23"
+compatibility_flags = ["nodejs_compat", "nodejs_compat_populate_process_env"]
