@@ -9,5 +9,5 @@ preview_urls = true
 
 # Enable NodeJS compatibility (used by the SDK for the Node Buffer API)
 # and Node's process.env (for logging)
-compatibility_date = "2025-09-23"
-compatibility_flags = [ "nodejs_compat", "nodejs_compat_populate_process_env" ]
+compatibility_date = "2026-02-20"
+compatibility_flags = [ "nodejs_compat" ]
