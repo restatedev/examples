@@ -1,3 +1,7 @@
+> ## Documentation Index
+> Fetch the complete documentation index at: https://docs.restate.dev/llms.txt
+> Use this file to discover all available pages before exploring further.
+
 # Restate TypeScript SDK Rules
 
 ## Core Concepts
@@ -419,6 +423,4 @@ await restateClient
 ```
 
 
----
-
-> To find navigation and other pages in this documentation, fetch the llms.txt file at: https://docs.restate.dev/llms.txt
+Built with [Mintlify](https://mintlify.com).
