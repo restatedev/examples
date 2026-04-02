@@ -33,8 +33,8 @@ github.com/nsf/jsondiff v0.0.0-20230430225905-43f6cf3098c1/go.mod h1:mpRZBD8SJ55
 github.com/pkg/diff v0.0.0-20210226163009-20ebb0f2a09e/go.mod h1:pJLUxLENpZxwdsKMEsNbx1VGcRFpLqf3715MtcvvzbA=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/restatedev/sdk-go v0.23.0 h1:Eewh6n/YZUfA7In5ZiAIA6smLyssynsBHVijUguNpvc=
-github.com/restatedev/sdk-go v0.23.0/go.mod h1:2G757yGe0Ihwcb+Z/HZUscQ0g3PFTyueO0f8qlqxWDo=
+github.com/restatedev/sdk-go v0.24.0 h1:SZN633U7Jb7AbhWwSOMVPz5Fw9fwWHcGlcr0BF4PMDM=
+github.com/restatedev/sdk-go v0.24.0/go.mod h1:2G757yGe0Ihwcb+Z/HZUscQ0g3PFTyueO0f8qlqxWDo=
 github.com/robfig/cron/v3 v3.0.1 h1:WdRxkvbJztn8LMz/QEvLN5sBU+xKpSqwwUO1Pjr4qDs=
 github.com/robfig/cron/v3 v3.0.1/go.mod h1:eQICP3HwyT7UooqI/z+Ov+PtYAWygg1TEWWzGIFLtro=
 github.com/rogpeppe/go-internal v1.9.0/go.mod h1:WtVeX8xhTBvf0smdhujwtBcq4Qrzq/fJaraNFVN+nFs=
