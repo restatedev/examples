@@ -49,6 +49,7 @@ Common tasks and patterns implemented with Restate:
 
 Examples integrating Restate with other tools and frameworks:
 
+- **[OpenTelemetry](integrations/opentelemetry)**: Integration with OpenTelemetry for distributed tracing and monitoring.
 - **[AWS Lambda + CDK](integrations/deployment-lambda-cdk)**: Sample project deploying a TypeScript-based Restate service to AWS Lambda using the AWS Cloud Development Kit (CDK).
 - **[XState](integrations/xstate)**: Resilient, distributed durable state machines with Restate and XState.
 

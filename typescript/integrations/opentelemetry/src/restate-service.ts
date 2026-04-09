@@ -7,7 +7,6 @@ import {
   trace,
   context,
   propagation,
-  SpanStatusCode,
 } from "@opentelemetry/api";
 
 const sdk = new NodeSDK({
