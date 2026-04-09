@@ -18,7 +18,8 @@
     "@opentelemetry/resources": "^1.30.0",
     "@opentelemetry/sdk-node": "^0.57.0",
     "@opentelemetry/semantic-conventions": "^1.28.0",
-    "@restatedev/restate-sdk": "^1.10.2"
+    "@restatedev/restate-sdk": "dev",
+    "@restatedev/restate-sdk-opentelemetry": "dev"
   },
   "devDependencies": {
     "@types/node": "^20.14.2",
