@@ -15,7 +15,7 @@ jobs:
       - run: echo '{"ignorePatterns":[{"pattern":"https://docs.restate.dev/_mintlify/feedback/restate-6d46e1dc/agent-feedback"}]}' > mlc_config.json
       - uses: gaurav-nelson/github-action-markdown-link-check@v1
         with:
-          use-quiet-mode: 'yes'
+          use-verbose-mode: 'yes'
           config-file: 'mlc_config.json'
   build-rust:
     # prevent from running on forks
