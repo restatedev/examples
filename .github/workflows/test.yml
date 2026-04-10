@@ -11,11 +11,12 @@ jobs:
   markdown-link-check:
     runs-on: ubuntu-latest
     steps:
-    - uses: lycheeverse/lychee-action@v1
-      with:
-        args: --verbose --no-progress --retry-wait-time 30 --max-retries 5 --exclude 'http://localhost*' --exclude 'https://localhost*' --exclude 'https://restate:9070*' --exclude 'https://docs.restate.dev/_mintlify/feedback/restate-6d46e1dc/agent-feedback' '**/*.md' '**/*.mdx'
-        fail: false
-
+      - uses: actions/checkout@v3
+      - run: echo '{"ignorePatterns":[{"pattern":"https://docs.restate.dev/_mintlify/feedback/restate-6d46e1dc/agent-feedback"}]}' > mlc_config.json
+      - uses: gaurav-nelson/github-action-markdown-link-check@v1
+        with:
+          use-quiet-mode: 'yes'
+          config-file: 'mlc_config.json'
   build-rust:
     # prevent from running on forks
     if: github.repository_owner == 'restatedev'
