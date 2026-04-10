@@ -13,7 +13,6 @@ npm_install_check $PROJECT_ROOT/typescript/basics
 
 npm_install_check $PROJECT_ROOT/typescript/templates/node
 npm_install_check $PROJECT_ROOT/typescript/templates/lambda
-RESTATE_ENV_ID=env_test RESTATE_API_KEY=key_test npm_install_check $PROJECT_ROOT/typescript/integrations/deployment-lambda-cdk
 npm_install_check $PROJECT_ROOT/typescript/templates/cloudflare-worker
 npm_install_check $PROJECT_ROOT/typescript/templates/vercel
 npm_install_check $PROJECT_ROOT/typescript/templates/nextjs
@@ -29,5 +28,8 @@ npm_install_check $PROJECT_ROOT/typescript/patterns-use-cases
 npm_install_check $PROJECT_ROOT/typescript/end-to-end-applications/ai-image-workflows
 npm_install_check $PROJECT_ROOT/typescript/end-to-end-applications/food-ordering/app
 npm_install_check $PROJECT_ROOT/typescript/end-to-end-applications/chat-bot
+
+npm_install_check $PROJECT_ROOT/typescript/integrations/opentelemetry
+RESTATE_ENV_ID=env_test RESTATE_API_KEY=key_test npm_install_check $PROJECT_ROOT/typescript/integrations/deployment-lambda-cdk
 
 RESTATE_ENV_ID=env_test RESTATE_API_KEY=key_test npm_install_check $PROJECT_ROOT/python/integrations/deployment-lambda-cdk
