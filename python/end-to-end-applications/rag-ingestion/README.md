@@ -7,7 +7,7 @@ This demo:
 * Shows how to use Restate as a reliable and resilient recipient of webhook events
 * How to invoke workflows based on the webhook event
 * How to use [LangChain](https://www.langchain.com/) with Restate
-* Using Restate's [workflows in Python](https://docs.restate.dev/develop/python/workflows).
+* Using Restate's [workflows in Python](https://docs.restate.dev/develop/python/services#workflows).
 
 Whenever a new file is uploaded to MinIO, it triggers a webhook event that is sent to a webhook endpoint.
 The webhook endpoint is here a Restate handler (docs/webhook), that durable persists and processes all incoming events.
