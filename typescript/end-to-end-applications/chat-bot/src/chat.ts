@@ -196,7 +196,6 @@ async function interpretCommand(
     if (e instanceof Error) {
       throw new restate.TerminalError(
         `Failed to interpret command: ${e.message}\nCommand:\n${command}`,
-        { cause: e },
       );
     }
     throw new restate.TerminalError(`Failed to interpret command: ${e}\nCommand:\n${command}`);
@@ -232,7 +231,6 @@ function parseGptResponse(response: string): GptTaskCommand {
   } catch (e: any) {
     throw new restate.TerminalError(
       `Malformed response from LLM: ${e.message}.\nRaw response:\n${response}`,
-      { cause: e },
     );
   }
 }
