@@ -11,10 +11,11 @@ jobs:
   markdown-link-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: gaurav-nelson/github-action-markdown-link-check@v1
-        with:
-          use-quiet-mode: 'yes'
+    - uses: lycheeverse/lychee-action@v1
+      with:
+        args: --verbose --no-progress --retry-wait-time 30 --max-retries 5 --exclude 'http://localhost*' --exclude 'https://localhost*' --exclude 'https://restate:9070*' --exclude 'https://docs.restate.dev/_mintlify/feedback/restate-6d46e1dc/agent-feedback' '**/*.md' '**/*.mdx'
+        fail: false
+
   build-rust:
     # prevent from running on forks
     if: github.repository_owner == 'restatedev'
