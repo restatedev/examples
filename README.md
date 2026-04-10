@@ -169,3 +169,5 @@ git push origin v0.9.1
 This triggers a workflow that [creates a draft release](https://github.com/restatedev/examples/releases) on GitHub, which you need to approve to finalize it.
 
 Please update the version tag referenced on the [Tour of Restate](https://github.com/restatedev/documentation) documentation page.
+
+[www.testthislinkdoesntexist.com](www.testthislinkdoesntexist.com)
