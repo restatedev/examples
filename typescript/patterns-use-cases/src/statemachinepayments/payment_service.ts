@@ -44,7 +44,7 @@ const payments = restate.object({
         ctx.set("status", "COMPLETED");
         ctx.set("payment", payment);
 
-        ctx.objectSendClient(payments, paymentId, { delay: EXPIRY_TIMEOUT }).expireToken();
+        ctx.objectSendClient(payments, paymentId).expireToken(restate.rpc.sendOpts({ delay: EXPIRY_TIMEOUT }));
       }
 
       return `${paymentId} successful: ${paymentResult.success}`;
@@ -71,7 +71,7 @@ const payments = restate.object({
           // The cancellation may have overtaken the actual payment request before arriving at Restate.
           ctx.set("status", "CANCELLED");
 
-          ctx.objectSendClient(payments, ctx.key, { delay: EXPIRY_TIMEOUT }).expireToken();
+          ctx.objectSendClient(payments, ctx.key).expireToken(restate.rpc.sendOpts({ delay: EXPIRY_TIMEOUT }));
           break;
         }
       }

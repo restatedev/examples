@@ -55,7 +55,7 @@ export function httpResponseToError(statusCode: number, bodyText: string): Promi
 export function checkRethrowTerminalError(e: unknown): never {
   if (e instanceof ReferenceError) {
     // a bug in the code is terminal
-    throw new TerminalError("Error in the code: " + e.message, { cause: e });
+    throw new TerminalError("Error in the code: " + e.message);
   }
 
   throw e;
