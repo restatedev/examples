@@ -1,0 +1,22 @@
+{
+  "name": "restatedev-plugin",
+  "interface": {
+    "displayName": "Restate"
+  },
+  "plugins": [
+    {
+      "name": "restatedev",
+      "source": {
+        "source": "git-subdir",
+        "url": "https://github.com/restatedev/skills.git",
+        "path": "./plugins/restatedev",
+        "ref": "main"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "NONE"
+      },
+      "category": "Coding"
+    }
+  ]
+}

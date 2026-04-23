@@ -1,0 +1,59 @@
+name: Sync java-api-and-pitfalls.md
+
+on:
+  schedule:
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'restatedev'
+    permissions:
+      contents: write
+      pull-requests: write
+
+    env:
+      SOURCE_URL: https://raw.githubusercontent.com/restatedev/docs-restate/main/restate-plugin/skills/building-restate-services/references/java/api-and-pitfalls.md
+      DEST_FILENAME: java-api-and-pitfalls.md
+      TEMPLATES: |
+        java-gradle
+        java-maven
+        java-maven-quarkus
+        java-maven-spring-boot
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download source file
+        run: curl -fsSL "$SOURCE_URL" -o /tmp/api-and-pitfalls.md
+
+      - name: Copy into each Java template with frontmatter
+        run: |
+          {
+            echo '---'
+            echo 'apply: by model decision'
+            echo 'instructions: Java SDK API reference and common pitfalls for Restate durable services'
+            echo '---'
+            echo
+            cat /tmp/api-and-pitfalls.md
+          } > /tmp/java-api-and-pitfalls.md
+
+          while IFS= read -r template; do
+            [ -z "$template" ] && continue
+            dest_dir="java/templates/$template/.aiassistant/rules"
+            mkdir -p "$dest_dir"
+            cp /tmp/java-api-and-pitfalls.md "$dest_dir/$DEST_FILENAME"
+          done <<< "$TEMPLATES"
+
+      - name: Create pull request if changed
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore: sync java-api-and-pitfalls.md from docs-restate"
+          title: "chore: sync java-api-and-pitfalls.md from docs-restate"
+          body: |
+            Automated weekly sync of `java-api-and-pitfalls.md` from
+            [restatedev/docs-restate](https://github.com/restatedev/docs-restate/blob/main/restate-plugin/skills/building-restate-services/references/java/api-and-pitfalls.md)
+            into each Java template under `java/templates/*/.aiassistant/rules/`.
+          branch: chore/sync-java-api-and-pitfalls
+          delete-branch: true
