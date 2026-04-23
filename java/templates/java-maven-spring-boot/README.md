@@ -14,3 +14,9 @@ $ mvn compile spring-boot:run
 
 Restate SDK uses annotation processing to generate client classes.
 When modifying the annotated services in Intellij, it is suggested to run **CTRL + F9** to re-generate the client classes.
+
+## Using AI coding tools
+
+If you use Claude Code or Codex, then the Restate plugin will automatically be installed. For Cursor, you need to use `/add-plugin`.
+
+Plugin repo: https://github.com/restatedev/skills/tree/main

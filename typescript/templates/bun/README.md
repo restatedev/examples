@@ -7,3 +7,9 @@ Have a look at the [TypeScript Quickstart guide](https://docs.restate.dev/get_st
 
 You can run locally with `npm run dev` and register to Restate with
 `restate dep add http://localhost:9080`.
+
+## Using AI coding tools
+
+If you use Claude Code or Codex, then the Restate plugin will automatically be installed. For Cursor, you need to use `/add-plugin`.
+
+Plugin repo: https://github.com/restatedev/skills/tree/main

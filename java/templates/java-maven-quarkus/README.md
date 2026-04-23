@@ -13,3 +13,9 @@ To start the service, simply run:
 ```shell
 $ quarkus dev
 ```
+
+## Using AI coding tools
+
+If you use Claude Code or Codex, then the Restate plugin will automatically be installed. For Cursor, you need to use `/add-plugin`.
+
+Plugin repo: https://github.com/restatedev/skills/tree/main
