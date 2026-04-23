@@ -39,11 +39,22 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-vertx</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-junit5</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>dev.restate</groupId>
             <artifactId>sdk-java-http</artifactId>
             <version>${restate.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.restate</groupId>
+            <artifactId>sdk-testing</artifactId>
+            <version>${restate.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- This is usually not needed, but fails without it with CNFE -->
