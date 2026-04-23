@@ -7,3 +7,9 @@ You can run locally with `go run .` and register to Restate with
 
 You can build a docker image using [ko](https://github.com/ko-build/ko):
 `ko build --platform=all`
+
+## Using AI coding tools
+
+If you use Claude Code or Codex, then the Restate plugin will automatically be installed. For Cursor, you need to use `/add-plugin`.
+
+Plugin repo: https://github.com/restatedev/skills/tree/main
