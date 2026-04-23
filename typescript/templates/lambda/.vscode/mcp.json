@@ -1,8 +1,0 @@
-{
-  "servers": {
-    "restate-docs": {
-      "type": "http",
-      "url": "https://docs.restate.dev/mcp"
-    }
-  }
-}

@@ -9,3 +9,9 @@ You can run the tests with:
 ```shell
 npm run test
 ```
+
+## Using AI coding tools
+
+If you use Claude Code or Codex, then the Restate plugin will automatically be installed. For Cursor, you need to use `/add-plugin`.
+
+Plugin repo: https://github.com/restatedev/skills/tree/main

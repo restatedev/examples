@@ -63,3 +63,9 @@ Once deployed, you can test your service using the [Restate Cloud Playground](ht
 - 💬 Join the [Restate Discord community](https://discord.gg/skW3AZ6uGd)
 
 Happy building! 🎉
+
+## Using AI coding tools
+
+If you use Claude Code or Codex, then the Restate plugin will automatically be installed. For Cursor, you need to use `/add-plugin`.
+
+Plugin repo: https://github.com/restatedev/skills/tree/main
