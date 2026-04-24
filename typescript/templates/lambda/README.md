@@ -143,7 +143,7 @@ For more info on how to deploy manually, check:
 
 - 📖 Explore the [Restate documentation](https://docs.restate.dev)
 - 🔍 Check out more [examples and tutorials](https://github.com/restatedev/examples)
-- 💬 Join the [Restate Discord community](https://discord.gg/skW3AZ6uGd)
+- 💬 Join the [Restate Discord community](https://discord.restate.dev)
 
 Happy building! 🎉
 
