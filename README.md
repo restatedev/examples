@@ -1,7 +1,7 @@
 <!-- markdown-link-check-disable -->
 [![Documentation](https://img.shields.io/badge/doc-reference-blue)](https://docs.restate.dev)
-[![Discord](https://img.shields.io/discord/1128210118216007792?logo=discord)](https://discord.gg/skW3AZ6uGd)
-[![Slack](https://img.shields.io/badge/Slack-4A154B?logo=slack&logoColor=fff)](https://join.slack.com/t/restatecommunity/shared_invite/zt-2v9gl005c-WBpr167o5XJZI1l7HWKImA)
+[![Discord](https://img.shields.io/discord/1128210118216007792?logo=discord)](https://discord.restate.dev)
+[![Slack](https://img.shields.io/badge/Slack-4A154B?logo=slack&logoColor=fff)](https://slack.restate.dev)
 [![Twitter](https://img.shields.io/twitter/follow/restatedev.svg?style=social&label=Follow)](https://x.com/intent/follow?screen_name=restatedev)
 <!-- markdown-link-check-enable -->
 
@@ -122,7 +122,7 @@ If you use Claude Code, Codex, or Cursor to build on Restate, we highly recommen
 
 ## Joining the community
 
-If you want to join the Restate community in order to stay up to date, then please join our [Discord](https://discord.gg/skW3AZ6uGd) or [Slack](https://join.slack.com/t/restatecommunity/shared_invite/zt-2v9gl005c-WBpr167o5XJZI1l7HWKImA).
+If you want to join the Restate community in order to stay up to date, then please join our [Discord](https://discord.restate.dev) or [Slack](https://slack.restate.dev).
 This is also the perfect place for sharing your feedback with us, learning more about Restate and connect with others!
 
 ## Running the examples
