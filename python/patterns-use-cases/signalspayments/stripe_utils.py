@@ -50,18 +50,21 @@ async def create_payment_intent(request: dict) -> dict:
             **request_options,
         )
 
+        result = payment_intent.to_dict()
         if request.get("delayed_status"):
-            payment_intent["status"] = "processing"
+            result["status"] = "processing"
 
-        return payment_intent
+        return result
     except stripe.CardError as error:
 
         if request.get("delayed_status") and error.error and error.error.payment_intent:
-            payment_intent = error.error.payment_intent
-            payment_intent["status"] = "processing"
-            return payment_intent
+            result = error.error.payment_intent.to_dict()
+            result["status"] = "processing"
+            return result
         else:
-            status = error.error.payment_intent.get('status') if error.error and error.error.payment_intent else "unknown status"
+            status = "unknown status"
+            if error.error and error.error.payment_intent:
+                status = error.error.payment_intent.to_dict().get("status", "unknown status")
             raise TerminalError(f"Payment declined: {status} - {error.user_message}")
     except Exception as error:
         raise error
