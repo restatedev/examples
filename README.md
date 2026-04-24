@@ -116,6 +116,10 @@ Or have a look at the general catalog below:
 | Tour of Orchestration  | [<img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white">](typescript/tutorials/tour-of-orchestration-typescript) [<img src="https://img.shields.io/badge/Go-00ADD8?logo=go&logoColor=white">](go/tutorials/tour-of-orchestration-go) [<img src="https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white">](python/tutorials/tour-of-orchestration-python) [<img src="https://img.shields.io/badge/Java-ED8B00?logo=openjdk&logoColor=white">](java/tutorials/tour-of-orchestration-java) |
 | Tour of Agents  | [AI examples repo](https://github.com/restatedev/ai-examples)                                                                                                                                                                                                                                                                                                                                                 |
 
+## Using AI coding tools
+
+If you use Claude Code, Codex, or Cursor to build on Restate, we highly recommend installing the [Restate plugin](https://github.com/restatedev/skills). It bundles skills, prompts, and context that help AI coding assistants generate correct, idiomatic Restate code across all supported SDKs. Most templates in this repo install the plugin automatically — see the [skills repo](https://github.com/restatedev/skills) for setup instructions.
+
 ## Joining the community
 
 If you want to join the Restate community in order to stay up to date, then please join our [Discord](https://discord.gg/skW3AZ6uGd) or [Slack](https://join.slack.com/t/restatecommunity/shared_invite/zt-2v9gl005c-WBpr167o5XJZI1l7HWKImA).

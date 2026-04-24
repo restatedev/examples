@@ -82,6 +82,6 @@ Happy building! 🎉
 
 ## Using AI coding tools
 
-If you use Claude Code or Codex, then the Restate plugin will automatically be installed. For Cursor, you need to use `/add-plugin`.
+If you use Claude Code or Codex, then the Restate plugin will automatically be installed. For Cursor, consult the [skills repo README](https://github.com/restatedev/skills).
 
 Plugin repo: https://github.com/restatedev/skills/tree/main
