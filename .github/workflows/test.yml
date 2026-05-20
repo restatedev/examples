@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: echo '{"ignorePatterns":[{"pattern":"https://docs.restate.dev/_mintlify/feedback/restate-6d46e1dc/agent-feedback"}]}' > mlc_config.json
+      - run: echo '{"ignorePatterns":[{"pattern":"https://docs.restate.dev/_mintlify/feedback/restate-6d46e1dc/agent-feedback"},{"pattern":"https://slack.restate.dev"}]}' > mlc_config.json
       - uses: gaurav-nelson/github-action-markdown-link-check@v1
         with:
           use-verbose-mode: 'yes'
