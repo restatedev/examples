@@ -9,9 +9,7 @@ describe("ExampleService", () => {
   let restateIngress: clients.Ingress;
 
   beforeAll(async () => {
-    restateTestEnvironment = await RestateTestEnvironment.start((restateServer) =>
-      restateServer.bind(exampleService),
-    );
+    restateTestEnvironment = await RestateTestEnvironment.start({services: [exampleService]});
     restateIngress = clients.connect({ url: restateTestEnvironment.baseUrl() });
   }, 20_000);
 
@@ -34,9 +32,7 @@ describe("ExampleObject", () => {
   let restateIngress: clients.Ingress;
 
   beforeAll(async () => {
-    restateTestEnvironment = await RestateTestEnvironment.start((restateServer) =>
-      restateServer.bind(exampleObject),
-    );
+    restateTestEnvironment = await RestateTestEnvironment.start({services: [exampleObject]});
     restateIngress = clients.connect({ url: restateTestEnvironment.baseUrl() });
   }, 20_000);
 
