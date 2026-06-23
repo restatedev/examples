@@ -16,11 +16,11 @@
     "app-dev": "npm run dev"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.14.4",
-    "@restatedev/restate-sdk-clients": "^1.14.4"
+    "@restatedev/restate-sdk": "^1.15.0",
+    "@restatedev/restate-sdk-clients": "^1.15.0"
   },
   "devDependencies": {
-    "@types/node": "^20.14.2",
+    "@types/node": "^22",
     "esbuild": "^0.25.4",
     "tsx": "^4.19.2",
     "typescript": "^5.4.5"
