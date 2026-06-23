@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@restatedev/restate-sdk": "^1.15.0",
-    "@types/node": "^20.6.3",
+    "@types/node": "^22",
     "@types/uuid": "^9.0.0",
     "axios": "^1.4.0",
     "express": "^4.17.3",

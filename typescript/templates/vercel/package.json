@@ -13,7 +13,7 @@
     "zod": "^4.3"
   },
   "devDependencies": {
-    "@types/node": "^20",
+    "@types/node": "^22",
     "@types/react": "^19",
     "typescript": "^5"
   }

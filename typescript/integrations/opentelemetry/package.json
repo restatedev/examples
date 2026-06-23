@@ -22,7 +22,7 @@
     "@restatedev/restate-sdk-opentelemetry": "^1.15.0"
   },
   "devDependencies": {
-    "@types/node": "^20.14.2",
+    "@types/node": "^22",
     "tsx": "^4.19.2",
     "typescript": "^5.4.5"
   }

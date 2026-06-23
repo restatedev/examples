@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
-    "@types/node": "^20.14.2",
+    "@types/node": "^22",
     "@types/sequelize": "^4.28.20",
     "prettier": "^2.8.4",
     "tsx": "^4.19.2",

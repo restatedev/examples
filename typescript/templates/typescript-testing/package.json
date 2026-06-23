@@ -22,7 +22,7 @@
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
-    "@types/node": "^20.14.2",
+    "@types/node": "^22",
     "esbuild": "^0.25.4",
     "ts-jest": "^29.3.1",
     "tsx": "^4.19.2",
