@@ -48,7 +48,7 @@ func failOnNetflix(subscription string) error {
 func terminalErrorOnDisney(subscription string) error {
 	if subscription == "Disney" {
 		fmt.Printf(`[👻 SIMULATED] "Disney subscription is not available in this region"`)
-		return restate.TerminalError(fmt.Errorf(`[👻 SIMULATED] "Disney subscription is not available in this region"`))
+		return restate.TerminalErrorf(`[👻 SIMULATED] "Disney subscription is not available in this region"`)
 	}
 	return nil
 }

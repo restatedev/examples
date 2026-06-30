@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/restatedev/examples/go/patterns-use-cases/src/ratelimit/types"
@@ -164,9 +165,9 @@ func (lim *Limiter) WaitN(n int, maxFutureReserve time.Duration) (err error) {
 
 	if !r.r.Ok {
 		if maxFutureReserve == types.InfDuration {
-			return restate.WithErrorCode(restate.TerminalErrorf("rate: Wait(n=%d) would exceed the limiters burst", n), 429)
+			return restate.ToTerminalError(fmt.Errorf("rate: Wait(n=%d) would exceed the limiters burst", n), restate.WithErrorCode(429))
 		} else {
-			return restate.WithErrorCode(restate.TerminalErrorf("rate: Wait(n=%d) would either exceed the limiters burst or the provided maxFutureReserve", n), 429)
+			return restate.ToTerminalError(fmt.Errorf("rate: Wait(n=%d) would either exceed the limiters burst or the provided maxFutureReserve", n), restate.WithErrorCode(429))
 		}
 	}
 

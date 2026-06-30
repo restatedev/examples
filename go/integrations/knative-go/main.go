@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/restatedev/sdk-go/server"
 	"log/slog"
 	"os"
+
+	"github.com/restatedev/sdk-go/server"
 
 	restate "github.com/restatedev/sdk-go"
 )
@@ -33,7 +34,7 @@ func (t *userObject) Initialize(ctx restate.ObjectContext, user User) error {
 		return err
 	}
 	if usr != nil {
-		return restate.TerminalError(fmt.Errorf("the user was already initialized"))
+		return restate.TerminalErrorf("the user was already initialized")
 	}
 
 	// Store the user
@@ -53,7 +54,7 @@ func (t *userObject) Activate(ctx restate.ObjectContext) error {
 		return err
 	}
 	if usr == nil {
-		return restate.TerminalError(fmt.Errorf("the user doesn't exist"))
+		return restate.TerminalErrorf("the user doesn't exist")
 	}
 
 	// Store the activated status
