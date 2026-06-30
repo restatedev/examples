@@ -1,7 +1,6 @@
 package examples
 
 import (
-	"fmt"
 	"time"
 
 	restate "github.com/restatedev/sdk-go"
@@ -52,7 +51,7 @@ func (SignupWithTimersWorkflow) Run(ctx restate.WorkflowContext, user User) (boo
 			}
 			break // Break out the switch to continue the main loop
 		case verificationTimeoutFuture:
-			return false, restate.TerminalError(fmt.Errorf("email verification timed out after 24 hours"))
+			return false, restate.TerminalErrorf("email verification timed out after 24 hours")
 		}
 	}
 }

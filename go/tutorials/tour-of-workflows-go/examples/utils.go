@@ -48,7 +48,7 @@ func failOnAlice(name, action string) error {
 func terminalErrorOnAlice(name, action string) error {
 	if name == "Alice" {
 		log.Printf("[👻 SIMULATED] Failed to %s for %s: not available in this country", action, name)
-		return restate.TerminalError(fmt.Errorf("[👻 SIMULATED] Failed to %s for %s: not available in this country", action, name))
+		return restate.TerminalErrorf("[👻 SIMULATED] Failed to %s for %s: not available in this country", action, name)
 	}
 	return nil
 }

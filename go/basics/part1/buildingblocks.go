@@ -95,7 +95,7 @@ func (MyService) Run(ctx restate.Context) error {
 	// Use this for non-deterministic actions or interaction with APIs, DBs, ...
 	// For example, generate idempotency keys that are stable across retries
 	// Then use these to call other APIs and let them deduplicate
-	paymentDeduplicationID := restate.Rand(ctx).UUID().String()
+	paymentDeduplicationID := restate.UUID(ctx).String()
 	success, err := restate.Run(ctx, func(ctx restate.RunContext) (string, error) {
 		return chargeBankAccount(paymentDeduplicationID, 100)
 	})

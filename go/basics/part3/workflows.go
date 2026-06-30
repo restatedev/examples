@@ -40,7 +40,7 @@ func (SignupWorkflow) Run(ctx restate.WorkflowContext, user User) (bool, error) 
 	}
 
 	// Send the email with the verification link
-	secret := restate.Rand(ctx).UUID().String()
+	secret := restate.UUID(ctx).String()
 	if _, err := restate.Run(ctx, func(ctx restate.RunContext) (restate.Void, error) {
 		return restate.Void{}, SendEmailWithLink(userId, user, secret)
 	}); err != nil {

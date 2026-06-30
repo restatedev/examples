@@ -2,10 +2,11 @@ package main
 
 import (
 	"context"
-	restate "github.com/restatedev/sdk-go"
-	"github.com/restatedev/sdk-go/server"
 	"log/slog"
 	"os"
+
+	restate "github.com/restatedev/sdk-go"
+	"github.com/restatedev/sdk-go/server"
 )
 
 // Restate helps you implement resilient applications:
@@ -39,7 +40,7 @@ type SubscriptionService struct{}
 func (SubscriptionService) Add(ctx restate.Context, req SubscriptionRequest) error {
 	// Restate persists the result of all `ctx` actions and recovers them after failures
 	// For example, generate a stable idempotency key:
-	paymentId := restate.Rand(ctx).UUID().String()
+	paymentId := restate.UUID(ctx).String()
 
 	// restate.Run persists results of successful actions and skips execution on retries
 	// Failed actions (timeouts, API downtime, etc.) get retried

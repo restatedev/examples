@@ -104,7 +104,7 @@ func (CronJob) Cancel(ctx restate.ObjectContext) error {
 		return err
 	}
 	if job == nil {
-		return restate.TerminalError(fmt.Errorf("job not found for cancellation"), 404)
+		return restate.ToTerminalError(fmt.Errorf("job not found for cancellation"), restate.WithErrorCode(404))
 	}
 	restate.CancelInvocation(ctx, job.NextExecutionID)
 
@@ -117,7 +117,7 @@ func (CronJob) GetInfo(ctx restate.ObjectSharedContext) (*JobInfo, error) {
 }
 
 // scheduleNextExecution calculates and schedules the next execution of the cron job
-func scheduleNextExecution(ctx restate.ObjectContext, req JobRequest) (*JobInfo, error) {
+func scheduleNextExecution(ctx restate.ObjectContext, req JobRequest) (*JobInfo, restate.TerminalError) {
 	// Parse cron expression
 	parser := cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow)
 	schedule, err := parser.Parse(req.CronExpression)
