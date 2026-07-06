@@ -431,6 +431,21 @@ Note: the Java SDK uses `TerminalException`, NOT `TerminalError` (which is used 
 
 Any other exception type causes automatic retries with exponential backoff. For retry policy configuration, refer to the retry guide.
 
+### TerminalException metadata
+
+You can attach a string metadata map to a `TerminalException`. The metadata is propagated to callers and accessible via `getMetadata()`. Requires Restate Server >= 1.6.
+
+```java
+throw new TerminalException("Something went wrong", Map.of("correlationId", correlationId));
+```
+
+Callers can read the metadata:
+
+```java
+Map<String, String> metadata = e.getMetadata();
+String correlationId = metadata.get("correlationId");
+```
+
 ---
 
 ## SDK Clients (External Invocations)
