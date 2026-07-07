@@ -10,7 +10,7 @@ repositories {
     mavenCentral()
 }
 
-val restateVersion = "2.7.0"
+val restateVersion = "2.9.0"
 
 dependencies {
     // Kafka
@@ -28,6 +28,14 @@ dependencies {
 // Set main class
 application {
     mainClass.set("dev.restate.sdk.examples.RestaurantMain")
+    // Java 25 warnings: --enable-native-access for the Restate SDK state machine, --sun-misc-unsafe-memory-access for netty.
+    applicationDefaultJvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "--sun-misc-unsafe-memory-access=allow")
+}
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
+    // Java 25 warnings: --enable-native-access for the Restate SDK state machine, --sun-misc-unsafe-memory-access for netty.
+    jvmArgs("--enable-native-access=ALL-UNNAMED", "--sun-misc-unsafe-memory-access=allow")
 }
 
 

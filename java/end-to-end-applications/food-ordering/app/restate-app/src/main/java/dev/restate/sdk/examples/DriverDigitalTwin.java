@@ -11,16 +11,15 @@
 
 package dev.restate.sdk.examples;
 
-import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
+import dev.restate.sdk.common.StateKey;
+import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.examples.types.AssignDeliveryRequest;
 import dev.restate.sdk.examples.types.AssignedDelivery;
 import dev.restate.sdk.examples.types.DriverStatus;
 import dev.restate.sdk.examples.types.Location;
-import dev.restate.sdk.common.StateKey;
-import dev.restate.sdk.common.TerminalException;
-
 import java.util.Optional;
 
 /**
@@ -48,11 +47,12 @@ public class DriverDigitalTwin {
    * (DriverMobileAppSimulator) calls this method.
    */
   @Handler
-  public void setDriverAvailable(ObjectContext ctx, String region) throws TerminalException {
-    expectStatus(ctx, DriverStatus.IDLE);
+  public void setDriverAvailable(String region) throws TerminalException {
+    expectStatus(DriverStatus.IDLE);
 
-    ctx.set(DRIVER_STATUS, DriverStatus.WAITING_FOR_WORK);
-    DriverDeliveryMatcherClient.fromContext(ctx, region).send().setDriverAvailable(ctx.key());
+    Restate.state().set(DRIVER_STATUS, DriverStatus.WAITING_FOR_WORK);
+    Restate.virtualObjectHandle(DriverDeliveryMatcher.class, region)
+        .send(DriverDeliveryMatcher::setDriverAvailable, Restate.key());
   }
 
   /**
@@ -61,89 +61,90 @@ public class DriverDigitalTwin {
    * location.
    */
   @Handler
-  public void assignDeliveryJob(ObjectContext ctx, AssignDeliveryRequest request)
-      throws TerminalException {
-    expectStatus(ctx, DriverStatus.WAITING_FOR_WORK);
+  public void assignDeliveryJob(AssignDeliveryRequest request) throws TerminalException {
+    expectStatus(DriverStatus.WAITING_FOR_WORK);
 
+    var state = Restate.state();
     // Update the status and assigned delivery information of the driver
-    ctx.set(DRIVER_STATUS, DriverStatus.DELIVERING);
-    ctx.set(
+    state.set(DRIVER_STATUS, DriverStatus.DELIVERING);
+    state.set(
         ASSIGNED_DELIVERY,
         new AssignedDelivery(
-            ctx.key(),
+            Restate.key(),
             request.getOrderId(),
             request.getRestaurantId(),
             request.getRestaurantLocation(),
             request.getCustomerLocation()));
 
     // Notify current location to the delivery service
-    ctx.get(DRIVER_LOCATION)
+    state
+        .get(DRIVER_LOCATION)
         .ifPresent(
             loc ->
-                DeliveryManagerClient.fromContext(ctx, request.getOrderId())
-                    .send()
-                    .handleDriverLocationUpdate(loc));
+                Restate.virtualObjectHandle(DeliveryManager.class, request.getOrderId())
+                    .send(DeliveryManager::handleDriverLocationUpdate, loc));
   }
 
   /**
    * Gets called by the driver's mobile app when he has picked up the delivery from the restaurant.
    */
   @Handler
-  public void notifyDeliveryPickup(ObjectContext ctx) throws TerminalException {
-    expectStatus(ctx, DriverStatus.DELIVERING);
+  public void notifyDeliveryPickup() throws TerminalException {
+    expectStatus(DriverStatus.DELIVERING);
 
+    var state = Restate.state();
     // Retrieve the ongoing delivery and update its status
     var currentDelivery =
-        ctx.get(ASSIGNED_DELIVERY)
+        state
+            .get(ASSIGNED_DELIVERY)
             .orElseThrow(
                 () ->
                     new TerminalException(
                         "Driver is in status DELIVERING but there is no current delivery set."));
     currentDelivery.notifyPickup();
-    ctx.set(ASSIGNED_DELIVERY, currentDelivery);
+    state.set(ASSIGNED_DELIVERY, currentDelivery);
 
     // Update the status of the delivery in the delivery manager
-    DeliveryManagerClient.fromContext(ctx, currentDelivery.getOrderId())
-        .send()
-        .notifyDeliveryPickup();
+    Restate.virtualObjectHandle(DeliveryManager.class, currentDelivery.getOrderId())
+        .send(DeliveryManager::notifyDeliveryPickup);
   }
 
   /** Gets called by the driver's mobile app when he has delivered the order to the customer. */
   @Handler
-  public void notifyDeliveryDelivered(ObjectContext ctx) throws TerminalException {
-    expectStatus(ctx, DriverStatus.DELIVERING);
+  public void notifyDeliveryDelivered() throws TerminalException {
+    expectStatus(DriverStatus.DELIVERING);
 
+    var state = Restate.state();
     // Retrieve the ongoing delivery
     var assignedDelivery =
-        ctx.get(ASSIGNED_DELIVERY)
+        state
+            .get(ASSIGNED_DELIVERY)
             .orElseThrow(
                 () ->
                     new TerminalException(
                         "Driver is in status DELIVERING but there is no current delivery set."));
     // Clean up the state
-    ctx.clear(ASSIGNED_DELIVERY);
+    state.clear(ASSIGNED_DELIVERY);
 
     // Notify the delivery service that the delivery was delivered
-    DeliveryManagerClient.fromContext(ctx, assignedDelivery.getOrderId())
-        .send()
-        .notifyDeliveryDelivered();
+    Restate.virtualObjectHandle(DeliveryManager.class, assignedDelivery.getOrderId())
+        .send(DeliveryManager::notifyDeliveryDelivered);
 
     // Update the status of the driver to idle
-    ctx.set(DRIVER_STATUS, DriverStatus.IDLE);
+    state.set(DRIVER_STATUS, DriverStatus.IDLE);
   }
 
   /** Gets called by the driver's mobile app when he has moved to a new location. */
   @Handler
-  public void handleDriverLocationUpdateEvent(ObjectContext ctx, Location location) {
+  public void handleDriverLocationUpdateEvent(Location location) {
     // Update the location of the driver
-    ctx.set(DRIVER_LOCATION, location);
+    Restate.state().set(DRIVER_LOCATION, location);
 
     // Update the location of the delivery, if there is one
-    Optional<AssignedDelivery> assignedDelivery = ctx.get(ASSIGNED_DELIVERY);
+    Optional<AssignedDelivery> assignedDelivery = Restate.state().get(ASSIGNED_DELIVERY);
     if (assignedDelivery.isPresent()) {
-      DeliveryManagerClient.fromContext(ctx, assignedDelivery.get().getOrderId())
-          .send()
-          .handleDriverLocationUpdate(location);
+      Restate.virtualObjectHandle(DeliveryManager.class, assignedDelivery.get().getOrderId())
+          .send(DeliveryManager::handleDriverLocationUpdate, location);
     }
   }
 
@@ -153,16 +154,16 @@ public class DriverDigitalTwin {
    * got assigned to him.
    */
   @Handler
-  public Optional<AssignedDelivery> getAssignedDelivery(ObjectContext ctx) {
-    return ctx.get(ASSIGNED_DELIVERY);
+  public Optional<AssignedDelivery> getAssignedDelivery() {
+    return Restate.state().get(ASSIGNED_DELIVERY);
   }
 
   // Utility function to check if the driver is in the expected state
   // If the driver is in a different state, a terminal exception is thrown that stops any retries
   // from taking place.
   // Is only called from inside the driver service.
-  private void expectStatus(ObjectContext ctx, DriverStatus expectedStatus) {
-    var currentStatus = ctx.get(DRIVER_STATUS).orElse(DriverStatus.IDLE);
+  private void expectStatus(DriverStatus expectedStatus) {
+    var currentStatus = Restate.state().get(DRIVER_STATUS).orElse(DriverStatus.IDLE);
 
     if (currentStatus != expectedStatus) {
       throw new TerminalException(

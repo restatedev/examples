@@ -62,7 +62,7 @@ jobs:
         if: github.event.inputs.sdkJavaVersion != ''
         with:
           distribution: "temurin"
-          java-version: "21"
+          java-version: "25"
       - name: Setup Gradle
         if: github.event.inputs.sdkJavaVersion != ''
         uses: gradle/actions/setup-gradle@v3

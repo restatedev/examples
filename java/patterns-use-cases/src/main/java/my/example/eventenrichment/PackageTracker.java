@@ -1,7 +1,6 @@
 package my.example.eventenrichment;
 
-import dev.restate.sdk.ObjectContext;
-import dev.restate.sdk.SharedObjectContext;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.VirtualObject;
@@ -23,26 +22,30 @@ public class PackageTracker {
 
   // Called first by the seller over HTTP
   @Handler
-  public void registerPackage(ObjectContext ctx, PackageInfo packageInfo) {
+  public void registerPackage(PackageInfo packageInfo) {
     // Store the package details in the state
-    ctx.set(PACKAGE_INFO, packageInfo);
+    Restate.state().set(PACKAGE_INFO, packageInfo);
   }
 
   // Connected to a Kafka topic for real-time location updates
   @Handler
-  public void updateLocation(ObjectContext ctx, LocationUpdate locationUpdate) {
+  public void updateLocation(LocationUpdate locationUpdate) {
     var packageInfo =
-        ctx.get(PACKAGE_INFO).orElseThrow(() -> new TerminalException("Package not found"));
+        Restate.state()
+            .get(PACKAGE_INFO)
+            .orElseThrow(() -> new TerminalException("Package not found"));
 
     // Update the package info with the new location
     packageInfo.addLocation(locationUpdate);
-    ctx.set(PACKAGE_INFO, packageInfo);
+    Restate.state().set(PACKAGE_INFO, packageInfo);
   }
 
   // Called by the delivery dashboard to get the package details
   @Shared
-  public PackageInfo getPackageInfo(SharedObjectContext ctx) {
-    return ctx.get(PACKAGE_INFO).orElseThrow(() -> new TerminalException("Package not found"));
+  public PackageInfo getPackageInfo() {
+    return Restate.state()
+        .get(PACKAGE_INFO)
+        .orElseThrow(() -> new TerminalException("Package not found"));
   }
 
   public static void main(String[] args) {

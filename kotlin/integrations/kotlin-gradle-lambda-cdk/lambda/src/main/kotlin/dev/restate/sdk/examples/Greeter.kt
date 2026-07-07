@@ -13,7 +13,7 @@ package dev.restate.sdk.examples
 
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Service
-import dev.restate.sdk.kotlin.Context
+import dev.restate.sdk.kotlin.*
 
 /**
  * Template of a Restate service and handler
@@ -23,7 +23,7 @@ import dev.restate.sdk.kotlin.Context
 class Greeter {
 
   @Handler
-  suspend fun greet(ctx: Context, name: String): String {
+  suspend fun greet(name: String): String {
     return "Hello, $name!"
   }
 }

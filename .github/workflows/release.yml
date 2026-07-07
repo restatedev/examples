@@ -37,10 +37,7 @@ jobs:
             
                   java-hello-world-gradle.zip
                   java-hello-world-maven.zip
-                  java-hello-world-new-api-gradle.zip
-                  java-hello-world-new-api-maven.zip
                   java-hello-world-maven-spring-boot.zip
-                  java-hello-world-new-api-maven-spring-boot.zip
                   java-hello-world-maven-quarkus.zip
                   java-hello-world-lambda-cdk.zip
                   java-tour-of-orchestration.zip
@@ -145,27 +142,6 @@ jobs:
     with:
       source-directory: java/templates/java-maven-spring-boot
       destination-repo: java-spring-boot-template
-  copy-java-new-api-maven-template:
-    name: Copy Java New API Maven template to java-new-api-maven-template repo
-    uses: ./.github/workflows/copy-to-repo.yml
-    secrets: inherit
-    with:
-      source-directory: java/templates/java-new-api-maven
-      destination-repo: java-new-api-maven-template
-  copy-java-new-api-gradle-template:
-    name: Copy Java New API Gradle template to java-new-api-gradle-template repo
-    uses: ./.github/workflows/copy-to-repo.yml
-    secrets: inherit
-    with:
-      source-directory: java/templates/java-new-api-gradle
-      destination-repo: java-new-api-gradle-template
-  copy-java-new-api-spring-boot-template:
-    name: Copy Java New API Spring boot template to java-new-api-spring-boot-template repo
-    uses: ./.github/workflows/copy-to-repo.yml
-    secrets: inherit
-    with:
-      source-directory: java/templates/java-new-api-maven-spring-boot
-      destination-repo: java-new-api-spring-boot-template
   copy-kotlin-template:
     name: Copy Kotlin template to kotlin-template repo
     uses: ./.github/workflows/copy-to-repo.yml

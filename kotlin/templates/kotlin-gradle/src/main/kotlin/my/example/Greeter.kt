@@ -17,12 +17,12 @@ class Greeter {
   data class GreetingResponse(val message: String)
 
   @Handler
-  suspend fun greet(ctx: Context, req: Greeting): GreetingResponse {
+  suspend fun greet(req: Greeting): GreetingResponse {
     // Durably execute a set of steps; resilient against failures
-    val greetingId = ctx.random().nextUUID().toString()
-    ctx.runBlock("Notification") { sendNotification(greetingId, req.name) }
-    ctx.sleep(1.seconds)
-    ctx.runBlock("Reminder") { sendReminder(greetingId, req.name) }
+    val greetingId = random().nextUUID().toString()
+    runBlock("Notification") { sendNotification(greetingId, req.name) }
+    sleep(1.seconds)
+    runBlock("Reminder") { sendReminder(greetingId, req.name) }
 
     // Respond to caller
     return GreetingResponse("You said hi to ${req.name}!")

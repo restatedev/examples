@@ -1,6 +1,7 @@
 package my.example.queue;
 
 import dev.restate.client.Client;
+import dev.restate.common.InvocationOptions;
 
 /*
  * Restate is as a sophisticated task queue, with extra features like:
@@ -22,15 +23,16 @@ public class TaskSubmitter {
     // submit the task; similar to publishing a message to a queue
     // Restate ensures the task is executed exactly once
     var handle =
-        AsyncTaskWorkerClient.fromClient(restateClient)
+        restateClient
+            .serviceHandle(AsyncTaskWorker.class)
             // optionally add a delay to execute the task later
-            .send()
-            .runTask(
+            .send(
+                AsyncTaskWorker::runTask,
                 taskOpts,
                 // optionally add a delay to execute the task later
                 // Duration.ofDays(1),
                 // use a stable uuid as an idempotency key; Restate deduplicates for us
-                opts -> opts.idempotencyKey("dQw4w9WgXcQ"));
+                InvocationOptions.idempotencyKey("dQw4w9WgXcQ"));
 
     // ... do other things while the task is being processed ...
 

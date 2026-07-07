@@ -1,13 +1,11 @@
 package my.example.objects;
 
-import dev.restate.sdk.ObjectContext;
-import dev.restate.sdk.SharedObjectContext;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.serde.TypeRef;
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,20 +16,22 @@ public class UserSubscriptions {
   private static final StateKey<String> LAST_UPDATED = StateKey.of("lastUpdated", String.class);
 
   @Handler
-  public void add(ObjectContext ctx, String subscription) {
+  public void add(String subscription) {
+    var state = Restate.state();
+
     // Get current subscriptions
-    Set<String> subscriptions = ctx.get(SUBSCRIPTIONS).orElse(new HashSet<>());
+    Set<String> subscriptions = state.get(SUBSCRIPTIONS).orElse(new HashSet<>());
 
     // Add new subscription
     subscriptions.add(subscription);
-    ctx.set(SUBSCRIPTIONS, subscriptions);
+    state.set(SUBSCRIPTIONS, subscriptions);
 
     // Update metrics
-    ctx.set(LAST_UPDATED, Instant.now().toString());
+    state.set(LAST_UPDATED, Restate.instantNow().toString());
   }
 
   @Shared
-  public Set<String> getSubscriptions(SharedObjectContext ctx) {
-    return ctx.get(SUBSCRIPTIONS).orElse(Set.of());
+  public Set<String> getSubscriptions() {
+    return Restate.state().get(SUBSCRIPTIONS).orElse(Set.of());
   }
 }

@@ -4,7 +4,7 @@ import com.stripe.model.Event;
 import com.stripe.model.PaymentIntent;
 import com.stripe.net.ApiResource;
 import dev.restate.sdk.Awakeable;
-import dev.restate.sdk.Context;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Accept;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Raw;
@@ -45,18 +45,18 @@ public class PaymentService {
   public record PaymentRequest(Long amount, String paymentMethodId, boolean delayedStatus) {}
 
   @Handler
-  public void processPayment(Context ctx, PaymentRequest request) {
+  public void processPayment(PaymentRequest request) {
     PaymentUtils.verifyPaymentRequest(request);
 
     // Generate a deterministic idempotency key
-    String idempotencyKey = ctx.random().nextUUID().toString();
+    String idempotencyKey = Restate.random().nextUUID().toString();
 
     // Initiate a listener for external calls for potential webhook callbacks
-    Awakeable<PaymentIntent> webhookPromise = ctx.awakeable(paymentIntentSerde);
+    Awakeable<PaymentIntent> webhookPromise = Restate.awakeable(paymentIntentSerde);
 
     // Make a synchronous call to the payment service
     PaymentIntent paymentIntent =
-        ctx.run(
+        Restate.run(
             "Stripe call",
             paymentIntentSerde,
             () -> {
@@ -91,10 +91,10 @@ public class PaymentService {
 
   @Handler
   public boolean processWebhook(
-      Context ctx,
       // The raw request is the webhook call from Stripe that we will verify in the handler
       @Accept("*/*") @Raw byte[] request) {
-    Event event = stripe.parseWebhookCall(request, ctx.request().headers().get("stripe-signature"));
+    Event event =
+        stripe.parseWebhookCall(request, Restate.request().headers().get("stripe-signature"));
 
     if (!PaymentUtils.isPaymentIntent(event)) {
       logger.info("Unhandled event type: {}", event.getType());
@@ -111,7 +111,7 @@ public class PaymentService {
           400, "Missing callback property: " + PaymentUtils.RESTATE_CALLBACK_ID);
     }
 
-    ctx.awakeableHandle(webhookPromise).resolve(paymentIntentSerde, paymentIntent);
+    Restate.awakeableHandle(webhookPromise).resolve(paymentIntentSerde, paymentIntent);
     return true;
   }
 

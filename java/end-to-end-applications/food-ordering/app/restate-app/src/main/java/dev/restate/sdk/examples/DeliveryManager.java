@@ -11,13 +11,13 @@
 
 package dev.restate.sdk.examples;
 
-import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.examples.types.*;
-import dev.restate.sdk.examples.utils.GeoUtils;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
+import dev.restate.sdk.examples.types.*;
+import dev.restate.sdk.examples.utils.GeoUtils;
 
 /**
  * Manages the delivery of the order to the customer. Keyed by the order ID (similar to the
@@ -35,12 +35,14 @@ public class DeliveryManager {
    * Gets called by the OrderService when a new order has been prepared and needs to be delivered.
    */
   @Handler
-  public void start(ObjectContext ctx, DeliveryRequest request) throws TerminalException {
-    String orderId = ctx.key();
+  public void start(DeliveryRequest request) throws TerminalException {
+    String orderId = Restate.key();
 
     // Temporary placeholder: random location
-    var restaurantLocation = ctx.run(Location.class, GeoUtils::randomLocation);
-    var customerLocation = ctx.run(Location.class, GeoUtils::randomLocation);
+    var restaurantLocation =
+        Restate.run("restaurant location", Location.class, GeoUtils::randomLocation);
+    var customerLocation =
+        Restate.run("customer location", Location.class, GeoUtils::randomLocation);
 
     // Store the delivery information in Restate's state store
     DeliveryInformation deliveryInfo =
@@ -51,29 +53,26 @@ public class DeliveryManager {
             restaurantLocation,
             customerLocation,
             false);
-    ctx.set(DELIVERY_INFO, deliveryInfo);
+    Restate.state().set(DELIVERY_INFO, deliveryInfo);
 
     // Acquire a driver
-    var driverAwakeable = ctx.awakeable(String.class);
-    DriverDeliveryMatcherClient.fromContext(ctx, GeoUtils.DEMO_REGION)
-        .send()
-        .requestDriverForDelivery(driverAwakeable.id());
+    var driverAwakeable = Restate.awakeable(String.class);
+    Restate.virtualObjectHandle(DriverDeliveryMatcher.class, GeoUtils.DEMO_REGION)
+        .send(DriverDeliveryMatcher::requestDriverForDelivery, driverAwakeable.id());
     // Wait until the driver pool service has located a driver
     // This awakeable gets resolved either immediately when there is a pending delivery
     // or later, when a new delivery comes in.
     var driverId = driverAwakeable.await();
 
     // Assign the driver to the job
-    DriverDigitalTwinClient.fromContext(ctx, driverId)
+    Restate.virtualObject(DriverDigitalTwin.class, driverId)
         .assignDeliveryJob(
             new AssignDeliveryRequest(
-                orderId, request.getRestaurantId(), restaurantLocation, customerLocation))
-        .await();
+                orderId, request.getRestaurantId(), restaurantLocation, customerLocation));
 
     // Update the status of the order to "waiting for the driver"
-    OrderStatusServiceClient.fromContext(ctx, orderId)
-        .send()
-        .setStatus(StatusEnum.WAITING_FOR_DRIVER);
+    Restate.virtualObjectHandle(OrderStatusService.class, orderId)
+        .send(OrderStatusService::setStatus, StatusEnum.WAITING_FOR_DRIVER);
   }
 
   /**
@@ -81,20 +80,23 @@ public class DeliveryManager {
    * when the driver has arrived at the restaurant.
    */
   @Handler
-  public void notifyDeliveryPickup(ObjectContext ctx) throws TerminalException {
+  public void notifyDeliveryPickup() throws TerminalException {
+    var state = Restate.state();
     // Retrieve the delivery information for this delivery
     var delivery =
-        ctx.get(DELIVERY_INFO)
+        state
+            .get(DELIVERY_INFO)
             .orElseThrow(
                 () ->
                     new TerminalException(
                         "Delivery was picked up but there is no ongoing delivery."));
     // Update the status of the delivery to "picked up"
     delivery.notifyPickup();
-    ctx.set(DELIVERY_INFO, delivery);
+    state.set(DELIVERY_INFO, delivery);
 
     // Update the status of the order to "in delivery"
-    OrderStatusServiceClient.fromContext(ctx, ctx.key()).send().setStatus(StatusEnum.IN_DELIVERY);
+    Restate.virtualObjectHandle(OrderStatusService.class, Restate.key())
+        .send(OrderStatusService::setStatus, StatusEnum.IN_DELIVERY);
   }
 
   /**
@@ -102,19 +104,21 @@ public class DeliveryManager {
    * when the driver has delivered the order to the customer.
    */
   @Handler
-  public void notifyDeliveryDelivered(ObjectContext ctx) throws TerminalException {
+  public void notifyDeliveryDelivered() throws TerminalException {
+    var state = Restate.state();
     // Retrieve the delivery information for this delivery
     var delivery =
-        ctx.get(DELIVERY_INFO)
+        state
+            .get(DELIVERY_INFO)
             .orElseThrow(
                 () ->
                     new TerminalException(
                         "Delivery was delivered but there is no ongoing delivery."));
     // Order has been delivered, so state can be cleared
-    ctx.clear(DELIVERY_INFO);
+    state.clear(DELIVERY_INFO);
 
     // Notify the OrderService that the delivery has been completed
-    ctx.awakeableHandle(delivery.getCallbackId()).resolve(Void.class, null);
+    Restate.awakeableHandle(delivery.getCallbackId()).resolve(Void.class, null);
   }
 
   /**
@@ -123,11 +127,11 @@ public class DeliveryManager {
    * has moved to a new location.
    */
   @Handler
-  public void handleDriverLocationUpdate(ObjectContext ctx, Location newLocation)
-      throws TerminalException {
+  public void handleDriverLocationUpdate(Location newLocation) throws TerminalException {
     // Retrieve the delivery information for this delivery
     var delivery =
-        ctx.get(DELIVERY_INFO)
+        Restate.state()
+            .get(DELIVERY_INFO)
             .orElseThrow(
                 () ->
                     new TerminalException(
@@ -142,6 +146,7 @@ public class DeliveryManager {
                     delivery.getRestaurantLocation(), delivery.getCustomerLocation());
 
     // Update the ETA of the order
-    OrderStatusServiceClient.fromContext(ctx, ctx.key()).send().setETA(eta);
+    Restate.virtualObjectHandle(OrderStatusService.class, Restate.key())
+        .send(OrderStatusService::setETA, eta);
   }
 }

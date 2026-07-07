@@ -17,12 +17,12 @@ class Todos {
     }
 
     @Handler
-    suspend fun add(ctx: ObjectContext, item: TodoItem) = ctx.update(TODOS) {
+    suspend fun add(item: TodoItem) = update(TODOS) {
       (it ?: emptyMap()) + (item.id to item)
     }
 
     @Handler
-    suspend fun markCompleted(ctx: ObjectContext, id: String) = ctx.update(TODOS) {
+    suspend fun markCompleted(id: String) = update(TODOS) {
        val newNote = (it ?: emptyMap())
            .getOrElse(id) { throw TerminalException(404, "Note not found for given index $id") }
            .copy(isCompleted = true)
@@ -31,7 +31,7 @@ class Todos {
     }
 
     @Handler
-    suspend fun remove(ctx: ObjectContext, id: String) = ctx.update(TODOS) {
+    suspend fun remove(id: String) = update(TODOS) {
         val map = it?.toMutableMap() ?: mutableMapOf()
         if (map.remove(id) == null) {
             throw TerminalException(404, "Note not found for given index $id")
@@ -40,13 +40,15 @@ class Todos {
     }
 
     @Shared
-    suspend fun readAll(ctx: SharedObjectContext): Collection<TodoItem> =
-        ctx.get(TODOS)?.values ?: emptyList()
+    suspend fun readAll(): Collection<TodoItem> =
+        state().get(TODOS)?.values ?: emptyList()
 }
 
 // Helper function to update state values
-private suspend fun <T: Any> ObjectContext.update(stateKey: StateKey<T>, fn: (T?) -> T) =
-    this.set(stateKey, fn(this.get(stateKey)))
+private suspend fun <T: Any> update(stateKey: StateKey<T>, fn: (T?) -> T) {
+    val state = state()
+    state.set(stateKey, fn(state.get(stateKey)))
+}
 
 fun main() {
     RestateHttpServer.listen(endpoint {

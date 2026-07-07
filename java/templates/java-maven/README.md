@@ -7,11 +7,8 @@ Have a look at the [Java Quickstart guide](https://docs.restate.dev/get_started/
 To run:
 
 ```shell
-mvn compile exec:java
+mvn compile exec:exec
 ```
-
-Restate SDK uses annotation processing to generate client classes.
-When modifying the annotated services in Intellij, it is suggested to run **CTRL + F9** to re-generate the client classes.
 
 ## Using AI coding tools
 

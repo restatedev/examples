@@ -33,19 +33,19 @@ import utils.createSubscription
 class SubscriptionService {
 
     @Handler
-    suspend fun add(ctx: Context, req: SubscriptionRequest) {
-        // Restate persists the result of all `ctx` actions and recovers them after failures
+    suspend fun add(req: SubscriptionRequest) {
+        // Restate persists the result of all durable actions and recovers them after failures
         // For example, generate a stable idempotency key:
-        val paymentId = ctx.random().nextUUID().toString()
+        val paymentId = random().nextUUID().toString()
 
-        // ctx.run persists results of successful actions and skips execution on retries
+        // runBlock persists results of successful actions and skips execution on retries
         // Failed actions (timeouts, API downtime, etc.) get retried
-        val payRef = ctx.runBlock {
+        val payRef = runBlock {
             createRecurringPayment(req.creditCard, paymentId)
         }
 
         for (subscription in req.subscriptions) {
-            ctx.runBlock {
+            runBlock {
                 createSubscription(req.userId, subscription, payRef)
             }
         }

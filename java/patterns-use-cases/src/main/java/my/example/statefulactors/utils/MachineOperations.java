@@ -1,6 +1,6 @@
 package my.example.statefulactors.utils;
 
-import dev.restate.sdk.Context;
+import dev.restate.sdk.Restate;
 import java.time.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,21 +22,21 @@ public class MachineOperations {
     }
   }
 
-  public static void bringUpMachine(Context ctx, String machineId) {
+  public static void bringUpMachine(String machineId) {
     logger.info("{} beginning transition to UP", machineId);
 
     // Some long fragile process
     maybeCrash(0.4);
-    ctx.sleep(Duration.ofMillis(5000));
+    Restate.sleep(Duration.ofMillis(5000));
     logger.info("{} is now running", machineId);
   }
 
-  public static void tearDownMachine(Context ctx, String machineId) {
+  public static void tearDownMachine(String machineId) {
     logger.info("{} beginning transition to down", machineId);
 
     // Some long fragile process
     maybeCrash(0.4);
-    ctx.sleep(Duration.ofMillis(5000));
+    Restate.sleep(Duration.ofMillis(5000));
     logger.info("{} is now down", machineId);
   }
 }

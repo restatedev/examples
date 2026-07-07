@@ -2,8 +2,7 @@ package my.example.workflows;
 
 import static my.example.utils.Utils.*;
 
-import dev.restate.sdk.SharedWorkflowContext;
-import dev.restate.sdk.WorkflowContext;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.common.DurablePromiseKey;
@@ -17,20 +16,20 @@ public class SignupWithSignalsWorkflow {
       DurablePromiseKey.of("email-verified", String.class);
 
   @Workflow
-  public boolean run(WorkflowContext ctx, User user) {
-    String userId = ctx.key();
+  public boolean run(User user) {
+    String userId = Restate.key();
 
     // Generate verification secret and send email
-    String secret = ctx.random().nextUUID().toString();
-    ctx.run("verify", () -> sendVerificationEmail(userId, user, secret));
+    String secret = Restate.random().nextUUID().toString();
+    Restate.run("verify", () -> sendVerificationEmail(userId, user, secret));
 
     // Wait for user to click verification link
-    String clickedSecret = ctx.promise(EMAIL_VERIFIED_PROMISE).future().await();
+    String clickedSecret = Restate.promise(EMAIL_VERIFIED_PROMISE).future().await();
     return secret.equals(clickedSecret);
   }
 
   @Shared
-  public void verifyEmail(SharedWorkflowContext ctx, VerifyEmailRequest req) {
-    ctx.promiseHandle(EMAIL_VERIFIED_PROMISE).resolve(req.secret());
+  public void verifyEmail(VerifyEmailRequest req) {
+    Restate.promiseHandle(EMAIL_VERIFIED_PROMISE).resolve(req.secret());
   }
 }

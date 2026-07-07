@@ -11,12 +11,12 @@
 
 package dev.restate.sdk.examples;
 
-import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
-import dev.restate.sdk.examples.types.StatusEnum;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
+import dev.restate.sdk.examples.types.StatusEnum;
 
 @VirtualObject
 public class OrderStatusService {
@@ -45,19 +45,20 @@ public class OrderStatusService {
 
   /** Gets called by the webUI frontend to display the status of an order. */
   @Handler
-  public OrderStatus get(ObjectContext ctx) throws TerminalException {
-    var status = ctx.get(ORDER_STATUS).orElse(StatusEnum.NEW);
-    var eta = ctx.get(ORDER_ETA).orElse(-1L);
+  public OrderStatus get() throws TerminalException {
+    var state = Restate.state();
+    var status = state.get(ORDER_STATUS).orElse(StatusEnum.NEW);
+    var eta = state.get(ORDER_ETA).orElse(-1L);
     return new OrderStatus(status, eta);
   }
 
   @Handler
-  public void setStatus(ObjectContext ctx, StatusEnum statusEnum) throws TerminalException {
-    ctx.set(ORDER_STATUS, statusEnum);
+  public void setStatus(StatusEnum statusEnum) throws TerminalException {
+    Restate.state().set(ORDER_STATUS, statusEnum);
   }
 
   @Handler
-  public void setETA(ObjectContext ctx, long eta) throws TerminalException {
-    ctx.set(ORDER_ETA, eta);
+  public void setETA(long eta) throws TerminalException {
+    Restate.state().set(ORDER_ETA, eta);
   }
 }

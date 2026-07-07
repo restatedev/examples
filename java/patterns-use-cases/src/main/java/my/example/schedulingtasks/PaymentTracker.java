@@ -3,7 +3,7 @@ package my.example.schedulingtasks;
 import static my.example.schedulingtasks.utils.Utils.escalateToHuman;
 import static my.example.schedulingtasks.utils.Utils.sendReminderEmail;
 
-import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.StateKey;
@@ -21,29 +21,30 @@ public class PaymentTracker {
 
   // Stripe sends us webhook events for invoice payment attempts
   @Handler
-  public void onPaymentSuccess(ObjectContext ctx, StripeEvent event) {
-    ctx.set(PAID, true);
+  public void onPaymentSuccess(StripeEvent event) {
+    Restate.state().set(PAID, true);
   }
 
   @Handler
-  public void onPaymentFailure(ObjectContext ctx, StripeEvent event) {
+  public void onPaymentFailure(StripeEvent event) {
+    var state = Restate.state();
+
     // Already paid, no need to send reminders
-    if (ctx.get(PAID).orElse(false)) {
+    if (state.get(PAID).orElse(false)) {
       return;
     }
 
-    int remindersCount = ctx.get(REMINDER_COUNT).orElse(0);
+    int remindersCount = state.get(REMINDER_COUNT).orElse(0);
     if (remindersCount < 3) {
-      ctx.set(REMINDER_COUNT, remindersCount + 1);
-      ctx.run(() -> sendReminderEmail(event));
+      state.set(REMINDER_COUNT, remindersCount + 1);
+      Restate.run("send reminder", () -> sendReminderEmail(event));
 
       // Schedule next reminder via a delayed self call
-      PaymentTrackerClient.fromContext(ctx, ctx.key())
-          .send()
-          .onPaymentFailure(event, Duration.ofDays(1));
+      Restate.virtualObjectHandle(PaymentTracker.class, Restate.key())
+          .send(PaymentTracker::onPaymentFailure, event, Duration.ofDays(1));
     } else {
       // After three reminders, escalate to support team
-      ctx.run(() -> escalateToHuman(event));
+      Restate.run("escalate", () -> escalateToHuman(event));
     }
   }
 

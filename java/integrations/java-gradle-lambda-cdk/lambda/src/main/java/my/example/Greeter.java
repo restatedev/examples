@@ -3,7 +3,7 @@ package my.example;
 import static my.example.Utils.sendNotification;
 import static my.example.Utils.sendReminder;
 
-import dev.restate.sdk.Context;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import java.time.Duration;
@@ -12,12 +12,12 @@ import java.time.Duration;
 public class Greeter {
 
   @Handler
-  public String greet(Context ctx, String name) {
+  public String greet(String name) {
     // Durably execute a set of steps; resilient against failures
-    String greetingId = ctx.random().nextUUID().toString();
-    ctx.run(() -> sendNotification(greetingId, name));
-    ctx.sleep(Duration.ofMillis(1000));
-    ctx.run(() -> sendReminder(greetingId));
+    String greetingId = Restate.random().nextUUID().toString();
+    Restate.run("send-notification", () -> sendNotification(greetingId, name));
+    Restate.sleep(Duration.ofMillis(1000));
+    Restate.run("send-reminder", () -> sendReminder(greetingId));
 
     // Respond to caller
     return "You said hi to " + name + "!";

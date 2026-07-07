@@ -13,10 +13,10 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
-    <restate.version>2.7.0</restate.version>
+    <maven.compiler.release>25</maven.compiler.release>
+    <restate.version>2.9.0</restate.version>
   </properties>
+
 
   <dependencies>
     <dependency>
@@ -59,35 +59,48 @@
 
   <build>
     <plugins>
-      <!-- Setup annotation processor -->
+      <!-- Provision a JDK 25 toolchain, auto-discovered from installed JDKs (no toolchains.xml needed) -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.11.0</version>
+        <artifactId>maven-toolchains-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>select-jdk-toolchain</goal>
+            </goals>
+          </execution>
+        </executions>
         <configuration>
-          <annotationProcessorPaths>
-            <path>
-              <groupId>dev.restate</groupId>
-              <artifactId>sdk-api-gen</artifactId>
-              <version>${restate.version}</version>
-            </path>
-          </annotationProcessorPaths>
+          <version>[25,)</version>
         </configuration>
       </plugin>
 
-      <!-- Setup main method -->
+      <!-- Run the app in a forked JVM via `mvn compile exec:exec`, so it uses the JDK 25 toolchain
+           and the Java 25 flags below (exec:java runs in-process in Maven's JVM and can't take these). -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>3.6.3</version>
         <configuration>
-          <mainClass>my.example.Greeter</mainClass>
+          <executable>java</executable>
+          <arguments>
+            <argument>--enable-native-access=ALL-UNNAMED</argument>
+            <argument>--sun-misc-unsafe-memory-access=allow</argument>
+            <argument>-classpath</argument>
+            <classpath/>
+            <argument>my.example.Greeter</argument>
+          </arguments>
         </configuration>
       </plugin>
 
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.5.1</version>
+        <configuration>
+          <!-- Java 25 warnings: enable-native-access is for the Restate SDK state machine, sun-misc-unsafe-memory-access is for netty. -->
+          <argLine>--enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow</argLine>
+        </configuration>
       </plugin>
     </plugins>
   </build>

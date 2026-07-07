@@ -28,25 +28,27 @@ class GreeterObject {
   }
 
   @Handler
-  suspend fun greet(ctx: ObjectContext, greeting: String): String  {
+  suspend fun greet(greeting: String): String  {
     // Access the state attached to this object (this 'name')
     // State access and updates are exclusive and consistent with the invocations
-    val count = ctx.get(COUNT) ?: 0
+    val state = state()
+    val count = state.get(COUNT) ?: 0
     val newCount = count + 1
-    ctx.set(COUNT, newCount)
+    state.set(COUNT, newCount)
 
-    return "$greeting ${ctx.key()}, for the $newCount-th time"
+    return "$greeting ${objectKey()}, for the $newCount-th time"
   }
 
   @Handler
-  suspend fun ungreet(ctx: ObjectContext): String {
-    val count = ctx.get(COUNT) ?: 0
+  suspend fun ungreet(): String {
+    val state = state()
+    val count = state.get(COUNT) ?: 0
     if (count > 0) {
       val newCount = count - 1
-      ctx.set(COUNT, newCount)
+      state.set(COUNT, newCount)
     }
 
-    return "Dear ${ctx.key()}, taking one greeting back: $count"
+    return "Dear ${objectKey()}, taking one greeting back: $count"
   }
 }
 

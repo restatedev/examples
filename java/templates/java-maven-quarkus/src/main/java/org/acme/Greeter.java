@@ -1,6 +1,6 @@
 package org.acme;
 
-import dev.restate.sdk.Context;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -21,12 +21,12 @@ public class Greeter {
   public record GreetingResponse(String message) {}
 
   @Handler
-  public GreetingResponse greet(Context ctx, Greeting req) {
+  public GreetingResponse greet(Greeting req) {
     // Durably execute a set of steps; resilient against failures
-    String greetingId = ctx.random().nextUUID().toString();
-    ctx.run("Notification", () -> sendNotification(greetingId, req.name));
-    ctx.sleep(Duration.ofSeconds(1));
-    ctx.run("Reminder", () -> sendReminder(greetingId, req.name));
+    String greetingId = Restate.random().nextUUID().toString();
+    Restate.run("Notification", () -> sendNotification(greetingId, req.name));
+    Restate.sleep(Duration.ofSeconds(1));
+    Restate.run("Reminder", () -> sendReminder(greetingId, req.name));
 
     // Respond to caller
     return new GreetingResponse("You said hi to " + req.name + "!");

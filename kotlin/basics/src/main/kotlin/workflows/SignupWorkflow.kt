@@ -26,21 +26,21 @@ class SignupWorkflow {
   }
 
   @Workflow
-  suspend fun run(ctx: WorkflowContext, user: User): Boolean {
+  suspend fun run(user: User): Boolean {
     // workflow ID = user ID; workflow runs once per user
-    val userId = ctx.key()
+    val userId = workflowKey()
 
     // Durably executed action; write to other system
-    ctx.runBlock { createUserEntry(user) }
+    runBlock { createUserEntry(user) }
 
     // Sent user email with verification link
-    val secret = ctx.random().nextUUID().toString()
-    ctx.runBlock { sendEmailWithLink(userId, user, secret) }
+    val secret = random().nextUUID().toString()
+    runBlock { sendEmailWithLink(userId, user, secret) }
 
     // Wait until user clicked email verification link
     // Promise gets resolved or rejected by the other handlers
     val clickSecret: String =
-      ctx.promise(LINK_CLICKED)
+      promise(LINK_CLICKED)
         .future()
         .await()
 
@@ -49,9 +49,9 @@ class SignupWorkflow {
 
   // --- Other handlers interact with the workflow via queries and signals ---
   @Shared
-  suspend fun click(ctx: SharedWorkflowContext, secret: String) {
+  suspend fun click(secret: String) {
     // Send data to the workflow via a durable promise
-    ctx.promiseHandle(LINK_CLICKED).resolve(secret)
+    promiseHandle(LINK_CLICKED).resolve(secret)
   }
 }
 

@@ -29,7 +29,7 @@ public class GreeterTest {
   @Test
   @Timeout(value = 10)
   void greet(@RestateClient Client ingressClient) {
-    var client = GreeterClient.fromClient(ingressClient);
+    var client = ingressClient.service(Greeter.class);
 
     var response = client.greet(new Greeting("Francesco"));
     assertThat(response.message()).isEqualTo("You said ciao to Francesco!");

@@ -16,7 +16,7 @@ public class HelloController {
 
     @GetMapping("/")
 	public String index() {
-		return GreeterClient.fromClient(restateClient).greet(new Greeting("Alice")) + " from Spring Boot!";
+		return restateClient.service(Greeter.class).greet(new Greeting("Alice")) + " from Spring Boot!";
 	}
 
 }

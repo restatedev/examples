@@ -17,16 +17,16 @@ class UserFeed {
   @Serializable data class SocialMediaPost(val content: String, val metadata: String)
 
   @Handler
-  suspend fun processPost(ctx: ObjectContext, post: SocialMediaPost) {
-    val userId = ctx.key()
+  suspend fun processPost(post: SocialMediaPost) {
+    val userId = objectKey()
 
-    val postId = ctx.runBlock { createPost(userId, post) }
+    val postId = runBlock { createPost(userId, post) }
 
-    while (ctx.runBlock { getPostStatus(postId) } == "PENDING") {
-      ctx.sleep(5000.milliseconds)
+    while (runBlock { getPostStatus(postId) } == "PENDING") {
+      sleep(5000.milliseconds)
     }
 
-    ctx.runBlock { updateUserFeed(userId, postId) }
+    runBlock { updateUserFeed(userId, postId) }
   }
 }
 

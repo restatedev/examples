@@ -13,14 +13,12 @@ repositories {
 	mavenCentral()
 }
 
-val restateVersion = "2.7.0"
+val restateVersion = "2.9.0"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
-	annotationProcessor("dev.restate:sdk-api-gen:$restateVersion")
 
 	implementation("org.springframework.boot", "spring-boot-starter-data-jpa")
 
@@ -35,7 +33,7 @@ dependencies {
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
+		languageVersion = JavaLanguageVersion.of(25)
 	}
 }
 
@@ -46,6 +44,13 @@ application {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	// Java 25 warnings: --enable-native-access for the Restate SDK state machine, --sun-misc-unsafe-memory-access for netty.
+	jvmArgs("--enable-native-access=ALL-UNNAMED", "--sun-misc-unsafe-memory-access=allow")
+}
+
+tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
+	// Java 25 warnings: --enable-native-access for the Restate SDK state machine, --sun-misc-unsafe-memory-access for netty.
+	jvmArgs("--enable-native-access=ALL-UNNAMED", "--sun-misc-unsafe-memory-access=allow")
 }
 
 spotless {

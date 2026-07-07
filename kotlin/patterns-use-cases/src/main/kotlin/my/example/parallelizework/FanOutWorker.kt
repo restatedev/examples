@@ -29,22 +29,25 @@ import dev.restate.sdk.kotlin.endpoint.endpoint
 @Service
 class FanOutWorker {
   @Handler
-  suspend fun run(ctx: Context, task: Task): TaskResult {
+  suspend fun run(task: Task): TaskResult {
     // Split the task in subtasks
-    val subTasks = ctx.runBlock { task.split() }
+    val subTasks = runBlock { task.split() }
 
     // Fan out the subtasks - run them in parallel
     // Fan in - Await all results and aggregate
-    val results = subTasks.map { FanOutWorkerClient.fromContext(ctx).runSubtask(it) }.awaitAll()
+    val results =
+        subTasks
+            .map { subTask -> toService<FanOutWorker>().request { runSubtask(subTask) }.call() }
+            .awaitAll()
 
     return results.aggregate()
   }
 
   @Handler
-  suspend fun runSubtask(ctx: Context, subTask: SubTask): SubTaskResult {
+  suspend fun runSubtask(subTask: SubTask): SubTaskResult {
     // Processing logic goes here ...
     // Can be moved to a separate service to scale independently
-    return subTask.execute(ctx)
+    return subTask.execute()
   }
 }
 

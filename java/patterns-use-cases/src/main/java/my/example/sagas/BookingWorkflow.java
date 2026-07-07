@@ -1,6 +1,6 @@
 package my.example.sagas;
 
-import dev.restate.sdk.Context;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.common.TerminalException;
@@ -48,20 +48,23 @@ public class BookingWorkflow {
       String customerId, FlightRequest flight, CarRequest car, HotelRequest hotel) {}
 
   @Handler
-  public void run(Context ctx, BookingRequest req) throws TerminalException {
+  public void run(BookingRequest req) throws TerminalException {
     // Create a list of undo actions
     List<Runnable> compensations = new ArrayList<>();
 
     try {
       // For each action, we register a compensation that will be executed on failures
-      compensations.add(() -> ctx.run("Cancel flight", () -> FlightClient.cancel(req.customerId)));
-      ctx.run("Book flight", () -> FlightClient.book(req.customerId, req.flight()));
+      compensations.add(
+          () -> Restate.run("Cancel flight", () -> FlightClient.cancel(req.customerId)));
+      Restate.run("Book flight", () -> FlightClient.book(req.customerId, req.flight()));
 
-      compensations.add(() -> ctx.run("Cancel car", () -> CarRentalClient.cancel(req.customerId)));
-      ctx.run("Book car", () -> CarRentalClient.book(req.customerId, req.car()));
+      compensations.add(
+          () -> Restate.run("Cancel car", () -> CarRentalClient.cancel(req.customerId)));
+      Restate.run("Book car", () -> CarRentalClient.book(req.customerId, req.car()));
 
-      compensations.add(() -> ctx.run("Cancel hotel", () -> HotelClient.cancel(req.customerId)));
-      ctx.run("Book hotel", () -> HotelClient.book(req.customerId, req.hotel()));
+      compensations.add(
+          () -> Restate.run("Cancel hotel", () -> HotelClient.cancel(req.customerId)));
+      Restate.run("Book hotel", () -> HotelClient.book(req.customerId, req.hotel()));
     }
     // Terminal exceptions are not retried by Restate. We undo previous actions and fail the
     // workflow.

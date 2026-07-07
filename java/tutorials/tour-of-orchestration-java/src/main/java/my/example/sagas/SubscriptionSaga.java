@@ -1,6 +1,6 @@
 package my.example.sagas;
 
-import dev.restate.sdk.Context;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.common.TerminalException;
@@ -15,15 +15,15 @@ import my.example.auxiliary.types.SubscriptionRequest;
 public class SubscriptionSaga {
 
   @Handler
-  public void add(Context ctx, SubscriptionRequest req) {
+  public void add(SubscriptionRequest req) {
     List<Runnable> compensations = new ArrayList<>();
     try {
-      var paymentId = ctx.random().nextUUID().toString();
+      var paymentId = Restate.random().nextUUID().toString();
 
       compensations.add(
-          () -> ctx.run("undo-pay", () -> PaymentClient.removeRecurringPayment(paymentId)));
+          () -> Restate.run("undo-pay", () -> PaymentClient.removeRecurringPayment(paymentId)));
       String payRef =
-          ctx.run(
+          Restate.run(
               "pay",
               String.class,
               () -> PaymentClient.createRecurringPayment(req.creditCard(), paymentId));
@@ -31,10 +31,10 @@ public class SubscriptionSaga {
       for (String subscription : req.subscriptions()) {
         compensations.add(
             () ->
-                ctx.run(
+                Restate.run(
                     "undo-" + subscription,
                     () -> SubscriptionClient.removeSubscription(req.userId(), subscription)));
-        ctx.run(
+        Restate.run(
             "add-" + subscription,
             () -> SubscriptionClient.createSubscription(req.userId(), subscription, payRef));
       }

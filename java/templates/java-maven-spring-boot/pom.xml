@@ -27,9 +27,11 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>17</java.version>
-        <restate.version>2.7.0</restate.version>
+		<java.version>25</java.version>
+        <restate.version>2.9.0</restate.version>
 	</properties>
+
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -55,23 +57,37 @@
 
 	<build>
 		<plugins>
+			<!-- Provision a JDK 25 toolchain, auto-discovered from installed JDKs (no toolchains.xml needed) -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-toolchains-plugin</artifactId>
+				<version>3.2.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>select-jdk-toolchain</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<version>[25,)</version>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<!-- Java 25 warnings: enable-native-access is for the Restate SDK state machine, sun-misc-unsafe-memory-access is for netty. -->
+					<jvmArguments>--enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow</jvmArguments>
+				</configuration>
 			</plugin>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <parameters>true</parameters>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>dev.restate</groupId>
-                            <artifactId>sdk-api-gen</artifactId>
-                            <version>${restate.version}</version>
-                        </path>
-                    </annotationProcessorPaths>
-                </configuration>
-            </plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<!-- Java 25 warnings: enable-native-access is for the Restate SDK state machine, sun-misc-unsafe-memory-access is for netty. -->
+					<argLine>--enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow</argLine>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 

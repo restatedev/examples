@@ -3,8 +3,8 @@ package my.example.concurrenttasks;
 import static my.example.auxiliary.clients.PaymentClient.createRecurringPayment;
 import static my.example.auxiliary.clients.SubscriptionClient.createSubscription;
 
-import dev.restate.sdk.Context;
 import dev.restate.sdk.DurableFuture;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import java.util.ArrayList;
@@ -16,16 +16,16 @@ import my.example.auxiliary.types.SubscriptionResult;
 public class ParallelSubscriptionService {
 
   @Handler
-  public SubscriptionResult add(Context ctx, SubscriptionRequest req) {
-    var paymentId = ctx.random().nextUUID().toString();
+  public SubscriptionResult add(SubscriptionRequest req) {
+    var paymentId = Restate.random().nextUUID().toString();
     var payRef =
-        ctx.run("pay", String.class, () -> createRecurringPayment(req.creditCard(), paymentId));
+        Restate.run("pay", String.class, () -> createRecurringPayment(req.creditCard(), paymentId));
 
     // Start all subscriptions in parallel
     List<DurableFuture<?>> subscriptionFutures = new ArrayList<>();
     for (String subscription : req.subscriptions()) {
       subscriptionFutures.add(
-          ctx.runAsync(
+          Restate.runAsync(
               "add-" + subscription, () -> createSubscription(req.userId(), subscription, payRef)));
     }
 

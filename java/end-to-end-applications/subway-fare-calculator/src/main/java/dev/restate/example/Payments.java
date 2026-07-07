@@ -1,7 +1,7 @@
 package dev.restate.example;
 
 import dev.restate.example.apis.PaymentApi;
-import dev.restate.sdk.Context;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.common.RetryPolicy;
 import dev.restate.sdk.common.TerminalException;
 
@@ -15,17 +15,17 @@ public class Payments {
           .setMaxAttempts(AUTH_ATTEMPTS)
           .setInitialDelay(ATTEMPT_DELAY);
 
-  public static boolean authorizeCard(Context ctx, String cardRef) {
+  public static boolean authorizeCard(String cardRef) {
     try {
-      return ctx.run("auth attempt", Boolean.TYPE, retryThreeTimes, () -> PaymentApi.runAuthorization(cardRef));
+      return Restate.run("auth attempt", Boolean.TYPE, retryThreeTimes, () -> PaymentApi.runAuthorization(cardRef));
     } catch (TerminalException e) {
       return false;
     }
   }
 
-  public static boolean chargeCard(Context ctx, String cardRef, long amountCents) {
+  public static boolean chargeCard(String cardRef, long amountCents) {
       try {
-        return ctx.run("charge attempt", Boolean.TYPE, retryThreeTimes, () -> PaymentApi.makePayment(cardRef, amountCents));
+        return Restate.run("charge attempt", Boolean.TYPE, retryThreeTimes, () -> PaymentApi.makePayment(cardRef, amountCents));
       } catch (TerminalException e) {
         return false;
       }

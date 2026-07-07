@@ -13,9 +13,9 @@ package dev.restate.sdk.examples
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.VirtualObject
+import dev.restate.sdk.common.TerminalException
 import dev.restate.sdk.examples.utils.GeoUtils
 import dev.restate.sdk.kotlin.*
-import dev.restate.sdk.common.TerminalException
 
 /** Virtual object tracking the ETA, keyed by order-id */
 @VirtualObject
@@ -28,23 +28,13 @@ class OrderETAService {
 
   /** Gets called by the webUI frontend to display the status of an order. */
   @Shared
-  suspend fun get(ctx: SharedObjectContext): Long {
-    return ctx.get(ORDER_ETA) ?: -1L
+  suspend fun get(): Long {
+    return state().get(ORDER_ETA) ?: -1L
   }
 
   @Handler
-  suspend fun notifyDeliveryLocations(ctx: ObjectContext, locations: DeliveryLocations) {
-    ctx.set(DELIVERY_LOCATIONS, locations)
-  }
-
-  /**
-   * Updates the location of the order. Gets called by
-   * DriverService.HandleDriverLocationUpdateEvent() (digital twin of the driver) when the driver
-   * has moved to a new location.
-   */
-  @Handler
-  suspend fun notifyDeliveryPickup(ctx: ObjectContext) {
-    ctx.set(DELIVERY_IS_PICKED_UP, Unit)
+  suspend fun notifyDeliveryLocations(locations: DeliveryLocations) {
+    state().set(DELIVERY_LOCATIONS, locations)
   }
 
   /**
@@ -53,14 +43,25 @@ class OrderETAService {
    * has moved to a new location.
    */
   @Handler
-  suspend fun notifyDriverLocationUpdate(ctx: ObjectContext, newLocation: Location) {
+  suspend fun notifyDeliveryPickup() {
+    state().set(DELIVERY_IS_PICKED_UP, Unit)
+  }
+
+  /**
+   * Updates the location of the order. Gets called by
+   * DriverService.HandleDriverLocationUpdateEvent() (digital twin of the driver) when the driver
+   * has moved to a new location.
+   */
+  @Handler
+  suspend fun notifyDriverLocationUpdate(newLocation: Location) {
+    val state = state()
     // Retrieve the delivery information for this delivery
     val locations =
-        ctx.get(DELIVERY_LOCATIONS)
+        state.get(DELIVERY_LOCATIONS)
             ?: throw TerminalException(
                 "Driver is doing a delivery but there is no ongoing delivery.")
 
-    val isOrderPickedUp = ctx.get(DELIVERY_IS_PICKED_UP) != null
+    val isOrderPickedUp = state.get(DELIVERY_IS_PICKED_UP) != null
 
     // Parse the new location, and calculate the ETA of the delivery to the customer
     val eta =
@@ -70,6 +71,6 @@ class OrderETAService {
                 GeoUtils.calculateEtaMillis(locations.restaurant, locations.customer))
 
     // Update the ETA of the order
-    ctx.set(ORDER_ETA, eta)
+    state.set(ORDER_ETA, eta)
   }
 }

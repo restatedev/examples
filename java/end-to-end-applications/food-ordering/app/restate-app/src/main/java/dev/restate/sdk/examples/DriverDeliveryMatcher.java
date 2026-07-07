@@ -11,14 +11,12 @@
 
 package dev.restate.sdk.examples;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.StateKey;
 import dev.restate.sdk.common.TerminalException;
 import dev.restate.serde.TypeRef;
-
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -43,23 +41,24 @@ public class DriverDeliveryMatcher {
    * in line. If no pending deliveries, driver is added to the available driver pool
    */
   @Handler
-  public void setDriverAvailable(ObjectContext ctx, String driverId) throws TerminalException {
-    var pendingDeliveries = ctx.get(PENDING_DELIVERIES).orElse(new LinkedList<>());
+  public void setDriverAvailable(String driverId) throws TerminalException {
+    var state = Restate.state();
+    var pendingDeliveries = state.get(PENDING_DELIVERIES).orElse(new LinkedList<>());
 
     // If there is a pending delivery, assign it to the driver
     var nextDelivery = pendingDeliveries.poll();
     if (nextDelivery != null) {
       // Update the queue in state. Delivery was removed.
-      ctx.set(PENDING_DELIVERIES, pendingDeliveries);
+      state.set(PENDING_DELIVERIES, pendingDeliveries);
       // Notify that delivery is ongoing
-      ctx.awakeableHandle(nextDelivery).resolve(String.class, driverId);
+      Restate.awakeableHandle(nextDelivery).resolve(String.class, driverId);
       return;
     }
 
     // Otherwise remember driver as available
-    var availableDrivers = ctx.get(AVAILABLE_DRIVERS).orElse(new LinkedList<>());
+    var availableDrivers = state.get(AVAILABLE_DRIVERS).orElse(new LinkedList<>());
     availableDrivers.offer(driverId);
-    ctx.set(AVAILABLE_DRIVERS, availableDrivers);
+    state.set(AVAILABLE_DRIVERS, availableDrivers);
   }
 
   /**
@@ -67,23 +66,23 @@ public class DriverDeliveryMatcher {
    * available. If no available drivers, the delivery is added to the pending deliveries queue
    */
   @Handler
-  public void requestDriverForDelivery(ObjectContext ctx, String deliveryCallbackId)
-      throws TerminalException {
-    var availableDrivers = ctx.get(AVAILABLE_DRIVERS).orElse(new LinkedList<>());
+  public void requestDriverForDelivery(String deliveryCallbackId) throws TerminalException {
+    var state = Restate.state();
+    var availableDrivers = state.get(AVAILABLE_DRIVERS).orElse(new LinkedList<>());
 
     // If a driver is available, assign the delivery right away
     var nextAvailableDriver = availableDrivers.poll();
     if (nextAvailableDriver != null) {
       // Remove driver from the pool
-      ctx.set(AVAILABLE_DRIVERS, availableDrivers);
+      state.set(AVAILABLE_DRIVERS, availableDrivers);
       // Notify that delivery is ongoing
-      ctx.awakeableHandle(deliveryCallbackId).resolve(String.class, nextAvailableDriver);
+      Restate.awakeableHandle(deliveryCallbackId).resolve(String.class, nextAvailableDriver);
       return;
     }
 
     // otherwise store the delivery request until a new driver becomes available
-    var pendingDeliveries = ctx.get(PENDING_DELIVERIES).orElse(new LinkedList<>());
+    var pendingDeliveries = state.get(PENDING_DELIVERIES).orElse(new LinkedList<>());
     pendingDeliveries.offer(deliveryCallbackId);
-    ctx.set(PENDING_DELIVERIES, pendingDeliveries);
+    state.set(PENDING_DELIVERIES, pendingDeliveries);
   }
 }

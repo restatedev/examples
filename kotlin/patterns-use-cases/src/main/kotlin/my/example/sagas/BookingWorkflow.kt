@@ -54,21 +54,21 @@ Note: that the compensation logic is purely implemented in user code (no special
 class BookingWorkflow {
 
   @Handler
-  suspend fun run(ctx: Context, req: BookingRequest) {
+  suspend fun run(req: BookingRequest) {
 
     // Create a list of undo actions
     val compensations = mutableListOf<suspend () -> Unit>()
 
     try {
       // For each action, we register a compensation that will be executed on failures
-      compensations.add { ctx.runBlock("Cancel flight") { cancelFlight(req.customerId) } }
-      ctx.runBlock("Book flight") { bookFlight(req.customerId, req.flight) }
+      compensations.add { runBlock("Cancel flight") { cancelFlight(req.customerId) } }
+      runBlock("Book flight") { bookFlight(req.customerId, req.flight) }
 
-      compensations.add { ctx.runBlock("Cancel car") { cancelCar(req.customerId) } }
-      ctx.runBlock("Book car") { bookCar(req.customerId, req.car) }
+      compensations.add { runBlock("Cancel car") { cancelCar(req.customerId) } }
+      runBlock("Book car") { bookCar(req.customerId, req.car) }
 
-      compensations.add { ctx.runBlock("Cancel hotel") { cancelHotel(req.customerId) } }
-      ctx.runBlock("Book hotel") { bookHotel(req.customerId, req.hotel) }
+      compensations.add { runBlock("Cancel hotel") { cancelHotel(req.customerId) } }
+      runBlock("Book hotel") { bookHotel(req.customerId, req.hotel) }
     }
     // Terminal exceptions are not retried by Restate. We undo previous actions and fail the
     // workflow.

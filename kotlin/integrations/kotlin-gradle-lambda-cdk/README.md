@@ -34,7 +34,7 @@ For more information on CDK, please see [Getting started with the AWS CDK](https
 
 * npm
 * gradle
-* JDK >= 21
+* JDK >= 25
 * AWS account, bootstrapped for CDK use
 * valid AWS credentials with sufficient privileges to create the necessary resources
 * an existing [Restate Cloud](https://restate.dev) environment (environment id + API key)
