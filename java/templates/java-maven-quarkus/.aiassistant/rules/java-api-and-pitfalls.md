@@ -36,19 +36,16 @@ docker run -it docker.restate.dev/restatedev/restate-cli:latest invocations ls
 
 **Gradle (build.gradle.kts):**
 ```kt
-// Annotation processor
-annotationProcessor("dev.restate:sdk-api-gen:2.4.1")
-
 // For deploying as HTTP service
-implementation("dev.restate:sdk-java-http:2.4.1")
+implementation("dev.restate:sdk-java-http:2.9.0")
 // Or for deploying using AWS Lambda
-implementation("dev.restate:sdk-java-lambda:2.4.1")
+implementation("dev.restate:sdk-java-lambda:2.9.0")
 ```
 
 **Maven**: 
 ```xml Java/Maven
 <properties>
-    <restate.version>2.4.1</restate.version>
+    <restate.version>2.9.0</restate.version>
 </properties>
 <dependencies>
     <!-- For deploying as HTTP service -->
@@ -57,37 +54,20 @@ implementation("dev.restate:sdk-java-lambda:2.4.1")
         <artifactId>sdk-java-http</artifactId>
         <version>${restate.version}</version>
     </dependency>
-    <!-- For deploying using AWS Lambda -->
+    <!-- Or for deploying using AWS Lambda -->
     <dependency>
         <groupId>dev.restate</groupId>
         <artifactId>sdk-java-lambda</artifactId>
         <version>${restate.version}</version>
     </dependency>
 </dependencies>
-<build>
-    <plugins>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-                <annotationProcessorPaths>
-                    <!-- Setup annotation processor -->
-                    <path>
-                        <groupId>dev.restate</groupId>
-                        <artifactId>sdk-api-gen</artifactId>
-                        <version>${restate.version}</version>
-                    </path>
-                </annotationProcessorPaths>
-            </configuration>
-        </plugin>
-    </plugins>
-</build>
 ```
+
+On JDK 23+, pass `--enable-native-access=ALL-UNNAMED` as a JVM argument (or set `Enable-Native-Access: ALL-UNNAMED` in the JAR manifest) to silence the native-access warning printed at startup.
 
 ### Minimal Scaffold
 
 ```java
-import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.endpoint.Endpoint;
@@ -96,7 +76,7 @@ import dev.restate.sdk.http.vertx.RestateHttpServer;
 @Service
 public class MyService {
   @Handler
-  public String myHandler(Context ctx, String greeting) {
+  public String myHandler(String greeting) {
     return greeting + "!";
   }
 
@@ -120,9 +100,9 @@ curl localhost:8080/MyService/greet --json '"World"'
 ## Core Concepts
 
 - Restate provides durable execution: if a handler crashes or the process restarts, Restate replays the handler from the last completed step, not from scratch.
-- All handlers receive a Context object (`ctx`) as their first parameter. Use ctx methods for all I/O and side effects.
+- Access all Restate functionality (state, calls, side effects, timers, ...) through the static methods on the `Restate` class (e.g. `Restate.state()`, `Restate.run(...)`, `Restate.sleep(...)`).
 - Handlers take one optional JSON-serializable input parameter and return one JSON-serializable output.
-- Code generation produces typed client classes (e.g., `MyServiceClient`) from annotated service definitions.
+- Call other services through `Restate.service(...)` / `Restate.serviceHandle(...)` (and the virtual-object/workflow variants) with a method reference.
 
 ---
 
@@ -135,8 +115,7 @@ See minimal scaffold above.
 ### Virtual Object (Stateful, Keyed)
 
 ```java
-import dev.restate.sdk.ObjectContext;
-import dev.restate.sdk.SharedObjectContext;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.VirtualObject;
@@ -147,14 +126,14 @@ import dev.restate.sdk.http.vertx.RestateHttpServer;
 public class MyObject {
 
   @Handler
-  public String myHandler(ObjectContext ctx, String greeting) {
-    String objectId = ctx.key();
+  public String myHandler(String greeting) {
+    String objectId = Restate.key();
 
     return greeting + " " + objectId + "!";
   }
 
   @Shared
-  public String myConcurrentHandler(SharedObjectContext ctx, String input) {
+  public String myConcurrentHandler(String input) {
     return "my-output";
   }
 
@@ -164,14 +143,12 @@ public class MyObject {
 }
 ```
 
-- **Exclusive handlers** (`@Handler`): only one executes at a time per key. Use for writes.  Receive `ObjectContext`.
-- **Shared handlers** (`@Shared`): run concurrently per key. Use for reads.  Receive `SharedObjectContext`.
+- **Exclusive handlers** (`@Handler`): only one executes at a time per key. Use for writes. Have read/write state access via `Restate.state()`.
+- **Shared handlers** (`@Shared`): run concurrently per key. Use for reads. Have read-only state access.
 
 ### Workflow
 
 ```java
-import dev.restate.sdk.SharedWorkflowContext;
-import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.endpoint.Endpoint;
@@ -181,7 +158,7 @@ import dev.restate.sdk.http.vertx.RestateHttpServer;
 public class MyWorkflow {
 
   @Workflow
-  public String run(WorkflowContext ctx, String input) {
+  public String run(String input) {
 
     // implement workflow logic here
 
@@ -189,7 +166,7 @@ public class MyWorkflow {
   }
 
   @Shared
-  public String interactWithWorkflow(SharedWorkflowContext ctx, String input) {
+  public String interactWithWorkflow(String input) {
     // implement interaction logic here
     return "my result";
   }
@@ -207,15 +184,16 @@ public class MyWorkflow {
 
 ## State Management
 
-Never use global variables for state -- it is not durable across restarts. Use `StateKey` with `ctx.get`/`ctx.set` instead (available on `ObjectContext` and `WorkflowContext`):
+Never use global variables for state -- it is not durable across restarts. Use `StateKey` with `Restate.state().get`/`Restate.state().set` instead:
 
 ```java
+var state = Restate.state();
 StateKey<String> STRING_STATE_KEY = StateKey.of("my-key", String.class);
-String stringState = ctx.get(STRING_STATE_KEY).orElse("my-default");
-ctx.set(STRING_STATE_KEY, "my-new-value");
-ctx.clear(STRING_STATE_KEY);
-ctx.clearAll();
-Collection<String> keys = ctx.stateKeys();
+String stringState = state.get(STRING_STATE_KEY).orElse("my-default");
+state.set(STRING_STATE_KEY, "my-new-value");
+state.clear(STRING_STATE_KEY);
+state.clearAll();
+Collection<String> keys = state.getAllKeys();
 ```
 
 For generic types, use `TypeRef`:
@@ -232,26 +210,37 @@ private static final StateKey<List<String>> ITEMS =
 
 ### Request-Response Calls
 
-Code generation creates typed client classes from annotated service definitions:
+Two client styles are available:
+
+- **Simple client** (`Restate.service(...)` / `Restate.virtualObject(...)` / `Restate.workflow(...)`): the call is awaited inline and returns the result directly. Use for straightforward request-response.
+- **Handle-based client** (`Restate.serviceHandle(...)` / `Restate.virtualObjectHandle(...)` / `Restate.workflowHandle(...)`, called with a method reference): returns a `DurableFuture` you await explicitly. Use it for invocation options (e.g. idempotency keys), timeouts, or concurrency.
 
 ```java
-String svcResponse = MyServiceClient.fromContext(ctx).myHandler(request).await();
-String objResponse = MyObjectClient.fromContext(ctx, objectKey).myHandler(request).await();
-String wfResponse = MyWorkflowClient.fromContext(ctx, workflowId).run(request).await();
+// Simple client: the call is awaited inline and returns the result directly.
+// Use this for straightforward request-response calls.
+String svcResponse = Restate.service(MyService.class).myHandler(request);
+String objResponse = Restate.virtualObject(MyObject.class, objectKey).myHandler(request);
+String wfResponse = Restate.workflow(MyWorkflow.class, workflowId).run(request);
+
+// Handle-based client: returns a DurableFuture that you await explicitly.
+// Use it for invocation options (e.g. an idempotency key), timeouts, or concurrency.
+// (virtualObjectHandle(...) / workflowHandle(...) work the same way.)
+String svcResult =
+    Restate.serviceHandle(MyService.class).call(MyService::myHandler, request).await();
 ```
 
 ### One-Way Calls (Fire-and-Forget)
 
 ```java
-MyServiceClient.fromContext(ctx).send().myHandler(request);
-MyObjectClient.fromContext(ctx, objectKey).send().myHandler(request);
-MyWorkflowClient.fromContext(ctx, workflowId).send().run(request);
+Restate.serviceHandle(MyService.class).send(MyService::myHandler, request);
+Restate.virtualObjectHandle(MyObject.class, objectKey).send(MyObject::myHandler, request);
+Restate.workflowHandle(MyWorkflow.class, workflowId).send(MyWorkflow::run, request);
 ```
 
 ### Delayed Calls
 
 ```java
-MyServiceClient.fromContext(ctx).send().myHandler(request, Duration.ofDays(5));
+Restate.serviceHandle(MyService.class).send(MyService::myHandler, request, Duration.ofDays(5));
 ```
 
 ### Generic Calls (String-Based Service/Method Names)
@@ -266,25 +255,26 @@ Target workflowTarget = Target.workflow("MyWorkflow", "wf-id", "run");
 
 // Do the call
 String response =
-    ctx.call(Request.of(target, TypeTag.of(String.class), TypeTag.of(String.class), request))
+    Restate.call(
+            Request.of(target, TypeTag.of(String.class), TypeTag.of(String.class), request))
         .await();
 
 // Or send the message
-ctx.send(Request.of(target, TypeTag.of(String.class), TypeTag.of(String.class), request));
+Restate.send(Request.of(target, TypeTag.of(String.class), TypeTag.of(String.class), request));
 ```
 
 ---
 
-## Side Effects / ctx.run
+## Side Effects / Restate.run
 
-Never call external APIs, databases, or non-deterministic functions directly in a handler. Wrap them in `ctx.run`:
+Never call external APIs, databases, or non-deterministic functions directly in a handler. Wrap them in `Restate.run`:
 
 ```java
-// Wrap non-deterministic code in ctx.run
-String result = ctx.run("call external API", String.class, () -> callExternalAPI());
+// Wrap non-deterministic code in Restate.run
+String result = Restate.run("call external API", String.class, () -> callExternalAPI());
 
 // Wrap with name for better tracing
-String namedResult = ctx.run("my-side-effect", String.class, () -> callExternalAPI());
+String namedResult = Restate.run("my-side-effect", String.class, () -> callExternalAPI());
 ```
 
 - The first argument is a label used for observability and debugging.
@@ -296,21 +286,21 @@ String namedResult = ctx.run("my-side-effect", String.class, () -> callExternalA
 
 ## Deterministic Helpers
 
-Never use `Math.random()`, `System.currentTimeMillis()`, or `new Date()` directly -- they break deterministic replay. Use ctx helpers instead:
+Never use `Math.random()`, `System.currentTimeMillis()`, or `new Date()` directly -- they break deterministic replay. Use `Restate.random()` / `Restate.instantNow()` instead:
 
 ```java
-float value = ctx.random().nextFloat();
-UUID uuid = ctx.random().nextUUID();
+float value = Restate.random().nextFloat();
+UUID uuid = Restate.random().nextUUID();
 ```
 
 ---
 
 ## Durable Timers
 
-Never use `Thread.sleep`. Use `ctx.sleep` for durable delays that survive crashes and restarts:
+Never use `Thread.sleep`. Use `Restate.sleep` for durable delays that survive crashes and restarts:
 
 ```java
-ctx.sleep(Duration.ofHours(30));
+Restate.sleep(Duration.ofHours(30));
 ```
 
 ---
@@ -321,11 +311,11 @@ Awakeables pause execution until an external system signals completion:
 
 ```java
 // Create awakeable
-Awakeable<String> awakeable = ctx.awakeable(String.class);
+Awakeable<String> awakeable = Restate.awakeable(String.class);
 String awakeableId = awakeable.id();
 
 // Send ID to external system
-ctx.run(() -> requestHumanReview(name, awakeableId));
+Restate.run("request-human-review", () -> requestHumanReview(name, awakeableId));
 
 // Wait for result
 String review = awakeable.await();
@@ -337,8 +327,8 @@ External systems can also resolve/reject via HTTP:
 Or from another handler:
 
 ```java
-ctx.awakeableHandle(awakeableId).resolve(String.class, "Looks good!");
-ctx.awakeableHandle(awakeableId).reject("Cannot be reviewed");
+Restate.awakeableHandle(awakeableId).resolve(String.class, "Looks good!");
+Restate.awakeableHandle(awakeableId).reject("Cannot be reviewed");
 ```
 
 ---
@@ -350,10 +340,10 @@ Cross-handler signaling within a Workflow. No ID management needed.
 ```java
 DurablePromiseKey<String> REVIEW_PROMISE = DurablePromiseKey.of("review", String.class);
 // Wait for promise
-String review = ctx.promise(REVIEW_PROMISE).future().await();
+String review = Restate.promise(REVIEW_PROMISE).future().await();
 
 // Resolve promise from another handler
-ctx.promiseHandle(REVIEW_PROMISE).resolve(review);
+Restate.promiseHandle(REVIEW_PROMISE).resolve(review);
 ```
 
 ---
@@ -366,8 +356,10 @@ Use `DurableFuture` combinators, NOT `CompletableFuture`. Native combinators are
 
 ```java
 // Wait for all to complete
-DurableFuture<String> call1 = MyServiceClient.fromContext(ctx).myHandler("request1");
-DurableFuture<String> call2 = MyServiceClient.fromContext(ctx).myHandler("request2");
+DurableFuture<String> call1 =
+    Restate.serviceHandle(MyService.class).call(MyService::myHandler, "request1");
+DurableFuture<String> call2 =
+    Restate.serviceHandle(MyService.class).call(MyService::myHandler, "request2");
 
 DurableFuture.all(call1, call2).await();
 ```
@@ -388,9 +380,8 @@ String res = Select.<String>select().or(call1).or(call2).await();
 
 ```java
 var handle =
-    MyServiceClient.fromContext(ctx)
-        .send()
-        .myHandler(request, req -> req.idempotencyKey("abc123"));
+    Restate.serviceHandle(MyService.class)
+        .send(MyService::myHandler, request, InvocationOptions.idempotencyKey("abc123"));
 ```
 
 ### Attach to a Running Invocation
@@ -415,7 +406,7 @@ All handler inputs/outputs and state values use Jackson JSON serialization by de
 
 ### Custom Serde
 
-Implement `Serde<T>` for custom serialization when Jackson defaults are not sufficient (binary payloads, non-JSON formats, or types with custom encoding). Pass the serde when declaring a `StateKey`, `DurablePromiseKey`, awakeable, or `ctx.run` call.
+Implement `Serde<T>` for custom serialization when Jackson defaults are not sufficient (binary payloads, non-JSON formats, or types with custom encoding). Pass the serde when declaring a `StateKey`, `DurablePromiseKey`, awakeable, or `Restate.run` call.
 
 ---
 
@@ -431,6 +422,21 @@ Note: the Java SDK uses `TerminalException`, NOT `TerminalError` (which is used 
 
 Any other exception type causes automatic retries with exponential backoff. For retry policy configuration, refer to the retry guide.
 
+### TerminalException metadata
+
+You can attach a string metadata map to a `TerminalException`. The metadata is propagated to callers and accessible via `getMetadata()`. Requires Restate Server >= 1.6.
+
+```java
+throw new TerminalException("Something went wrong", Map.of("correlationId", correlationId));
+```
+
+Callers can read the metadata:
+
+```java
+Map<String, String> metadata = e.getMetadata();
+String correlationId = metadata.get("correlationId");
+```
+
 ---
 
 ## SDK Clients (External Invocations)
@@ -441,27 +447,28 @@ Use `Client` to call Restate handlers from outside a Restate context (e.g., from
 Client restateClient = Client.connect("http://localhost:8080");
 
 // Request-response
-String result = MyServiceClient.fromClient(restateClient).myHandler("Hi");
+String result = restateClient.service(MyService.class).myHandler("Hi");
 
 // One-way
-MyServiceClient.fromClient(restateClient).send().myHandler("Hi");
+restateClient.serviceHandle(MyService.class).send(MyService::myHandler, "Hi");
 
 // Delayed
-MyServiceClient.fromClient(restateClient).send().myHandler("Hi", Duration.ofSeconds(1));
+restateClient
+    .serviceHandle(MyService.class)
+    .send(MyService::myHandler, "Hi", Duration.ofSeconds(1));
 
 // With idempotency key
-MyObjectClient.fromClient(restateClient, "Mary")
-    .send()
-    .myHandler("Hi", opt -> opt.idempotencyKey("abc"));
+restateClient
+    .virtualObjectHandle(MyObject.class, "Mary")
+    .send(MyObject::myHandler, "Hi", InvocationOptions.idempotencyKey("abc"));
 ```
 
 ---
 
 ## Java-Specific Pitfalls
 
-- **Code generation creates typed client classes** (e.g., `MyServiceClient`) from `@Service`/`@VirtualObject`/`@Workflow` annotations. Use these for type-safe calls.
 - **Use Restate's future combinators, NOT `CompletableFuture`.** Native Java futures break deterministic replay.
-- **Never use `Thread.sleep`, `Math.random()`, or `System.currentTimeMillis()`** -- use Restate context actions instead.
+- **Never use `Thread.sleep`, `Math.random()`, or `System.currentTimeMillis()`** -- use `Restate` SDK actions instead.
 - **Never use global mutable variables for state** -- use Restate's K/V store for durable state.
 - **For detailed API reference:** use the MCP server or JavaDocs.
 
@@ -490,7 +497,7 @@ class MyServiceTestMethod {
   @Test
   void testMyHandler(@RestateClient Client ingressClient) {
     // Create the service client from the injected ingress client
-    var client = MyServiceClient.fromClient(ingressClient);
+    var client = ingressClient.service(MyService.class);
 
     // Send request to service and assert the response
     var response = client.myHandler("Hi");
