@@ -22,7 +22,7 @@ data class BookingRequest(
     val customerId: String,
     val flight: FlightBookingRequest,
     val car: CarRentalBookingRequest,
-    val hotel: HotelRequest
+    val hotel: HotelRequest,
 )
 
 /*

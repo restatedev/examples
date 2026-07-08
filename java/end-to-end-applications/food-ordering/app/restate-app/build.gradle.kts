@@ -3,8 +3,8 @@ import java.net.URI
 plugins {
     java
     application
-    id ("com.google.cloud.tools.jib") version "3.4.0"
-    id("com.diffplug.spotless") version "6.25.0"
+    id ("com.google.cloud.tools.jib") version "3.5.3"
+    id("com.diffplug.spotless") version "8.8.0"
 }
 
 repositories {

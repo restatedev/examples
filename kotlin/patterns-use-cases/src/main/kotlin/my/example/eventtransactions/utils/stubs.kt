@@ -16,7 +16,9 @@ fun createPost(userId: String, post: UserFeed.SocialMediaPost): String {
 fun getPostStatus(postId: String): String {
   return if (Math.random() < 0.8) {
     logger.info(
-        "Content moderation for post {} is still pending... Will check again in 5 seconds", postId)
+        "Content moderation for post {} is still pending... Will check again in 5 seconds",
+        postId,
+    )
     "PENDING"
   } else {
     logger.info("Content moderation for post {} is done", postId)

@@ -2,10 +2,8 @@ plugins {
   application
   kotlin("jvm") version "2.4.0"
   kotlin("plugin.serialization") version "2.4.0"
-  // Restate proxy clients need non-final classes; the all-open plugin opens
-  // classes annotated with the Restate annotations (see allOpen block below).
   kotlin("plugin.allopen") version "2.4.0"
-  id("com.diffplug.spotless") version "6.25.0"
+  id("com.diffplug.spotless") version "8.8.0"
 }
 
 repositories {
@@ -28,6 +26,7 @@ dependencies {
 kotlin { jvmToolchain(25) }
 
 allOpen {
+  // Restate proxy clients need non-final classes.
   annotation("dev.restate.sdk.annotation.Service")
   annotation("dev.restate.sdk.annotation.VirtualObject")
   annotation("dev.restate.sdk.annotation.Workflow")

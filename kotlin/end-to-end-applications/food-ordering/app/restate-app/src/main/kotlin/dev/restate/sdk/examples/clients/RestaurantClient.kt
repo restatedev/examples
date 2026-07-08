@@ -37,7 +37,8 @@ object RestaurantClient {
     val response: HttpResponse<*> = httpClient.send(request, HttpResponse.BodyHandlers.discarding())
     if (response.statusCode() != 200) {
       throw TerminalException(
-          "Prepare request to restaurant failed with status code: " + response.statusCode())
+          "Prepare request to restaurant failed with status code: " + response.statusCode()
+      )
     }
   }
 }

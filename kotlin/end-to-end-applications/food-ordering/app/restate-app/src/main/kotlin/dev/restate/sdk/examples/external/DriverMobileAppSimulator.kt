@@ -94,7 +94,8 @@ class DriverMobileAppSimulator {
             getAssignedDeliveryResult.assignedDelivery.orderId,
             getAssignedDeliveryResult.assignedDelivery.restaurantId,
             getAssignedDeliveryResult.assignedDelivery.restaurantLocation,
-            getAssignedDeliveryResult.assignedDelivery.customerLocation)
+            getAssignedDeliveryResult.assignedDelivery.customerLocation,
+        )
     state().set(ASSIGNED_DELIVERY, newAssignedDelivery)
 
     // Start moving to the delivery pickup location

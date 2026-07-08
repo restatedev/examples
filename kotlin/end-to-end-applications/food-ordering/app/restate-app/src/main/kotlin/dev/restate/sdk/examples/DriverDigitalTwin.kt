@@ -66,13 +66,16 @@ class DriverDigitalTwin {
             request.orderId,
             request.restaurantId,
             request.restaurantLocation,
-            request.customerLocation))
+            request.customerLocation,
+        ),
+    )
 
     // Initialize the ETA service
     toVirtualObject<OrderETAService>(request.orderId)
         .request {
           notifyDeliveryLocations(
-              DeliveryLocations(request.restaurantLocation, request.customerLocation))
+              DeliveryLocations(request.restaurantLocation, request.customerLocation)
+          )
         }
         .send()
 
@@ -96,7 +99,8 @@ class DriverDigitalTwin {
     val currentDelivery =
         state.get(ASSIGNED_DELIVERY)
             ?: throw TerminalException(
-                "Driver is in status DELIVERING but there is no current delivery set.")
+                "Driver is in status DELIVERING but there is no current delivery set."
+            )
     currentDelivery.notifyPickup()
     state.set(ASSIGNED_DELIVERY, currentDelivery)
 
@@ -119,7 +123,8 @@ class DriverDigitalTwin {
     val assignedDelivery =
         state.get(ASSIGNED_DELIVERY)
             ?: throw TerminalException(
-                "Driver is in status DELIVERING but there is no current delivery set.")
+                "Driver is in status DELIVERING but there is no current delivery set."
+            )
     // Clean up the state
     state.clear(ASSIGNED_DELIVERY)
 
@@ -166,7 +171,8 @@ class DriverDigitalTwin {
 
     if (currentStatus != expectedStatus) {
       throw TerminalException(
-          "Driver status wrong. Expected $expectedStatus but was $currentStatus")
+          "Driver status wrong. Expected $expectedStatus but was $currentStatus"
+      )
     }
   }
 }

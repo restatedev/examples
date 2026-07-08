@@ -5,7 +5,7 @@ plugins {
   // Restate proxy clients need non-final classes; the all-open plugin opens
   // classes annotated with the Restate annotations (see allOpen block below).
   kotlin("plugin.allopen") version "2.4.0"
-  id("com.diffplug.spotless") version "6.25.0"
+  id("com.diffplug.spotless") version "8.8.0"
 }
 
 subprojects {

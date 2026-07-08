@@ -3,7 +3,7 @@ import java.net.URI
 plugins {
     java
     application
-    id ("com.google.cloud.tools.jib") version "3.4.0"
+    id ("com.google.cloud.tools.jib") version "3.5.3"
 }
 
 repositories {

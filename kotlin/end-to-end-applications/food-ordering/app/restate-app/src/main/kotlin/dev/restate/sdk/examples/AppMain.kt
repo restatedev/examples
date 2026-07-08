@@ -24,5 +24,6 @@ fun main() {
 
         // external mobile app on driver's phone
         bind(DriverMobileAppSimulator())
-      })
+      }
+  )
 }

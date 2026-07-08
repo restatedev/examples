@@ -135,6 +135,11 @@ class OrderWorkflow {
     virtualObject<DriverDigitalTwin>(driverId)
         .assignDeliveryJob(
             AssignDeliveryRequest(
-                order.orderId, order.restaurantId, restaurantLocation, customerLocation))
+                order.orderId,
+                order.restaurantId,
+                restaurantLocation,
+                customerLocation,
+            )
+        )
   }
 }

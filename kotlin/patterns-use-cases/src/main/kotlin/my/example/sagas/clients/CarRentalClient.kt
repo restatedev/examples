@@ -3,8 +3,7 @@ package my.example.sagas.clients
 import kotlinx.serialization.Serializable
 import org.apache.logging.log4j.LogManager
 
-@Serializable
-data class CarRentalBookingRequest(val pickupLocation: String, val rentalDate: String)
+@Serializable data class CarRentalBookingRequest(val pickupLocation: String, val rentalDate: String)
 
 private val logger = LogManager.getLogger("CarRentals")
 

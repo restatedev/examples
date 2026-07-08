@@ -3,7 +3,7 @@ plugins {
 	application
 	id("org.springframework.boot") version "3.3.1"
 	id("io.spring.dependency-management") version "1.1.5"
-	id("com.diffplug.spotless") version "6.25.0"
+	id("com.diffplug.spotless") version "8.8.0"
 }
 
 group = "dev.restate.examples"

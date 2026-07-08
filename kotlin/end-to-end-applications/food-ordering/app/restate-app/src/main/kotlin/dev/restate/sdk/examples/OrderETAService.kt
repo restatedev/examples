@@ -59,7 +59,8 @@ class OrderETAService {
     val locations =
         state.get(DELIVERY_LOCATIONS)
             ?: throw TerminalException(
-                "Driver is doing a delivery but there is no ongoing delivery.")
+                "Driver is doing a delivery but there is no ongoing delivery."
+            )
 
     val isOrderPickedUp = state.get(DELIVERY_IS_PICKED_UP) != null
 

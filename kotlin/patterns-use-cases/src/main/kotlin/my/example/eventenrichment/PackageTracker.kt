@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PackageInfo(
     val finalDestination: String,
-    val locations: MutableList<LocationUpdate> = mutableListOf()
+    val locations: MutableList<LocationUpdate> = mutableListOf(),
 )
 
 @Serializable data class LocationUpdate(val timestamp: String, val location: String)
