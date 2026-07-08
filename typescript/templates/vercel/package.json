@@ -8,7 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.15.0",
+    "@restatedev/restate-sdk": "^1.16.0",
     "next": "16.1.1",
     "zod": "^4.3"
   },
