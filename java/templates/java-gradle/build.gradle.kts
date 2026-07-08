@@ -7,11 +7,9 @@ repositories {
   mavenCentral()
 }
 
-val restateVersion = "2.7.0"
+val restateVersion = "2.9.0"
 
 dependencies {
-  annotationProcessor("dev.restate:sdk-api-gen:$restateVersion")
-
   // Restate SDK
   implementation("dev.restate:sdk-java-http:$restateVersion")
 
@@ -26,15 +24,19 @@ dependencies {
 
 java {
   toolchain {
-    languageVersion.set(JavaLanguageVersion.of(17))
+    languageVersion.set(JavaLanguageVersion.of(25))
   }
 }
 
 // Set main class
 application {
   mainClass.set("my.example.Greeter")
+  // Java 25 warnings: --enable-native-access for the Restate SDK state machine, --sun-misc-unsafe-memory-access for netty.
+  applicationDefaultJvmArgs = listOf("--enable-native-access=ALL-UNNAMED", "--sun-misc-unsafe-memory-access=allow")
 }
 
 tasks.named<Test>("test") {
   useJUnitPlatform()
+  // Java 25 warnings: --enable-native-access for the Restate SDK state machine, --sun-misc-unsafe-memory-access for netty.
+  jvmArgs("--enable-native-access=ALL-UNNAMED", "--sun-misc-unsafe-memory-access=allow")
 }

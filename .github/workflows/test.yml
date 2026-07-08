@@ -43,7 +43,7 @@ jobs:
       RESTATE_DISABLE_TELEMETRY: "true"
     strategy:
       matrix:
-        jvm-version: [ 21 ]
+        jvm-version: [ 25 ]
 
     steps:
       - uses: actions/checkout@v3

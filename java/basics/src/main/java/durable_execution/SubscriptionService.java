@@ -1,6 +1,6 @@
 package durable_execution;
 
-import dev.restate.sdk.Context;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.endpoint.Endpoint;
@@ -33,18 +33,18 @@ import static utils.ExampleStubs.*;
 public class SubscriptionService {
 
     @Handler
-    public void add(Context ctx, SubscriptionRequest req) {
-        // Restate persists the result of all `ctx` actions and recovers them after failures
+    public void add(SubscriptionRequest req) {
+        // Restate persists the result of all `Restate` actions and recovers them after failures
         // For example, generate a stable idempotency key:
-        var paymentId = ctx.random().nextUUID().toString();
+        var paymentId = Restate.random().nextUUID().toString();
 
-        // ctx.run persists results of successful actions and skips execution on retries
+        // Restate.run persists results of successful actions and skips execution on retries
         // Failed actions (timeouts, API downtime, etc.) get retried
-        var payRef = ctx.run(String.class, () ->
+        var payRef = Restate.run("createRecurringPayment", String.class, () ->
                 createRecurringPayment(req.creditCard(), paymentId));
 
         for (String subscription : req.subscriptions()) {
-            ctx.run(() -> createSubscription(req.userId(), subscription, payRef));
+            Restate.run("createSubscription", () -> createSubscription(req.userId(), subscription, payRef));
         }
     }
 

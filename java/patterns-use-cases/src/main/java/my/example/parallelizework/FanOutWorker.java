@@ -2,8 +2,8 @@ package my.example.parallelizework;
 
 import static my.example.parallelizework.utils.Utils.*;
 
-import dev.restate.sdk.Context;
 import dev.restate.sdk.DurableFuture;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.endpoint.Endpoint;
@@ -41,14 +41,15 @@ import my.example.parallelizework.utils.Task;
 public class FanOutWorker {
 
   @Handler
-  public Result run(Context ctx, Task task) {
+  public Result run(Task task) {
     // Split the task in subtasks
-    var subTasks = ctx.run(new TypeRef<>() {}, () -> split(task));
+    var subTasks = Restate.run("split", new TypeRef<List<SubTask>>() {}, () -> split(task));
 
     // Fan out the subtasks - run them in parallel
     List<DurableFuture<?>> resultFutures = new ArrayList<>();
     for (SubTask subTask : subTasks) {
-      resultFutures.add(FanOutWorkerClient.fromContext(ctx).runSubtask(subTask));
+      resultFutures.add(
+          Restate.serviceHandle(FanOutWorker.class).call(FanOutWorker::runSubtask, subTask));
     }
 
     DurableFuture.all(resultFutures).await();
@@ -60,10 +61,10 @@ public class FanOutWorker {
 
   // Can also run on FaaS
   @Handler
-  public SubTaskResult runSubtask(Context ctx, SubTask subTask) {
+  public SubTaskResult runSubtask(SubTask subTask) {
     // Processing logic goes here ...
     // Can be moved to a separate service to scale independently
-    return executeSubtask(ctx, subTask);
+    return executeSubtask(subTask);
   }
 
   public static void main(String[] args) {

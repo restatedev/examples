@@ -17,7 +17,7 @@ data class AssignDeliveryRequest(
     val orderId: String,
     val restaurantId: String,
     val restaurantLocation: Location,
-    val customerLocation: Location
+    val customerLocation: Location,
 )
 
 @Serializable
@@ -27,7 +27,7 @@ data class AssignedDelivery(
     val restaurantId: String,
     val restaurantLocation: Location,
     val customerLocation: Location,
-    var isOrderPickedUp: Boolean = false
+    var isOrderPickedUp: Boolean = false,
 ) {
   fun notifyPickup() {
     isOrderPickedUp = true
@@ -41,7 +41,7 @@ data class DeliveryInformation(
     val restaurantId: String,
     val restaurantLocation: Location,
     val customerLocation: Location,
-    var isOrderPickedUp: Boolean
+    var isOrderPickedUp: Boolean,
 ) {
   fun notifyPickup() {
     this.isOrderPickedUp = true
@@ -60,7 +60,7 @@ data class DeliveryLocations(
 enum class DriverStatus {
   IDLE,
   WAITING_FOR_WORK,
-  DELIVERING
+  DELIVERING,
 }
 
 @Serializable data class Location(val lon: Double, val lat: Double)
@@ -71,7 +71,7 @@ data class OrderRequest(
     val restaurantId: String,
     val products: List<Product>,
     val totalCost: Double,
-    val deliveryDelay: Int
+    val deliveryDelay: Int,
 )
 
 @Serializable data class Product(val productId: String, val description: String, val quantity: Int)
@@ -88,7 +88,7 @@ enum class Status {
   DELIVERED,
   REJECTED,
   CANCELLED,
-  UNKNOWN
+  UNKNOWN,
 }
 
 @Serializable data class GetAssignedDeliveryResult(val assignedDelivery: AssignedDelivery? = null)

@@ -6,12 +6,9 @@ repositories {
   mavenCentral()
 }
 
-val restateVersion = "2.7.0"
+val restateVersion = "2.9.0"
 
 dependencies {
-  // Annotation processor
-  annotationProcessor("dev.restate:sdk-api-gen:$restateVersion")
-
   // Restate SDK
   implementation("dev.restate:sdk-java-lambda:$restateVersion")
 
@@ -29,7 +26,7 @@ dependencies {
 // Setup Java compiler target
 java {
   toolchain {
-    languageVersion.set(JavaLanguageVersion.of(21))
+    languageVersion.set(JavaLanguageVersion.of(25))
   }
 }
 

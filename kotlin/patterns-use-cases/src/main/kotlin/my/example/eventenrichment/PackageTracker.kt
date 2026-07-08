@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PackageInfo(
     val finalDestination: String,
-    val locations: MutableList<LocationUpdate> = mutableListOf()
+    val locations: MutableList<LocationUpdate> = mutableListOf(),
 )
 
 @Serializable data class LocationUpdate(val timestamp: String, val location: String)
@@ -25,21 +25,21 @@ class PackageTracker {
   }
 
   @Handler
-  suspend fun registerPackage(ctx: ObjectContext, packageInfo: PackageInfo) {
-    ctx.set(PACKAGE_INFO, packageInfo)
+  suspend fun registerPackage(packageInfo: PackageInfo) {
+    state().set(PACKAGE_INFO, packageInfo)
   }
 
   @Handler
-  suspend fun updateLocation(ctx: ObjectContext, locationUpdate: LocationUpdate) {
-    val packageInfo = ctx.get(PACKAGE_INFO) ?: throw TerminalException("Package not found")
+  suspend fun updateLocation(locationUpdate: LocationUpdate) {
+    val packageInfo = state().get(PACKAGE_INFO) ?: throw TerminalException("Package not found")
 
     packageInfo.locations.add(locationUpdate)
-    ctx.set(PACKAGE_INFO, packageInfo)
+    state().set(PACKAGE_INFO, packageInfo)
   }
 
   @Shared
-  suspend fun getPackageInfo(ctx: SharedObjectContext): PackageInfo {
-    return ctx.get(PACKAGE_INFO) ?: throw TerminalException("Package not found")
+  suspend fun getPackageInfo(): PackageInfo {
+    return state().get(PACKAGE_INFO) ?: throw TerminalException("Package not found")
   }
 }
 

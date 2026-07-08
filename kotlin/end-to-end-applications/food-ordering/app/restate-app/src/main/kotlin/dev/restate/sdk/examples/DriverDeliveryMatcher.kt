@@ -35,23 +35,24 @@ class DriverDeliveryMatcher {
    * in line. If no pending deliveries, driver is added to the available driver pool
    */
   @Handler
-  suspend fun setDriverAvailable(ctx: ObjectContext, driverId: String) {
-    val pendingDeliveries = ctx.get(PENDING_DELIVERIES) ?: mutableListOf()
+  suspend fun setDriverAvailable(driverId: String) {
+    val state = state()
+    val pendingDeliveries = state.get(PENDING_DELIVERIES) ?: mutableListOf()
 
     // If there is a pending delivery, assign it to the driver
     val nextDelivery = pendingDeliveries.removeFirstOrNull()
     if (nextDelivery != null) {
       // Update the queue in state. Delivery was removed.
-      ctx.set(PENDING_DELIVERIES, pendingDeliveries)
+      state.set(PENDING_DELIVERIES, pendingDeliveries)
       // Notify that delivery is ongoing
-      ctx.awakeableHandle(nextDelivery).resolve(driverId)
+      awakeableHandle(nextDelivery).resolve(driverId)
       return
     }
 
     // Otherwise remember driver as available
-    val availableDrivers = ctx.get(AVAILABLE_DRIVERS) ?: mutableListOf()
+    val availableDrivers = state.get(AVAILABLE_DRIVERS) ?: mutableListOf()
     availableDrivers.add(driverId)
-    ctx.set(AVAILABLE_DRIVERS, availableDrivers)
+    state.set(AVAILABLE_DRIVERS, availableDrivers)
   }
 
   /**
@@ -59,22 +60,23 @@ class DriverDeliveryMatcher {
    * available. If no available drivers, the delivery is added to the pending deliveries queue
    */
   @Handler
-  suspend fun requestDriverForDelivery(ctx: ObjectContext, deliveryCallbackId: String) {
-    val availableDrivers = ctx.get(AVAILABLE_DRIVERS) ?: mutableListOf()
+  suspend fun requestDriverForDelivery(deliveryCallbackId: String) {
+    val state = state()
+    val availableDrivers = state.get(AVAILABLE_DRIVERS) ?: mutableListOf()
 
     // If a driver is available, assign the delivery right away
     val nextAvailableDriver = availableDrivers.removeFirstOrNull()
     if (nextAvailableDriver != null) {
       // Remove driver from the pool
-      ctx.set(AVAILABLE_DRIVERS, availableDrivers)
+      state.set(AVAILABLE_DRIVERS, availableDrivers)
       // Notify that delivery is ongoing
-      ctx.awakeableHandle(deliveryCallbackId).resolve(nextAvailableDriver)
+      awakeableHandle(deliveryCallbackId).resolve(nextAvailableDriver)
       return
     }
 
     // otherwise store the delivery request until a new driver becomes available
-    val pendingDeliveries = ctx.get(PENDING_DELIVERIES) ?: mutableListOf()
+    val pendingDeliveries = state.get(PENDING_DELIVERIES) ?: mutableListOf()
     pendingDeliveries.add(deliveryCallbackId)
-    ctx.set(PENDING_DELIVERIES, pendingDeliveries)
+    state.set(PENDING_DELIVERIES, pendingDeliveries)
   }
 }

@@ -1,9 +1,10 @@
 package com.example.restatestarter;
 
 import com.example.restatestarter.types.WorkflowStep;
-import dev.restate.sdk.Context;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
-import dev.restate.sdk.springboot.RestateService;
+import dev.restate.sdk.annotation.Service;
+import dev.restate.sdk.springboot.RestateComponent;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -15,15 +16,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-@RestateService
+@RestateComponent
+@Service
 public class PuppeteerService {
 
     @Handler
-    public String run(Context ctx, WorkflowStep wf) throws Exception {
+    public String run(WorkflowStep wf) throws Exception {
         System.out.println("Taking screenshot of website with parameters: " + wf);
         String screenshotUrl = (String) wf.parameters().get("url");
 
-        ctx.run(() -> takeWebsiteScreenshot(wf.imgOutputPath(), screenshotUrl));
+        Restate.run("takeScreenshot", () -> takeWebsiteScreenshot(wf.imgOutputPath(), screenshotUrl));
 
         return "[Took screenshot of website with url: " + screenshotUrl + "]";
     }

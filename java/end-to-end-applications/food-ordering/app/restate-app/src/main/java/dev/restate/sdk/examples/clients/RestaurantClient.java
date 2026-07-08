@@ -12,7 +12,6 @@
 package dev.restate.sdk.examples.clients;
 
 import dev.restate.sdk.common.TerminalException;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;

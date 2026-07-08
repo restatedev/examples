@@ -20,16 +20,16 @@ public class UploadClient {
 
     // Submit the workflow
     Client restateClient = Client.connect(RESTATE_URL);
-    var uploadClient = DataUploadServiceClient.fromClient(restateClient, userId);
-    uploadClient.submit();
+    var handle =
+        restateClient.workflowHandle(DataUploadService.class, userId).send(DataUploadService::run);
 
     String url;
     try {
       // Wait for the workflow to complete or timeout
-      url = uploadClient.workflowHandle().attachAsync().get(5, TimeUnit.SECONDS).response();
+      url = handle.attachAsync().get(5, TimeUnit.SECONDS).response();
     } catch (TimeoutException e) {
       logger.info("Slow upload... Mail the link later");
-      uploadClient.resultAsEmail(email);
+      restateClient.workflow(DataUploadService.class, userId).resultAsEmail(email);
       return;
     }
 

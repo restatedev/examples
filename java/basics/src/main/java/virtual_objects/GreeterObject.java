@@ -10,7 +10,7 @@
  */
 package virtual_objects;
 
-import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.endpoint.Endpoint;
@@ -38,26 +38,29 @@ public class GreeterObject {
             StateKey.of("count", Integer.TYPE);
 
     @Handler
-    public String greet(ObjectContext ctx, String greeting) {
+    public String greet(String greeting) {
+        var state = Restate.state();
 
         // Access the state attached to this object (this 'name')
         // State access and updates are exclusive and consistent with the invocations
-        int count = ctx.get(COUNT).orElse(0);
+        int count = state.get(COUNT).orElse(0);
         int newCount = count + 1;
-        ctx.set(COUNT, newCount);
+        state.set(COUNT, newCount);
 
-        return String.format( "%s %s, for the %d-th time", greeting, ctx.key(), newCount);
+        return String.format( "%s %s, for the %d-th time", greeting, Restate.key(), newCount);
     }
 
     @Handler
-    public String ungreet(ObjectContext ctx) {
-        int count = ctx.get(COUNT).orElse(0);
+    public String ungreet() {
+        var state = Restate.state();
+
+        int count = state.get(COUNT).orElse(0);
         if(count > 0){
             int newCount = count - 1;
-            ctx.set(COUNT, newCount);
+            state.set(COUNT, newCount);
         }
 
-        return String.format("Dear %s, taking one greeting back: %d", ctx.key(), count);
+        return String.format("Dear %s, taking one greeting back: %d", Restate.key(), count);
     }
 
     public static void main(String[] args) {

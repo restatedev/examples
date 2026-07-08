@@ -30,9 +30,13 @@ object KafkaPublisher {
     val properties = Properties()
     properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KAFKA_BOOTSTRAP_SERVERS)
     properties.setProperty(
-        ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java.name)
+        ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+        StringSerializer::class.java.name,
+    )
     properties.setProperty(
-        ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer::class.java.name)
+        ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+        ByteArraySerializer::class.java.name,
+    )
     return properties
   }
 }

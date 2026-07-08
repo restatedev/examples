@@ -3,7 +3,7 @@ package my.example.concurrenttasks;
 import static my.example.concurrenttasks.utils.EmailClient.sendReminder;
 import static my.example.concurrenttasks.utils.EmailClient.sendVerificationEmail;
 
-import dev.restate.sdk.Context;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.Select;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
@@ -28,7 +28,7 @@ import my.example.concurrenttasks.utils.EmailClient;
  *    or restarts, it resumes exactly where it left off - no lost emails, no duplicate
  *    reminders, no forgotten timeouts.
  *
- * 2. DURABLE FUTURES: The ctx.awakeable() creates a durable future that can be
+ * 2. DURABLE FUTURES: The Restate.awakeable() creates a durable future that can be
  *    resolved from external systems (like a webhook when user clicks verification link).
  *    This survives service restarts and infrastructure failures.
  *
@@ -54,14 +54,14 @@ public class EmailVerification {
   public record VerifyEmailRequest(String email, String userId) {}
 
   @Handler
-  public String verifyEmail(Context ctx, VerifyEmailRequest req) {
-    var confirmationFuture = ctx.awakeable(Boolean.class);
-    ctx.run("send email", () -> sendVerificationEmail(req.email(), confirmationFuture.id()));
+  public String verifyEmail(VerifyEmailRequest req) {
+    var confirmationFuture = Restate.awakeable(Boolean.class);
+    Restate.run("send email", () -> sendVerificationEmail(req.email(), confirmationFuture.id()));
 
-    var verificationTimeout = ctx.timer(Duration.ofDays(1));
+    var verificationTimeout = Restate.timer(Duration.ofDays(1));
 
     while (true) {
-      var reminderTimer = ctx.timer(Duration.ofSeconds(10));
+      var reminderTimer = Restate.timer(Duration.ofSeconds(10));
 
       var selected =
           Select.<String>select()
@@ -76,7 +76,7 @@ public class EmailVerification {
         case "failure":
           return "Email rejected";
         case "reminder":
-          ctx.run("send reminder", () -> sendReminder(req.email(), confirmationFuture.id()));
+          Restate.run("send reminder", () -> sendReminder(req.email(), confirmationFuture.id()));
           break;
         case "timeout":
           throw new TerminalException("Verification timed out");

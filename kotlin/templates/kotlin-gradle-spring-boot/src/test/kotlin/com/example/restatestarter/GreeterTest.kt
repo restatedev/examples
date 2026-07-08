@@ -10,9 +10,11 @@ package com.example.restatestarter
 
 import com.example.restatestarter.Greeter.Greeting
 import dev.restate.client.Client
+import dev.restate.client.kotlin.service
 import dev.restate.sdk.testing.BindService
-import dev.restate.sdk.testing.RestateClient
 import dev.restate.sdk.testing.RestateTest
+import dev.restate.sdk.testing.RestateURL
+import dev.restate.serde.kotlinx.KotlinSerializationSerdeFactory
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -29,8 +31,10 @@ class GreeterTest {
 
   @Test
   @Timeout(value = 10)
-  fun greet(@RestateClient ingressClient: Client) = runTest {
-    val client = GreeterClient.fromClient(ingressClient)
+  fun greet(@RestateURL url: String) = runTest {
+    // Kotlin services (de)serialize with kotlinx.serialization, so build the client
+    // with the KotlinSerializationSerdeFactory.
+    val client = Client.connect(url, KotlinSerializationSerdeFactory()).service<Greeter>()
 
     assertThat(client.greet(Greeting("Francesco")).message).isEqualTo("You said ciao to Francesco!")
   }

@@ -15,7 +15,8 @@ import dev.restate.sdk.http.vertx.RestateHttpServer
 import dev.restate.sdk.kotlin.endpoint.endpoint
 
 fun main() {
-    RestateHttpServer.listen(endpoint {
+  RestateHttpServer.listen(
+      endpoint {
         bind(OrderWorkflow())
         bind(OrderETAService())
         bind(DriverDeliveryMatcher())
@@ -23,5 +24,6 @@ fun main() {
 
         // external mobile app on driver's phone
         bind(DriverMobileAppSimulator())
-    })
+      }
+  )
 }

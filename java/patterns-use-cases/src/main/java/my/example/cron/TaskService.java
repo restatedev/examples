@@ -1,6 +1,5 @@
 package my.example.cron;
 
-import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import dev.restate.sdk.endpoint.Endpoint;
@@ -16,7 +15,7 @@ public class TaskService {
   This is a task stub to be able to demo the cron service.
   */
   @Handler
-  public void executeTask(Context ctx, String task) {
+  public void executeTask(String task) {
     // Here you would implement the logic to execute the task
     // For example, you could call another service or perform some computation
     logger.info("Executing task with payload: {}", task);

@@ -28,7 +28,7 @@ class GreeterTest {
   @Test
   @Timeout(value = 10)
   void testGreet(@RestateClient Client ingressClient) {
-    var client = GreeterClient.fromClient(ingressClient);
+    var client = ingressClient.service(Greeter.class);
 
     GreetingResponse response = client.greet(new Greeting("Francesco"));
     assertEquals(response.message(), "You said hi to Francesco!");

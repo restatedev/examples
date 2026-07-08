@@ -1,6 +1,6 @@
 package my.example.communication;
 
-import dev.restate.sdk.Context;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import my.example.auxiliary.types.PurchaseTicketRequest;
@@ -9,15 +9,16 @@ import my.example.auxiliary.types.PurchaseTicketRequest;
 public class ConcertTicketingService {
 
   @Handler
-  public String buy(Context ctx, PurchaseTicketRequest req) {
+  public String buy(PurchaseTicketRequest req) {
     // Request-response call - wait for payment to complete
-    String payRef = PaymentServiceClient.fromContext(ctx).charge(req).await();
+    String payRef = Restate.service(PaymentService.class).charge(req);
 
     // One-way message - fire and forget ticket delivery
-    EmailServiceClient.fromContext(ctx).send().emailTicket(req);
+    Restate.serviceHandle(EmailService.class).send(EmailService::emailTicket, req);
 
     // Delayed message - schedule reminder for day before concert
-    EmailServiceClient.fromContext(ctx).send().sendReminder(req, req.dayBefore());
+    Restate.serviceHandle(EmailService.class)
+        .send(EmailService::sendReminder, req, req.dayBefore());
 
     return "Ticket purchased successfully with payment reference: " + payRef;
   }

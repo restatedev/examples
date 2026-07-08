@@ -1,16 +1,16 @@
 plugins {
   application
-  id("com.google.cloud.tools.jib") version "3.4.0"
-  id("com.google.devtools.ksp") version "2.2.10-2.0.2"
+  id("com.google.cloud.tools.jib") version "3.5.3"
 }
 
-repositories { mavenCentral() }
+repositories {
+  mavenCentral()
+}
 
-val restateVersion = "2.7.0"
+val restateVersion = "2.9.0"
 
 dependencies {
   // Restate SDK
-  ksp("dev.restate:sdk-api-kotlin-gen:$restateVersion")
   implementation("dev.restate:sdk-kotlin-http:$restateVersion")
 
   // Kafka
@@ -18,7 +18,13 @@ dependencies {
 }
 
 // Set main class
-application { mainClass.set("dev.restate.sdk.examples.AppMainKt") }
+application {
+  mainClass.set("dev.restate.sdk.examples.AppMainKt")
+  // Java 25 warnings: --enable-native-access for the Restate SDK state machine,
+  // --sun-misc-unsafe-memory-access for netty.
+  applicationDefaultJvmArgs =
+      listOf("--enable-native-access=ALL-UNNAMED", "--sun-misc-unsafe-memory-access=allow")
+}
 
 jib {
   to.image = "restate-app:0.0.1"

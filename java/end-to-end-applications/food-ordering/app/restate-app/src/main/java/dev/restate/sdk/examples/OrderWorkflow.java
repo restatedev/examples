@@ -11,16 +11,15 @@
 
 package dev.restate.sdk.examples;
 
-import dev.restate.sdk.Context;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
+import dev.restate.sdk.common.TerminalException;
 import dev.restate.sdk.examples.clients.PaymentClient;
 import dev.restate.sdk.examples.clients.RestaurantClient;
 import dev.restate.sdk.examples.types.DeliveryRequest;
 import dev.restate.sdk.examples.types.OrderRequest;
 import dev.restate.sdk.examples.types.StatusEnum;
-import dev.restate.sdk.common.TerminalException;
-
 import java.time.Duration;
 
 /**
@@ -34,18 +33,18 @@ public class OrderWorkflow {
   private final PaymentClient paymentClnt = PaymentClient.get();
 
   @Handler
-  public void create(Context ctx, OrderRequest order) throws TerminalException {
+  public void create(OrderRequest order) throws TerminalException {
     String id = order.getOrderId();
 
-    var orderStatusService = OrderStatusServiceClient.fromContext(ctx, id);
+    var orderStatusService = Restate.virtualObject(OrderStatusService.class, id);
 
     // 1. Set status
     orderStatusService.setStatus(StatusEnum.CREATED);
 
     // 2. Handle payment
-    String token = ctx.random().nextUUID().toString();
+    String token = Restate.random().nextUUID().toString();
     boolean paid =
-        ctx.run(
+        Restate.run(
             "process payment",
             Boolean.TYPE,
             () -> paymentClnt.charge(id, token, order.getTotalCost()));
@@ -58,22 +57,23 @@ public class OrderWorkflow {
     // 3. Schedule preparation
     orderStatusService.setStatus(StatusEnum.SCHEDULED);
 
-    ctx.sleep(Duration.ofMillis(order.getDeliveryDelay()));
+    Restate.sleep(Duration.ofMillis(order.getDeliveryDelay()));
 
     // 4. Trigger preparation
-    var preparationFuture = ctx.awakeable(Void.class);
-    ctx.run("notify restaurant", () -> restaurant.prepare(id, preparationFuture.id()));
+    var preparationFuture = Restate.awakeable(Void.class);
+    Restate.run("notify restaurant", () -> restaurant.prepare(id, preparationFuture.id()));
 
     orderStatusService.setStatus(StatusEnum.IN_PREPARATION);
     preparationFuture.await();
     orderStatusService.setStatus(StatusEnum.SCHEDULING_DELIVERY);
 
     // 5. Find a driver and start delivery
-    var deliveryAwakeable = ctx.awakeable(Void.class);
+    var deliveryAwakeable = Restate.awakeable(Void.class);
 
-    DeliveryManagerClient.fromContext(ctx, id)
-        .send()
-        .start(new DeliveryRequest(order.getRestaurantId(), deliveryAwakeable.id()));
+    Restate.virtualObjectHandle(DeliveryManager.class, id)
+        .send(
+            DeliveryManager::start,
+            new DeliveryRequest(order.getRestaurantId(), deliveryAwakeable.id()));
     deliveryAwakeable.await();
     orderStatusService.setStatus(StatusEnum.DELIVERED);
   }

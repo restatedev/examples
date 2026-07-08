@@ -2,7 +2,7 @@ package my.example.workflows;
 
 import static my.example.utils.Utils.*;
 
-import dev.restate.sdk.WorkflowContext;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.common.TerminalException;
 import java.util.ArrayList;
@@ -14,19 +14,19 @@ import my.example.types.User;
 public class SignupWithSagasWorkflow {
 
   @Workflow
-  public boolean run(WorkflowContext ctx, User user) {
-    String userId = ctx.key();
+  public boolean run(User user) {
+    String userId = Restate.key();
     List<Runnable> compensations = new ArrayList<>();
 
     try {
-      compensations.add(() -> ctx.run("delete", () -> deleteUser(userId)));
-      ctx.run("create", () -> createUser(userId, user));
+      compensations.add(() -> Restate.run("delete", () -> deleteUser(userId)));
+      Restate.run("create", () -> createUser(userId, user));
 
-      compensations.add(() -> ctx.run("deactivate", () -> deactivateUser(userId)));
-      ctx.run("activate", () -> activateUser(userId));
+      compensations.add(() -> Restate.run("deactivate", () -> deactivateUser(userId)));
+      Restate.run("activate", () -> activateUser(userId));
 
-      compensations.add(() -> ctx.run("unsubscribe", () -> cancelSubscription(user)));
-      ctx.run("subscribe", () -> subscribeToPaidPlan(user));
+      compensations.add(() -> Restate.run("unsubscribe", () -> cancelSubscription(user)));
+      Restate.run("subscribe", () -> subscribeToPaidPlan(user));
 
     } catch (TerminalException e) {
       // Run compensations in reverse order

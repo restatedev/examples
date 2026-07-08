@@ -13,8 +13,8 @@ package dev.restate.sdk.examples
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.Shared
 import dev.restate.sdk.annotation.VirtualObject
-import dev.restate.sdk.kotlin.*
 import dev.restate.sdk.common.TerminalException
+import dev.restate.sdk.kotlin.*
 
 /**
  * Digital twin for the driver. Represents a driver and his status, assigned delivery, and location.
@@ -39,11 +39,12 @@ class DriverDigitalTwin {
    * (DriverMobileAppSimulator) calls this method.
    */
   @Handler
-  suspend fun setDriverAvailable(ctx: ObjectContext, region: String) {
-    expectStatus(ctx, DriverStatus.IDLE)
+  suspend fun setDriverAvailable(region: String) {
+    expectStatus(DriverStatus.IDLE)
 
-    ctx.set(DRIVER_STATUS, DriverStatus.WAITING_FOR_WORK)
-    DriverDeliveryMatcherClient.fromContext(ctx, region).send().setDriverAvailable(ctx.key())
+    val driverId = objectKey()
+    state().set(DRIVER_STATUS, DriverStatus.WAITING_FOR_WORK)
+    toVirtualObject<DriverDeliveryMatcher>(region).request { setDriverAvailable(driverId) }.send()
   }
 
   /**
@@ -52,29 +53,37 @@ class DriverDigitalTwin {
    * location.
    */
   @Handler
-  suspend fun assignDeliveryJob(ctx: ObjectContext, request: AssignDeliveryRequest) {
-    expectStatus(ctx, DriverStatus.WAITING_FOR_WORK)
+  suspend fun assignDeliveryJob(request: AssignDeliveryRequest) {
+    expectStatus(DriverStatus.WAITING_FOR_WORK)
 
     // Update the status and assigned delivery information of the driver
-    ctx.set(DRIVER_STATUS, DriverStatus.DELIVERING)
-    ctx.set(
+    val state = state()
+    state.set(DRIVER_STATUS, DriverStatus.DELIVERING)
+    state.set(
         ASSIGNED_DELIVERY,
         AssignedDelivery(
-            ctx.key(),
+            objectKey(),
             request.orderId,
             request.restaurantId,
             request.restaurantLocation,
-            request.customerLocation))
+            request.customerLocation,
+        ),
+    )
 
     // Initialize the ETA service
-    OrderETAServiceClient.fromContext(ctx, request.orderId)
+    toVirtualObject<OrderETAService>(request.orderId)
+        .request {
+          notifyDeliveryLocations(
+              DeliveryLocations(request.restaurantLocation, request.customerLocation)
+          )
+        }
         .send()
-        .notifyDeliveryLocations(
-            DeliveryLocations(request.restaurantLocation, request.customerLocation))
 
     // Notify current location to the delivery service
-    ctx.get(DRIVER_LOCATION)?.let {
-      OrderETAServiceClient.fromContext(ctx, request.orderId).send().notifyDriverLocationUpdate(it)
+    state.get(DRIVER_LOCATION)?.let { location ->
+      toVirtualObject<OrderETAService>(request.orderId)
+          .request { notifyDriverLocationUpdate(location) }
+          .send()
     }
   }
 
@@ -82,51 +91,64 @@ class DriverDigitalTwin {
    * Gets called by the driver's mobile app when he has picked up the delivery from the restaurant.
    */
   @Handler
-  suspend fun notifyDeliveryPickup(ctx: ObjectContext) {
-    expectStatus(ctx, DriverStatus.DELIVERING)
+  suspend fun notifyDeliveryPickup() {
+    expectStatus(DriverStatus.DELIVERING)
 
     // Retrieve the ongoing delivery and update its status
+    val state = state()
     val currentDelivery =
-        ctx.get(ASSIGNED_DELIVERY)
+        state.get(ASSIGNED_DELIVERY)
             ?: throw TerminalException(
-                "Driver is in status DELIVERING but there is no current delivery set.")
+                "Driver is in status DELIVERING but there is no current delivery set."
+            )
     currentDelivery.notifyPickup()
-    ctx.set(ASSIGNED_DELIVERY, currentDelivery)
+    state.set(ASSIGNED_DELIVERY, currentDelivery)
 
     // Update the status of the delivery in the delivery manager
-    OrderWorkflowClient.fromContext(ctx, currentDelivery.orderId).send().notifyDeliveryPickup()
-    OrderETAServiceClient.fromContext(ctx, currentDelivery.orderId).send().notifyDeliveryPickup()
+    toVirtualObject<OrderWorkflow>(currentDelivery.orderId)
+        .request { notifyDeliveryPickup() }
+        .send()
+    toVirtualObject<OrderETAService>(currentDelivery.orderId)
+        .request { notifyDeliveryPickup() }
+        .send()
   }
 
   /** Gets called by the driver's mobile app when he has delivered the order to the customer. */
   @Handler
-  suspend fun notifyDeliveryDelivered(ctx: ObjectContext) {
-    expectStatus(ctx, DriverStatus.DELIVERING)
+  suspend fun notifyDeliveryDelivered() {
+    expectStatus(DriverStatus.DELIVERING)
 
     // Retrieve the ongoing delivery
+    val state = state()
     val assignedDelivery =
-        ctx.get(ASSIGNED_DELIVERY)
+        state.get(ASSIGNED_DELIVERY)
             ?: throw TerminalException(
-                "Driver is in status DELIVERING but there is no current delivery set.")
+                "Driver is in status DELIVERING but there is no current delivery set."
+            )
     // Clean up the state
-    ctx.clear(ASSIGNED_DELIVERY)
+    state.clear(ASSIGNED_DELIVERY)
 
     // Notify the delivery service that the delivery was delivered
-    OrderWorkflowClient.fromContext(ctx, assignedDelivery.orderId).send().notifyDeliveryDelivered()
+    toVirtualObject<OrderWorkflow>(assignedDelivery.orderId)
+        .request { notifyDeliveryDelivered() }
+        .send()
 
     // Update the status of the driver to idle
-    ctx.set(DRIVER_STATUS, DriverStatus.IDLE)
+    state.set(DRIVER_STATUS, DriverStatus.IDLE)
   }
 
   /** Gets called by the driver's mobile app when he has moved to a new location. */
   @Handler
-  suspend fun handleDriverLocationUpdateEvent(ctx: ObjectContext, location: Location) {
+  suspend fun handleDriverLocationUpdateEvent(location: Location) {
     // Update the location of the driver
-    ctx.set(DRIVER_LOCATION, location)
+    val state = state()
+    state.set(DRIVER_LOCATION, location)
 
     // Update the location of the delivery, if there is one
-    ctx.get(ASSIGNED_DELIVERY)?.let {
-      OrderETAServiceClient.fromContext(ctx, it.orderId).send().notifyDriverLocationUpdate(location)
+    state.get(ASSIGNED_DELIVERY)?.let { delivery ->
+      toVirtualObject<OrderETAService>(delivery.orderId)
+          .request { notifyDriverLocationUpdate(location) }
+          .send()
     }
   }
 
@@ -136,20 +158,21 @@ class DriverDigitalTwin {
    * got assigned to him.
    */
   @Shared
-  suspend fun getAssignedDelivery(ctx: SharedObjectContext): GetAssignedDeliveryResult {
-    return GetAssignedDeliveryResult(ctx.get(ASSIGNED_DELIVERY))
+  suspend fun getAssignedDelivery(): GetAssignedDeliveryResult {
+    return GetAssignedDeliveryResult(state().get(ASSIGNED_DELIVERY))
   }
 
   // Utility function to check if the driver is in the expected state
   // If the driver is in a different state, a terminal exception is thrown that stops any retries
   // from taking place.
   // Is only called from inside the driver service.
-  private suspend fun expectStatus(ctx: ObjectContext, expectedStatus: DriverStatus) {
-    val currentStatus = ctx.get(DRIVER_STATUS) ?: DriverStatus.IDLE
+  private suspend fun expectStatus(expectedStatus: DriverStatus) {
+    val currentStatus = state().get(DRIVER_STATUS) ?: DriverStatus.IDLE
 
     if (currentStatus != expectedStatus) {
       throw TerminalException(
-          "Driver status wrong. Expected $expectedStatus but was $currentStatus")
+          "Driver status wrong. Expected $expectedStatus but was $currentStatus"
+      )
     }
   }
 }

@@ -1,6 +1,5 @@
 package my.example.batcher;
 
-import dev.restate.sdk.Context;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.Service;
 import java.util.List;
@@ -13,7 +12,7 @@ public class BatchReceiver {
   private static final Logger LOG = LogManager.getLogger(BatchReceiver.class);
 
   @Handler
-  public void receive(Context ctx, List<String> items) {
+  public void receive(List<String> items) {
     LOG.info("Received batch: {}", items);
   }
 }

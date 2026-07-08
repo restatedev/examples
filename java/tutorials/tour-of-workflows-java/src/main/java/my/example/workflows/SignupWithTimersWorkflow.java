@@ -2,9 +2,8 @@ package my.example.workflows;
 
 import static my.example.utils.Utils.*;
 
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.Select;
-import dev.restate.sdk.SharedWorkflowContext;
-import dev.restate.sdk.WorkflowContext;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.common.DurablePromiseKey;
@@ -20,17 +19,17 @@ public class SignupWithTimersWorkflow {
       DurablePromiseKey.of("email-verified", String.class);
 
   @Workflow
-  public boolean run(WorkflowContext ctx, User user) {
-    String userId = ctx.key();
+  public boolean run(User user) {
+    String userId = Restate.key();
 
-    var confirmationFuture = ctx.promise(EMAIL_VERIFIED_PROMISE).future();
-    var secret = ctx.random().nextUUID().toString();
-    ctx.run("verify", () -> sendVerificationEmail(userId, user, secret));
+    var confirmationFuture = Restate.promise(EMAIL_VERIFIED_PROMISE).future();
+    var secret = Restate.random().nextUUID().toString();
+    Restate.run("verify", () -> sendVerificationEmail(userId, user, secret));
 
-    var verificationTimeout = ctx.timer(Duration.ofDays(1));
+    var verificationTimeout = Restate.timer(Duration.ofDays(1));
 
     while (true) {
-      var reminderTimer = ctx.timer(Duration.ofSeconds(10));
+      var reminderTimer = Restate.timer(Duration.ofSeconds(10));
 
       var selected =
           Select.<String>select()
@@ -44,7 +43,7 @@ public class SignupWithTimersWorkflow {
           var clickedSecret = confirmationFuture.await();
           return secret.equals(clickedSecret);
         case "reminder":
-          ctx.run("send reminder", () -> sendReminderEmail(userId, user, secret));
+          Restate.run("send reminder", () -> sendReminderEmail(userId, user, secret));
           break;
         case "timeout":
           throw new TerminalException("Verification timed out");
@@ -53,7 +52,7 @@ public class SignupWithTimersWorkflow {
   }
 
   @Shared
-  public void verifyEmail(SharedWorkflowContext ctx, VerifyEmailRequest req) {
-    ctx.promiseHandle(EMAIL_VERIFIED_PROMISE).resolve(req.secret());
+  public void verifyEmail(VerifyEmailRequest req) {
+    Restate.promiseHandle(EMAIL_VERIFIED_PROMISE).resolve(req.secret());
   }
 }

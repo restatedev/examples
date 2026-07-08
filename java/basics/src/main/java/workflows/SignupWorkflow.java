@@ -10,8 +10,7 @@
  */
 package workflows;
 
-import dev.restate.sdk.SharedWorkflowContext;
-import dev.restate.sdk.WorkflowContext;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Shared;
 import dev.restate.sdk.annotation.Workflow;
 import dev.restate.sdk.endpoint.Endpoint;
@@ -41,21 +40,21 @@ public class SignupWorkflow {
 
     // --- The workflow logic ---
     @Workflow
-    public boolean run(WorkflowContext ctx, User user) {
+    public boolean run(User user) {
         // workflow ID = user ID; workflow runs once per user
-        String userId = ctx.key();
+        String userId = Restate.key();
 
         // Durably executed action; write to other system
-        ctx.run(() -> createUserEntry(user));
+        Restate.run("createUserEntry", () -> createUserEntry(user));
 
         // Sent user email with verification link
-        String secret = ctx.random().nextUUID().toString();
-        ctx.run(() -> sendEmailWithLink(userId, user, secret));
+        String secret = Restate.random().nextUUID().toString();
+        Restate.run("sendEmail", () -> sendEmailWithLink(userId, user, secret));
 
         // Wait until user clicked email verification link
         // Promise gets resolved or rejected by the other handlers
         String clickSecret =
-                ctx.promise(LINK_CLICKED)
+                Restate.promise(LINK_CLICKED)
                         .future()
                         .await();
 
@@ -65,9 +64,9 @@ public class SignupWorkflow {
 
     // --- Other handlers interact with the workflow via queries and signals ---
     @Shared
-    public void click(SharedWorkflowContext ctx, String secret) {
+    public void click(String secret) {
         // Send data to the workflow via a durable promise
-        ctx.promiseHandle(LINK_CLICKED).resolve(secret);
+        Restate.promiseHandle(LINK_CLICKED).resolve(secret);
     }
 
     public static void main(String[] args) {

@@ -1,7 +1,7 @@
 package my.example.batcher;
 
 import dev.restate.sdk.InvocationHandle;
-import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.StateKey;
@@ -24,8 +24,9 @@ public class Batcher {
   record BatcherState(List<String> items, String expireInvocationId) {}
 
   @Handler
-  public void receive(ObjectContext ctx, String item) {
-    ctx.get(STATE)
+  public void receive(String item) {
+    Restate.state()
+        .get(STATE)
         .ifPresentOrElse(
             state -> {
               LOG.info("Adding item {} to existing batch", item);
@@ -33,30 +34,32 @@ public class Batcher {
               if (state.items().size() == MAX_BATCH) {
                 LOG.info("Sending batch as it reached {} items", MAX_BATCH);
                 // cancel scheduled sending, since we are sending due to item count
-                ctx.invocationHandle(state.expireInvocationId()).cancel();
-                BatchReceiverClient.fromContext(ctx).receive(state.items());
-                ctx.clearAll();
+                Restate.invocationHandle(state.expireInvocationId()).cancel();
+                Restate.service(BatchReceiver.class).receive(state.items());
+                Restate.state().clearAll();
               } else {
                 // write back updated state
-                ctx.set(STATE, state);
+                Restate.state().set(STATE, state);
               }
             },
             () -> {
               LOG.info("Adding item to new batch, will send in at most {}", MAX_BATCH_WAIT);
               InvocationHandle<?> invocationId =
-                  BatcherClient.fromContext(ctx, ctx.key()).send().expire(MAX_BATCH_WAIT);
-              ctx.set(STATE, new BatcherState(List.of(item), invocationId.invocationId()));
+                  Restate.virtualObjectHandle(Batcher.class, Restate.key())
+                      .send(Batcher::expire, MAX_BATCH_WAIT);
+              Restate.state()
+                  .set(STATE, new BatcherState(List.of(item), invocationId.invocationId()));
             });
   }
 
   @Handler
-  public void expire(ObjectContext ctx) {
+  public void expire() {
     // if there is no state expire should never be called (meaning a bug),
     // so throw TerminalException since there is no recovery
-    var state = ctx.get(STATE).orElseThrow(TerminalException::new);
+    var state = Restate.state().get(STATE).orElseThrow(TerminalException::new);
     LOG.info("Sending batch with {} items as the timer fired", state.items().size());
-    BatchReceiverClient.fromContext(ctx).receive(state.items());
-    ctx.clearAll();
+    Restate.service(BatchReceiver.class).receive(state.items());
+    Restate.state().clearAll();
   }
 
   public static void main(String[] args) {

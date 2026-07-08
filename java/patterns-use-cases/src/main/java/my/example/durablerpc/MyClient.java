@@ -1,6 +1,7 @@
 package my.example.durablerpc;
 
 import dev.restate.client.Client;
+import dev.restate.common.InvocationOptions;
 import java.util.Optional;
 
 public class MyClient {
@@ -13,9 +14,11 @@ public class MyClient {
     // Durable RPC call to the product service
     // Restate registers the request and makes sure runs to completion exactly once
     boolean reserved =
-        ProductServiceClient.fromClient(restateClient, productId)
+        restateClient
+            .virtualObjectHandle(ProductService.class, productId)
             // Restate deduplicates requests with the same idempotency key
-            .reserve(opts -> opts.idempotencyKey(reservationId));
+            .call(ProductService::reserve, InvocationOptions.idempotencyKey(reservationId))
+            .response();
 
     return reserved;
   }

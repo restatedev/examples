@@ -17,27 +17,29 @@ class PaymentTracker {
 
   // Stripe sends us webhook events for invoice payment attempts
   @Handler
-  suspend fun onPaymentSuccess(ctx: ObjectContext, event: StripeEvent) {
-    ctx.set(PAID, true)
+  suspend fun onPaymentSuccess(event: StripeEvent) {
+    state().set(PAID, true)
   }
 
   @Handler
-  suspend fun onPaymentFailure(ctx: ObjectContext, event: StripeEvent) {
+  suspend fun onPaymentFailure(event: StripeEvent) {
+    val state = state()
+
     // Already paid, no need to send reminders
-    if (ctx.get(PAID) == true) {
+    if (state.get(PAID) == true) {
       return
     }
 
-    val remindersCount = ctx.get(REMINDER_COUNT) ?: 0
+    val remindersCount = state.get(REMINDER_COUNT) ?: 0
     if (remindersCount < 3) {
-      ctx.set(REMINDER_COUNT, remindersCount + 1)
-      ctx.runBlock { sendReminderEmail(event) }
+      state.set(REMINDER_COUNT, remindersCount + 1)
+      runBlock { sendReminderEmail(event) }
 
       // Schedule next reminder via a delayed self call
-      PaymentTrackerClient.fromContext(ctx, ctx.key()).send().onPaymentFailure(event, 1.days)
+      toVirtualObject<PaymentTracker>(objectKey()).request { onPaymentFailure(event) }.send(1.days)
     } else {
       // After three reminders, escalate to support team
-      ctx.runBlock { escalateToHuman(event) }
+      runBlock { escalateToHuman(event) }
     }
   }
 }

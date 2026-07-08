@@ -1,7 +1,7 @@
 plugins {
-  kotlin("jvm") version "2.2.10"
-  kotlin("plugin.serialization") version "2.2.10"
-  id("com.google.devtools.ksp") version "2.2.10-2.0.2"
+  kotlin("jvm") version "2.4.0"
+  kotlin("plugin.serialization") version "2.4.0"
+  kotlin("plugin.allopen") version "2.4.0"
 
   id("distribution")
 }
@@ -10,12 +10,16 @@ repositories {
   mavenCentral()
 }
 
-val restateVersion = "2.7.0"
+val restateVersion = "2.9.0"
+
+// Restate proxy clients require non-final annotated classes
+allOpen {
+  annotation("dev.restate.sdk.annotation.Service")
+  annotation("dev.restate.sdk.annotation.VirtualObject")
+  annotation("dev.restate.sdk.annotation.Workflow")
+}
 
 dependencies {
-  // Annotation processor
-  ksp("dev.restate:sdk-api-kotlin-gen:$restateVersion")
-
   // Restate SDK
   implementation("dev.restate:sdk-kotlin-lambda:$restateVersion")
 
@@ -27,10 +31,8 @@ dependencies {
 }
 
 // Setup Java/Kotlin compiler target
-java {
-  toolchain {
-    languageVersion.set(JavaLanguageVersion.of(21))
-  }
+kotlin {
+  jvmToolchain(25)
 }
 
 tasks.register<Zip>("lambdaZip") {

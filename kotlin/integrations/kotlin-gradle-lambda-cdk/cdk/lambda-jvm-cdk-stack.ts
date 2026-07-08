@@ -20,7 +20,7 @@ export class LambdaJvmCdkStack extends cdk.Stack {
     super(scope, id, props);
 
     const handler: lambda.Function = new lambda.Function(this, "GreeterService", {
-      runtime: lambda.Runtime.JAVA_21,
+      runtime: lambda.Runtime.JAVA_25,
       architecture: lambda.Architecture.ARM_64,
       code: lambda.Code.fromAsset("lambda/build/distributions/lambda.zip"),
       handler: "dev.restate.sdk.examples.LambdaHandler",
@@ -28,6 +28,10 @@ export class LambdaJvmCdkStack extends cdk.Stack {
       loggingFormat: lambda.LoggingFormat.JSON,
       applicationLogLevelV2: lambda.ApplicationLogLevel.DEBUG,
       systemLogLevelV2: lambda.SystemLogLevel.INFO,
+      environment: {
+        // Java 25 warnings: --enable-native-access for the Restate SDK state machine, --sun-misc-unsafe-memory-access for netty.
+        JAVA_TOOL_OPTIONS: "--enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow",
+      },
     });
 
     // If you would prefer to manually register the Lambda service with your Restate environment,

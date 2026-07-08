@@ -3,7 +3,7 @@ package my.example.statefulactors;
 import static my.example.statefulactors.utils.MachineOperations.bringUpMachine;
 import static my.example.statefulactors.utils.MachineOperations.tearDownMachine;
 
-import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.StateKey;
@@ -31,34 +31,34 @@ public class MachineOperator {
   private static final StateKey<Status> STATUS = StateKey.of("state", Status.class);
 
   @Handler
-  public String setUp(ObjectContext ctx) {
-    String machineId = ctx.key();
+  public String setUp() {
+    String machineId = Restate.key();
 
     // Ignore duplicate calls to start
-    var status = ctx.get(STATUS).orElse(Status.DOWN);
+    var status = Restate.state().get(STATUS).orElse(Status.DOWN);
     if (status.equals(Status.UP)) {
       return machineId + " is already running";
     }
 
     // Bringing up a machine is a slow process that frequently crashes
-    bringUpMachine(ctx, machineId);
-    ctx.set(STATUS, Status.UP);
+    bringUpMachine(machineId);
+    Restate.state().set(STATUS, Status.UP);
 
     return machineId + " is now running";
   }
 
   @Handler
-  public String tearDown(ObjectContext ctx) {
-    String machineId = ctx.key();
+  public String tearDown() {
+    String machineId = Restate.key();
 
-    var status = ctx.get(STATUS).orElse(Status.DOWN);
+    var status = Restate.state().get(STATUS).orElse(Status.DOWN);
     if (!status.equals(Status.UP)) {
       return machineId + " is not up, cannot tear down";
     }
 
     // Tearing down a machine is a slow process that frequently crashes
-    tearDownMachine(ctx, machineId);
-    ctx.set(STATUS, Status.DOWN);
+    tearDownMachine(machineId);
+    Restate.state().set(STATUS, Status.DOWN);
 
     return machineId + " is now down";
   }

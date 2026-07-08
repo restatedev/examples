@@ -2,7 +2,7 @@ package my.example;
 
 import dev.restate.client.Client;
 import my.example.types.User;
-import my.example.workflows.SignupWorkflowClient;
+import my.example.workflows.SignupWorkflow;
 
 public class WorkflowSubmitter {
 
@@ -12,7 +12,11 @@ public class WorkflowSubmitter {
     Client restateClient = Client.connect("http://localhost:8080");
 
     boolean result =
-        SignupWorkflowClient.fromClient(restateClient, "user-123").submit(user).attach().response();
+        restateClient
+            .workflowHandle(SignupWorkflow.class, "user-123")
+            .send(SignupWorkflow::run, user)
+            .attach()
+            .response();
     // <end_submit>
 
     System.out.println("Workflow result: " + result);

@@ -12,13 +12,13 @@ package dev.restate.sdk.examples.external
 
 import dev.restate.sdk.annotation.Handler
 import dev.restate.sdk.annotation.VirtualObject
+import dev.restate.sdk.common.TerminalException
 import dev.restate.sdk.examples.AssignedDelivery
-import dev.restate.sdk.examples.DriverDigitalTwinClient
+import dev.restate.sdk.examples.DriverDigitalTwin
 import dev.restate.sdk.examples.Location
 import dev.restate.sdk.examples.clients.KafkaPublisher
 import dev.restate.sdk.examples.utils.GeoUtils
 import dev.restate.sdk.kotlin.*
-import dev.restate.sdk.common.TerminalException
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -48,24 +48,24 @@ class DriverMobileAppSimulator {
 
   /** Mimics the driver setting himself to available in the app */
   @Handler
-  suspend fun startDriver(ctx: ObjectContext) {
+  suspend fun startDriver() {
+    val state = state()
     // If this driver was already created, do nothing
-    if (ctx.get(CURRENT_LOCATION) != null) {
+    if (state.get(CURRENT_LOCATION) != null) {
       return
     }
 
-    logger.info("Starting driver " + ctx.key())
-    val location = ctx.runBlock { GeoUtils.randomLocation() }
-    ctx.set(CURRENT_LOCATION, location)
-    KafkaPublisher.sendDriverUpdate(ctx.key(), Json.encodeToString(location).encodeToByteArray())
+    val driverId = objectKey()
+    logger.info("Starting driver " + driverId)
+    val location = runBlock { GeoUtils.randomLocation() }
+    state.set(CURRENT_LOCATION, location)
+    KafkaPublisher.sendDriverUpdate(driverId, Json.encodeToString(location).encodeToByteArray())
 
     // Tell the digital twin of the driver in the food ordering app, that he is available
-    DriverDigitalTwinClient.fromContext(ctx, ctx.key())
-        .setDriverAvailable(GeoUtils.DEMO_REGION)
-        .await()
+    virtualObject<DriverDigitalTwin>(driverId).setDriverAvailable(GeoUtils.DEMO_REGION)
 
     // Start polling for work
-    DriverMobileAppSimulatorClient.fromContext(ctx, ctx.key()).send().pollForWork()
+    toVirtualObject<DriverMobileAppSimulator>(driverId).request { pollForWork() }.send()
   }
 
   /**
@@ -73,16 +73,17 @@ class DriverMobileAppSimulator {
    * again after a short delay.
    */
   @Handler
-  suspend fun pollForWork(ctx: ObjectContext) {
-    val thisDriverSim = DriverMobileAppSimulatorClient.fromContext(ctx, ctx.key())
+  suspend fun pollForWork() {
+    val driverId = objectKey()
 
     // Ask the digital twin of the driver in the food ordering app, if he already got a job assigned
-    val getAssignedDeliveryResult =
-        DriverDigitalTwinClient.fromContext(ctx, ctx.key()).getAssignedDelivery().await()
+    val getAssignedDeliveryResult = virtualObject<DriverDigitalTwin>(driverId).getAssignedDelivery()
 
     // If there is no job, ask again after a short delay
     if (getAssignedDeliveryResult.assignedDelivery == null) {
-      thisDriverSim.send().pollForWork(POLL_INTERVAL.milliseconds)
+      toVirtualObject<DriverMobileAppSimulator>(driverId)
+          .request { pollForWork() }
+          .send(POLL_INTERVAL.milliseconds)
       return
     }
 
@@ -93,21 +94,25 @@ class DriverMobileAppSimulator {
             getAssignedDeliveryResult.assignedDelivery.orderId,
             getAssignedDeliveryResult.assignedDelivery.restaurantId,
             getAssignedDeliveryResult.assignedDelivery.restaurantLocation,
-            getAssignedDeliveryResult.assignedDelivery.customerLocation)
-    ctx.set(ASSIGNED_DELIVERY, newAssignedDelivery)
+            getAssignedDeliveryResult.assignedDelivery.customerLocation,
+        )
+    state().set(ASSIGNED_DELIVERY, newAssignedDelivery)
 
     // Start moving to the delivery pickup location
-    thisDriverSim.send().move(MOVE_INTERVAL.milliseconds)
+    toVirtualObject<DriverMobileAppSimulator>(driverId)
+        .request { move() }
+        .send(MOVE_INTERVAL.milliseconds)
   }
 
   /** Periodically lets the food ordering app know the new location */
   @Handler
-  suspend fun move(ctx: ObjectContext) {
-    val thisDriverSim = DriverMobileAppSimulatorClient.fromContext(ctx, ctx.key())
+  suspend fun move() {
+    val driverId = objectKey()
+    val state = state()
     val assignedDelivery =
-        ctx.get(ASSIGNED_DELIVERY) ?: throw TerminalException("Driver has no delivery assigned")
+        state.get(ASSIGNED_DELIVERY) ?: throw TerminalException("Driver has no delivery assigned")
     val currentLocation =
-        ctx.get(CURRENT_LOCATION) ?: throw TerminalException("Driver has no location assigned")
+        state.get(CURRENT_LOCATION) ?: throw TerminalException("Driver has no location assigned")
 
     // Get next destination to go to
     val nextDestination =
@@ -116,29 +121,29 @@ class DriverMobileAppSimulator {
 
     // Move to the next location
     val newLocation: Location = GeoUtils.moveToDestination(currentLocation, nextDestination)
-    ctx.set(CURRENT_LOCATION, newLocation)
-    KafkaPublisher.sendDriverUpdate(ctx.key(), Json.encodeToString(newLocation).encodeToByteArray())
+    state.set(CURRENT_LOCATION, newLocation)
+    KafkaPublisher.sendDriverUpdate(driverId, Json.encodeToString(newLocation).encodeToByteArray())
 
     // If we reached the destination, notify the food ordering app
     if (newLocation.equals(nextDestination)) {
       // If the delivery was already picked up, then that means it now arrived at the customer
       if (assignedDelivery.isOrderPickedUp) {
         // Delivery is delivered to customer
-        ctx.clear(ASSIGNED_DELIVERY)
+        state.clear(ASSIGNED_DELIVERY)
 
         // Notify the driver's digital twin in the food ordering app of the delivery success
-        DriverDigitalTwinClient.fromContext(ctx, ctx.key()).notifyDeliveryDelivered().await()
+        virtualObject<DriverDigitalTwin>(driverId).notifyDeliveryDelivered()
 
         // Take a small break before starting the next delivery
-        ctx.sleep(PAUSE_BETWEEN_DELIVERIES.milliseconds)
+        sleep(PAUSE_BETWEEN_DELIVERIES.milliseconds)
 
         // Tell the driver's digital twin in the food ordering app, that he is available
-        DriverDigitalTwinClient.fromContext(ctx, ctx.key())
+        toVirtualObject<DriverDigitalTwin>(driverId)
+            .request { setDriverAvailable(GeoUtils.DEMO_REGION) }
             .send()
-            .setDriverAvailable(GeoUtils.DEMO_REGION)
 
         // Start polling for work
-        DriverMobileAppSimulatorClient.fromContext(ctx, ctx.key()).send().pollForWork()
+        toVirtualObject<DriverMobileAppSimulator>(driverId).request { pollForWork() }.send()
         return
       }
 
@@ -146,11 +151,13 @@ class DriverMobileAppSimulator {
       // restaurant
       // and will start the delivery
       assignedDelivery.notifyPickup()
-      ctx.set(ASSIGNED_DELIVERY, assignedDelivery)
-      DriverDigitalTwinClient.fromContext(ctx, ctx.key()).notifyDeliveryPickup().await()
+      state.set(ASSIGNED_DELIVERY, assignedDelivery)
+      virtualObject<DriverDigitalTwin>(driverId).notifyDeliveryPickup()
     }
 
     // Call this method again after a short delay
-    thisDriverSim.send().move(MOVE_INTERVAL.milliseconds)
+    toVirtualObject<DriverMobileAppSimulator>(driverId)
+        .request { move() }
+        .send(MOVE_INTERVAL.milliseconds)
   }
 }

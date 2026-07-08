@@ -1,6 +1,6 @@
 package my.example.parallelizework
 
-import dev.restate.sdk.kotlin.Context
+import dev.restate.sdk.kotlin.*
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.serialization.Serializable
 import org.apache.logging.log4j.LogManager
@@ -18,11 +18,11 @@ private val logger = LogManager.getLogger("FanOutWorker")
 // Split the task into subTasks
 fun Task.split() = this.description.split(",").map { SubTask(it) }
 
-suspend fun SubTask.execute(ctx: Context): SubTaskResult {
+suspend fun SubTask.execute(): SubTaskResult {
   // Execute subtask
   logger.info("Started executing subtask: {}", this.description)
   // Sleep for a random amount between 0 and 10 seconds
-  ctx.sleep(ctx.random().nextInt(0, 10).toLong().seconds)
+  sleep(random().nextInt(0, 10).toLong().seconds)
   logger.info("Execution subtask finished: {}", this.description)
   return SubTaskResult("${this.description}: DONE")
 }

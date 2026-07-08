@@ -2,12 +2,12 @@ package my.example.statemachinepayments;
 
 import static my.example.statemachinepayments.types.PaymentStatus.*;
 
-import dev.restate.sdk.ObjectContext;
+import dev.restate.sdk.Restate;
 import dev.restate.sdk.annotation.Handler;
 import dev.restate.sdk.annotation.VirtualObject;
 import dev.restate.sdk.common.StateKey;
 import java.time.Duration;
-import my.example.statemachinepayments.accounts.AccountClient;
+import my.example.statemachinepayments.accounts.Account;
 import my.example.statemachinepayments.types.*;
 
 /*
@@ -33,9 +33,9 @@ public class PaymentProcessor {
   private static final Duration EXPIRY_TIMEOUT = Duration.ofDays(1);
 
   @Handler
-  public Result makePayment(ObjectContext ctx, Payment payment) {
-    final String paymentId = ctx.key();
-    final PaymentStatus status = ctx.get(STATUS).orElse(NEW);
+  public Result makePayment(Payment payment) {
+    final String paymentId = Restate.key();
+    final PaymentStatus status = Restate.state().get(STATUS).orElse(NEW);
 
     if (status == CANCELLED) {
       return new Result(false, "Payment already cancelled");
@@ -46,50 +46,50 @@ public class PaymentProcessor {
 
     // Charge the target account
     Result paymentResult =
-        AccountClient.fromContext(ctx, payment.getAccountId())
-            .withdraw(payment.getAmountCents())
-            .await();
+        Restate.virtualObject(Account.class, payment.getAccountId())
+            .withdraw(payment.getAmountCents());
 
     // Remember only on success, so that on failure (when we didn't charge) the external
     // caller may retry this (with the same payment-id), for the sake of this example
     if (paymentResult.isSuccess()) {
-      ctx.set(STATUS, COMPLETED_SUCCESSFULLY);
-      ctx.set(PAYMENT, payment);
-      PaymentProcessorClient.fromContext(ctx, paymentId).send().expire(EXPIRY_TIMEOUT);
+      Restate.state().set(STATUS, COMPLETED_SUCCESSFULLY);
+      Restate.state().set(PAYMENT, payment);
+      Restate.virtualObjectHandle(PaymentProcessor.class, paymentId)
+          .send(PaymentProcessor::expire, EXPIRY_TIMEOUT);
     }
 
     return paymentResult;
   }
 
   @Handler
-  public void cancelPayment(ObjectContext ctx) {
-    PaymentStatus status = ctx.get(STATUS).orElse(NEW);
+  public void cancelPayment() {
+    PaymentStatus status = Restate.state().get(STATUS).orElse(NEW);
 
     switch (status) {
       case NEW -> {
         // not seen this payment-id before, mark as canceled, in case the cancellation
         // overtook the actual payment request (on the external caller's side)
-        ctx.set(STATUS, CANCELLED);
-        PaymentProcessorClient.fromContext(ctx, ctx.key()).send().expire(EXPIRY_TIMEOUT);
+        Restate.state().set(STATUS, CANCELLED);
+        Restate.virtualObjectHandle(PaymentProcessor.class, Restate.key())
+            .send(PaymentProcessor::expire, EXPIRY_TIMEOUT);
       }
 
       case CANCELLED -> {}
 
       case COMPLETED_SUCCESSFULLY -> {
         // remember this as cancelled
-        ctx.set(STATUS, CANCELLED);
+        Restate.state().set(STATUS, CANCELLED);
 
         // undo the payment
-        Payment payment = ctx.get(PAYMENT).get();
-        AccountClient.fromContext(ctx, payment.getAccountId())
-            .send()
-            .deposit(payment.getAmountCents());
+        Payment payment = Restate.state().get(PAYMENT).get();
+        Restate.virtualObjectHandle(Account.class, payment.getAccountId())
+            .send(Account::deposit, payment.getAmountCents());
       }
     }
   }
 
   @Handler
-  public void expire(ObjectContext ctx) {
-    ctx.clearAll();
+  public void expire() {
+    Restate.state().clearAll();
   }
 }
