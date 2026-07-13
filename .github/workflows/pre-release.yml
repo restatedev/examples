@@ -8,7 +8,7 @@ on:
         required: false
         type: string
       sdkJavaVersion:
-        description: "sdk-java version (without prepending v). Leave empty if you do not want to update it."
+        description: "sdk-java version (without prepending v). Leave empty if you do not want to update it. Bumps both the Java and Kotlin examples."
         required: false
         type: string
       sdkGoVersion:
@@ -16,11 +16,11 @@ on:
         required: false
         type: string
       sdkPythonVersion:
-        description: 'sdk-python version (without prepending v). Leave empty if you do not want to update it.'
+        description: "sdk-python version (without prepending v). Leave empty if you do not want to update it."
         required: false
         type: string
       sdkRustVersion:
-        description: 'sdk-rust version (without prepending v). Leave empty if you do not want to update it.'
+        description: "sdk-rust version (without prepending v). Leave empty if you do not want to update it."
         required: false
         type: string
       cdkVersion:
@@ -28,109 +28,187 @@ on:
         required: false
         type: string
 
+# Each SDK gets its own job so the bumps + test suites run in parallel. A job only
+# runs when its version input is set, and each opens its own pull request on a
+# dedicated branch (one PR per SDK).
+env:
+  RESTATE_DISABLE_TELEMETRY: "true"
+
 jobs:
-  updates:
-    # prevent from running on forks
-    if: github.repository_owner == 'restatedev'
+  typescript:
+    if: github.repository_owner == 'restatedev' && inputs.sdkTypescriptVersion != ''
     runs-on: ubuntu-latest
     timeout-minutes: 40
-    env:
-      RESTATE_DISABLE_TELEMETRY: "true"
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      # Bump Typescript SDK
-      - uses: actions/setup-node@v3
-        if: github.event.inputs.sdkTypescriptVersion != ''
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: "22.x"
           registry-url: "https://registry.npmjs.org"
       - name: Bump sdk-typescript
-        if: github.event.inputs.sdkTypescriptVersion != ''
         run: ./.tools/update_node_examples.sh ${{ inputs.sdkTypescriptVersion }}
-      - name: Bump cdk
-        if: github.event.inputs.cdkVersion != ''
-        run: ./.tools/update_cdk_examples.sh ${{ inputs.cdkVersion }}
       - name: Run Node tests
-        if: github.event.inputs.sdkTypescriptVersion != ''
         run: ./.tools/run_node_tests.sh
+      - name: Compute paths to commit
+        id: changes
+        run: |
+          {
+            echo 'paths<<EOF'
+            printf '%s\n' '**/package.json' 'typescript/templates/deno/main.ts'
+            # Agent docs are only listed when they actually exist, otherwise git add
+            # would fatal on a pathspec matching nothing. git ls-files just prints
+            # nothing (exit 0) when there is no match.
+            git ls-files -- ':(glob)**/AGENTS.md' ':(glob)**/CLAUDE.md'
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: "[GithubActions] Update SDK-Typescript ${{ inputs.sdkTypescriptVersion }}"
+          commit-message: "[GithubActions] Update SDK-Typescript ${{ inputs.sdkTypescriptVersion }}"
+          branch: pre-release/typescript
+          add-paths: ${{ steps.changes.outputs.paths }}
 
-      # Bump Java SDK
-      - uses: actions/setup-java@v3
-        if: github.event.inputs.sdkJavaVersion != ''
+  cdk:
+    if: github.repository_owner == 'restatedev' && inputs.cdkVersion != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+          registry-url: "https://registry.npmjs.org"
+      - name: Bump cdk
+        run: ./.tools/update_cdk_examples.sh ${{ inputs.cdkVersion }}
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: "[GithubActions] Update CDK ${{ inputs.cdkVersion }}"
+          commit-message: "[GithubActions] Update CDK ${{ inputs.cdkVersion }}"
+          branch: pre-release/cdk
+          # The CDK bump touches package.json in the Go/Kotlin/TypeScript/Python lambda-cdk integrations.
+          add-paths: |
+            **/package.json
+
+  java:
+    if: github.repository_owner == 'restatedev' && inputs.sdkJavaVersion != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: "temurin"
           java-version: "25"
       - name: Setup Gradle
-        if: github.event.inputs.sdkJavaVersion != ''
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
       - name: Bump sdk-java
-        if: github.event.inputs.sdkJavaVersion != ''
         run: ./.tools/update_jvm_examples.sh ${{ inputs.sdkJavaVersion }}
       - name: Run JVM tests
-        if: github.event.inputs.sdkJavaVersion != ''
         run: ./.tools/run_jvm_tests.sh
+      - name: Compute paths to commit
+        id: changes
+        run: |
+          {
+            echo 'paths<<EOF'
+            printf '%s\n' '**/build.gradle.kts' '**/pom.xml'
+            git ls-files -- ':(glob)**/AGENTS.md' ':(glob)**/CLAUDE.md'
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: "[GithubActions] Update SDK-Java ${{ inputs.sdkJavaVersion }}"
+          commit-message: "[GithubActions] Update SDK-Java ${{ inputs.sdkJavaVersion }}"
+          branch: pre-release/java
+          add-paths: ${{ steps.changes.outputs.paths }}
 
-      # Bump Python SDK
+  python:
+    if: github.repository_owner == 'restatedev' && inputs.sdkPythonVersion != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-        if: github.event.inputs.sdkPythonVersion != ''
         with:
           python-version: "3.12"
       - name: Install uv
         uses: astral-sh/setup-uv@v6
       - name: Bump Python SDK
-        if: github.event.inputs.sdkPythonVersion != ''
         run: ./.tools/update_python_examples.sh ${{ inputs.sdkPythonVersion }}
       - name: Run Python tests
-        if: github.event.inputs.sdkPythonVersion != ''
         run: ./.tools/run_python_tests.sh
+      - name: Compute paths to commit
+        id: changes
+        run: |
+          {
+            echo 'paths<<EOF'
+            printf '%s\n' '**/pyproject.toml' '**/requirements.txt'
+            git ls-files -- ':(glob)**/AGENTS.md' ':(glob)**/CLAUDE.md'
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: "[GithubActions] Update SDK-Python ${{ inputs.sdkPythonVersion }}"
+          commit-message: "[GithubActions] Update SDK-Python ${{ inputs.sdkPythonVersion }}"
+          branch: pre-release/python
+          add-paths: ${{ steps.changes.outputs.paths }}
 
-      # Bump Go SDK
+  go:
+    if: github.repository_owner == 'restatedev' && inputs.sdkGoVersion != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
-        if: github.event.inputs.sdkGoVersion != ''
         with:
           go-version: "1.22"
       - name: Bump sdk-go
-        if: github.event.inputs.sdkGoVersion != ''
         run: ./.tools/update_go_examples.sh ${{ inputs.sdkGoVersion }}
       - name: Run Go tests
-        if: github.event.inputs.sdkGoVersion != ''
         run: ./.tools/run_go_tests.sh
+      - name: Compute paths to commit
+        id: changes
+        run: |
+          {
+            echo 'paths<<EOF'
+            printf '%s\n' '**/go.mod' '**/go.sum'
+            git ls-files -- ':(glob)**/AGENTS.md' ':(glob)**/CLAUDE.md'
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          title: "[GithubActions] Update SDK-Go ${{ inputs.sdkGoVersion }}"
+          commit-message: "[GithubActions] Update SDK-Go ${{ inputs.sdkGoVersion }}"
+          branch: pre-release/go
+          add-paths: ${{ steps.changes.outputs.paths }}
 
-      # Bump Rust SDK
+  rust:
+    if: github.repository_owner == 'restatedev' && inputs.sdkRustVersion != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
       - name: Install Rust toolchain
-        if: github.event.inputs.sdkRustVersion != ''
         uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           components: clippy
           rustflags: ""
       - name: Install cargo-edit
-        if: github.event.inputs.sdkRustVersion != ''
         run: cargo install -f --no-default-features --features upgrade cargo-edit@0.13.2
       - name: Bump sdk-rust
-        if: github.event.inputs.sdkRustVersion != ''
         run: ./.tools/update_rust_examples.sh ${{ inputs.sdkRustVersion }}
       - name: Run Rust tests
-        if: github.event.inputs.sdkRustVersion != ''
         run: ./.tools/run_rust_tests.sh
-
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v7
         with:
-          title: "[GithubActions] Update ${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }} ${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0} ', inputs.sdkJavaVersion) }} ${{ inputs.cdkVersion != '' && format('CDK {0} ', inputs.cdkVersion) }} ${{ inputs.sdkGoVersion != '' && format('SDK-Go {0} ', inputs.sdkGoVersion) }} ${{ inputs.sdkRustVersion != '' && format('SDK-Rust {0} ', inputs.sdkRustVersion) }} ${{ inputs.sdkPythonVersion != '' && format('SDK-Python {0} ', inputs.sdkPythonVersion) }}"
-          commit-message: "[GithubActions] Update ${{ inputs.sdkTypescriptVersion != '' && format('SDK-Typescript {0} ', inputs.sdkTypescriptVersion) }} ${{ inputs.sdkJavaVersion != '' && format('SDK-Java {0} ', inputs.sdkJavaVersion) }} ${{ inputs.cdkVersion != '' && format('CDK {0} ', inputs.cdkVersion) }} ${{ inputs.sdkGoVersion != '' && format('SDK-Go {0} ', inputs.sdkGoVersion) }} ${{ inputs.sdkRustVersion != '' && format('SDK-Rust {0} ', inputs.sdkRustVersion) }} ${{ inputs.sdkPythonVersion != '' && format('SDK-Python {0} ', inputs.sdkPythonVersion) }}"
+          title: "[GithubActions] Update SDK-Rust ${{ inputs.sdkRustVersion }}"
+          commit-message: "[GithubActions] Update SDK-Rust ${{ inputs.sdkRustVersion }}"
+          branch: pre-release/rust
           add-paths: |
-            **/package.json
-            **/package-lock.json
-            **/build.gradle.kts
-            **/pom.xml
-            **/pyproject.toml
-            **/requirements.txt
-            **/go.mod
-            **/go.sum
-            **/Cargo.lock
             **/Cargo.toml
-            **/AGENTS.md
-            **/CLAUDE.md
+            **/Cargo.lock
