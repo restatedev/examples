@@ -2,7 +2,7 @@ module github.com/restatedev/examples/go/templates/go-hello-world
 
 go 1.25.0
 
-require github.com/restatedev/sdk-go v1.0.0
+require github.com/restatedev/sdk-go v1.0.1
 
 require (
 	github.com/bahlo/generic-list-go v0.2.0 // indirect
