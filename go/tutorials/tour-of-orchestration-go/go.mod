@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/google/uuid v1.6.0
-	github.com/restatedev/sdk-go v1.0.0
+	github.com/restatedev/sdk-go v1.0.1
 )
 
 require (
