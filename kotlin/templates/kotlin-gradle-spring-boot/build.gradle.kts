@@ -20,7 +20,7 @@ repositories {
 	mavenCentral()
 }
 
-val restateVersion = "2.9.0"
+val restateVersion = "2.9.1"
 
 dependencies {
 	// Restate SDK (the Spring Boot Kotlin starter also applies the all-open plugin for Restate annotations)
