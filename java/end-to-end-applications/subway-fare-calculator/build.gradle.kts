@@ -7,7 +7,7 @@ repositories {
   mavenCentral()
 }
 
-val restateVersion = "2.9.0"
+val restateVersion = "2.9.1"
 
 dependencies {
   implementation("dev.restate:sdk-java-http:$restateVersion")

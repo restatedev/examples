@@ -28,7 +28,7 @@
 	</scm>
 	<properties>
 		<java.version>25</java.version>
-        <restate.version>2.9.0</restate.version>
+        <restate.version>2.9.1</restate.version>
 	</properties>
 
 
