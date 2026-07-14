@@ -26,8 +26,8 @@ github.com/pb33f/ordered-map/v2 v2.3.1 h1:5319HDO0aw4DA4gzi+zv4FXU9UlSs3xGZ40wcP
 github.com/pb33f/ordered-map/v2 v2.3.1/go.mod h1:qxFQgd0PkVUtOMCkTapqotNgzRhMPL7VvaHKbd1HnmQ=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/restatedev/sdk-go v1.0.1 h1:+VwB4ItI/E7b9bBVkBe7NuSP0FivxHozYfH7oJ62u5Q=
-github.com/restatedev/sdk-go v1.0.1/go.mod h1:wBPSXBOgBvwTQhLqujDSeW1BA480JXh6ZcIervk7tnA=
+github.com/restatedev/sdk-go v1.0.2 h1:XQYa8mrel+OPc9ObswwGfDHM/3IYw6FOXbfF5q9FgaA=
+github.com/restatedev/sdk-go v1.0.2/go.mod h1:wBPSXBOgBvwTQhLqujDSeW1BA480JXh6ZcIervk7tnA=
 github.com/robfig/cron/v3 v3.0.1 h1:WdRxkvbJztn8LMz/QEvLN5sBU+xKpSqwwUO1Pjr4qDs=
 github.com/robfig/cron/v3 v3.0.1/go.mod h1:eQICP3HwyT7UooqI/z+Ov+PtYAWygg1TEWWzGIFLtro=
 github.com/stretchr/testify v1.11.1 h1:7s2iGBzp5EwR7/aIZr8ao5+dra3wiQyKjjFuvgVKu7U=
