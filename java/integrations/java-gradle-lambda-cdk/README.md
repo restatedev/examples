@@ -47,7 +47,7 @@ npm install
 To deploy the stack, export the Restate Cloud environment id and API key, and run `cdk deploy`:
 
 ```shell
-export RESTATE_ENV_ID=env_... RESTATE_API_KEY=key_...
+export RESTATE_ENV_ID=env_... RESTATE_AUTH_TOKEN=key_...
 npx cdk deploy
 ```
 
@@ -59,7 +59,7 @@ You can send a test request to the Restate ingress endpoint to call the newly de
 
 ```shell
 curl -k ${restateIngressUrl}/Greeter/greet \
-  -H "Authorization: Bearer $RESTATE_API_KEY" \
+  -H "Authorization: Bearer $RESTATE_AUTH_TOKEN" \
   -H 'content-type: application/json' -d '"Restate"'
 ```
 
