@@ -3,7 +3,7 @@ plugins {
   kotlin("plugin.spring") version "2.4.0"
   kotlin("plugin.serialization") version "2.4.0"
 
-	id("org.springframework.boot") version "3.5.6"
+	id("org.springframework.boot") version "3.5.16"
 	id("io.spring.dependency-management") version "1.1.7"
 }
 
@@ -20,7 +20,7 @@ repositories {
 	mavenCentral()
 }
 
-val restateVersion = "2.9.1"
+val restateVersion = "2.9.2"
 
 dependencies {
 	// Restate SDK (the Spring Boot Kotlin starter also applies the all-open plugin for Restate annotations)

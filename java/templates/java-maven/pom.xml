@@ -14,7 +14,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>25</maven.compiler.release>
-    <restate.version>2.9.1</restate.version>
+    <restate.version>2.9.2</restate.version>
   </properties>
 
 

@@ -10,7 +10,7 @@ plugins {
 group = "dev.restate.examples.noteapp"
 version = "1.0.0"
 
-val restateVersion = "2.9.1"
+val restateVersion = "2.9.2"
 
 kotlin {
     jvmToolchain(25)
