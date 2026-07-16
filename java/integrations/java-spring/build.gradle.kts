@@ -1,8 +1,8 @@
 plugins {
 	java
 	application
-	id("org.springframework.boot") version "3.3.1"
-	id("io.spring.dependency-management") version "1.1.5"
+	id("org.springframework.boot") version "3.5.16"
+	id("io.spring.dependency-management") version "1.1.7"
 	id("com.diffplug.spotless") version "8.8.0"
 }
 
@@ -13,7 +13,7 @@ repositories {
 	mavenCentral()
 }
 
-val restateVersion = "2.9.1"
+val restateVersion = "2.9.2"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")

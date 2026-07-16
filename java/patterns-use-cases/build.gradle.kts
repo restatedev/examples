@@ -8,7 +8,7 @@ repositories {
   mavenCentral()
 }
 
-val restateVersion = "2.9.1"
+val restateVersion = "2.9.2"
 
 dependencies {
   // Restate SDK
