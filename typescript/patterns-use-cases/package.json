@@ -9,8 +9,8 @@
     "format": "prettier --ignore-path .eslintignore --write \"**/*.+(js|ts|json)\""
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.16.0",
-    "@restatedev/restate-sdk-clients": "^1.16.0",
+    "@restatedev/restate-sdk": "^1.16.2",
+    "@restatedev/restate-sdk-clients": "^1.16.2",
     "cron-parser": "^5.2.0",
     "express": "^5.2.1",
     "pg": "^8.10.0",
