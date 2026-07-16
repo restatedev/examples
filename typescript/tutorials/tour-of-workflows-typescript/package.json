@@ -16,8 +16,8 @@
     "app-dev": "npm run dev"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.16.0",
-    "@restatedev/restate-sdk-clients": "^1.16.0"
+    "@restatedev/restate-sdk": "^1.16.2",
+    "@restatedev/restate-sdk-clients": "^1.16.2"
   },
   "devDependencies": {
     "@types/node": "^22",
