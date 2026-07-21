@@ -32,14 +32,11 @@ pub struct SubscriptionRequest {
 // Whenever a handler uses the Restate Context, an event gets persisted in Restate's log.
 // After a failure, a retry is triggered and this log gets replayed to recover the state of the handler.
 
+pub struct SubscriptionService;
+
 #[restate_sdk::service]
-pub trait SubscriptionService {
-    async fn add(req: Json<SubscriptionRequest>) -> Result<(), HandlerError>;
-}
-
-struct SubscriptionServiceImpl;
-
-impl SubscriptionService for SubscriptionServiceImpl {
+impl SubscriptionService {
+    #[handler]
     async fn add(
         &self,
         mut ctx: Context<'_>,
@@ -71,7 +68,7 @@ async fn main() {
 
     HttpServer::new(
         Endpoint::builder()
-            .bind(SubscriptionServiceImpl.serve())
+            .bind(SubscriptionService)
             .build(),
     )
     .listen_and_serve("0.0.0.0:9080".parse().unwrap())

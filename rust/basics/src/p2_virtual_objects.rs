@@ -1,10 +1,5 @@
 use restate_sdk::prelude::*;
 
-#[restate_sdk::object]
-pub trait GreeterObject {
-    async fn greet(req: String) -> Result<String, HandlerError>;
-    async fn ungreet() -> Result<String, HandlerError>;
-}
 // Virtual Objects are services that hold K/V state. Its handlers interact with the object state.
 // An object is identified by a unique id - only one object exists per id.
 //
@@ -18,9 +13,11 @@ pub trait GreeterObject {
 //
 // Virtual Objects are Stateful (Serverless) constructs.
 
-pub struct GreeterObjectImpl;
+pub struct GreeterObject;
 
-impl GreeterObject for GreeterObjectImpl {
+#[restate_sdk::object]
+impl GreeterObject {
+    #[handler]
     async fn greet(
         &self,
         ctx: ObjectContext<'_>,
@@ -39,6 +36,7 @@ impl GreeterObject for GreeterObjectImpl {
         ))
     }
 
+    #[handler]
     async fn ungreet(&self, ctx: ObjectContext<'_>) -> Result<String, HandlerError> {
         let mut count: u64 = ctx.get::<u64>("count").await?.unwrap_or(0);
         if count > 0 {
@@ -57,7 +55,7 @@ impl GreeterObject for GreeterObjectImpl {
 async fn main() {
     tracing_subscriber::fmt::init();
 
-    HttpServer::new(Endpoint::builder().bind(GreeterObjectImpl.serve()).build())
+    HttpServer::new(Endpoint::builder().bind(GreeterObject).build())
         .listen_and_serve("0.0.0.0:9080".parse().unwrap())
         .await;
 }

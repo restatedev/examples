@@ -16,16 +16,13 @@ use std::time::Duration;
 * The run handler below shows a catalog of these building blocks.
 * Look at the other examples in this project to see how to use them in examples.
  */
+struct MyService;
+
 #[restate_sdk::service]
-trait MyService {
-    async fn run() -> Result<(), HandlerError>;
-}
-
-struct MyServiceImpl;
-
-impl MyService for MyServiceImpl {
-    // This handler can be called over HTTP at http://restate:8080/myService/handlerName
+impl MyService {
+    // This handler can be called over HTTP at http://restate:8080/MyService/run
     // Use the context to access Restate's durable building blocks
+    #[handler]
     async fn run(&self, mut ctx: Context<'_>) -> Result<(), HandlerError> {
         // ---
         // 1. IDEMPOTENCY: Add an idempotency key to the header of your requests
@@ -85,7 +82,7 @@ impl MyService for MyServiceImpl {
 async fn main() {
     tracing_subscriber::fmt::init();
 
-    HttpServer::new(Endpoint::builder().bind(MyServiceImpl.serve()).build())
+    HttpServer::new(Endpoint::builder().bind(MyService).build())
         .listen_and_serve("0.0.0.0:9080".parse().unwrap())
         .await;
 }
