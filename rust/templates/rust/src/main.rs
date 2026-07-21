@@ -4,14 +4,11 @@ use restate_sdk::prelude::*;
 use std::time::Duration;
 use utils::{send_notification, send_reminder};
 
+struct Greeter;
+
 #[restate_sdk::service]
-trait Greeter {
-    async fn greet(name: String) -> Result<String, HandlerError>;
-}
-
-struct GreeterImpl;
-
-impl Greeter for GreeterImpl {
+impl Greeter {
+    #[handler]
     async fn greet(&self, mut ctx: Context<'_>, name: String) -> Result<String, HandlerError> {
         // Durably execute a set of steps; resilient against failures
         let greeting_id = ctx.rand_uuid().to_string();
@@ -33,7 +30,7 @@ async fn main() {
     // To enable logging
     tracing_subscriber::fmt::init();
 
-    HttpServer::new(Endpoint::builder().bind(GreeterImpl.serve()).build())
+    HttpServer::new(Endpoint::builder().bind(Greeter).build())
         .listen_and_serve("0.0.0.0:9080".parse().unwrap())
         .await;
 }

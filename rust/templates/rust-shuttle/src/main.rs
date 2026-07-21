@@ -7,14 +7,11 @@ use restate_shuttle::RestateShuttleEndpoint;
 use std::time::Duration;
 use utils::{send_notification, send_reminder};
 
+struct Greeter;
+
 #[restate_sdk::service]
-trait Greeter {
-    async fn greet(name: String) -> Result<String, HandlerError>;
-}
-
-struct GreeterImpl;
-
-impl Greeter for GreeterImpl {
+impl Greeter {
+    #[handler]
     async fn greet(&self, mut ctx: Context<'_>, name: String) -> Result<String, HandlerError> {
         // Durably execute a set of steps; resilient against failures
         let greeting_id = ctx.rand_uuid().to_string();
@@ -34,6 +31,6 @@ impl Greeter for GreeterImpl {
 #[shuttle_runtime::main]
 async fn main() -> Result<RestateShuttleEndpoint, shuttle_runtime::Error> {
     Ok(RestateShuttleEndpoint::new(
-        Endpoint::builder().bind(GreeterImpl.serve()).build(),
+        Endpoint::builder().bind(Greeter).build(),
     ))
 }

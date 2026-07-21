@@ -13,17 +13,12 @@ use restate_sdk::prelude::*;
 //  - Additional methods interact with the workflow.
 // Each workflow instance has a unique ID and runs only once (to success or failure).
 
+struct SignupWorkflow;
+
 #[restate_sdk::workflow]
-trait SignupWorkflow {
-    async fn run(user: Json<User>) -> Result<bool, HandlerError>;
-    #[shared]
-    async fn click(secret: String) -> Result<(), HandlerError>;
-}
-
-struct SignupWorkflowImpl;
-
-impl SignupWorkflow for SignupWorkflowImpl {
+impl SignupWorkflow {
     // --- The workflow logic ---
+    #[handler]
     async fn run(
         &self,
         mut ctx: WorkflowContext<'_>,
@@ -46,6 +41,7 @@ impl SignupWorkflow for SignupWorkflowImpl {
     }
 
     // --- Other handlers interact with the workflow via queries and signals ---
+    #[handler]
     async fn click(
         &self,
         ctx: SharedWorkflowContext<'_>,
@@ -60,7 +56,7 @@ impl SignupWorkflow for SignupWorkflowImpl {
 async fn main() {
     tracing_subscriber::fmt::init();
 
-    HttpServer::new(Endpoint::builder().bind(SignupWorkflowImpl.serve()).build())
+    HttpServer::new(Endpoint::builder().bind(SignupWorkflow).build())
         .listen_and_serve("0.0.0.0:9080".parse().unwrap())
         .await;
 }
