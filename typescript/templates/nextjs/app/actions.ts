@@ -60,9 +60,9 @@ function getRestateUrl(): string {
 
 function getRestateAuthHeaders(): Record<string, string> {
   if (process.env.VERCEL) {
-    const apiKey = process.env.RESTATE_API_KEY;
+    const apiKey = process.env.RESTATE_AUTH_TOKEN;
     if (!apiKey) {
-      throw new Error('RESTATE_API_KEY environment variable is not set');
+      throw new Error('RESTATE_AUTH_TOKEN environment variable is not set');
     }
     return {
       Authorization: "Bearer " + apiKey,
