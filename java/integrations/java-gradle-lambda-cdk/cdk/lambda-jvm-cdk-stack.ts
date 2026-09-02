@@ -36,9 +36,9 @@ export class LambdaJvmCdkStack extends cdk.Stack {
 
     // If you would prefer to manually register the Lambda service with your Restate environment,
     // you can remove or comment the rest of the code below this line.
-    if (!process.env.RESTATE_ENV_ID || !process.env.RESTATE_API_KEY) {
+    if (!process.env.RESTATE_ENV_ID || !process.env.RESTATE_AUTH_TOKEN) {
       throw new Error(
-        "Required environment variables RESTATE_ENV_ID and RESTATE_API_KEY are not set, please see README."
+        "Required environment variables RESTATE_ENV_ID and RESTATE_AUTH_TOKEN are not set, please see README."
       );
     }
 
@@ -50,7 +50,7 @@ export class LambdaJvmCdkStack extends cdk.Stack {
       // For improved security, pre-populate the secret and pass it to the construct as a reference.
       // See: https://docs.aws.amazon.com/secretsmanager/latest/userguide/cdk.html
       apiKey: new secrets.Secret(this, "RestateCloudApiKey", {
-        secretStringValue: cdk.SecretValue.unsafePlainText(process.env.RESTATE_API_KEY!),
+        secretStringValue: cdk.SecretValue.unsafePlainText(process.env.RESTATE_AUTH_TOKEN!),
       }),
     });
     const deployer = new restate.ServiceDeployer(this, "ServiceDeployer");
