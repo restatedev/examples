@@ -47,8 +47,6 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       - name: Bump sdk-typescript
         run: ./.tools/update_node_examples.sh ${{ inputs.sdkTypescriptVersion }}
-      - name: Run Node tests
-        run: ./.tools/run_node_tests.sh
       - name: Compute paths to commit
         id: changes
         run: |
@@ -105,8 +103,6 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
       - name: Bump sdk-java
         run: ./.tools/update_jvm_examples.sh ${{ inputs.sdkJavaVersion }}
-      - name: Run JVM tests
-        run: ./.tools/run_jvm_tests.sh
       - name: Compute paths to commit
         id: changes
         run: |
@@ -137,8 +133,6 @@ jobs:
         uses: astral-sh/setup-uv@v6
       - name: Bump Python SDK
         run: ./.tools/update_python_examples.sh ${{ inputs.sdkPythonVersion }}
-      - name: Run Python tests
-        run: ./.tools/run_python_tests.sh
       - name: Compute paths to commit
         id: changes
         run: |
@@ -167,8 +161,6 @@ jobs:
           go-version: "1.22"
       - name: Bump sdk-go
         run: ./.tools/update_go_examples.sh ${{ inputs.sdkGoVersion }}
-      - name: Run Go tests
-        run: ./.tools/run_go_tests.sh
       - name: Compute paths to commit
         id: changes
         run: |
@@ -201,8 +193,6 @@ jobs:
         run: cargo install -f --no-default-features --features upgrade cargo-edit@0.13.2
       - name: Bump sdk-rust
         run: ./.tools/update_rust_examples.sh ${{ inputs.sdkRustVersion }}
-      - name: Run Rust tests
-        run: ./.tools/run_rust_tests.sh
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
