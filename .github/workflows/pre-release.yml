@@ -15,6 +15,10 @@ on:
         description: "sdk-go version (without the prepending v). Leave empty if you do not want to update it."
         required: false
         type: string
+      sdkGoTunnelVersion:
+        description: "Go tunnel module version (without prepending v). Leave empty to keep the current version."
+        required: false
+        type: string
       sdkPythonVersion:
         description: "sdk-python version (without prepending v). Leave empty if you do not want to update it."
         required: false
@@ -151,16 +155,19 @@ jobs:
           add-paths: ${{ steps.changes.outputs.paths }}
 
   go:
-    if: github.repository_owner == 'restatedev' && inputs.sdkGoVersion != ''
+    if: github.repository_owner == 'restatedev' && (inputs.sdkGoVersion != '' || inputs.sdkGoTunnelVersion != '')
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
-      - name: Bump sdk-go
-        run: ./.tools/update_go_examples.sh ${{ inputs.sdkGoVersion }}
+          go-version-file: go/templates/go-kubernetes/go.mod
+      - name: Bump Go dependencies
+        env:
+          SDK_GO_VERSION: ${{ inputs.sdkGoVersion }}
+          SDK_GO_TUNNEL_VERSION: ${{ inputs.sdkGoTunnelVersion }}
+        run: ./.tools/update_go_examples.sh "$SDK_GO_VERSION" "$SDK_GO_TUNNEL_VERSION"
       - name: Compute paths to commit
         id: changes
         run: |
@@ -173,8 +180,8 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
-          title: "[GithubActions] Update SDK-Go ${{ inputs.sdkGoVersion }}"
-          commit-message: "[GithubActions] Update SDK-Go ${{ inputs.sdkGoVersion }}"
+          title: "[GithubActions] Update Go dependencies ${{ inputs.sdkGoVersion != '' && format('SDK {0}', inputs.sdkGoVersion) || '' }} ${{ inputs.sdkGoTunnelVersion != '' && format('Tunnel {0}', inputs.sdkGoTunnelVersion) || '' }}"
+          commit-message: "[GithubActions] Update Go dependencies ${{ inputs.sdkGoVersion != '' && format('SDK {0}', inputs.sdkGoVersion) || '' }} ${{ inputs.sdkGoTunnelVersion != '' && format('Tunnel {0}', inputs.sdkGoTunnelVersion) || '' }}"
           branch: pre-release/go
           add-paths: ${{ steps.changes.outputs.paths }}
 

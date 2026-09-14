@@ -2,23 +2,36 @@
 
 set -eufx -o pipefail
 
-NEW_VERSION=v$1
+SDK_VERSION=${1:-}
+TUNNEL_VERSION=${2:-}
 SELF_PATH=${BASH_SOURCE[0]:-"$(command -v -- "$0")"}
 PROJECT_ROOT="$(dirname "$SELF_PATH")/.."
 
 function bump_go_sdk() {
-    pushd $1
-    go get github.com/restatedev/sdk-go@$NEW_VERSION
+    local project_dir=$1
+    local modules=()
+    if [[ -n "$SDK_VERSION" ]]; then
+        modules+=("github.com/restatedev/sdk-go@v${SDK_VERSION#v}")
+    fi
+    if [[ -n "$TUNNEL_VERSION" ]] && grep -Eq '^[[:space:]]*(require[[:space:]]+)?github.com/restatedev/sdk-go/x/tunnel[[:space:]]' "$project_dir/go.mod"; then
+        modules+=("github.com/restatedev/sdk-go/x/tunnel@v${TUNNEL_VERSION#v}")
+    fi
+    if [[ ${#modules[@]} -eq 0 ]]; then
+        return
+    fi
+
+    pushd "$project_dir"
+    go get "${modules[@]}"
     go mod tidy
+    go test ./...
 
 
     # If this is a template directory and has existing agents documentation, update it
-    local project_dir=$1
-    if [[ "$project_dir" == *"/templates/"* ]] && [ -f "./.cursor/rules/AGENTS.md" ]; then
+    if [[ -n "$SDK_VERSION" && "$project_dir" == *"/templates/"* ]] && [ -f "./.cursor/rules/AGENTS.md" ]; then
         echo "Updating agents documentation for template in $project_dir"
         wget -O "./.cursor/rules/AGENTS.md" https://docs.restate.dev/develop/go/agents.md
     fi
-    if [[ "$project_dir" == *"/templates/"* ]] && [ -f "./.claude/CLAUDE.md" ]; then
+    if [[ -n "$SDK_VERSION" && "$project_dir" == *"/templates/"* ]] && [ -f "./.claude/CLAUDE.md" ]; then
         echo "Updating agents documentation for template in $project_dir"
         wget -O "./.claude/CLAUDE.md" https://docs.restate.dev/develop/go/agents.md
     fi
