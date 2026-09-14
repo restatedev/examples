@@ -47,6 +47,7 @@ function bump_restate_sdk_deps() {
 # Update all projects with package.json
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/basics
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/node
+bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/node-kubernetes
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/lambda
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/typescript-testing
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/bun

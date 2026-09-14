@@ -53,6 +53,7 @@ create_release_zip typescript/end-to-end-applications/chat-bot typescript-chat-b
 create_release_zip typescript/end-to-end-applications/ai-image-workflows typescript-ai-image-workflows
 create_release_zip typescript/patterns-use-cases typescript-patterns-use-cases
 create_release_zip typescript/templates/node typescript-hello-world
+create_release_zip typescript/templates/node-kubernetes typescript-hello-world-kubernetes
 create_release_zip typescript/templates/lambda typescript-hello-world-lambda
 create_release_zip typescript/templates/bun typescript-hello-world-bun
 create_release_zip typescript/templates/cloudflare-worker typescript-hello-world-cloudflare-worker
@@ -69,6 +70,7 @@ create_release_zip go/integrations/go-lambda-cdk go-hello-world-lambda-cdk
 create_release_zip go/integrations/knative-go go-knative-go
 create_release_zip go/patterns-use-cases go-patterns-use-cases
 create_release_zip go/templates/go go-hello-world
+create_release_zip go/templates/go-kubernetes go-hello-world-kubernetes
 create_release_zip go/tutorials/tour-of-orchestration-go go-tour-of-orchestration
 create_release_zip go/tutorials/tour-of-workflows-go go-tour-of-workflows
 

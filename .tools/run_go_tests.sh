@@ -14,6 +14,7 @@ function go_build_check() {
 
 go_build_check $PROJECT_ROOT/go/basics
 go_build_check $PROJECT_ROOT/go/templates/go
+go_build_check $PROJECT_ROOT/go/templates/go-kubernetes
 go_build_check $PROJECT_ROOT/go/integrations/knative-go
 go_build_check $PROJECT_ROOT/go/integrations/go-lambda-cdk/lambda
 go_build_check $PROJECT_ROOT/go/tutorials/tour-of-orchestration-go

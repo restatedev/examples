@@ -1,0 +1,6 @@
+.git
+.idea
+.agents
+.claude
+*.zip
+go-kubernetes

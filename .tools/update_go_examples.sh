@@ -28,6 +28,7 @@ function bump_go_sdk() {
 
 bump_go_sdk $PROJECT_ROOT/go/basics
 bump_go_sdk $PROJECT_ROOT/go/templates/go
+bump_go_sdk $PROJECT_ROOT/go/templates/go-kubernetes
 bump_go_sdk $PROJECT_ROOT/go/integrations/knative-go
 bump_go_sdk $PROJECT_ROOT/go/integrations/go-lambda-cdk/lambda
 bump_go_sdk $PROJECT_ROOT/go/tutorials/tour-of-orchestration-go

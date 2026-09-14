@@ -1,0 +1,12 @@
+apiVersion: restate.dev/v1beta1
+kind: RestateCloudEnvironment
+metadata:
+  name: my-cloud-env
+spec:
+  environmentId: env_...
+  signingPublicKey: publickeyv1_...
+  region: eu
+  authentication:
+    secret:
+      name: my-cloud-environment-secret
+      key: token
