@@ -68,6 +68,7 @@ Complete applications built with Restate:
 Starter templates for new projects:
 
 - **[Node Template](templates/node)**
+- **[Node.js Kubernetes Template](templates/node-kubernetes)**: Deploy to Kubernetes with an ingress tunnel and Kubernetes YAML files.
 - **[Bun Template](templates/bun)**
 - **[CloudFlare Workers Template](templates/cloudflare-worker)**
 - **[Deno Template](templates/deno)**

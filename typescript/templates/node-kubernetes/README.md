@@ -1,8 +1,8 @@
-# Hello world - TypeScript example
+# Hello world - Node.js Kubernetes template
 
-Sample project configuration of a Restate service using the TypeScript SDK.
+Sample Restate service using the TypeScript SDK on Node.js, with an ingress tunnel, a Dockerfile, and Kubernetes YAML files.
 
-Have a look at the [TypeScript Quickstart guide](https://docs.restate.dev/get_started/quickstart?sdk=ts) for more information on how to use this template.
+See the [Kubernetes service deployment guide](https://docs.restate.dev/services/deploy/kubernetes) for more information on using this template to deploy to Kubernetes.
 
 ## Using AI coding tools
 

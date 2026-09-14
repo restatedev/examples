@@ -57,6 +57,7 @@ jobs:
                   kotlin-hello-world-lambda-cdk.zip
             
                   typescript-hello-world.zip
+                  typescript-hello-world-kubernetes.zip
                   typescript-hello-world-bun.zip
                   typescript-hello-world-cloudflare-worker.zip
                   typescript-hello-world-deno.zip
