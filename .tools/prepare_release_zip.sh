@@ -70,6 +70,7 @@ create_release_zip go/integrations/go-lambda-cdk go-hello-world-lambda-cdk
 create_release_zip go/integrations/knative-go go-knative-go
 create_release_zip go/patterns-use-cases go-patterns-use-cases
 create_release_zip go/templates/go go-hello-world
+create_release_zip go/templates/go-kubernetes go-hello-world-kubernetes
 create_release_zip go/tutorials/tour-of-orchestration-go go-tour-of-orchestration
 create_release_zip go/tutorials/tour-of-workflows-go go-tour-of-workflows
 

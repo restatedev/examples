@@ -45,6 +45,7 @@ Examples integrating Restate with other tools and frameworks:
 Starter templates for new projects:
 
 - **[Go Template](templates/go)** [<img src="https://raw.githubusercontent.com/restatedev/img/refs/heads/main/play-button.svg" width="16" height="16">](templates/go/greeter.go)
+- **[Go Kubernetes Template](templates/go-kubernetes)**: Deploy to Kubernetes with an in-process tunnel and Kubernetes YAML files.
 
 ## Tutorials
 

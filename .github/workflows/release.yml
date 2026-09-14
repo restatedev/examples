@@ -74,6 +74,7 @@ jobs:
                   typescript-nextjs-fullstack.zip
             
                   go-hello-world.zip
+                  go-hello-world-kubernetes.zip
                   go-hello-world-lambda-cdk.zip
                   go-tour-of-orchestration.zip
                   go-tour-of-workflows.zip
