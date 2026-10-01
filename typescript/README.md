@@ -68,6 +68,7 @@ Complete applications built with Restate:
 Starter templates for new projects:
 
 - **[Node Template](templates/node)**
+- **[Node Generator SDK Template](templates/node-gen)**: Uses the generator-based SDK (`@restatedev/restate-sdk-gen`), with pnpm, TypeScript 7, oxlint and oxfmt.
 - **[Node.js Kubernetes Template](templates/node-kubernetes)**: Deploy to Kubernetes with an ingress tunnel and Kubernetes YAML files.
 - **[Bun Template](templates/bun)**
 - **[CloudFlare Workers Template](templates/cloudflare-worker)**

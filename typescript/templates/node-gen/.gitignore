@@ -1,0 +1,18 @@
+# Node
+node_modules
+dist
+
+# debug
+npm-debug.log*
+pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# typescript
+*.tsbuildinfo
+
+# Restate
+.restate
+restate-data
+pnpm-lock.yaml

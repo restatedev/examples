@@ -84,6 +84,35 @@ jobs:
       - name: Run tests
         run: ./.tools/run_node_tests.sh
 
+  build-node-gen:
+    # prevent from running on forks
+    if: github.repository_owner == 'restatedev'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: typescript/templates/node-gen
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js 24.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+
+      - uses: pnpm/action-setup@v6
+        with:
+          package_json_file: typescript/templates/node-gen/package.json
+
+      - name: Install
+        run: pnpm install
+
+      - name: Check
+        run: pnpm check
+
+      - name: Build
+        run: pnpm build
+
   build-altjs:
     # prevent from running on forks
     if: github.repository_owner == 'restatedev'
