@@ -26,10 +26,21 @@ function bump_restate_sdk_deps() {
         console.log(restateDeps.join(' '));
     ")
 
+    # Projects declaring pnpm as packageManager are bumped with pnpm, others with npm
+    local package_manager=$(node -e "
+        const fs = require('fs');
+        const pkg = JSON.parse(fs.readFileSync('$package_json', 'utf8'));
+        console.log((pkg.packageManager || 'npm').split('@')[0]);
+    ")
+
     # Install each dependency with the new version
     for dep in $deps; do
         echo "Installing $dep@^$NEW_VERSION in $project_dir"
-        npm install $dep@^$NEW_VERSION
+        if [ "$package_manager" == "pnpm" ]; then
+            pnpm add $dep@^$NEW_VERSION
+        else
+            npm install $dep@^$NEW_VERSION
+        fi
     done
 
     # If this is a template directory and has existing agents documentation, update it
@@ -47,6 +58,7 @@ function bump_restate_sdk_deps() {
 # Update all projects with package.json
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/basics
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/node
+bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/node-gen
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/node-kubernetes
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/lambda
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/typescript-testing

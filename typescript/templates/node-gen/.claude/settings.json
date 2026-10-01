@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "restatedev-plugin": {
+      "source": {
+        "source": "github",
+        "repo": "restatedev/skills"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "restatedev@restatedev-plugin": true
+  }
+}

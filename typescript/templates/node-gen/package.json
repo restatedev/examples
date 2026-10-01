@@ -1,0 +1,31 @@
+{
+  "name": "restate-ts-gen-template",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Template for TypeScript services running with Restate (https://github.com/restatedev/), using the generator-based SDK",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node ./dist/app.js",
+    "dev": "node --watch ./src/app.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "check": "pnpm typecheck && pnpm lint && pnpm fmt:check"
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "^1.17.2",
+    "@restatedev/restate-sdk-gen": "^1.17.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "oxfmt": "^0.71.0",
+    "oxlint": "^1.86.0",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@12.8.1"
+}

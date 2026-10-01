@@ -57,6 +57,7 @@ jobs:
                   kotlin-hello-world-lambda-cdk.zip
             
                   typescript-hello-world.zip
+                  typescript-hello-world-gen.zip
                   typescript-hello-world-kubernetes.zip
                   typescript-hello-world-bun.zip
                   typescript-hello-world-cloudflare-worker.zip
@@ -88,6 +89,13 @@ jobs:
 
 
 
+  copy-ts-gen-template:
+    name: Copy TypeScript gen template to typescript-gen-template repo
+    uses: ./.github/workflows/copy-to-repo.yml
+    secrets: inherit
+    with:
+      source-directory: typescript/templates/node-gen
+      destination-repo: typescript-gen-template
   copy-deno-template:
     name: Copy deno template to deno-template repo
     uses: ./.github/workflows/copy-to-repo.yml
