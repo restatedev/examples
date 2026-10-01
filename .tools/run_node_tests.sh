@@ -9,9 +9,14 @@ function npm_install_check() {
     npm install --prefix $1 && npm --prefix $1 run build
 }
 
+function pnpm_install_check() {
+    pnpm --dir $1 install && pnpm --dir $1 run check && pnpm --dir $1 run build
+}
+
 npm_install_check $PROJECT_ROOT/typescript/basics
 
 npm_install_check $PROJECT_ROOT/typescript/templates/node
+pnpm_install_check $PROJECT_ROOT/typescript/templates/node-gen
 npm_install_check $PROJECT_ROOT/typescript/templates/node-kubernetes
 npm_install_check $PROJECT_ROOT/typescript/templates/lambda
 npm_install_check $PROJECT_ROOT/typescript/templates/cloudflare-worker

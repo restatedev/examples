@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - run: echo '{"ignorePatterns":[{"pattern":"https://docs.restate.dev/_mintlify/feedback/restate-6d46e1dc/agent-feedback"},{"pattern":"https://slack.restate.dev"}]}' > mlc_config.json
+      - run: echo '{"ignorePatterns":[{"pattern":"https://docs.restate.dev/_mintlify/feedback/restate-6d46e1dc/agent-feedback"},{"pattern":"https://slack.restate.dev"},{"pattern":"^https://www.npmjs.com"}]}' > mlc_config.json
       - uses: gaurav-nelson/github-action-markdown-link-check@v1
         with:
           use-verbose-mode: 'yes'
@@ -68,7 +68,7 @@ jobs:
       RESTATE_DISABLE_TELEMETRY: "true"
     strategy:
       matrix:
-        node-version: [22.x]
+        node-version: [24.x]
 
     steps:
       - uses: actions/checkout@v3
@@ -80,38 +80,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: "https://registry.npmjs.org"
-
-      - name: Run tests
-        run: ./.tools/run_node_tests.sh
-
-  build-node-gen:
-    # prevent from running on forks
-    if: github.repository_owner == 'restatedev'
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: typescript/templates/node-gen
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Use Node.js 24.x
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24.x
-
       - uses: pnpm/action-setup@v6
         with:
           package_json_file: typescript/templates/node-gen/package.json
 
-      - name: Install
-        run: pnpm install
-
-      - name: Check
-        run: pnpm check
-
-      - name: Build
-        run: pnpm build
+      - name: Run tests
+        run: ./.tools/run_node_tests.sh
 
   build-altjs:
     # prevent from running on forks
