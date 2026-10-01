@@ -64,9 +64,11 @@ jobs:
           cd destination
           git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
           git config --global user.email "${{ env.CI_COMMIT_EMAIL }}"
-          if [[ `git status --porcelain --untracked-files=no` ]]; then
+          # Stage first and check the index: line-ending normalization (e.g. gradlew.bat CRLF)
+          # can make `git status` report files as modified even when there's nothing to commit
+          git add .
+          if ! git diff --cached --quiet; then
             # Changes
-            git add .
             git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
             git push
           else
