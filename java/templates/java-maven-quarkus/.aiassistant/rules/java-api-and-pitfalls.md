@@ -92,7 +92,7 @@ Start the service, then register and invoke:
 
 ```bash
 restate deployments register http://localhost:9080
-curl localhost:8080/MyService/greet --json '"World"'
+curl localhost:8080/restate/call/MyService/greet --json '"World"'
 ```
 
 ---
