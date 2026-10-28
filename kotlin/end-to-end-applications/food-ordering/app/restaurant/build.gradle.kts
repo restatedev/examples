@@ -7,7 +7,7 @@ repositories {
   mavenCentral()
 }
 
-val restateVersion = "2.9.4"
+val restateVersion = "2.11.0"
 
 dependencies {
   // Kafka

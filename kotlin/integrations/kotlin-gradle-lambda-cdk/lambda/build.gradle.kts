@@ -10,7 +10,7 @@ repositories {
   mavenCentral()
 }
 
-val restateVersion = "2.9.4"
+val restateVersion = "2.11.0"
 
 // Restate proxy clients require non-final annotated classes
 allOpen {
