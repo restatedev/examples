@@ -3,7 +3,7 @@ module github.com/restatedev/examples/go/templates/go-kubernetes
 go 1.25.0
 
 require (
-	github.com/restatedev/sdk-go v1.0.3
+	github.com/restatedev/sdk-go v1.2.0
 	github.com/restatedev/sdk-go/x/tunnel v0.1.1
 )
 

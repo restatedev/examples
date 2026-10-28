@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/aws/aws-lambda-go v1.47.0
-	github.com/restatedev/sdk-go v1.0.3
+	github.com/restatedev/sdk-go v1.2.0
 )
 
 require (
