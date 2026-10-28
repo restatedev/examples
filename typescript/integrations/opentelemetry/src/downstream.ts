@@ -1,7 +1,7 @@
 // OpenTelemetry must be initialized before other imports
 import { NodeSDK } from "@opentelemetry/sdk-node";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-grpc";
-import { Resource } from "@opentelemetry/resources";
+import { resourceFromAttributes } from "@opentelemetry/resources";
 import { ATTR_SERVICE_NAME } from "@opentelemetry/semantic-conventions";
 import {
   trace,
@@ -13,7 +13,7 @@ import {
 import { createServer } from "node:http";
 
 const sdk = new NodeSDK({
-  resource: new Resource({
+  resource: resourceFromAttributes({
     [ATTR_SERVICE_NAME]: "downstream-service",
   }),
   traceExporter: new OTLPTraceExporter({
