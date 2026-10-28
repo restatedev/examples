@@ -75,9 +75,3 @@ bump_restate_sdk_deps $PROJECT_ROOT/typescript/end-to-end-applications/ai-image-
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/end-to-end-applications/food-ordering/app
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/end-to-end-applications/food-ordering/webui
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/end-to-end-applications/chat-bot
-
-# deno bump - it doesn't use a package.json, only import strings
-# -i works differently in gnu sed and mac (bsd) sed - best avoided
-tmp=$(mktemp)
-sed "s#\"npm:@restatedev/restate-sdk@^.*/fetch\"#\"npm:@restatedev/restate-sdk@^${NEW_VERSION}/fetch\"#g" $PROJECT_ROOT/typescript/templates/deno/main.ts > $tmp
-mv $tmp $PROJECT_ROOT/typescript/templates/deno/main.ts

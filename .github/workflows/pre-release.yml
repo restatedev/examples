@@ -59,7 +59,7 @@ jobs:
         run: |
           {
             echo 'paths<<EOF'
-            printf '%s\n' '**/package.json' 'typescript/templates/deno/main.ts'
+            printf '%s\n' '**/package.json'
             # Agent docs are only listed when they actually exist, otherwise git add
             # would fatal on a pathspec matching nothing. git ls-files just prints
             # nothing (exit 0) when there is no match.

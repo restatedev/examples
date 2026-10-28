@@ -108,11 +108,6 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: v2.4.x
-
       - name: Run tests
         run: ./.tools/run_altjs_tests.sh
 
