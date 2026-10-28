@@ -6,7 +6,7 @@ Welcome to the **Restate TypeScript + Cloudflare Workers** template! ✨
 
 ### Prerequisites
 
-- 📦 Node.js 20+ installed
+- 📦 Node.js 26+ installed
 - 🔧 npm or yarn package manager
 - 🌐 Cloudflare account (for deployment)
 

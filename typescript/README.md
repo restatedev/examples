@@ -1,7 +1,7 @@
 # TypeScript Example Catalog
 
 ## Prerequisites
-- NodeJS >= v22
+- NodeJS >= v26
 - npm CLI >= 9.6.7
 
 ## Basics
