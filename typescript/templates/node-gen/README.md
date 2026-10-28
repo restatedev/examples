@@ -6,7 +6,7 @@ Have a look at the [TypeScript Quickstart guide](https://docs.restate.dev/get_st
 
 ## Requirements
 
-- Node.js 24+
+- Node.js 26+
 - [pnpm](https://pnpm.io/installation)
 
 ## Running

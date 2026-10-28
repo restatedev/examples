@@ -68,7 +68,7 @@ jobs:
       RESTATE_DISABLE_TELEMETRY: "true"
     strategy:
       matrix:
-        node-version: [24.x]
+        node-version: [26.x]
 
     steps:
       - uses: actions/checkout@v3
@@ -107,11 +107,6 @@ jobs:
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
-
-      - name: Setup Deno
-        uses: denoland/setup-deno@v1
-        with:
-          deno-version: v2.4.x
 
       - name: Run tests
         run: ./.tools/run_altjs_tests.sh

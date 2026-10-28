@@ -15,18 +15,18 @@
     "check": "pnpm typecheck && pnpm lint && pnpm fmt:check"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.17.2",
-    "@restatedev/restate-sdk-gen": "^1.17.2",
+    "@restatedev/restate-sdk": "^1.18.0",
+    "@restatedev/restate-sdk-gen": "^1.18.0",
     "zod": "^4.3"
   },
   "devDependencies": {
-    "@types/node": "^24",
+    "@types/node": "^26",
     "oxfmt": "^0.71.0",
     "oxlint": "^1.86.0",
     "typescript": "^7.0.2"
   },
   "engines": {
-    "node": ">=24"
+    "node": ">=26"
   },
   "packageManager": "pnpm@12.8.1"
 }

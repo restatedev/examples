@@ -1,7 +1,7 @@
 # TypeScript Example Catalog
 
 ## Prerequisites
-- NodeJS >= v22
+- NodeJS >= v26
 - npm CLI >= 9.6.7
 
 ## Basics
@@ -72,7 +72,6 @@ Starter templates for new projects:
 - **[Node.js Kubernetes Template](templates/node-kubernetes)**: Deploy to Kubernetes with an ingress tunnel and Kubernetes YAML files.
 - **[Bun Template](templates/bun)**
 - **[CloudFlare Workers Template](templates/cloudflare-worker)**
-- **[Deno Template](templates/deno)**
 - **[Vercel](templates/vercel)**
 - **[Next.js Template](templates/nextjs)**
 

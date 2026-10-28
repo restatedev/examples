@@ -61,7 +61,6 @@ jobs:
                   typescript-hello-world-kubernetes.zip
                   typescript-hello-world-bun.zip
                   typescript-hello-world-cloudflare-worker.zip
-                  typescript-hello-world-deno.zip
                   typescript-hello-world-vercel.zip
                   typescript-hello-world-lambda.zip
                   typescript-hello-world-lambda-cdk.zip
@@ -96,13 +95,6 @@ jobs:
     with:
       source-directory: typescript/templates/node-gen
       destination-repo: typescript-gen-template
-  copy-deno-template:
-    name: Copy deno template to deno-template repo
-    uses: ./.github/workflows/copy-to-repo.yml
-    secrets: inherit
-    with:
-      source-directory: typescript/templates/deno
-      destination-repo: deno-template
   copy-vercel-template:
     name: Copy vercel template to vercel-template repo
     uses: ./.github/workflows/copy-to-repo.yml

@@ -12,12 +12,6 @@ function bun_install_check() {
     popd
 }
 
-function deno_install_check() {
-    pushd $1
-    deno task build
-    popd
-}
-
 function wrangler_install_check() {
     pushd $1
     npm install
@@ -28,4 +22,3 @@ function wrangler_install_check() {
 
 wrangler_install_check $PROJECT_ROOT/typescript/templates/cloudflare-worker
 bun_install_check $PROJECT_ROOT/typescript/templates/bun
-deno_install_check $PROJECT_ROOT/typescript/templates/deno

@@ -1,4 +1,4 @@
-FROM node:24-alpine AS build
+FROM node:26-alpine AS build
 
 RUN npm install -g pnpm@12.8.1
 
@@ -13,7 +13,7 @@ RUN pnpm build
 
 RUN pnpm prune --prod
 
-FROM node:24-alpine
+FROM node:26-alpine
 
 # dumb-init helps handling SIGTERM and SIGINT correctly
 RUN apk add dumb-init

@@ -16,13 +16,13 @@
     "test": "TESTCONTAINERS_RYUK_DISABLED=true DEBUG=testcontainers,testcontainers:exec,testcontainers:containers jest --maxWorkers=1 --detectOpenHandles"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.17.0",
-    "@restatedev/restate-sdk-testcontainers": "^1.17.0",
+    "@restatedev/restate-sdk": "^1.18.0",
+    "@restatedev/restate-sdk-testcontainers": "^1.18.0",
     "testcontainers": "^10.24.1"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
-    "@types/node": "^22",
+    "@types/node": "^26",
     "esbuild": "^0.25.4",
     "ts-jest": "^29.3.1",
     "tsx": "^4.19.2",
