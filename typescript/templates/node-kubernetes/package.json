@@ -15,8 +15,8 @@
     "app-dev": "npm run dev"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.17.0",
-    "@restatedev/restate-sdk-tunnel": "^1.17.0",
+    "@restatedev/restate-sdk": "^1.18.0",
+    "@restatedev/restate-sdk-tunnel": "^1.18.0",
     "zod": "^4.3"
   },
   "devDependencies": {

@@ -15,8 +15,8 @@
     "check": "pnpm typecheck && pnpm lint && pnpm fmt:check"
   },
   "dependencies": {
-    "@restatedev/restate-sdk": "^1.17.2",
-    "@restatedev/restate-sdk-gen": "^1.17.2",
+    "@restatedev/restate-sdk": "^1.18.0",
+    "@restatedev/restate-sdk-gen": "^1.18.0",
     "zod": "^4.3"
   },
   "devDependencies": {
