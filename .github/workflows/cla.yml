@@ -7,5 +7,11 @@ on:
 
 jobs:
   CLAAssistant:
+    # the reusable workflow can't exceed the caller's permissions, so grant what it needs explicitly
+    permissions:
+      actions: write
+      contents: read
+      pull-requests: write
+      statuses: write
     uses: restatedev/restate/.github/workflows/cla.yml@main
     secrets: inherit
