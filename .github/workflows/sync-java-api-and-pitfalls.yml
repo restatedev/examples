@@ -23,7 +23,7 @@ jobs:
         java-maven-spring-boot
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.4.0
 
       - name: Download source file
         run: curl -fsSL "$SOURCE_URL" -o /tmp/api-and-pitfalls.md
@@ -47,7 +47,7 @@ jobs:
           done <<< "$TEMPLATES"
 
       - name: Create pull request if changed
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v6.1.0
         with:
           commit-message: "chore: sync java-api-and-pitfalls.md from docs-restate"
           title: "chore: sync java-api-and-pitfalls.md from docs-restate"
