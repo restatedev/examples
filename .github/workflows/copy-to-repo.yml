@@ -34,12 +34,12 @@ jobs:
 
     steps:
       - name: Checkout examples repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           path: examples
 
       - name: Checkout ${{ inputs.destination-repo }} repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.4.0
         with:
           repository: restatedev/${{ inputs.destination-repo }}
           path: destination

@@ -1,0 +1,23 @@
+# Fails when .github/workflows/actions.lock is out of sync with the
+# workflows or a locked pin no longer verifies upstream.
+# The job lives in restatedev/restate so the gh-actions-lock version is
+# maintained in one place.
+
+name: Verify actions lockfile
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+      - "**/action.yml"
+      - "**/action.yaml"
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    uses: restatedev/restate/.github/workflows/verify-lockfile.yml@main

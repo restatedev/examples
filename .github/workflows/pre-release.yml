@@ -44,12 +44,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v4.4.0
+      - uses: actions/setup-node@v4.4.0
         with:
           node-version: "22.x"
           registry-url: "https://registry.npmjs.org"
-      - uses: pnpm/action-setup@v6
+      - uses: pnpm/action-setup@v6.0.10
         with:
           package_json_file: typescript/templates/node-gen/package.json
       - name: Bump sdk-typescript
@@ -67,7 +67,7 @@ jobs:
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v7.0.11
         with:
           title: "[GithubActions] Update SDK-Typescript ${{ inputs.sdkTypescriptVersion }}"
           commit-message: "[GithubActions] Update SDK-Typescript ${{ inputs.sdkTypescriptVersion }}"
@@ -79,15 +79,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v4.4.0
+      - uses: actions/setup-node@v4.4.0
         with:
           node-version: "22.x"
           registry-url: "https://registry.npmjs.org"
       - name: Bump cdk
         run: ./.tools/update_cdk_examples.sh ${{ inputs.cdkVersion }}
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v7.0.11
         with:
           title: "[GithubActions] Update CDK ${{ inputs.cdkVersion }}"
           commit-message: "[GithubActions] Update CDK ${{ inputs.cdkVersion }}"
@@ -101,13 +101,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v4.4.0
+      - uses: actions/setup-java@v4.9.1
         with:
           distribution: "temurin"
           java-version: "25"
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v4.4.3
       - name: Bump sdk-java
         run: ./.tools/update_jvm_examples.sh ${{ inputs.sdkJavaVersion }}
       - name: Compute paths to commit
@@ -120,7 +120,7 @@ jobs:
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v7.0.11
         with:
           title: "[GithubActions] Update SDK-Java ${{ inputs.sdkJavaVersion }}"
           commit-message: "[GithubActions] Update SDK-Java ${{ inputs.sdkJavaVersion }}"
@@ -132,12 +132,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v4.4.0
+      - uses: actions/setup-python@v5.6.0
         with:
           python-version: "3.12"
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v6.8.0
       - name: Bump Python SDK
         run: ./.tools/update_python_examples.sh ${{ inputs.sdkPythonVersion }}
       - name: Compute paths to commit
@@ -150,7 +150,7 @@ jobs:
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v7.0.11
         with:
           title: "[GithubActions] Update SDK-Python ${{ inputs.sdkPythonVersion }}"
           commit-message: "[GithubActions] Update SDK-Python ${{ inputs.sdkPythonVersion }}"
@@ -162,8 +162,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v4.4.0
+      - uses: actions/setup-go@v5.6.0
         with:
           go-version-file: go/templates/go-kubernetes/go.mod
       - name: Bump Go dependencies
@@ -181,7 +181,7 @@ jobs:
             echo 'EOF'
           } >> "$GITHUB_OUTPUT"
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v7.0.11
         with:
           title: "[GithubActions] Update Go dependencies ${{ inputs.sdkGoVersion != '' && format('SDK {0}', inputs.sdkGoVersion) || '' }} ${{ inputs.sdkGoTunnelVersion != '' && format('Tunnel {0}', inputs.sdkGoTunnelVersion) || '' }}"
           commit-message: "[GithubActions] Update Go dependencies ${{ inputs.sdkGoVersion != '' && format('SDK {0}', inputs.sdkGoVersion) || '' }} ${{ inputs.sdkGoTunnelVersion != '' && format('Tunnel {0}', inputs.sdkGoTunnelVersion) || '' }}"
@@ -193,9 +193,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.4.0
       - name: Install Rust toolchain
-        uses: actions-rust-lang/setup-rust-toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
           components: clippy
           rustflags: ""
@@ -204,7 +204,7 @@ jobs:
       - name: Bump sdk-rust
         run: ./.tools/update_rust_examples.sh ${{ inputs.sdkRustVersion }}
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v7.0.11
         with:
           title: "[GithubActions] Update SDK-Rust ${{ inputs.sdkRustVersion }}"
           commit-message: "[GithubActions] Update SDK-Rust ${{ inputs.sdkRustVersion }}"
