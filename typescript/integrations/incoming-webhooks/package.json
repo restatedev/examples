@@ -1,0 +1,27 @@
+{
+  "name": "@restatedev/examples-incoming-webhooks",
+  "version": "0.0.1",
+  "description": "Receiving GitHub, Linear and Slack webhooks in Restate handlers",
+  "license": "MIT",
+  "author": "Restate developers",
+  "email": "code@restate.dev",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc --noEmitOnError",
+    "app": "tsx ./src/app.ts",
+    "app-dev": "tsx watch ./src/app.ts",
+    "send-samples": "tsx ./src/send_samples.ts",
+    "test": "tsx --test \"src/**/*.test.ts\"",
+    "format": "prettier --print-width 100 --write \"src/**/*.ts\"",
+    "check-format": "prettier --print-width 100 --check \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@restatedev/restate-sdk": "^1.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26",
+    "prettier": "^2.8.4",
+    "tsx": "^4.19.2",
+    "typescript": "^5.4.5"
+  }
+}
