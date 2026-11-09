@@ -36,6 +36,8 @@ npm_install_check $PROJECT_ROOT/typescript/end-to-end-applications/food-ordering
 npm_install_check $PROJECT_ROOT/typescript/end-to-end-applications/chat-bot
 
 npm_install_check $PROJECT_ROOT/typescript/integrations/opentelemetry
+npm_install_check $PROJECT_ROOT/typescript/integrations/incoming-webhooks
+npm --prefix $PROJECT_ROOT/typescript/integrations/incoming-webhooks run test
 RESTATE_ENV_ID=env_test RESTATE_AUTH_TOKEN=key_test npm_install_check $PROJECT_ROOT/typescript/integrations/deployment-lambda-cdk
 
 RESTATE_ENV_ID=env_test RESTATE_AUTH_TOKEN=key_test npm_install_check $PROJECT_ROOT/python/integrations/deployment-lambda-cdk
