@@ -117,7 +117,10 @@ and the object's `history` state holds the event once.
 3. Give each sender its webhook URL, and copy its signing secret into the deployment's environment:
    - **GitHub**: in the repository's settings, add a webhook with the URL, content type
      `application/json` and a secret (`GITHUB_WEBHOOK_SECRET`), for issue comment and pull request
-     events. GitHub sends a `ping` at once.
+     events. GitHub sends a `ping` at once. GitHub does not retry a failed delivery, so a delivery
+     that gets a 5xx (a webhook answers 503 when it briefly cannot look itself up) is lost until you
+     press **Redeliver** under the webhook's Recent Deliveries. Redelivering is safe: it keeps the
+     delivery ID, so the work still runs once.
    - **Linear**: create a webhook for Issues and Comments with the URL, and copy its signing secret
      (`LINEAR_WEBHOOK_SECRET`).
    - **Slack**: in the app's settings, enter the URL as the Event Subscriptions Request URL (Slack
@@ -136,10 +139,18 @@ runs unit tests of the signature checks and request parsing, with no server: the
 GitHub's and Slack's published test vectors, and each sender's deliveries, including the 401 and 400
 rejections. `npm run send-samples` is the end-to-end check described above.
 
+## Tested with real deliveries
+
+The example ran against real GitHub deliveries through Restate Cloud webhooks: a repository with
+one sync webhook (JSON) and one async webhook (form encoding), `ping`, issue and pull request events,
+and redeliveries from GitHub's UI. Each event reached its object once, and `npm run send-samples`
+passed through Restate Cloud in both modes. GitHub sends the same delivery ID to every webhook of a
+repository for one event, so two webhooks on one repository forward each event once.
+
 ## Not confirmed
 
 These points are not stated in the senders' documentation, and the example was not run against real
-GitHub, Linear or Slack deliveries:
+Linear or Slack deliveries:
 
 - **Linear retries.** Linear retries after 1 minute, 1 hour and 6 hours, but does not say whether a
   retry keeps the original `Linear-Delivery` and `webhookTimestamp`. If it keeps the timestamp, the
@@ -149,8 +160,5 @@ GitHub, Linear or Slack deliveries:
 - **Slack retries and commands.** That a retried event keeps its `event_id` follows from the ID being
   unique per event, but Slack does not say so. Slack does not say whether it retries slash commands;
   deduplicating by `trigger_id` is a precaution.
-- **GitHub form encoding.** That a form-encoded delivery is signed over the form body, not the JSON
-  inside it, follows from GitHub signing the request body; GitHub does not show an example.
-- **Restate Cloud.** The sample sender ran against a local `restate-server` ingress, which does not
-  filter headers or limit body size like Restate Cloud webhooks. GitHub payloads can reach 25 MB;
-  any over 1 MiB will not reach the handler.
+- **Large GitHub payloads.** GitHub payloads can reach 25 MB; Restate Cloud webhooks reject any over
+  1 MiB, so those never reach the handler.
