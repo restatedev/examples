@@ -147,10 +147,14 @@ and redeliveries from GitHub's UI. Each event reached its object once, and `npm 
 passed through Restate Cloud in both modes. GitHub sends the same delivery ID to every webhook of a
 repository for one event, so two webhooks on one repository forward each event once.
 
+It also ran against a real Slack app and a real Linear workspace, through sync Restate Cloud webhooks:
+Slack verified the Request URL, and an `app_mention` and a slash command each reached `SlackChannel`
+once; a Linear issue and a comment on it each reached the issue's `LinearIssue` once.
+
 ## Not confirmed
 
-These points are not stated in the senders' documentation, and the example was not run against real
-Linear or Slack deliveries:
+These points are not stated in the senders' documentation, and no real Linear or Slack retry
+happened during the runs above:
 
 - **Linear retries.** Linear retries after 1 minute, 1 hour and 6 hours, but does not say whether a
   retry keeps the original `Linear-Delivery` and `webhookTimestamp`. If it keeps the timestamp, the
