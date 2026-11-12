@@ -1,66 +1,74 @@
 # Incoming webhooks from GitHub, Linear and Slack
 
-Restate Cloud can give a handler its own webhook URL, which you hand to GitHub, Linear or Slack.
-This example has one webhook handler per sender. Each one checks the sender's signature, hands the
-work to a virtual object with an idempotency key, and returns well within the sender's time limit.
-The objects do the slow work, one event at a time per issue, pull request or channel.
+Incoming webhooks let GitHub, Linear and Slack invoke a service handler in Restate Cloud through a
+dedicated URL. This example provides one webhook handler per sender. Each handler verifies the
+sender's signature and forwards supported events to a virtual object with an idempotency key before
+returning a response. The virtual objects process events sequentially for each issue, pull request
+or channel, independently of the sender's response time limit.
 
-| Sender | Webhook handler          | Mode          | Checks                                                  | Deduplicates by                         | Hands work to                            |
+| Sender | Webhook handler          | Mode          | Signature and timestamp checks                          | Idempotency key source                  | Target virtual object                    |
 |--------|--------------------------|---------------|---------------------------------------------------------|-----------------------------------------|------------------------------------------|
 | GitHub | `GitHubWebhook/receive`  | sync or async | `X-Hub-Signature-256`                                   | `X-GitHub-Delivery`                     | `GitHubThread`, keyed `owner/repo#123`   |
 | Linear | `LinearWebhook/receive`  | sync          | `Linear-Signature`, `webhookTimestamp` within 1 minute  | `Linear-Delivery`                       | `LinearIssue`, keyed by issue ID         |
 | Slack  | `SlackWebhook/receive`   | sync          | `X-Slack-Signature`, `X-Slack-Request-Timestamp` within 5 minutes | `event_id`; `trigger_id` for commands | `SlackChannel`, keyed by channel ID |
 
-- **GitHub** ([github.ts](src/github.ts)): answers `ping`, and forwards `issue_comment` (created) and
-  `pull_request` events. Issues and pull requests share numbers, so a pull request's comments and
-  its own events reach the same `GitHubThread`.
-- **Linear** ([linear.ts](src/linear.ts)): forwards Issue and Comment `create` events. A comment goes
-  to its issue's `LinearIssue`, after the issue's earlier events.
-- **Slack** ([slack.ts](src/slack.ts)): one handler takes everything a Slack app sends to its Request
-  URL. It returns the `url_verification` challenge, forwards `app_mention` events, and replies to
-  slash commands at once while forwarding the work.
-- **Sample sender** ([send_samples.ts](src/send_samples.ts)): posts signed deliveries, shaped like the
-  senders' own, to your webhook URLs and checks the responses.
+- **GitHub** ([github.ts](src/github.ts)): responds to `ping` and forwards `issue_comment` (created)
+  and `pull_request` events. Issues and pull requests share a numbering sequence, so comments on a
+  pull request and events for that pull request are forwarded to the same `GitHubThread`.
+- **Linear** ([linear.ts](src/linear.ts)): forwards Issue and Comment `create` events to the
+  corresponding `LinearIssue`, which processes them in the order they arrive.
+- **Slack** ([slack.ts](src/slack.ts)): handles URL verification, events and slash commands through
+  one Request URL. It returns the `url_verification` challenge, forwards `app_mention` events, and
+  acknowledges slash commands while forwarding them for processing.
+- **Sample sender** ([send_samples.ts](src/send_samples.ts)): sends signed sample deliveries in each
+  sender's payload format to your webhook URLs and checks the responses.
 
 ## How the webhook handlers work
 
-1. **Raw input.** Each handler declares `input: restate.serde.binary, accept: "*/*"`. The signature
-   covers the body's exact bytes, so the handler must see those bytes, not re-serialized JSON. And
-   Slack slash commands (and GitHub webhooks set to form encoding) are
-   `application/x-www-form-urlencoded`: a JSON-only handler refuses them.
-2. **Verify first.** A missing or wrong signature, or a timestamp outside the sender's window, throws
-   a `TerminalError` with code 401. Restate does not retry a `TerminalError`. The time windows compare
-   against `ctx.date.now()`, which is journaled, so a retried handler sees the time of its first
-   attempt.
-3. **Forward and return.** The handler sends the work to a virtual object with the idempotency key
-   `webhook:<sender>:<delivery ID>`. Senders retry, and send the same delivery ID each time: Restate
-   runs the work once and returns the first invocation's ID to the retries. The handler returns that
-   ID as `forwarded`.
-4. **Slow work in the object.** A virtual object runs one exclusive handler at a time per key, so an
-   issue's or channel's events are processed in order, and different keys in parallel. Each object
-   sets `idempotencyRetention` to cover its sender's retries (GitHub lets you redeliver for 3 days).
-   The handlers here only log and record events (see their `history` handler); call LLMs and the
-   senders' APIs there, inside `ctx.run`.
+1. **Receive the raw request body.** Each handler declares
+   `input: restate.serde.binary, accept: "*/*"` to receive the unmodified body as raw bytes,
+   regardless of content type. Signature verification requires these exact bytes. This also allows
+   the handler to accept `application/x-www-form-urlencoded` requests from Slack slash commands and
+   GitHub webhooks configured to use form encoding.
+2. **Verify the signature and timestamp.** The handler throws a `TerminalError` with code `401` if
+   the signature is missing or invalid, or if the timestamp is outside the accepted window. Restate
+   does not retry a `TerminalError`. Timestamp checks use `ctx.date.now()`, which records the time
+   on the first attempt so retries of the same invocation compare against the same time.
+3. **Forward the event and return a response.** The handler sends the event to a virtual object with
+   the idempotency key `webhook:<sender>:<delivery ID>`. When a redelivery uses the same ID within
+   the retention period, Restate deduplicates the request and returns the original invocation ID.
+   The webhook handler returns that ID in the `forwarded` field.
+4. **Process events in the virtual object.** A virtual object runs one exclusive handler at a time
+   per key. Events for each issue or channel are processed sequentially, while different keys can
+   be processed in parallel. Each object sets `idempotencyRetention` to cover its sender's retry
+   period (GitHub allows manual redelivery for 3 days). The handlers in this example log and record
+   events, which you can retrieve through their `history` handler. Add calls to LLMs or the senders'
+   APIs in these handlers, inside `ctx.run`.
 
-### Sync or async delivery
+### Choose a delivery mode
 
 A Restate Cloud webhook delivers in one of two modes:
 
-- **Sync**: like a call to the ingress. The sender gets 200 with the handler's JSON result, or the
-  handler's `TerminalError` code as the status.
-- **Async**: the sender gets 202 at once and never sees the result. Rejected deliveries show up only
-  as failed invocations in the Restate UI.
+- **Sync**: the sender receives `200` with the handler's JSON result, or the handler's
+  `TerminalError` code as the response status, as with a regular HTTP call to the ingress.
+- **Async**: the sender receives `202` when Restate accepts the invocation. The response does not
+  include the handler's result. Deliveries rejected by the handler appear as failed invocations in
+  the Restate UI.
 
-Slack needs sync: it reads the URL verification challenge and slash command replies from the
-response. Linear needs sync too, as it treats anything but 200 as a failure. GitHub works with
-either. With async, a handler can start later than the delivery (Restate holds requests while your
-service is unavailable), and then the Linear and Slack time windows reject genuine deliveries.
+Use sync mode for Slack, which requires the URL verification challenge and slash command replies in
+the response. Linear also requires sync mode because it treats any response other than `200` as a
+failure. You can use either mode for GitHub.
 
-Restate Cloud passes the sender's headers to `ctx.request().headers` in lower case, except
-`Authorization`, `Cookie`, hop-by-hop headers and `x-restate-*` and `x-restatecloud-*` headers, and
-adds `x-restatecloud-webhook-id`. It accepts bodies of up to 1 MiB, sent with `Content-Length`.
+In async mode, Restate retains requests while your service is unavailable, so the handler may start
+after a delay. Linear and Slack deliveries that exceed the accepted timestamp window are rejected,
+even if their signatures are valid.
 
-## Run it locally
+Restate Cloud forwards the sender's headers to `ctx.request().headers` with lowercase names. It
+removes `Authorization`, `Cookie`, hop-by-hop headers, and headers with the `x-restate-` or
+`x-restatecloud-` prefix, and adds `x-restatecloud-webhook-id`. Requests must include a `Content-Length`
+header, and their bodies must not exceed 1 MiB.
+
+## Run the example locally
 
 Start Restate Server in a separate shell: `restate-server`.
 
@@ -77,8 +85,8 @@ Register the services:
 restate deployments register http://localhost:9080
 ```
 
-The ingress answers like a sync webhook at `/<Service>/receive`, and like an async one at
-`/<Service>/receive/send`. Send the samples through it in sync mode:
+For local testing, use the Restate ingress endpoint `/<Service>/receive` for sync calls and
+`/<Service>/receive/send` for async calls. Send the sample deliveries in sync mode:
 
 ```shell
 GITHUB_WEBHOOK_URL=http://localhost:8080/GitHubWebhook/receive GITHUB_WEBHOOK_SECRET=gh-secret \
@@ -87,7 +95,7 @@ SLACK_WEBHOOK_URL=http://localhost:8080/SlackWebhook/receive SLACK_SIGNING_SECRE
 npm run send-samples
 ```
 
-```
+```text
 GitHub (sync mode)
 ok   github ping
 ok   github issue_comment
@@ -101,12 +109,13 @@ ok   linear issue created
 ok   slack stale timestamp rejected
 ```
 
-For async mode, append `/send` to each URL and run `npm run send-samples -- --mode async`. Every
-delivery then gets 202, and the outcomes are in the Restate UI at `localhost:9070`.
+For async mode, append `/send` to each URL and run `npm run send-samples -- --mode async`. Each
+accepted invocation returns `202`. Inspect the invocation results in the Restate UI at
+`localhost:9070`.
 
-The `redelivered` and `retried` checks pass only if the second delivery reaches the invocation the
-first one started. In the Restate UI you see one `onEvent` or `onMention` invocation for the pair,
-and the object's `history` state holds the event once.
+The `redelivered` and `retried` checks pass only if both deliveries return the same forwarded
+invocation ID. In the Restate UI, you can verify that the pair produces one `onEvent` or `onMention`
+invocation and that the object's `history` state contains the event once.
 
 ## Connect GitHub, Linear and Slack through Restate Cloud
 
@@ -114,55 +123,31 @@ and the object's `history` state holds the event once.
    environment variables on the deployment (any value for a sender you do not use).
 2. In Restate Cloud, create a webhook for each sender, targeting its `receive` handler, in the mode
    from the table above.
-3. Give each sender its webhook URL, and copy its signing secret into the deployment's environment:
+3. Configure each sender with its webhook URL and set its signing secret in the deployment's
+   environment:
    - **GitHub**: in the repository's settings, add a webhook with the URL, content type
      `application/json` and a secret (`GITHUB_WEBHOOK_SECRET`), for issue comment and pull request
-     events. GitHub sends a `ping` at once. GitHub does not retry a failed delivery, so a delivery
-     that gets a 5xx (a webhook answers 503 when it briefly cannot look itself up) is lost until you
-     press **Redeliver** under the webhook's Recent Deliveries. Redelivering is safe: it keeps the
-     delivery ID, so the work still runs once.
+     events. GitHub immediately sends a `ping`. GitHub does not automatically retry failed
+     deliveries, including `5xx` responses. For example, a webhook returns `503` if Restate Cloud
+     temporarily cannot look up the webhook. To retry a failed delivery, select **Redeliver** under
+     the webhook's Recent Deliveries. A redelivery preserves the delivery ID, which Restate uses
+     for deduplication within the configured retention period.
    - **Linear**: create a webhook for Issues and Comments with the URL, and copy its signing secret
      (`LINEAR_WEBHOOK_SECRET`).
    - **Slack**: in the app's settings, enter the URL as the Event Subscriptions Request URL (Slack
      verifies it with a challenge), subscribe to the `app_mention` bot event, and use the same URL for
      a slash command. The signing secret (`SLACK_SIGNING_SECRET`) is under Basic Information.
-4. Check the setup with `npm run send-samples`, using the webhook URLs and secrets. The script never
-   prints them: a webhook URL lets anyone who has it invoke your handler.
+4. Verify the setup with `npm run send-samples`, using the webhook URLs and secrets. The script does
+   not print these values. Anyone with a webhook URL can invoke its handler.
 
-## Test
+## Run the tests
+
+Run the unit tests for signature verification and request parsing without starting a server:
 
 ```shell
 npm test
 ```
 
-runs unit tests of the signature checks and request parsing, with no server: the HMAC check against
-GitHub's and Slack's published test vectors, and each sender's deliveries, including the 401 and 400
-rejections. `npm run send-samples` is the end-to-end check described above.
-
-## Tested with real deliveries
-
-The example ran against real GitHub deliveries through Restate Cloud webhooks: a repository with
-one sync webhook (JSON) and one async webhook (form encoding), `ping`, issue and pull request events,
-and redeliveries from GitHub's UI. Each event reached its object once, and `npm run send-samples`
-passed through Restate Cloud in both modes. GitHub sends the same delivery ID to every webhook of a
-repository for one event, so two webhooks on one repository forward each event once.
-
-It also ran against a real Slack app and a real Linear workspace, through sync Restate Cloud webhooks:
-Slack verified the Request URL, and an `app_mention` and a slash command each reached `SlackChannel`
-once; a Linear issue and a comment on it each reached the issue's `LinearIssue` once.
-
-## Not confirmed
-
-These points are not stated in the senders' documentation, and no real Linear or Slack retry
-happened during the runs above:
-
-- **Linear retries.** Linear retries after 1 minute, 1 hour and 6 hours, but does not say whether a
-  retry keeps the original `Linear-Delivery` and `webhookTimestamp`. If it keeps the timestamp, the
-  one-minute window rejects every retry.
-- **Linear payloads.** Linear publishes no signature test vector and no example Issue payload; the
-  Issue sample follows the documented data-change fields and the Comment example.
-- **Slack retries and commands.** That a retried event keeps its `event_id` follows from the ID being
-  unique per event, but Slack does not say so. Slack does not say whether it retries slash commands;
-  deduplicating by `trigger_id` is a precaution.
-- **Large GitHub payloads.** GitHub payloads can reach 25 MB; Restate Cloud webhooks reject any over
-  1 MiB, so those never reach the handler.
+The tests check HMAC verification against GitHub's and Slack's published test vectors and validate
+each sender's deliveries, including `401` and `400` rejections. Use `npm run send-samples` for the
+end-to-end check described above.
