@@ -52,6 +52,7 @@ Examples integrating Restate with other tools and frameworks:
 - **[OpenTelemetry](integrations/opentelemetry)**: Integration with OpenTelemetry for distributed tracing and monitoring.
 - **[AWS Lambda + CDK](integrations/deployment-lambda-cdk)**: Sample project deploying a TypeScript-based Restate service to AWS Lambda using the AWS Cloud Development Kit (CDK).
 - **[XState](integrations/xstate)**: Resilient, distributed durable state machines with Restate and XState.
+- **[Incoming Webhooks](integrations/webhooks)**: Receive GitHub, Linear and Slack webhooks through Restate Cloud: verify signatures, deduplicate redeliveries, and hand slow work to virtual objects.
 
 
 ## End-to-End Applications
