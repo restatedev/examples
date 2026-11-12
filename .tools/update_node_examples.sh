@@ -68,7 +68,7 @@ bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/vercel
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/templates/cloudflare-worker
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/integrations/deployment-lambda-cdk
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/integrations/opentelemetry
-bump_restate_sdk_deps $PROJECT_ROOT/typescript/integrations/incoming-webhooks
+bump_restate_sdk_deps $PROJECT_ROOT/typescript/integrations/webhooks
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/tutorials/tour-of-orchestration-typescript
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/tutorials/tour-of-workflows-typescript
 bump_restate_sdk_deps $PROJECT_ROOT/typescript/patterns-use-cases

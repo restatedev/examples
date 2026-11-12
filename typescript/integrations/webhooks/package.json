@@ -1,5 +1,5 @@
 {
-  "name": "@restatedev/examples-incoming-webhooks",
+  "name": "@restatedev/examples-webhooks",
   "version": "0.0.1",
   "description": "Receiving GitHub, Linear and Slack webhooks in Restate handlers",
   "license": "MIT",
